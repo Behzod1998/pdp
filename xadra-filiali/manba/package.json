@@ -1,0 +1,12 @@
+{
+  "name": "pdp-xadra-2-qavat",
+  "private": true,
+  "type": "module",
+  "description": "PDP Academy Xadra filiali, 2-qavat: chizma va xonalar izohi generatori",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "three": "0.170.0"
+  }
+}
