@@ -1,7 +1,7 @@
 // A4 hujjat: "2-qavat: xonalar bo'yicha izoh" (Quyluq namunasidagi tartibda).
 import { LOYIHA, H, ICHKI, STANDART, XONALAR } from './model.mjs';
 import { rejaSvg, QURILMALAR } from './reja-svg.mjs';
-import { korsatkichlar, baho, tekshiruv, evakuatsiya, ishlar, xizmatHavo, kwHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
+import { korsatkichlar, baho, tekshiruv, evakuatsiya, ishlar, xizmatHavo, kwHavo, ceoHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
 
 const mm = v => (v / 1000).toFixed(2);           // m
 const sm = v => Math.round(v / 10);              // sm
@@ -80,7 +80,7 @@ function bet1(kor, t) {
     <div class="kpi">
       <div><b>7 sinf</b><span>6 ta 24 o'rinli + 1 ta 20 o'rinli</span></div>
       <div><b>${jamiOrin} o'rin</b><span>jami bir vaqtda</span></div>
-      <div><b>${Math.round(jamiA)} m²</b><span>sinflar; + 4 xizmat xonasi, koworking ${b1(xonaMaydoni(XONALAR.find(x => x.kod === 'KW')))} m²</span></div>
+      <div><b>${Math.round(jamiA)} m²</b><span>sinflar; + sotuv, admin, ustozlar, call-markaz, CEO; koworking ${b1(xonaMaydoni(XONALAR.find(x => x.kod === 'KW')))} m²</span></div>
       <div><b>${t.toqnashuv.length + t.toSilgan.length}</b><span>to'qnashuv va doskani to'suvchi ustun</span></div>
     </div>
     <div style="width:122mm;margin:0 auto">${plan}</div>
@@ -237,12 +237,13 @@ function havoBeti(kor, n) {
   const rows = kor.map((k, i) => q(k.kod, k.odam, { ...k.havo, A: k.A }, k.derazalar.length ? k.derazalar[0].tomon : '<span class="og">yo\'q</span>', QURILMALAR[i].kod));
   xz.forEach(z => rows.push(q(`${z.kod} · ${z.nomi}`, z.odam, z, '<span class="og">yo\'q</span>', 'PV-9')));
   rows.push(q('KW (tadbir)', 70, kw.tadbir, 'chap devorda', 'PV-8'));
+  rows.push(q('X12 · CEO', 5, ceoHavo(), 'burchak (2 devor)', 'tabiiy + KD'));
   const barcha = [...kor.map(k => k.havo), ...xz, kw.tadbir];
   const jamiQ = barcha.reduce((s, h) => s + h.Q, 0);
   const jamiS = barcha.reduce((s, h) => s + h.sovutishYaxlit, 0);
   return bet(n, `
     <h2 style="margin-top:0">Havo almashinuvi</h2>
-    <p><b>Nima uchun mexanik ventilyatsiya kerak.</b> 1–3 va 5–7-xonalar 7.7 m chuqur, deraza orqa devorda: bir tomonlama tabiiy shamollatish (~2.5 × H ≈ 7.5 m) deyarli butun xonaga yetadi, lekin qishda va +40 °C yozda derazalar yopiq turadi — 25 kishi soatiga ~450 l CO₂ chiqaradi, 20–30 daqiqada havo og'irlashadi. <b>4-xona va 4 ta xizmat xonasida deraza umuman yo'q</b> — ular uchun mexanik ventilyatsiya majburiy.</p>
+    <p><b>Nima uchun mexanik ventilyatsiya kerak.</b> 1–3 va 5–7-xonalar 7.7 m chuqur, deraza orqa devorda: bir tomonlama tabiiy shamollatish (~2.5 × H ≈ 7.5 m) deyarli butun xonaga yetadi, lekin qishda va +40 °C yozda derazalar yopiq turadi — 25 kishi soatiga ~450 l CO₂ chiqaradi, 20–30 daqiqada havo og'irlashadi. <b>4-xona, offline sotuv, admin, ustozlar xonasi va call-markazda deraza umuman yo'q</b> — ular uchun mexanik ventilyatsiya majburiy.</p>
     <h2>Hisob</h2>
     <table class="havo"><tr><th>Xona</th><th>Odam</th><th>Maydon, m²</th><th>Hajm, m³</th><th>Havo, m³/soat</th><th>Marta / soat</th><th>Sovutish, kVt</th><th>Deraza</th><th>Qurilma</th></tr>
       ${rows.join('')}<tr class="jami"><td>Jami</td><td></td><td></td><td></td><td>${jamiQ}</td><td></td><td>${b1(jamiS)}</td><td></td><td>9 ta PV</td></tr></table>
@@ -252,7 +253,7 @@ function havoBeti(kor, n) {
     <ul>
       <li><b>PV-1…PV-7</b> — har sinfga rekuperatorli kiritish-chiqarish qurilmasi, ~750 m³/soat, shovqin ≤ 35 dB(A), deraza devori yonida shift ichida. Toza havo <b>doska tomonga</b> beriladi, <b>orqa tomondan</b> so'riladi — oqim o'quvchilar ustidan o'tadi.</li>
       <li><b>PV-4 (4-xona)</b> — o'ng devor qo'shni bino bilan umumiy, orqasida tor oraliq bor: panjaralar shu oraliqqa chiqariladi, kirish va chiqish bir-biridan ~7 m uzoq. Oraliq eni joyida o'lchanadi; havo turg'un bo'lsa, kanal K2 koridori shifti orqali fasadga.</li>
-      <li><b>PV-9</b> — sotuv (XZ1), admin (XZ2) va XZ3, XZ4 uchun: havo koworking chap devoridan olinadi va K1 koridori shifti orqali beriladi. Xodimlar kun bo'yi o'tiradi — qurilma ish vaqti davomida to'xtovsiz ishlaydi.</li>
+      <li><b>PV-9</b> — sotuv (XZ1), admin (XZ2), ustozlar (XZ3) va call-markaz (XZ4) uchun: havo koworking chap devoridan olinadi va K1 koridori shifti orqali beriladi. Xodimlar kun bo'yi o'tiradi — qurilma ish vaqti davomida to'xtovsiz ishlaydi.</li>
       <li><b>PV-8 (koworking)</b> — tadbirda ~70 kishi uchun ~${kw.tadbir.Q} m³/soat; kundalik rejimda ~${kw.kundalik.Q} m³/soat.</li>
       <li><b>CO₂ datchigi</b> qurilmani boshqaradi: xona bo'sh bo'lsa o'chadi, dars paytida havo miqdorini oshiradi.</li>
       <li><b>Konditsioner:</b> har sinfga 2 ta ichki blok (kasseta yoki kanalli), jami ~${Math.round(jamiS)} kVt; tashqi bloklar fasadda yoki tomda — joyini ijaraga beruvchi bilan kelishish.</li>
@@ -272,7 +273,7 @@ function qavatBeti(kor, t, ev, n) {
     <h2 style="margin-top:0">Butun qavat bo'yicha masalalar</h2>
     <table class="masala">
       ${m('Evakuatsiya', `Ikkala zina (ZN1, ZN2) qavatning chap qismida, ikkala koridor koworking zaliga chiqadi. K1 va K2 ning o'ng uchlari berk: koworkinggacha ${berk.toFixed(1)} m. Eng uzoq o'rindan (${eng.kod}) eng yaqin zinagacha ~${Math.round(Math.min(eng.gacha1, eng.gacha2) / 1000)} m. ZN1 ga faqat xo'jalik xonasi (6) orqali, ~70 sm eshik bilan chiqiladi. Koworking o'ng tomonidagi ~1.6 m yo'lak doim bo'sh turishi kerak. 164 o'quvchi va xodimlar uchun evakuatsiya yo'llarini yong'in xavfsizligi mutaxassisi bilan tasdiqlatish kerak.`)}
-      ${m('Derazasiz xonalar', `4-xona (20 o'rin) va 4 ta xizmat xonasida tabiiy yorug'lik va shamollatish yo'q. Mexanik ventilyatsiya, konditsioner va yaxshi yoritish majburiy (10-bet).`)}
+      ${m('Derazasiz xonalar', `4-xona (20 o'rin), offline sotuv, admin, ustozlar xonasi va call-markazda tabiiy yorug'lik va shamollatish yo'q; xodimlar kun bo'yi o'tiradi. Mexanik ventilyatsiya, konditsioner va yaxshi yoritish majburiy (10-bet). CEO xonasi derazali (2 devor).`)}
       ${m('Sinflar zichligi', `1–3 va 5–7-xonalarda 1 kishiga ~1.83 m², orqa bo'sh zona 42 sm — Beruniy qoidasi (oxirgi partadan devorgacha ≥ 65 sm) bajariladi, lekin shkaf uchun joy yo'q.`)}
       ${m('Hojatxona yetishmaydi', `WC (A) va WC (B) da jami 4 ta unitaz. 164 o'quvchi va ~10 xodimga taxminan 6–8 unitaz kerak (1 unitaz 20–30 kishiga). Yechim: tanaffuslarni xonalar bo'yicha 5–10 daqiqa farq bilan qo'yish; 1-qavatdagi hojatxonalardan foydalanish imkonini ijaraga beruvchi bilan aniqlash.`)}
       ${m('Yangi devorlar', `~${ish.yangiUz.toFixed(1)} m GKL 100 (≈ ${Math.round(ish.yangiUz * 3)} m²), ${ish.buzUz.toFixed(1)} m devor buziladi (eski o'rta devor va koridorlarga tushgan bo'laklar), ${ish.yangiEshik} ta yangi eshik. Barcha doskalar yangi koridor devorlarida — doska joyiga ichki mustahkamlash. 3 va 4-xona doskalari bir devorda — ovoz izolyatsiyasi.`)}
@@ -289,10 +290,8 @@ function qavatBeti(kor, t, ev, n) {
     </ul>
     <h2>Tasdiqlash uchun savollar</h2>
     <ul>
-      <li>12-xona (17.6 m², derazali, zina yonida) bo'shadi — nima uchun ishlatiladi?</li>
-      <li>Xizmat xonalari 3 va 4 vazifasi: direktor, ustozlar xonasi, ombor, uchrashuv xonasi?</li>
-      <li>Offline sotuvda nechta konsultant o'tiradi (chizmada 2 ta) va admin xonasida nechta xodim (chizmada 2 ta)?</li>
-      <li>XZ1 ning koworking tomonidagi devorini ham shisha qilamizmi — mijoz kirish zalidan to'g'ridan-to'g'ri ko'radi?</li>
+      <li>XZ1 (offline sotuv) ning koworking tomonidagi devorini ham shisha qilamizmi — mijoz kirish zalidan to'g'ridan-to'g'ri ko'radi?</li>
+      <li>O'ng devor ortidagi oraliq eni — o'lchangach PV-4 yechimi aniqlashtiriladi.</li>
       <li>Havo almashinuvi: har xonaga alohida PV qurilma (tavsiya) yoki markaziy tizim?</li>
       <li>Tanaffuslarni xonalar bo'yicha surish (hojatxona va koridorlar yuklamasi uchun) ma'qulmi?</li>
     </ul>

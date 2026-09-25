@@ -1,7 +1,7 @@
 // A3 chizma varaqlari (HTML → PDF): 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi.
 import { LOYIHA, ICHKI, USTUNLAR, OQLAR, STANDART, PARTA, STUL, H, ESKI_XONALAR, XONALAR } from './model.mjs';
 import { rejaSvg, RANG, QURILMALAR, son } from './reja-svg.mjs';
-import { korsatkichlar, ishlar, xizmatHavo, kwHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
+import { korsatkichlar, ishlar, xizmatHavo, kwHavo, ceoHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
 
 const VB = { x1: -2500, y1: -2300, x2: 25600, y2: 25700 };
 const v = n => n.toFixed(1).replace('.', ',');           // Beruniy panelidagi kabi vergul
@@ -73,9 +73,9 @@ function maydonJadvali() {
     <tr><td>Foydali maydon (hujjat)</td><td class="r">${String(LOYIHA.foydali).replace('.', ',')} m²</td></tr>
     <tr><td>O'quv xonalari, 7 ta · ${kor.reduce((t, k) => t + k.orin, 0)} o'rin</td><td class="r">${m2(sinf)}</td></tr>
     <tr><td>Offline sotuv (XZ1) va admin (XZ2)</td><td class="r">${m2(x('XZ1') + x('XZ2'))}</td></tr>
-    <tr><td>Xizmat xonalari XZ3, XZ4</td><td class="r">${m2(x('XZ3') + x('XZ4'))}</td></tr>
+    <tr><td>Ustozlar (XZ3), call-markaz (XZ4)</td><td class="r">${m2(x('XZ3') + x('XZ4'))}</td></tr>
     <tr><td>Koworking / tadbirlar zali (KW)</td><td class="r">${m2(x('KW'))}</td></tr>
-    <tr><td>12-xona (zaxira, o'zgarmaydi)</td><td class="r">${m2(x('X12'))}</td></tr>
+    <tr><td>CEO xonasi (12-xona, o'zgarmaydi)</td><td class="r">${m2(x('X12'))}</td></tr>
     <tr><td>Koridorlar K1, K2 va kirish zali ZL</td><td class="r">${m2(kor2)}</td></tr>
     <tr><td>Zinalar va sanuzel bloki (o'zgarmaydi)</td><td class="r">${m2(x('ZN1') + x('ZN2') + ['2', '3', '4', '5', '6'].reduce((t, k2) => t + x(k2), 0))}</td></tr>
     <tr><td>Toza balandlik</td><td class="r">${H} mm <span class="qizil">(taxmin)</span></td></tr>
@@ -90,8 +90,9 @@ function xonalarJadvali() {
   return `<h3>XONALAR</h3><table><tr><th>Xona</th><th>O'lcham, m</th><th class="r">m²</th><th class="r">O'rin</th><th class="r">m²/kishi</th><th>Partalar</th></tr>${rows}
     <tr><td>XZ1 · sotuv</td><td>2.80 × 5.60</td><td class="r">${v(xonaMaydoni(xz[0]))}</td><td class="r">2</td><td class="r">—</td><td>2 stol + 4 mijoz stuli, shisha devor</td></tr>
     <tr><td>XZ2 · admin</td><td>2.80 × 5.60</td><td class="r">${v(xonaMaydoni(xz[1]))}</td><td class="r">2</td><td class="r">—</td><td>2 stol + 2 mehmon stuli, shisha devor</td></tr>
-    <tr><td>XZ3, XZ4</td><td>2.85 × 5.60</td><td class="r">${v(xonaMaydoni(xz[2]))} / ${v(xonaMaydoni(xz[3]))}</td><td class="r">—</td><td class="r">—</td><td>xizmat, derazasiz</td></tr>
-    <tr><td>12-xona</td><td>5.95 × 2.95</td><td class="r">${v(xonaMaydoni(x12))}</td><td class="r">—</td><td class="r">—</td><td>zaxira (derazali)</td></tr>
+    <tr><td>XZ3 · ustozlar</td><td>2.85 × 5.60</td><td class="r">${v(xonaMaydoni(xz[2]))}</td><td class="r">9</td><td class="r">—</td><td>umumiy stol, lokerlar</td></tr>
+    <tr><td>XZ4 · call-markaz</td><td>2.85 × 5.60</td><td class="r">${v(xonaMaydoni(xz[3]))}</td><td class="r">6</td><td class="r">—</td><td>devor bo'ylab 6 ish o'rni</td></tr>
+    <tr><td>CEO (12-xona)</td><td>5.95 × 2.95</td><td class="r">${v(xonaMaydoni(x12))}</td><td class="r">1</td><td class="r">—</td><td>ish stoli + 4 kishilik stol, derazali</td></tr>
     <tr><td>KW</td><td>5.95 × 11.85</td><td class="r">${v(xonaMaydoni(XONALAR.find(r => r.kod === 'KW')))}</td><td class="r">~35</td><td class="r">—</td><td>koworking; tadbirda 66 o'rin</td></tr>
     <tr class="jami"><td>Jami</td><td></td><td class="r">${v(kor.reduce((t, k) => t + k.A, 0))}</td><td class="r">${kor.reduce((t, k) => t + k.orin, 0)}</td><td></td><td>6 × 24 + 1 × 20</td></tr></table>`;
 }
@@ -116,7 +117,8 @@ function partaQoidasi() {
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100, ovoz izolyatsiyali.<br>
     KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (sanuzel, K1, K2, kirish zali).<br>
     XZ1 (offline sotuv) va XZ2 (admin): K2 tomonda shisha devor va shisha eshik — kirish zalidan ko'rinadi.<br>
-    12-xona va zinalar mavjud holicha; 1-qavatda zina oldida resepshn va turniket.
+    XZ3 — ustozlar xonasi, XZ4 — call-markaz va online sotuv; 12-xona — CEO (mavjud holicha).<br>
+    Zinalar mavjud holicha; 1-qavatda zina oldida resepshn va turniket.
   </p>`;
 }
 
@@ -170,7 +172,7 @@ function mavjudPanel() {
   <div><h3>O'ZGARISHLAR</h3><p class="izoh">
     <b>O'zgarmaydi</b> (buyurtmachi talabi): ZN1 va ZN2 zinalari, sanuzel bloki (2–6), 12-xona.<br>
     <b>Buziladi:</b> eski o'rta devor (8–10 va 13–15-xonalar orasida); 7 va 11-xonalar orasidagi devor; K1, K2 koridorlariga tushgan devor bo'laklari.<br>
-    <b>Quriladi:</b> K1 va K2 koridorlarining devorlari (1–3 va 5–7-xonalarning doskalari shu devorlarda), 4 ta xizmat xonasi va 4-xona devorlari; xonalar orasidagi bo'shliqlar yopiladi.
+    <b>Quriladi:</b> K1 va K2 koridorlarining devorlari (1–3 va 5–7-xonalarning doskalari shu devorlarda), o'rta qatordagi 4 ta ofis xonasi (sotuv, admin, ustozlar, call-markaz) va 4-xona devorlari; xonalar orasidagi bo'shliqlar yopiladi.
   </p></div>
   <div><h3>ISHLAR HAJMI (taxminiy)</h3><table>
     <tr><td>Yangi devor, GKL 100</td><td class="r">${v(ish.yangiUz)} m · ≈ ${Math.round(ish.yangiUz * H / 1000)} m²</td></tr>

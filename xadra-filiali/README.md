@@ -17,11 +17,11 @@ Xonalarga bo'linish buyurtmachi yuborgan namuna (`manba/namuna-format.webp`) bo'
 - **Talab:** 22–24 o'rinli 6 ta xona, 18–20 o'rinli 1 ta xona, 4 kishilik admin/sotuv xonasi (15–20 m²). Ikkala zina va ular yonidagi kichik xonalar o'zgarmaydi.
 - **Yuqori qator:** 1, 2, 3-xona (SR1–SR3), har biri 24 o'rin, 5.70–5.80 × 7.70 m.
 - **Pastki qator:** 7, 6, 5-xona (SR7–SR5), har biri 24 o'rin, 5.70–5.80 × 7.70 m.
-- **O'rta qator:** XZ1 — offline sotuv bo'limi (2 konsultant, mijoz stullari, kutish divani) va XZ2 — admin (2 ish o'rni). Ikkalasining K2 tomonidagi devori va eshigi shishadan: kirish zalidan chiqqan mijoz darhol ko'radi. XZ3, XZ4 — xizmat xonalari. O'ngda 4-xona (SR4) — sinf, 20 o'rin (6 + 6 + 6 + 2), L shaklida, derazasiz.
+- **O'rta qator:** XZ1 — offline sotuv bo'limi (2 konsultant, mijoz stullari, kutish divani) va XZ2 — admin (2 ish o'rni). Ikkalasining K2 tomonidagi devori va eshigi shishadan: kirish zalidan chiqqan mijoz darhol ko'radi. XZ3 — ustozlar xonasi (umumiy stol, 9 o'rin, lokerlar), XZ4 — call-markaz va online sotuv (6 ish o'rni). O'ngda 4-xona (SR4) — sinf, 20 o'rin (6 + 6 + 6 + 2), L shaklida, derazasiz.
 - **4-xona havosi:** o'ng devor qo'shni bino bilan umumiy, orqasida tor oraliq bor (egasining aytishicha). PV-4 panjaralari shu oraliqqa chiqariladi; oraliq eni joyida o'lchanadi.
 - **Koridorlar:** ikkita gorizontal koridor K1 va K2, har biri 1500 mm. Ikkalasi ham koworking zaliga chiqadi.
 - **Koworking / tadbirlar zali (KW):** chap qanotda, 70.5 m². Kundalik rejimda ~35 o'rin, tadbirda 66 o'rin.
-- **Qolgan xonalar:** WC (A), WC (B), xo'jalik xonasi va 12-xona (17.6 m², hozircha zaxira) mavjud holicha qoladi.
+- **Qolgan xonalar:** WC (A), WC (B) va xo'jalik xonasi mavjud holicha qoladi. 12-xona (17.6 m², derazali) — CEO xonasi: ish stoli, 2 mehmon stuli, 4 kishilik uchrashuv stoli.
 - **Havo almashinuvi:** har bir sinfga alohida rekuperatorli PV qurilma, hisob 30 m³/soat har bir kishiga. Derazasiz xonalar (4-xona va xizmat xonalari) uchun mexanik ventilyatsiya majburiy.
 - **Jami:** 7 xona, 164 o'rin. Avtomatik tekshiruv: to'qnashuv 0, doskani to'suvchi ustun 0.
 

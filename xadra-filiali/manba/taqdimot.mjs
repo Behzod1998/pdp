@@ -45,7 +45,8 @@ export function taqdimotHtml() {
   const x = kod => xonaMaydoni(XONALAR.find(r => r.kod === kod));
   const kw = kwHavo();
   const sinfQ = kor.map(k => `<tr><td>${XONA_NOMI[k.kod]}</td><td class="r">${k.A.toFixed(1)} m²</td><td class="r">${k.orin} o'rin</td></tr>`).join('');
-  const xizmatQ = xizmatHavo().map(z => `<tr><td>${z.kod === 'XZ1' ? 'Offline sotuv bo\'limi' : z.kod === 'XZ2' ? 'Admin' : `Xizmat xonasi ${z.kod.slice(2)}`}</td><td class="r">${z.A.toFixed(1)} m²</td><td class="r">${z.kod === 'XZ1' || z.kod === 'XZ2' ? '2 o\'rin' : ''}</td></tr>`).join('');
+  const orinX = { XZ1: 2, XZ2: 2, XZ3: 9, XZ4: 6 };
+  const xizmatQ = xizmatHavo().map(z => `<tr><td>${z.nomi}</td><td class="r">${z.A.toFixed(1)} m²</td><td class="r">${orinX[z.kod]} o'rin</td></tr>`).join('');
   const jamiA = kor.reduce((s, k) => s + k.A, 0), jamiO = kor.reduce((s, k) => s + k.orin, 0);
   const zinaWc = x('ZN1') + x('ZN2') + ['2', '3', '4', '5', '6'].reduce((s, k) => s + x(k), 0);
   const reja = renderSvg({ vb: { x1: -1300, y1: -2000, x2: 25900, y2: 25700 }, olchamMm: true });
@@ -67,7 +68,7 @@ export function taqdimotHtml() {
           <div>${kesimSvg(1.75)}</div>
           <ul>
             <li>Har bir sinfga <b>rekuperatorli PV qurilma</b> (~750 m³/soat) — ${HAVO.kishiga} m³/soat har bir kishiga, CO₂ ≤ 1000 ppm.</li>
-            <li><b>4-xona, sotuv, admin va xizmat xonalarida deraza yo'q</b> — mexanik ventilyatsiya va konditsioner shart. 4-xona havosi o'ng devor ortidagi oraliqqa chiqariladi.</li>
+            <li><b>4-xona, sotuv, admin, ustozlar va call-markazda deraza yo'q</b> — mexanik ventilyatsiya va konditsioner shart. 4-xona havosi o'ng devor ortidagi oraliqqa chiqariladi.</li>
             <li>Koworking: kundalik ~${kw.kundalik.Q} m³/soat, tadbirda ~${kw.tadbir.Q} m³/soat.</li>
             <li>Toza havo doska tomonga beriladi, orqadan so'riladi. Har sinfga 2 ta konditsioner, CO₂ datchigi.</li>
           </ul></div>
@@ -75,10 +76,10 @@ export function taqdimotHtml() {
       <div class="jadval"><h2>Xonalar maydonlari</h2>
         <table>${sinfQ}
           <tr class="jami"><td>O'quv xonalari</td><td class="r">${jamiA.toFixed(1)} m²</td><td class="r">${jamiO} o'rin</td></tr>
-          <tr class="sar"><td colspan="3">Xizmat xonalari</td></tr>${xizmatQ}
+          <tr class="sar"><td colspan="3">Ofis xonalari</td></tr>${xizmatQ}
           <tr class="sar"><td colspan="3">Boshqa</td></tr>
           <tr><td>Koworking / Tadbirlar zali</td><td class="r">${x('KW').toFixed(1)} m²</td><td></td></tr>
-          <tr><td>12-xona (zaxira)</td><td class="r">${x('X12').toFixed(1)} m²</td><td></td></tr>
+          <tr><td>CEO xonasi (12-xona)</td><td class="r">${x('X12').toFixed(1)} m²</td><td></td></tr>
           <tr><td>Koridorlar, kirish zali</td><td class="r">${(x('K1') + x('K2') + x('ZL')).toFixed(1)} m²</td><td></td></tr>
           <tr><td>Zinapoyalar, WC, xo'jalik</td><td class="r">${zinaWc.toFixed(1)} m²</td><td></td></tr>
         </table>

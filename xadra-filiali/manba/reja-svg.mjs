@@ -127,8 +127,9 @@ export function rejaSvg(o = {}) {
     ADM_JIHOZ.stul.forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));
     XIZMAT_JIHOZ.forEach(z => {
       [...z.stollar, ...z.shkaflar].forEach(p => q.push(rect(p, `fill="${RANG.ustoz}" stroke="#8a6a3c" stroke-width="${8 * k}"`)));
+      z.dumaloq.forEach(d => q.push(`<circle cx="${d.cx}" cy="${d.cy}" r="${d.r}" fill="${RANG.parta}" stroke="${RANG.partaCh}" stroke-width="${8 * k}"/>`));
       z.divanlar.forEach(p => q.push(rect(p, `rx="100" fill="#c9ccd2" stroke="#8a8f99" stroke-width="${8 * k}"`)));
-      [...z.xodim, ...z.mehmon].forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));
+      z.stullar.forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));
     });
     const kw = KW_KUNDALIK;
     [...kw.stollar, ...kw.jurnal, ...kw.shkaf].forEach(p => q.push(rect(p, `fill="${RANG.ustoz}" stroke="#8a6a3c" stroke-width="${8 * k}"`)));
@@ -168,16 +169,16 @@ export function rejaSvg(o = {}) {
         q.push(matn(lx, cy, `${x.kod} · ${x.kod.slice(2)}-xona`, 440, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         q.push(matn(lx, cy + 400 * k, `${K.A.toFixed(1)} m² · ${K.orin} o'rin`, 240, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'xizmat') {
-        const ly = x.kod === 'XZ1' ? 9950 : x.kod === 'XZ2' ? 12200 : 11500;
-        const lx = x.kod === 'XZ1' ? 7650 : x.kod === 'XZ2' ? 10400 : cx - 150;
+        const ly = { XZ1: 9950, XZ2: 12200, XZ3: 14400, XZ4: 14350 }[x.kod];
+        const lx = { XZ1: 7650, XZ2: 10400, XZ3: 13300, XZ4: 15950 }[x.kod];
         q.push(matn(lx, ly, x.kod, 380, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         if (rejim !== 'havo') q.push(matn(lx, ly + 360 * k, `${x.qisqa} · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'koworking') {
         q.push(matn(rejim === 'havo' ? 2200 : 2975, rejim === 'havo' ? 13800 : 9380, 'KW', 420, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         if (rejim !== 'havo') q.push(matn(2975, 9380 + 360 * k, `koworking / tadbirlar · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
       } else if (x.kod === 'X12') {
-        q.push(matn(2975, 22900, '12-xona', 420, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
-        if (rejim !== 'havo') q.push(matn(2975, 23300, `zaxira · ${xonaMaydoni(x).toFixed(1)} m²`, 220, `text-anchor="middle" fill="#555"`));
+        q.push(matn(2700, 21850, 'CEO', 380, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
+        if (rejim !== 'havo') q.push(matn(2700, 22150, `12-xona · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#555"`));
       } else if (x.kod === 'K1' || x.kod === 'K2') {
         q.push(matn(10600, cy + 120, x.kod, 360, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         q.push(matn(11100, cy + 90, `Koridor 1500 · ${xonaMaydoni(x).toFixed(1)} m²`, 210, `text-anchor="start" fill="#555"`));

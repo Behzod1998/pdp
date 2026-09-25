@@ -252,6 +252,10 @@ export function ishlar() {
 export function xizmatHavo() {
   return XONALAR.filter(x => x.tur === 'xizmat').map(x => ({ kod: x.kod, nomi: x.nomi, odam: x.odam, ...havoHisobi(x, x.odam, x.odam * 0.1) }));
 }
+export function ceoHavo() {
+  const x = XONALAR.find(r => r.kod === 'X12');
+  return havoHisobi(x, x.odam, 0.3);
+}
 export function kwHavo() {
   const x = XONALAR.find(r => r.kod === 'KW');
   return { kundalik: havoHisobi(x, 35, 35 * 0.05), tadbir: havoHisobi(x, 70, 0.8) };

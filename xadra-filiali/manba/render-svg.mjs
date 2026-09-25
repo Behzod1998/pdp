@@ -50,8 +50,8 @@ function osimliklar() {
     if (x.kod === 'SR4') { r.push([23550, 9750], [23500, 16200]); return; }
     r.push([x.x2 - 350, x.doska === 'past' ? x.y2 - 1950 : x.y1 + 1950]);
   });
-  XONALAR.filter(x => x.tur === 'xizmat').forEach(x => r.push(x.kod === 'XZ1' ? [8750, 10600] : x.kod === 'XZ2' ? [11550, 11700] : [x.x2 - 320, x.y1 + 420]));
-  r.push([3900, 13950], [3700, 17650]);
+  r.push([8750, 10600], [11550, 11700], [14700, 9800], [17550, 11900]);
+  r.push([3900, 13950], [3700, 17650], [5650, 24050]);
   return r;
 }
 
@@ -69,7 +69,7 @@ export function renderSvg(o = {}) {
   // ---- pollar ----
   q.push(rect({ x1: 0, y1: 0, x2: ICHKI.x, y2: ICHKI.y }, `fill="url(#${id}plitka)"`));
   XONALAR.forEach(x => {
-    if (['sinf', 'zaxira', 'xizmat', 'koworking'].includes(x.tur)) bolaklar(x).forEach(b => q.push(rect(b, `fill="url(#${id}parket)"`)));
+    if (['sinf', 'ofis', 'xizmat', 'koworking'].includes(x.tur)) bolaklar(x).forEach(b => q.push(rect(b, `fill="url(#${id}parket)"`)));
     if (x.tur === 'sanuzel') q.push(rect(x, `fill="url(#${id}wc)"`));
     if (x.tur === 'zina') q.push(rect(x, `fill="#d8d5cf"`));
   });
@@ -101,15 +101,19 @@ export function renderSvg(o = {}) {
     j.push(use('ofisStul', ...markaz(x.j.ustozStuli), x.doska === 'past' ? 0 : 180));
   });
   XIZMAT_JIHOZ.forEach(z => {
-    const pastga = z.xodimYuz === 'past';            // xodim janubga (eshik tomonga) qaraydi
     z.stollar.forEach(st => {
       j.push(rect(st, `fill="url(#${id}yogT)" stroke="#5f4630" stroke-width="8"`));
       const [cx, cy] = markaz(st);
-      const my = pastga ? st.y2 - 120 : st.y1 + 60;
-      j.push(`<rect x="${cx - 280}" y="${my}" width="560" height="60" rx="14" fill="#1f2329"/><rect x="${cx - 220}" y="${cy - 70}" width="440" height="140" rx="12" fill="#3b414b"/>`);
+      if (st.monitor === 'past' || st.monitor === 'yuqori') {
+        const my = st.monitor === 'past' ? st.y2 - 120 : st.y1 + 60;
+        j.push(`<rect x="${cx - 280}" y="${my}" width="560" height="60" rx="14" fill="#1f2329"/><rect x="${cx - 220}" y="${cy - 70}" width="440" height="140" rx="12" fill="#3b414b"/>`);
+      } else if (st.monitor) {
+        const mx = st.monitor === 'chap' ? st.x1 + 60 : st.x2 - 120;
+        j.push(`<rect x="${mx}" y="${cy - 280}" width="60" height="560" rx="14" fill="#1f2329"/><rect x="${cx - 70}" y="${cy - 220}" width="140" height="440" rx="12" fill="#3b414b"/>`);
+      }
     });
-    z.xodim.forEach(p => j.push(use('ofisStul', ...markaz(p), pastga ? 180 : 0)));
-    z.mehmon.forEach(m => j.push(use('stul', ...markaz(m), pastga ? 0 : 180)));
+    z.dumaloq.forEach(d => j.push(`<circle cx="${d.cx}" cy="${d.cy}" r="${d.r}" fill="url(#${id}yog)" stroke="#a88155" stroke-width="10"/>`));
+    z.stullar.forEach(p => j.push(use(p.ofis ? 'ofisStul' : 'stul', ...markaz(p), BURISH[p.yon])));
     z.shkaflar.forEach(shkaf);
     z.divanlar.forEach(r => j.push(rect(r, `rx="100" fill="#7d858f"`), rect({ ...r, x1: r.x2 - 160 }, `rx="70" fill="#626a74"`)));
   });
@@ -196,12 +200,13 @@ export function renderSvg(o = {}) {
       const cx = (x.x1 + x.x2) / 2 - 150;
       if (x.kod === 'XZ1') L.push(t(7650, 9800, 'Offline sotuv', 320, B), t(7650, 10130, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 250, R));
       else if (x.kod === 'XZ2') L.push(t(10400, 12100, 'Admin', 380, B), t(10400, 12450, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 260, R));
-      else L.push(t(cx, 11300, 'Xizmat', 330, B), t(cx, 11680, `xonasi ${x.kod.slice(2)}`, 330, B), t(cx, 12080, `${xonaMaydoni(x).toFixed(1)} m²`, 300, R));
+      else if (x.kod === 'XZ3') L.push(t(13300, 14450, 'Ustozlar xonasi', 280, B), t(13300, 14760, `${xonaMaydoni(x).toFixed(1)} m² · 9 o'rin`, 230, R));
+      else L.push(t(15950, 14350, 'Call-markaz', 290, B), t(15950, 14660, 'online sotuv · 6', 220, R));
     });
     const kwx = XONALAR.find(x => x.kod === 'KW');
     L.push(t(2975, 9460, 'Koworking / Tadbirlar zali', 330, B), t(2975, 9820, `${xonaMaydoni(kwx).toFixed(1)} m²`, 300, R));
     const x12 = XONALAR.find(x => x.kod === 'X12');
-    L.push(t(2975, 22800, '12-xona', 380, B), t(2975, 23200, `${xonaMaydoni(x12).toFixed(1)} m² · zaxira`, 260, G));
+    L.push(t(2700, 21800, 'CEO xonasi', 360, B), t(2700, 22120, `${xonaMaydoni(x12).toFixed(1)} m²`, 250, G));
     L.push(t(1500, 5150, 'Zinapoya', 380, B), t(1500, 5650, '18.79 m²', 330, R));
     L.push(t(3725, 3200, 'WC (A)', 250, B), t(3725, 3520, '4.68 m²', 220, R));
     L.push(t(5175, 3200, 'WC (B)', 250, B), t(5175, 3520, '5.25 m²', 220, R));

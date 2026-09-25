@@ -122,11 +122,14 @@ sinflar().forEach(x => {
   rQuti({ ...d, y1: x.doska === 'yuqori' ? d.y1 : d.y2 - 40, y2: x.doska === 'yuqori' ? d.y1 + 40 : d.y2 }, 0.88, 2.12, M.ramka);
   rQuti({ ...d, x1: d.x1 + 30, x2: d.x2 - 30, y1: x.doska === 'yuqori' ? d.y1 : d.y2 - 50, y2: x.doska === 'yuqori' ? d.y1 + 50 : d.y2 }, 0.91, 2.09, M.doska);
 });
+const YON_S = { n: 'top', s: 'bottom', w: 'left', e: 'right' };
 XIZMAT_JIHOZ.forEach(z => {
-  const pastga = z.xodimYuz === 'past';
   z.stollar.forEach(st => parta(st, M.ustoz));
-  z.xodim.forEach(p => stul(p, pastga ? 'top' : 'bottom'));
-  z.mehmon.forEach(p => stul(p, pastga ? 'bottom' : 'top'));
+  z.stullar.forEach(p => stul(p, YON_S[p.yon]));
+  z.dumaloq.forEach(d => {
+    const g = new THREE.Mesh(new THREE.CylinderGeometry(m(d.r), m(d.r), 0.04, 32), M.parta);
+    g.position.set(m(d.cx), 0.73, m(d.cy)); sahna.add(g);
+  });
   z.shkaflar.forEach(r => rQuti(r, 0, 1.9, M.parta));
   z.divanlar.forEach(r => { rQuti(r, 0, 0.45, mat('#8a919b')); rQuti({ ...r, x1: r.x2 - 160 }, 0.45, 0.85, mat('#8a919b')); });
 });
