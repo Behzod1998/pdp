@@ -6,6 +6,7 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 
 | Fayl | Mazmuni |
 |---|---|
+| `Xadra_2-qavat_taqdimot_reja_v1.0.pdf` / `.png` | A3 portret, taqdimot formatida (namuna: `manba/namuna-format.webp`): rangli reja — parket, mebel, o'lchamlar; sinf yaqindan, havo aylanishi, xonalar maydonlari |
 | `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.0.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
 | `Xadra_2-qavat_xonalar_izoh_v1.0.pdf` | A4, 11 bet: umumiy ko'rsatkichlar, 3D ko'rinishlar, har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
 
@@ -36,7 +37,7 @@ O'lcham yoki talab o'zgarsa, `manba/model.mjs` tahrirlanadi. Keyin quyidagi buyr
 ```sh
 cd manba
 npm install          # three.js (3D ko'rinishlar uchun)
-node build.mjs       # chizma/ ichidagi ikkala PDF qayta yaratiladi; --png — varaqlarning rasmi ham
+node build.mjs       # chizma/ ichidagi barcha PDF va taqdimot PNG qayta yaratiladi; --png — boshqa varaqlarning rasmi ham
 ```
 
 Playwright Chromium bilan o'rnatilgan bo'lishi kerak. Generator avval tekshiruvni bajaradi: partalar, devorlar, ustunlar, eshiklar va doskalar orasidagi to'qnashuvlar.
@@ -47,4 +48,5 @@ Playwright Chromium bilan o'rnatilgan bo'lishi kerak. Generator avval tekshiruvn
 | `tekshiruv.mjs` | xona ko'rsatkichlari, havo hisobi, avtomatik tekshiruv, evakuatsiya yo'li |
 | `reja-svg.mjs` | reja chizmasi (SVG) |
 | `varaqlar.mjs`, `izoh.mjs` | A3 varaqlar va A4 izoh (HTML) |
+| `render-svg.mjs`, `taqdimot.mjs` | taqdimot uslubidagi rangli reja va A3 portret varaq |
 | `sahna3d.html`, `sahna3d.mjs` | 3D ko'rinishlar (three.js) |

@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { varaqlarHtml } from './varaqlar.mjs';
 import { izohHtml } from './izoh.mjs';
+import { taqdimotHtml } from './taqdimot.mjs';
 import { tekshiruv } from './tekshiruv.mjs';
 import { LOYIHA } from './model.mjs';
 
@@ -73,6 +74,14 @@ if (PNG) {
   for (let i = 0; i < betlar.length; i++) await betlar[i].screenshot({ path: join(CHIQISH, `bet-${i + 1}.png`) });
 }
 await a4.close();
+
+// 4. Taqdimot varag'i (A3 portret) — PDF va katta PNG
+const tq = await brauzer.newPage({ viewport: { width: 1123, height: 1587 }, deviceScaleFactor: 2.5 });
+await tq.setContent(taqdimotHtml(), { waitUntil: 'load' });
+const tqNom = `Xadra_2-qavat_taqdimot_reja_${LOYIHA.versiya}`;
+await tq.pdf({ path: join(CHIQISH, `${tqNom}.pdf`), width: '297mm', height: '420mm', printBackground: true, preferCSSPageSize: true });
+await (await tq.$('section.varaq')).screenshot({ path: join(CHIQISH, `${tqNom}.png`) });
+await tq.close();
 
 await brauzer.close();
 server.close();

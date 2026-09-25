@@ -199,7 +199,7 @@ function xonaBeti(k, i, ev) {
 }
 
 // ---------- havo almashinuvi ----------
-function kesimSvg() {
+export function kesimSvg(m = 1) {
   // Sinf kesimi: chapda deraza (orqa), o'ngda doska (old); shift ichida PV, kanal, diffuzorlar
   const L = 12200, Hh = 3000, s = [];
   s.push(`<rect x="0" y="0" width="${L}" height="${Hh}" fill="#f5f3ee"/>`);
@@ -223,10 +223,11 @@ function kesimSvg() {
   s.push(`<rect x="2300" y="280" width="500" height="40" fill="#d1452f"/><path d="M2550,1000 L2550,360" stroke="#d1452f" stroke-width="40" marker-end="url(#kq)"/>`);
   // oqim
   s.push(`<path d="M${L - 3500},1100 C${L - 5000},2000 5200,2100 3000,1300" fill="none" stroke="#5b8fd6" stroke-width="35" stroke-dasharray="160 90" marker-end="url(#kh)"/>`);
-  const t = (x, y, m, a = 'middle', c = '#333') => `<text x="${x}" y="${y}" font-size="210" text-anchor="${a}" fill="${c}">${m}</text>`;
-  s.push(t(-2550, 20, 'toza havo', 'start', '#1f6fd1'), t(-2550, 470, 'chiqarish', 'start', '#d1452f'), t(L - 3500, 1450, 'diffuzorlar', 'middle', '#1f6fd1'),
-    t(2550, 1250, 'so\'rish', 'middle', '#d1452f'), t(L - 250, 2450, 'doska', 'end', '#2e5e45'), t(150, 2750, 'deraza (orqa)', 'start'), t(4300, 2000, 'havo oqimi', 'middle', '#5b8fd6'),
-    t(-2550, 1500, 'fasad', 'start', '#555'), t(-2550, 1750, 'panjarasi', 'start', '#555'));
+  const t = (x, y, matn, a = 'middle', c = '#333') => `<text x="${x}" y="${y}" font-size="${210 * m}" text-anchor="${a}" fill="${c}">${matn}</text>`;
+  const fs = 210 * m;
+  s.push(t(-2550, 30, 'toza havo', 'start', '#1f6fd1'), t(-2550, 260 + fs, 'chiqarish', 'start', '#d1452f'), t(L - 3500, 1250 + fs, 'diffuzorlar', 'middle', '#1f6fd1'),
+    t(2550, 1030 + fs, 'so\'rish', 'middle', '#d1452f'), t(L - 250, 2450, 'doska', 'end', '#2e5e45'), t(150, 2750, 'deraza (orqa)', 'start'), t(4300, 2030 + fs, 'havo oqimi', 'middle', '#5b8fd6'),
+    t(-2550, 700 + 2 * fs, 'fasad', 'start', '#555'), t(-2550, 760 + 3 * fs, 'panjarasi', 'start', '#555'));
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2650 -700 ${L + 3150} ${Hh + 1100}" width="100%" font-family="Liberation Sans, Arial">
     <defs>${['kk:#1f6fd1', 'kq:#d1452f', 'kh:#5b8fd6'].map(v => { const [i, c] = v.split(':'); return `<marker id="${i}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${c}"/></marker>`; }).join('')}</defs>${s.join('')}</svg>`;
 }
