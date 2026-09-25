@@ -1,7 +1,7 @@
 // Xonalar ko'rsatkichlari, havo almashinuvi hisobi va chizmaning avtomatik tekshiruvi.
 import {
   H, ICHKI, PARTA, STUL, STANDART, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR,
-  ADM_JIHOZ, sinflar, maydon,
+  ADM_JIHOZ, XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, sinflar, maydon, bolaklar,
 } from './model.mjs';
 
 // ---------- geometriya ----------
@@ -46,8 +46,8 @@ const sektorKesadi = (s, rect) => {
 };
 
 // ---------- ko'rsatkichlar ----------
-const ichidagiUstunlar = xona => USTUNLAR.filter(u => kesishadi(u, xona)).map(u => ({ ...u, kesim: kesim(u, xona) }));
-const sofMaydon = xona => maydon(xona) - ichidagiUstunlar(xona).reduce((t, u) => t + maydon(u.kesim), 0);
+const ichidagiUstunlar = xona => USTUNLAR.flatMap(u => bolaklar(xona).filter(b => kesishadi(u, b)).map(b => ({ ...u, kesim: kesim(u, b) })));
+const sofMaydon = xona => bolaklar(xona).reduce((t, b) => t + maydon(b), 0) - ichidagiUstunlar(xona).reduce((t, u) => t + maydon(u.kesim), 0);
 
 function xonaDerazalari(xona) {
   return DERAZALAR.map(d => {
@@ -94,13 +94,20 @@ export function korsatkichlar() {
     const qatorlar = [...new Set(j.partalar.map(p => p.qator))].map(q => j.partalar.filter(p => p.qator === q).length);
     const oxirgi = s.doska + (s.qatorlar - 1) * s.qadam + PARTA.chuq;
     const stulOrqasi = s.qadam - PARTA.chuq - STUL.oraliq - STUL.chuq;
-    const orqaZona = D - (oxirgi + STUL.oraliq + STUL.chuq);
+    // orqa zona: orqasida parta bo'lmagan har bir stuldan xona chegarasigacha (eng kichigi)
+    const orqada = (st, p) => p.x1 < st.x2 && st.x1 < p.x2 && (x.doska === 'yuqori' ? p.y1 > st.y2 : p.y2 < st.y1);
+    const orqaZona = Math.min(...j.stullar.filter(st => !j.partalar.some(p => orqada(st, p))).map(st => {
+      const cx = (st.x1 + st.x2) / 2, cy = (st.y1 + st.y2) / 2;
+      const b = bolaklar(x).find(r => cx >= r.x1 && cx <= r.x2 && cy >= r.y1 && cy <= r.y2) || x;
+      const pastki = bolaklar(x).filter(r => cx >= r.x1 && cx <= r.x2).reduce((a, r) => (x.doska === 'yuqori' ? Math.max(a, r.y2) : Math.min(a, r.y1)), x.doska === 'yuqori' ? b.y2 : b.y1);
+      return x.doska === 'yuqori' ? pastki - st.y2 : st.y1 - pastki;
+    }));
     const yonChap = j.u0, yonOng = j.W - j.u0 - j.blokEni;
     // chetdagi o'quvchining qarash burchagi: old qatordagi chetki parta markazidan doska markaziga
     const chetki = Math.max(j.W / 2 - (j.u0 + PARTA.eni / 2), (j.u0 + j.blokEni - PARTA.eni / 2) - j.W / 2);
     const burchak = Math.atan(chetki / (s.doska + 350)) * 180 / Math.PI;
     const derazalar = xonaDerazalari(x).map(d => ({ ...d, tomon: derazaTomoni(x, d.devor) }));
-    const partadanOynagacha = Math.min(...derazalar.flatMap(d => j.partalar.map(p => masofa(p, d))));
+    const partadanOynagacha = derazalar.length ? Math.min(...derazalar.flatMap(d => j.partalar.map(p => masofa(p, d)))) : null;
     const ustunlar = ichidagiUstunlar(x).map(u => ({
       kod: u.kod || `${u.ox}-${u.oy}`, chiqish: Math.min(u.kesim.x2 - u.kesim.x1, u.kesim.y2 - u.kesim.y1),
       partagacha: Math.min(...[...j.partalar, ...j.stullar].map(p => masofa(p, u))),
@@ -116,7 +123,7 @@ export function korsatkichlar() {
       kod: x.kod, nomi: x.nomi, xona: x, W: j.W, D, A: sofMaydon(x), orin, qatorlar, bloklar: s.bloklar,
       qadam: s.qadam, doska: s.doska, yolak: s.yolak, oxirgi, stulOrqasi, orqaZona, yonChap, yonOng,
       burchak, derazalar, partadanOynagacha, ustunlar, eshik: esh, eshikOldda, havo, odam,
-      kishiga: sofMaydon(x) / orin,
+      kishiga: sofMaydon(x) / orin, koridor: x.koridor,
     };
   });
 }
@@ -148,7 +155,14 @@ export function tekshiruv() {
   }
   ADM_JIHOZ.stol.forEach((p, i) => hammaJihoz.push({ r: p, nom: `ADM stol ${i + 1}`, xona: 'ADM' }));
   ADM_JIHOZ.stul.forEach((p, i) => hammaJihoz.push({ r: p, nom: `ADM stul ${i + 1}`, xona: 'ADM' }));
+  XIZMAT_JIHOZ.forEach(z => [z.stol, z.stul, ...z.mehmon, z.shkaf].forEach((p, i) => hammaJihoz.push({ r: p, nom: `${z.kod} jihoz ${i + 1}`, xona: z.kod })));
+  const kw = KW_KUNDALIK;
+  [...kw.stollar, ...kw.dumaloq, ...kw.stullar, ...kw.divan, ...kw.kreslo, ...kw.jurnal, ...kw.shkaf]
+    .forEach((p, i) => hammaJihoz.push({ r: p, nom: `KW jihoz ${i + 1}`, xona: 'KW' }));
   natija.jihozlar = hammaJihoz.length;
+  // tadbirlar rejimi alohida tekshiriladi (kundalik jihozlar bilan emas)
+  const tadbir = [...KW_TADBIR.stullar, KW_TADBIR.minbar].map((p, i) => ({ r: p, nom: `KW tadbir ${i + 1}`, xona: 'KWt' }));
+  hammaJihoz.push(...tadbir);
 
   // 1. Jihozlar: o'zaro, devor, ustun, zina, eshik bilan
   for (let i = 0; i < hammaJihoz.length; i++) {
@@ -205,8 +219,9 @@ export function tekshiruv() {
 }
 
 // ---------- evakuatsiya (taxminiy yo'l uzunligi) ----------
+export const KORIDOR_Y = { K1: 8550, K2: 15850 };
 export function evakuatsiya() {
-  const tutashuv = { x: 5200, y: 13150 };           // K1 va K2 kesishgan joy
+  const kw = { x: 5100 };                            // koworking ichidagi o'tish yo'lagi
   const zn2 = { x: 4200, y: 19200 };                // ZN2 marshining yuqori uchi
   const zn1 = { x: 3100, y: 5700 };                 // ZN1 eshigi (6-xona orqali)
   const su6 = { x: 4800, y: 6500 };
@@ -215,17 +230,10 @@ export function evakuatsiya() {
     const x = k.xona, e = k.eshik;
     const eshik = e.devor === 'h' ? { x: (e.a + e.b) / 2, y: e.yuz } : { x: e.yuz, y: (e.a + e.b) / 2 };
     const ichkari = Math.max(...x.j.stullar.map(s => L1({ x: (s.x1 + s.x2) / 2, y: (s.y1 + s.y2) / 2 }, eshik)));
-    let gacha2, gacha1;
-    if (x.kod === 'SR7') {
-      const k2 = { x: 5200, y: eshik.y };
-      gacha2 = L1(eshik, k2) + L1(k2, zn2);
-      gacha1 = L1(eshik, k2) + L1(k2, su6) + L1(su6, zn1);
-    } else {
-      const k1 = { x: eshik.x, y: tutashuv.y };
-      gacha2 = L1(eshik, k1) + L1(k1, tutashuv) + L1(tutashuv, zn2);
-      gacha1 = L1(eshik, k1) + L1(k1, tutashuv) + L1(tutashuv, su6) + L1(su6, zn1);
-    }
-    return { kod: k.kod, ichkari, gacha2: ichkari + gacha2, gacha1: ichkari + gacha1 };
+    const ky = KORIDOR_Y[x.koridor];
+    const kP = { x: Math.min(eshik.x, 19000), y: ky }, tut = { x: kw.x, y: ky };
+    const bosh = L1(eshik, kP) + L1(kP, tut);
+    return { kod: k.kod, ichkari, gacha2: ichkari + bosh + L1(tut, zn2), gacha1: ichkari + bosh + L1(tut, su6) + L1(su6, zn1) };
   });
 }
 
@@ -244,6 +252,14 @@ export function ishlar() {
 export function admHavo() {
   const x = XONALAR.find(r => r.kod === 'ADM');
   return havoHisobi(x, 6, 4 * 0.1);
+}
+// Xizmat xonalari (har biri 3 kishi) va koworking (kundalik ~35, tadbirda ~70 kishi)
+export function xizmatHavo() {
+  return XONALAR.filter(x => x.tur === 'xizmat').map(x => ({ kod: x.kod, ...havoHisobi(x, 3, 0.3) }));
+}
+export function kwHavo() {
+  const x = XONALAR.find(r => r.kod === 'KW');
+  return { kundalik: havoHisobi(x, 35, 35 * 0.05), tadbir: havoHisobi(x, 70, 0.8) };
 }
 
 export const xonaMaydoni = sofMaydon;

@@ -6,19 +6,23 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 
 | Fayl | Mazmuni |
 |---|---|
-| `Xadra_2-qavat_taqdimot_reja_v1.0.pdf` / `.png` | A3 portret, taqdimot formatida (namuna: `manba/namuna-format.webp`): rangli reja — parket, mebel, o'lchamlar; sinf yaqindan, havo aylanishi, xonalar maydonlari |
+| `Xadra_2-qavat_taqdimot_reja_v1.0.pdf` / `.png` | A3 portret, namuna formatida (`manba/namuna-format.webp`): rangli reja, koworking zalining ikki rejimi (kundalik va tadbir), havo aylanishi, xonalar maydonlari |
 | `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.0.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
 | `Xadra_2-qavat_xonalar_izoh_v1.0.pdf` | A4, 11 bet: umumiy ko'rsatkichlar, 3D ko'rinishlar, har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
 
 ## Asosiy yechim
 
+Xonalarga bo'linish buyurtmachi yuborgan namuna (`manba/namuna-format.webp`) bo'yicha qilingan. O'lchamlar real chizmadan olingan.
+
 - **Talab:** 22–24 o'rinli 6 ta xona, 18–20 o'rinli 1 ta xona, 4 kishilik admin/sotuv xonasi (15–20 m²). Ikkala zina va ular yonidagi kichik xonalar o'zgarmaydi.
-- **SR1–SR6** — eski 8, 9, 10, 13, 14, 15-xonalar o'rnida, har biri 24 o'rin: 6×4, Beruniy standarti.
-- **SR7** — eski 7 va 11-xonalar o'rnida, 20 o'rin: 5×4 (2 + 3 bloklar). Derazalar o'quvchilarning chap tomonida.
-- **ADM** — 12-xona (17,6 m²), 4 ish o'rni. Xona mavjud holicha qoladi.
-- **K1** (1500) koridori o'rta devor bo'ylab SR1–SR6 ni bog'laydi. **K2** (1500) koridori ZN2 zinasini (asosiy kirish), sanuzel blokini va ZN1 zinasini bog'laydi.
-- **Havo almashinuvi:** har sinfga alohida rekuperatorli PV qurilma, hisob 30 m³/soat har bir kishiga. Toza havo doska tomonga beriladi, orqa tomondan so'riladi. Har sinfga 2 ta konditsioner.
-- **Jami:** 7 sinf, 164 o'rin. Avtomatik tekshiruv: to'qnashuv 0, doskani to'suvchi ustun 0.
+- **Yuqori qator:** 1, 2, 3-xona (SR1–SR3), har biri 24 o'rin, 5.70–5.80 × 7.70 m.
+- **Pastki qator:** 7, 6, 5-xona (SR7–SR5), har biri 24 o'rin, 5.70–5.80 × 7.70 m.
+- **O'rta qator:** 4 ta xizmat xonasi (15.6–15.9 m²). O'ngda 4-xona (SR4) — 20 o'rin (6 + 6 + 6 + 2), L shaklida, derazasiz.
+- **Koridorlar:** ikkita gorizontal koridor K1 va K2, har biri 1500 mm. Ikkalasi ham koworking zaliga chiqadi.
+- **Koworking / tadbirlar zali (KW):** chap qanotda, 70.5 m². Kundalik rejimda ~35 o'rin, tadbirda 66 o'rin.
+- **Qolgan xonalar:** WC (A), WC (B) va xo'jalik xonasi mavjud holicha qoladi. Admin/sotuv — 12-xona (17.6 m²).
+- **Havo almashinuvi:** har bir sinfga alohida rekuperatorli PV qurilma, hisob 30 m³/soat har bir kishiga. Derazasiz xonalar (4-xona va xizmat xonalari) uchun mexanik ventilyatsiya majburiy.
+- **Jami:** 7 xona, 164 o'rin. Avtomatik tekshiruv: to'qnashuv 0, doskani to'suvchi ustun 0.
 
 ## Taxminlar (joyida o'lchanadi)
 

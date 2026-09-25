@@ -1,6 +1,6 @@
 // 3D ko'rinishlar (three.js). Reja koordinatasi (x, y) → sahna (x, z), balandlik — y. Birlik: metr.
 import * as THREE from 'three';
-import { H, ICHKI, DEVORLAR, DERAZALAR, USTUNLAR, ESHIKLAR, ZINALAR, XONALAR, ADM_JIHOZ, sinflar } from './model.mjs';
+import { H, ICHKI, DEVORLAR, DERAZALAR, USTUNLAR, ESHIKLAR, ZINALAR, XONALAR, ADM_JIHOZ, XIZMAT_JIHOZ, KW_KUNDALIK, sinflar } from './model.mjs';
 
 const m = v => v / 1000;
 const HM = m(H);
@@ -73,7 +73,7 @@ USTUNLAR.forEach(u => rQuti(u, 0, HM, M.ustun));
 
 // eshik teshiklari ustidagi peremichka
 ESHIKLAR.forEach(e => {
-  const t = e.kod.startsWith('SR') && e.devor === 'h' && e.yuz === 12200 ? 200 : 100;
+  const t = e.holat === 'mavjud' ? 200 : 100;
   const r = e.devor === 'h'
     ? { x1: e.a, x2: e.b, y1: e.yon < 0 ? e.yuz : e.yuz - t, y2: e.yon < 0 ? e.yuz + t : e.yuz }
     : { x1: e.yon < 0 ? e.yuz : e.yuz - t, x2: e.yon < 0 ? e.yuz + t : e.yuz, y1: e.a, y2: e.b };
@@ -123,12 +123,33 @@ sinflar().forEach(x => {
 });
 ADM_JIHOZ.stol.forEach(p => parta(p, M.ustoz));
 ADM_JIHOZ.stul.forEach(p => stul(p, p.tur === 'xodim' ? 'bottom' : 'top'));
+XIZMAT_JIHOZ.forEach(z => {
+  parta(z.stol, M.ustoz);
+  stul(z.stul, 'bottom');
+  z.mehmon.forEach(m2 => stul(m2, 'top'));
+  rQuti(z.shkaf, 0, 1.9, M.parta);
+});
+const kw = KW_KUNDALIK;
+const YON = { n: 'top', s: 'bottom', w: 'left', e: 'right' };
+kw.stollar.forEach(r => parta(r, M.ustoz));
+kw.dumaloq.forEach(d => {
+  const g = new THREE.Mesh(new THREE.CylinderGeometry(m(d.r), m(d.r), 0.04, 32), M.parta);
+  g.position.set(m(d.cx), 0.73, m(d.cy)); sahna.add(g);
+  const o = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.72, 12), M.oyoq);
+  o.position.set(m(d.cx), 0.36, m(d.cy)); sahna.add(o);
+});
+kw.stullar.forEach(p => stul(p, YON[p.yon]));
+const yumshoq = mat('#8a919b');
+kw.divan.forEach(r => { rQuti(r, 0, 0.45, yumshoq); rQuti({ ...r, x1: r.x2 - 220 }, 0.45, 0.85, yumshoq); });
+kw.kreslo.forEach(r => { rQuti(r, 0, 0.45, yumshoq); });
+kw.jurnal.forEach(r => rQuti(r, 0, 0.42, M.parta));
+kw.shkaf.forEach(r => rQuti(r, 0, 0.9, M.parta));
 
 // ko'rinishlar
 const KORINISHLAR = {
-  sr1: { pos: [9.1, 1.25, 4.1], nishon: [9.1, 1.3, 12.2], fov: 70 },
-  sr7: { pos: [2.6, 1.25, 14.4], nishon: [2.0, 1.3, 6.5], fov: 70 },
-  k1: { pos: [6.3, 1.65, 13.35], nishon: [23.9, 1.2, 13.0], fov: 78 },
+  sr1: { pos: [9.1, 1.3, 0.25], nishon: [9.1, 1.2, 7.7], fov: 78 },
+  sr4: { pos: [21.4, 1.3, 15.9], nishon: [21.0, 1.2, 7.8], fov: 74 },
+  kw: { pos: [5.3, 1.65, 18.1], nishon: [1.6, 0.9, 8.5], fov: 74 },
   tepa: { pos: [-9, 29, 38], nishon: [12.2, -1.5, 11.5], fov: 34, shiftYoq: true },
 };
 window.KORINISHLAR = KORINISHLAR;
