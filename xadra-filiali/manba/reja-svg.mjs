@@ -1,7 +1,7 @@
 // Reja chizmasi (SVG). Rejimlar: 'mavjud' (1-varaq), 'jihoz' (2-varaq), 'havo' (3-varaq), 'izoh' (A4 hujjat).
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, ESKI_XONALAR, ADM_JIHOZ,
-  XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, PARTA, bolaklar,
+  XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, PARTA, bolaklar, xizmatJihozlari,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 
@@ -68,6 +68,9 @@ export function rejaSvg(o = {}) {
       if (wl.holat === 'mavjud') q.push(rect(wl, `fill="${RANG.devorI}"`));
       if (wl.holat === 'yangi') q.push(rect(wl, `fill="${RANG.yangi}"`));
       if (wl.holat === 'buziladi') q.push(rect(wl, `fill="#fff" stroke="${RANG.buz}" stroke-width="${14 * k}" stroke-dasharray="${60 * k} ${40 * k}"`));
+    } else if (wl.shisha) {
+      q.push(rect(wl, `fill="#e3f2fb" stroke="#2f78b7" stroke-width="${10 * k}"`));
+      q.push(chiziq(wl.x1, (wl.y1 + wl.y2) / 2, wl.x2, (wl.y1 + wl.y2) / 2, `stroke="#2f78b7" stroke-width="${7 * k}"`));
     } else if (wl.holat !== 'buziladi') {
       q.push(rect(wl, `fill="${rejim === 'havo' ? '#5d6472' : RANG.devorI}"`));
     }
@@ -123,8 +126,9 @@ export function rejaSvg(o = {}) {
     ADM_JIHOZ.stol.forEach(p => q.push(rect(p, `fill="${RANG.ustoz}" stroke="#8a6a3c" stroke-width="${8 * k}"`)));
     ADM_JIHOZ.stul.forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));
     XIZMAT_JIHOZ.forEach(z => {
-      [z.stol, z.shkaf].forEach(p => q.push(rect(p, `fill="${RANG.ustoz}" stroke="#8a6a3c" stroke-width="${8 * k}"`)));
-      [z.stul, ...z.mehmon].forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));
+      [...z.stollar, ...z.shkaflar].forEach(p => q.push(rect(p, `fill="${RANG.ustoz}" stroke="#8a6a3c" stroke-width="${8 * k}"`)));
+      z.divanlar.forEach(p => q.push(rect(p, `rx="100" fill="#c9ccd2" stroke="#8a8f99" stroke-width="${8 * k}"`)));
+      [...z.xodim, ...z.mehmon].forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));
     });
     const kw = KW_KUNDALIK;
     [...kw.stollar, ...kw.jurnal, ...kw.shkaf].forEach(p => q.push(rect(p, `fill="${RANG.ustoz}" stroke="#8a6a3c" stroke-width="${8 * k}"`)));
@@ -164,14 +168,16 @@ export function rejaSvg(o = {}) {
         q.push(matn(lx, cy, `${x.kod} · ${x.kod.slice(2)}-xona`, 440, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         q.push(matn(lx, cy + 400 * k, `${K.A.toFixed(1)} m² · ${K.orin} o'rin`, 240, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'xizmat') {
-        q.push(matn(cx - 150, 11500, x.kod, 380, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
-        if (rejim !== 'havo') q.push(matn(cx - 150, 11500 + 380 * k, `xizmat · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
+        const ly = x.kod === 'XZ1' ? 9950 : x.kod === 'XZ2' ? 12200 : 11500;
+        const lx = x.kod === 'XZ1' ? 7650 : x.kod === 'XZ2' ? 10400 : cx - 150;
+        q.push(matn(lx, ly, x.kod, 380, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
+        if (rejim !== 'havo') q.push(matn(lx, ly + 360 * k, `${x.qisqa} · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'koworking') {
         q.push(matn(rejim === 'havo' ? 2200 : 2975, rejim === 'havo' ? 13800 : 9380, 'KW', 420, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         if (rejim !== 'havo') q.push(matn(2975, 9380 + 360 * k, `koworking / tadbirlar · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
-      } else if (x.kod === 'ADM') {
-        q.push(matn(1300, 22080, 'ADM', 420, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
-        if (rejim !== 'havo') q.push(matn(2100, 22040, `admin · sotuv · 4 ish o'rni`, 190, `text-anchor="start" fill="#555"`));
+      } else if (x.kod === 'X12') {
+        q.push(matn(2975, 22900, '12-xona', 420, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
+        if (rejim !== 'havo') q.push(matn(2975, 23300, `zaxira · ${xonaMaydoni(x).toFixed(1)} m²`, 220, `text-anchor="middle" fill="#555"`));
       } else if (x.kod === 'K1' || x.kod === 'K2') {
         q.push(matn(10600, cy + 120, x.kod, 360, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         q.push(matn(11100, cy + 90, `Koridor 1500 · ${xonaMaydoni(x).toFixed(1)} m²`, 210, `text-anchor="start" fill="#555"`));
@@ -283,7 +289,7 @@ export const QURILMALAR = (() => {
     if (x.kod === 'SR4') {
       // derazasiz xona: havo o'ng tashqi devor orqali (qo'shni bino bo'lsa — kanal bilan fasadga)
       Object.assign(d, { qurilma: { x1: 22900, x2: 23700, y1: 11600, y2: 12900 }, devor: 'ong', taxminiy: true,
-        kirish: { x1: ICHKI.x, x2: ICHKI.x + 400, y1: 10300, y2: 10900 }, chiqish: { x1: ICHKI.x, x2: ICHKI.x + 400, y1: 13600, y2: 14200 },
+        kirish: { x1: ICHKI.x, x2: ICHKI.x + 400, y1: 8300, y2: 8900 }, chiqish: { x1: ICHKI.x, x2: ICHKI.x + 400, y1: 15700, y2: 16300 },
         kanallar: [[[22900, 12250], [21025, 12250], [21025, 10200]]],
         diffuzor: [[21025, 10300], [21025, 12250]], sorish: [[22100, 15700]],
         konditsioner: [[19700, 11600], [22400, 13900]], co2: [23500, 9000] });
@@ -305,16 +311,13 @@ export const QURILMALAR = (() => {
     }
     r.push(d);
   });
-  r.push({ kod: 'PV-8', xona: 'ADM', qurilma: { x1: 2400, x2: 3300, y1: 23500, y2: 24000 }, devor: 'past',
-    kirish: { x1: 900, x2: 1400, y1: ICHKI.y, y2: ICHKI.y + DEVOR.past }, chiqish: { x1: 4700, x2: 5200, y1: ICHKI.y, y2: ICHKI.y + DEVOR.past },
-    kanallar: [[[2850, 23500], [2850, 21950]]], diffuzor: [[2850, 21950]], sorish: [[4900, 23150]], konditsioner: [[4000, 21900]], co2: [5700, 21750] });
-  r.push({ kod: 'PV-9', xona: 'KW', qurilma: { x1: 300, x2: 1300, y1: 11600, y2: 12600 }, devor: 'chap',
+  r.push({ kod: 'PV-8', xona: 'KW', qurilma: { x1: 300, x2: 1300, y1: 11600, y2: 12600 }, devor: 'chap',
     kirish: { x1: -400, x2: 0, y1: 10800, y2: 11400 }, chiqish: { x1: -400, x2: 0, y1: 13300, y2: 13900 },
     kanallar: [[[1300, 12100], [3700, 12100]], [[1800, 7900], [3700, 7900], [3700, 16900], [1800, 16900]]],
     diffuzor: [[1800, 7900], [3700, 10000], [3700, 14300], [1800, 16900]], sorish: [[900, 9400], [900, 15500]],
     konditsioner: [[2600, 9200], [2600, 15600]], co2: [5700, 12900] });
   const xz = XONALAR.filter(x => x.tur === 'xizmat');
-  r.push({ kod: 'PV-10', xona: 'XZ', qurilma: { x1: 6500, x2: 7500, y1: 8150, y2: 8950 }, devor: 'chap',
+  r.push({ kod: 'PV-9', xona: 'XZ', qurilma: { x1: 6500, x2: 7500, y1: 8150, y2: 8950 }, devor: 'chap',
     kirish: { x1: -400, x2: 0, y1: 6700, y2: 7100 }, chiqish: { x1: -400, x2: 0, y1: 7600, y2: 8000 },
     kanallar: [[[0, 7300], [5600, 7300], [5600, 8550], [6500, 8550]], [[7500, 8550], [16600, 8550]], ...xz.map(x => [[(x.x1 + x.x2) / 2 - 300, 8550], [(x.x1 + x.x2) / 2 - 300, 10200]])],
     diffuzor: xz.map(x => [(x.x1 + x.x2) / 2 - 300, 10300]), sorish: xz.map(x => [(x.x1 + x.x2) / 2 - 300, 14000]),

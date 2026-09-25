@@ -1,6 +1,6 @@
 // 3D ko'rinishlar (three.js). Reja koordinatasi (x, y) → sahna (x, z), balandlik — y. Birlik: metr.
 import * as THREE from 'three';
-import { H, ICHKI, DEVORLAR, DERAZALAR, USTUNLAR, ESHIKLAR, ZINALAR, XONALAR, ADM_JIHOZ, XIZMAT_JIHOZ, KW_KUNDALIK, sinflar } from './model.mjs';
+import { H, ICHKI, DEVORLAR, DERAZALAR, USTUNLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ, KW_KUNDALIK, sinflar } from './model.mjs';
 
 const m = v => v / 1000;
 const HM = m(H);
@@ -51,6 +51,7 @@ sahna.add(shift);
 // devorlar (tashqi devorlarda deraza teshiklari)
 const SEP = 0.9, LINT = 2.4;
 DEVORLAR.filter(w => w.holat !== 'buziladi').forEach(w => {
+  if (w.shisha) { rQuti(w, 0, 2.7, M.shisha); rQuti(w, 2.7, HM, M.devor); rQuti({ ...w, y1: w.y1 + 30, y2: w.y2 - 30 }, 0, 0.1, M.ramka); return; }
   const material = w.holat === 'tashqi' ? M.tashqi : w.holat === 'yangi' ? M.yangi : M.devor;
   if (w.holat !== 'tashqi') return rQuti(w, 0, HM, material);
   const gorizontal = w.x2 - w.x1 > w.y2 - w.y1;
@@ -121,13 +122,13 @@ sinflar().forEach(x => {
   rQuti({ ...d, y1: x.doska === 'yuqori' ? d.y1 : d.y2 - 40, y2: x.doska === 'yuqori' ? d.y1 + 40 : d.y2 }, 0.88, 2.12, M.ramka);
   rQuti({ ...d, x1: d.x1 + 30, x2: d.x2 - 30, y1: x.doska === 'yuqori' ? d.y1 : d.y2 - 50, y2: x.doska === 'yuqori' ? d.y1 + 50 : d.y2 }, 0.91, 2.09, M.doska);
 });
-ADM_JIHOZ.stol.forEach(p => parta(p, M.ustoz));
-ADM_JIHOZ.stul.forEach(p => stul(p, p.tur === 'xodim' ? 'bottom' : 'top'));
 XIZMAT_JIHOZ.forEach(z => {
-  parta(z.stol, M.ustoz);
-  stul(z.stul, 'bottom');
-  z.mehmon.forEach(m2 => stul(m2, 'top'));
-  rQuti(z.shkaf, 0, 1.9, M.parta);
+  const pastga = z.xodimYuz === 'past';
+  z.stollar.forEach(st => parta(st, M.ustoz));
+  z.xodim.forEach(p => stul(p, pastga ? 'top' : 'bottom'));
+  z.mehmon.forEach(p => stul(p, pastga ? 'bottom' : 'top'));
+  z.shkaflar.forEach(r => rQuti(r, 0, 1.9, M.parta));
+  z.divanlar.forEach(r => { rQuti(r, 0, 0.45, mat('#8a919b')); rQuti({ ...r, x1: r.x2 - 160 }, 0.45, 0.85, mat('#8a919b')); });
 });
 const kw = KW_KUNDALIK;
 const YON = { n: 'top', s: 'bottom', w: 'left', e: 'right' };
@@ -149,6 +150,8 @@ kw.shkaf.forEach(r => rQuti(r, 0, 0.9, M.parta));
 const KORINISHLAR = {
   sr1: { pos: [9.1, 1.3, 0.25], nishon: [9.1, 1.2, 7.7], fov: 78 },
   sr4: { pos: [21.4, 1.3, 15.9], nishon: [21.0, 1.2, 7.8], fov: 74 },
+  sotuv: { pos: [4.3, 1.6, 16.3], nishon: [12.0, 1.1, 14.6], fov: 72 },
+  k1: { pos: [6.6, 1.6, 8.55], nishon: [19.3, 1.2, 8.55], fov: 70 },
   kw: { pos: [5.3, 1.65, 18.1], nishon: [1.6, 0.9, 8.5], fov: 74 },
   tepa: { pos: [-9, 29, 38], nishon: [12.2, -1.5, 11.5], fov: 34, shiftYoq: true },
 };

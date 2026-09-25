@@ -1,7 +1,7 @@
 // A4 hujjat: "2-qavat: xonalar bo'yicha izoh" (Quyluq namunasidagi tartibda).
 import { LOYIHA, H, ICHKI, STANDART, XONALAR } from './model.mjs';
 import { rejaSvg, QURILMALAR } from './reja-svg.mjs';
-import { korsatkichlar, baho, tekshiruv, evakuatsiya, ishlar, admHavo, xizmatHavo, kwHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
+import { korsatkichlar, baho, tekshiruv, evakuatsiya, ishlar, xizmatHavo, kwHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
 
 const mm = v => (v / 1000).toFixed(2);           // m
 const sm = v => Math.round(v / 10);              // sm
@@ -101,6 +101,8 @@ function bet2(rasm) {
     ${r('sr1', '1-xona — oxirgi qatordan (6.84 m) doskaga: doska K1 koridori devorida, deraza orqada')}
     ${r('sr4', '4-xona — orqa zonadan doskaga: derazasiz xona, 3 qator × 6 + 2 o\'rin')}
     ${r('kw', 'Koworking / tadbirlar zali — kirish zalidan: chapda derazalar, o\'ngda o\'tish yo\'lagi')}
+    ${r('sotuv', 'Koworking yo\'lagidan K2 koridoriga (kirish zalidan 2 m): chapda offline sotuv va admin xonalarining shisha devorlari')}
+    ${r('k1', 'K1 koridori — koworkingdan o\'ngga: chapda 1–3-xona, o\'ngda xizmat xonalari')}
     ${r('tepa', 'Butun qavat — tepadan umumiy ko\'rinish (to\'q sariq — yangi devorlar)')}
   </div>
   <p class="izohm" style="margin-top:4mm">3D model chizmadagi o'lchamlardan qurilgan; derazalar joyi va toza balandlik (${H / 1000} m) taxminiy. To'sinlar fotoda ko'rsatilmagan — joyida o'lchanadi.</p>`);
@@ -128,7 +130,7 @@ function xonaMatni(k, ev) {
     q.push(`Deraza yo'q — doska va proyektor ekraniga quyosh ham, deraza aksi ham tushmaydi.`);
     if (ustunlar.length) q.push(`${ustunMatn} ustuni devordan 10 sm chiqadi, partaning yon tomonida (${sm(Math.min(...ustunlar.map(u => u.partagacha)))} sm) — doskani to'smaydi.`);
     n.push(`<b>Derazasiz</b>: tabiiy yorug'lik va shamollatish yo'q — PV qurilma va konditsioner majburiy, yoritish kunduzgi spektrda (4000 K).`);
-    n.push(`O'ng devor tashqi devormi yoki qo'shni binoga tegadimi — noma'lum: PV-4 havosi shu devor orqali olinadi, aks holda kanal koridor shifti orqali fasadga chiqariladi.`);
+    n.push(`O'ng devor qo'shni bino bilan umumiy; egasining aytishicha orqasida tor oraliq bor — PV-4 panjaralari shu oraliqqa chiqariladi (kirish va chiqish bir-biridan ~7 m uzoq). Oraliq eni va ochiqligi joyida o'lchanadi; havo turg'un bo'lsa, kanal K2 shifti orqali fasadga.`);
     n.push(`Doska 3-xona doskasi bilan bir devorda (orqama-orqa) — bu devor ovoz izolyatsiyali (mineral paxta, 2 qavat GKL) bo'lishi kerak.`);
     n.push(`L shaklidagi xona: yuqori va pastki chap burchaklari koridor uchlari uchun kesilgan.`);
     n.push(`Yon chekka ${sm(yon)} sm — chetki o'rinlarga qatorlar orasidan kiriladi.`);
@@ -230,13 +232,12 @@ export function kesimSvg(m = 1) {
 }
 
 function havoBeti(kor, n) {
-  const adm = admHavo(), xz = xizmatHavo(), kw = kwHavo();
+  const xz = xizmatHavo(), kw = kwHavo();
   const q = (nom, odam, h, deraza, pv) => `<tr><td><b>${nom}</b></td><td>${odam}</td><td>${b1(h.A)}</td><td>${Math.round(h.V)}</td><td>${h.Q}</td><td>${b1(h.karra)}</td><td>${b1(h.sovutishYaxlit)}</td><td>${deraza}</td><td>${pv}</td></tr>`;
   const rows = kor.map((k, i) => q(k.kod, k.odam, { ...k.havo, A: k.A }, k.derazalar.length ? k.derazalar[0].tomon : '<span class="og">yo\'q</span>', QURILMALAR[i].kod));
-  xz.forEach(z => rows.push(q(z.kod, 3, z, '<span class="og">yo\'q</span>', 'PV-10')));
-  rows.push(q('KW (tadbir)', 70, kw.tadbir, 'chap devorda', 'PV-9'));
-  rows.push(q('ADM', 6, adm, 'burchak (2 devor)', 'PV-8'));
-  const barcha = [...kor.map(k => k.havo), ...xz, kw.tadbir, adm];
+  xz.forEach(z => rows.push(q(`${z.kod} · ${z.nomi}`, z.odam, z, '<span class="og">yo\'q</span>', 'PV-9')));
+  rows.push(q('KW (tadbir)', 70, kw.tadbir, 'chap devorda', 'PV-8'));
+  const barcha = [...kor.map(k => k.havo), ...xz, kw.tadbir];
   const jamiQ = barcha.reduce((s, h) => s + h.Q, 0);
   const jamiS = barcha.reduce((s, h) => s + h.sovutishYaxlit, 0);
   return bet(n, `
@@ -244,15 +245,15 @@ function havoBeti(kor, n) {
     <p><b>Nima uchun mexanik ventilyatsiya kerak.</b> 1–3 va 5–7-xonalar 7.7 m chuqur, deraza orqa devorda: bir tomonlama tabiiy shamollatish (~2.5 × H ≈ 7.5 m) deyarli butun xonaga yetadi, lekin qishda va +40 °C yozda derazalar yopiq turadi — 25 kishi soatiga ~450 l CO₂ chiqaradi, 20–30 daqiqada havo og'irlashadi. <b>4-xona va 4 ta xizmat xonasida deraza umuman yo'q</b> — ular uchun mexanik ventilyatsiya majburiy.</p>
     <h2>Hisob</h2>
     <table class="havo"><tr><th>Xona</th><th>Odam</th><th>Maydon, m²</th><th>Hajm, m³</th><th>Havo, m³/soat</th><th>Marta / soat</th><th>Sovutish, kVt</th><th>Deraza</th><th>Qurilma</th></tr>
-      ${rows.join('')}<tr class="jami"><td>Jami</td><td></td><td></td><td></td><td>${jamiQ}</td><td></td><td>${b1(jamiS)}</td><td></td><td>10 ta PV</td></tr></table>
+      ${rows.join('')}<tr class="jami"><td>Jami</td><td></td><td></td><td></td><td>${jamiQ}</td><td></td><td>${b1(jamiS)}</td><td></td><td>9 ta PV</td></tr></table>
     <p class="izohm">${HAVO.kishiga} m³/soat har bir kishiga: bir kishi soatiga ~18 l CO₂ chiqaradi, 18 l ÷ (1000 − 420) ppm ≈ 31 m³/soat — shunda xonada CO₂ 1000 ppm dan oshmaydi. Hajm toza balandlik ${H / 1000} m (taxmin) bo'yicha. Sovutish — odamlar, noutbuklar, proyektor, yoritish, derazadan quyosh va toza havo (rekuperator FIK ${HAVO.rekuperator * 100}%) yig'indisi; OV loyihachisi aniqlashtiradi.</p>
     <h2>Yechim</h2>
     <div style="margin:1mm 0 3mm">${kesimSvg()}</div>
     <ul>
       <li><b>PV-1…PV-7</b> — har sinfga rekuperatorli kiritish-chiqarish qurilmasi, ~750 m³/soat, shovqin ≤ 35 dB(A), deraza devori yonida shift ichida. Toza havo <b>doska tomonga</b> beriladi, <b>orqa tomondan</b> so'riladi — oqim o'quvchilar ustidan o'tadi.</li>
-      <li><b>PV-4 (4-xona)</b> — havo o'ng tashqi devor orqali olinadi. Bu devor qo'shni binoga tegib tursa, kanal K2 koridori shifti orqali fasadga chiqariladi.</li>
-      <li><b>PV-10</b> — xizmat xonalari uchun: havo koworking chap devoridan olinadi va K1 koridori shifti orqali XZ1–XZ4 ga beriladi.</li>
-      <li><b>PV-9 (koworking)</b> — tadbirda ~70 kishi uchun ~${kw.tadbir.Q} m³/soat; kundalik rejimda ~${kw.kundalik.Q} m³/soat.</li>
+      <li><b>PV-4 (4-xona)</b> — o'ng devor qo'shni bino bilan umumiy, orqasida tor oraliq bor: panjaralar shu oraliqqa chiqariladi, kirish va chiqish bir-biridan ~7 m uzoq. Oraliq eni joyida o'lchanadi; havo turg'un bo'lsa, kanal K2 koridori shifti orqali fasadga.</li>
+      <li><b>PV-9</b> — sotuv (XZ1), admin (XZ2) va XZ3, XZ4 uchun: havo koworking chap devoridan olinadi va K1 koridori shifti orqali beriladi. Xodimlar kun bo'yi o'tiradi — qurilma ish vaqti davomida to'xtovsiz ishlaydi.</li>
+      <li><b>PV-8 (koworking)</b> — tadbirda ~70 kishi uchun ~${kw.tadbir.Q} m³/soat; kundalik rejimda ~${kw.kundalik.Q} m³/soat.</li>
       <li><b>CO₂ datchigi</b> qurilmani boshqaradi: xona bo'sh bo'lsa o'chadi, dars paytida havo miqdorini oshiradi.</li>
       <li><b>Konditsioner:</b> har sinfga 2 ta ichki blok (kasseta yoki kanalli), jami ~${Math.round(jamiS)} kVt; tashqi bloklar fasadda yoki tomda — joyini ijaraga beruvchi bilan kelishish.</li>
       <li><b>V-1</b> — sanuzel chiqarish ventilyatsiyasi 4 × 50 = 200 m³/soat; mavjud shaxta ishlashini tekshirish. Tutun chiqarish talabini yong'in xavfsizligi mutaxassisi belgilaydi.</li>
@@ -275,7 +276,7 @@ function qavatBeti(kor, t, ev, n) {
       ${m('Sinflar zichligi', `1–3 va 5–7-xonalarda 1 kishiga ~1.83 m², orqa bo'sh zona 42 sm — Beruniy qoidasi (oxirgi partadan devorgacha ≥ 65 sm) bajariladi, lekin shkaf uchun joy yo'q.`)}
       ${m('Hojatxona yetishmaydi', `WC (A) va WC (B) da jami 4 ta unitaz. 164 o'quvchi va ~10 xodimga taxminan 6–8 unitaz kerak (1 unitaz 20–30 kishiga). Yechim: tanaffuslarni xonalar bo'yicha 5–10 daqiqa farq bilan qo'yish; 1-qavatdagi hojatxonalardan foydalanish imkonini ijaraga beruvchi bilan aniqlash.`)}
       ${m('Yangi devorlar', `~${ish.yangiUz.toFixed(1)} m GKL 100 (≈ ${Math.round(ish.yangiUz * 3)} m²), ${ish.buzUz.toFixed(1)} m devor buziladi (eski o'rta devor va koridorlarga tushgan bo'laklar), ${ish.yangiEshik} ta yangi eshik. Barcha doskalar yangi koridor devorlarida — doska joyiga ichki mustahkamlash. 3 va 4-xona doskalari bir devorda — ovoz izolyatsiyasi.`)}
-      ${m('Joyida o\'lchanmagan', `Derazalar joyi va o'lchami; U8, U9 ustunlari (fotoda ko'rinmaydi); devor qalinliklari; toza balandlik (hisobda ${H / 1000} m); to'sinlar; radiatorlar; o'ng devor tashqi yoki qo'shni binoga tegib turishi.`)}
+      ${m('Joyida o\'lchanmagan', `Derazalar joyi va o'lchami; U8, U9 ustunlari (fotoda ko'rinmaydi); devor qalinliklari; toza balandlik (hisobda ${H / 1000} m); to'sinlar; radiatorlar; o'ng devor ortidagi oraliq eni.`)}
       ${m('Hujjatlar', `Mavjud chizmada: «Xonalar ichki qismi loyiha hujjatlarisiz qayta ta'mirlangan». Devorlarni buzish va qurishdan oldin ijaraga beruvchining yozma roziligi olinadi. 8-xonaning raqami fotoda ko'rinmaydi.`)}
     </table>
     <h2>Chizma tekshiruvi (avtomatik)</h2>
@@ -288,10 +289,11 @@ function qavatBeti(kor, t, ev, n) {
     </ul>
     <h2>Tasdiqlash uchun savollar</h2>
     <ul>
-      <li>ADM 12-xonada (17.6 m², derazali, zina yonida) qoladimi yoki xizmat xonasi 1 ga o'tadimi?</li>
-      <li>4-xona derazasiz — sinf sifatida qoladimi? Qolsa, 20 o'rin (6+6+6+2) yoki 24 o'rin (4-qator to'liq)?</li>
-      <li>Xizmat xonalari 1–4 vazifasi: direktor, ustozlar xonasi, ombor, uchrashuv xonasi?</li>
-      <li>Havo almashinuvi: har xonaga alohida PV qurilma (tavsiya) yoki markaziy tizim? O'ng devor tashqi devormi?</li>
+      <li>12-xona (17.6 m², derazali, zina yonida) bo'shadi — nima uchun ishlatiladi?</li>
+      <li>Xizmat xonalari 3 va 4 vazifasi: direktor, ustozlar xonasi, ombor, uchrashuv xonasi?</li>
+      <li>Offline sotuvda nechta konsultant o'tiradi (chizmada 2 ta) va admin xonasida nechta xodim (chizmada 2 ta)?</li>
+      <li>XZ1 ning koworking tomonidagi devorini ham shisha qilamizmi — mijoz kirish zalidan to'g'ridan-to'g'ri ko'radi?</li>
+      <li>Havo almashinuvi: har xonaga alohida PV qurilma (tavsiya) yoki markaziy tizim?</li>
       <li>Tanaffuslarni xonalar bo'yicha surish (hojatxona va koridorlar yuklamasi uchun) ma'qulmi?</li>
     </ul>
   `);

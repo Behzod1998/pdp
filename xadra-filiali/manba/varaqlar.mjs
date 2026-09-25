@@ -1,7 +1,7 @@
 // A3 chizma varaqlari (HTML → PDF): 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi.
 import { LOYIHA, ICHKI, USTUNLAR, OQLAR, STANDART, PARTA, STUL, H, ESKI_XONALAR, XONALAR } from './model.mjs';
 import { rejaSvg, RANG, QURILMALAR, son } from './reja-svg.mjs';
-import { korsatkichlar, ishlar, admHavo, xizmatHavo, kwHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
+import { korsatkichlar, ishlar, xizmatHavo, kwHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
 
 const VB = { x1: -2500, y1: -2300, x2: 25600, y2: 25700 };
 const v = n => n.toFixed(1).replace('.', ',');           // Beruniy panelidagi kabi vergul
@@ -72,9 +72,10 @@ function maydonJadvali() {
     <tr><td>Umumiy maydon (hujjat)</td><td class="r">${LOYIHA.umumiy} m²</td></tr>
     <tr><td>Foydali maydon (hujjat)</td><td class="r">${String(LOYIHA.foydali).replace('.', ',')} m²</td></tr>
     <tr><td>O'quv xonalari, 7 ta · ${kor.reduce((t, k) => t + k.orin, 0)} o'rin</td><td class="r">${m2(sinf)}</td></tr>
-    <tr><td>Xizmat xonalari XZ1–XZ4</td><td class="r">${m2(['XZ1', 'XZ2', 'XZ3', 'XZ4'].reduce((t, k2) => t + x(k2), 0))}</td></tr>
+    <tr><td>Offline sotuv (XZ1) va admin (XZ2)</td><td class="r">${m2(x('XZ1') + x('XZ2'))}</td></tr>
+    <tr><td>Xizmat xonalari XZ3, XZ4</td><td class="r">${m2(x('XZ3') + x('XZ4'))}</td></tr>
     <tr><td>Koworking / tadbirlar zali (KW)</td><td class="r">${m2(x('KW'))}</td></tr>
-    <tr><td>Admin va sotuv (ADM, 12-xona)</td><td class="r">${m2(x('ADM'))}</td></tr>
+    <tr><td>12-xona (zaxira, o'zgarmaydi)</td><td class="r">${m2(x('X12'))}</td></tr>
     <tr><td>Koridorlar K1, K2 va kirish zali ZL</td><td class="r">${m2(kor2)}</td></tr>
     <tr><td>Zinalar va sanuzel bloki (o'zgarmaydi)</td><td class="r">${m2(x('ZN1') + x('ZN2') + ['2', '3', '4', '5', '6'].reduce((t, k2) => t + x(k2), 0))}</td></tr>
     <tr><td>Toza balandlik</td><td class="r">${H} mm <span class="qizil">(taxmin)</span></td></tr>
@@ -83,12 +84,14 @@ function maydonJadvali() {
 
 function xonalarJadvali() {
   const kor = korsatkichlar();
-  const adm = XONALAR.find(r => r.kod === 'ADM');
+  const x12 = XONALAR.find(r => r.kod === 'X12');
   const rows = kor.map(k => `<tr><td>${k.kod} · ${k.kod.slice(2)}-xona</td><td>${(k.W / 1000).toFixed(2)} × ${(k.D / 1000).toFixed(2)}${k.xona.bolaklar ? ' (L)' : ''}</td><td class="r">${v(k.A)}</td><td class="r">${k.orin}</td><td class="r">${v(k.kishiga)}</td><td>${k.qatorlar.join('+')}</td></tr>`).join('');
   const xz = XONALAR.filter(r => r.tur === 'xizmat');
   return `<h3>XONALAR</h3><table><tr><th>Xona</th><th>O'lcham, m</th><th class="r">m²</th><th class="r">O'rin</th><th class="r">m²/kishi</th><th>Partalar</th></tr>${rows}
-    <tr><td>ADM</td><td>5.95 × 2.95</td><td class="r">${v(xonaMaydoni(adm))}</td><td class="r">4</td><td class="r">—</td><td>4 stol + 4 mijoz stuli</td></tr>
-    <tr><td>XZ1–XZ4</td><td>2.80–2.85 × 5.60</td><td class="r">${xz.map(r => v(xonaMaydoni(r))).join(' / ')}</td><td class="r">—</td><td class="r">—</td><td>xizmat, derazasiz</td></tr>
+    <tr><td>XZ1 · sotuv</td><td>2.80 × 5.60</td><td class="r">${v(xonaMaydoni(xz[0]))}</td><td class="r">2</td><td class="r">—</td><td>2 stol + 4 mijoz stuli, shisha devor</td></tr>
+    <tr><td>XZ2 · admin</td><td>2.80 × 5.60</td><td class="r">${v(xonaMaydoni(xz[1]))}</td><td class="r">2</td><td class="r">—</td><td>2 stol + 2 mehmon stuli, shisha devor</td></tr>
+    <tr><td>XZ3, XZ4</td><td>2.85 × 5.60</td><td class="r">${v(xonaMaydoni(xz[2]))} / ${v(xonaMaydoni(xz[3]))}</td><td class="r">—</td><td class="r">—</td><td>xizmat, derazasiz</td></tr>
+    <tr><td>12-xona</td><td>5.95 × 2.95</td><td class="r">${v(xonaMaydoni(x12))}</td><td class="r">—</td><td class="r">—</td><td>zaxira (derazali)</td></tr>
     <tr><td>KW</td><td>5.95 × 11.85</td><td class="r">${v(xonaMaydoni(XONALAR.find(r => r.kod === 'KW')))}</td><td class="r">~35</td><td class="r">—</td><td>koworking; tadbirda 66 o'rin</td></tr>
     <tr class="jami"><td>Jami</td><td></td><td class="r">${v(kor.reduce((t, k) => t + k.A, 0))}</td><td class="r">${kor.reduce((t, k) => t + k.orin, 0)}</td><td></td><td>6 × 24 + 1 × 20</td></tr></table>`;
 }
@@ -112,7 +115,8 @@ function partaQoidasi() {
     Doska 3000 kar devorda; eshiklar 900, ichkariga ochiladi.<br>
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100, ovoz izolyatsiyali.<br>
     KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (sanuzel, K1, K2, kirish zali).<br>
-    ADM (12-xona) va zinalar mavjud holicha; 1-qavatda zina oldida resepshn va turniket.
+    XZ1 (offline sotuv) va XZ2 (admin): K2 tomonda shisha devor va shisha eshik — kirish zalidan ko'rinadi.<br>
+    12-xona va zinalar mavjud holicha; 1-qavatda zina oldida resepshn va turniket.
   </p>`;
 }
 
@@ -139,6 +143,7 @@ function belgilar(rejim) {
     sw(`background:${RANG.stul};border-color:${RANG.stulCh};width:3.2mm`, `stul ${STUL.eni} × ${STUL.chuq}`),
     sw(`background:${RANG.doska};height:1.2mm`, 'doska (kar devorda)'),
     sw(`background:${RANG.ustoz}`, 'o\'qituvchi / xodim stoli'),
+    sw(`background:#e3f2fb;border:.3mm solid #2f78b7;height:1.4mm`, 'shisha devor va eshik (XZ1, XZ2)'),
   ];
   else q = [
     sw(`background:#fff;border:.35mm dashed #222`, 'PV — rekuperatorli kiritish-chiqarish qurilmasi (shift ichida)'),
@@ -163,7 +168,7 @@ function mavjudPanel() {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm">${ustun(rows.slice(0, yarmi))}${ustun(rows.slice(yarmi))}</div>
     <p class="izoh" style="margin-top:1mm">Umumiy maydon ${LOYIHA.umumiy} m², foydali ${String(LOYIHA.foydali).replace('.', ',')} m². 8-xonaning raqami va maydoni fotoda ko'rinmaydi (hisob bo'yicha ≈ 70 m²).</p></div>
   <div><h3>O'ZGARISHLAR</h3><p class="izoh">
-    <b>O'zgarmaydi</b> (buyurtmachi talabi): ZN1 va ZN2 zinalari, sanuzel bloki (2–6), 12-xona — ADM.<br>
+    <b>O'zgarmaydi</b> (buyurtmachi talabi): ZN1 va ZN2 zinalari, sanuzel bloki (2–6), 12-xona.<br>
     <b>Buziladi:</b> eski o'rta devor (8–10 va 13–15-xonalar orasida); 7 va 11-xonalar orasidagi devor; K1, K2 koridorlariga tushgan devor bo'laklari.<br>
     <b>Quriladi:</b> K1 va K2 koridorlarining devorlari (1–3 va 5–7-xonalarning doskalari shu devorlarda), 4 ta xizmat xonasi va 4-xona devorlari; xonalar orasidagi bo'shliqlar yopiladi.
   </p></div>
@@ -177,15 +182,14 @@ function mavjudPanel() {
 
 function havoPanel() {
   const kor = korsatkichlar();
-  const adm = admHavo(), xz = xizmatHavo(), kw = kwHavo();
+  const xz = xizmatHavo(), kw = kwHavo();
   const q = (nom, odam, h, pv) => `<tr><td>${nom}</td><td class="r">${odam}</td><td class="r">${son(h.Q)}</td><td class="r">${Math.round(h.V)}</td><td class="r">${v(h.karra)}</td><td class="r">${v(h.sovutishYaxlit)}</td><td>${pv}</td></tr>`;
   const qatorlar = kor.map((k, i) => q(k.kod, k.odam, k.havo, QURILMALAR[i].kod));
   const xzJ = xz.reduce((t, z) => ({ Q: t.Q + z.Q, V: t.V + z.V, s: t.s + z.sovutishYaxlit }), { Q: 0, V: 0, s: 0 });
-  qatorlar.push(q('XZ1–XZ4', 12, { Q: xzJ.Q, V: xzJ.V, karra: xzJ.Q / xzJ.V, sovutishYaxlit: xzJ.s }, 'PV-10'));
-  qatorlar.push(q('KW (tadbir)', 70, kw.tadbir, 'PV-9'));
-  qatorlar.push(q('ADM', 6, adm, 'PV-8'));
-  const jamiQ = kor.reduce((t, k) => t + k.havo.Q, 0) + adm.Q + xzJ.Q + kw.tadbir.Q;
-  const jamiS = kor.reduce((t, k) => t + k.havo.sovutishYaxlit, 0) + adm.sovutishYaxlit + xzJ.s + kw.tadbir.sovutishYaxlit;
+  qatorlar.push(q('XZ1–XZ4', xz.reduce((t, z) => t + z.odam, 0), { Q: xzJ.Q, V: xzJ.V, karra: xzJ.Q / xzJ.V, sovutishYaxlit: xzJ.s }, 'PV-9'));
+  qatorlar.push(q('KW (tadbir)', 70, kw.tadbir, 'PV-8'));
+  const jamiQ = kor.reduce((t, k) => t + k.havo.Q, 0) + xzJ.Q + kw.tadbir.Q;
+  const jamiS = kor.reduce((t, k) => t + k.havo.sovutishYaxlit, 0) + xzJ.s + kw.tadbir.sovutishYaxlit;
   return `<div><h3>HAVO ALMASHINUVI — XONALAR BO'YICHA</h3><table>
     <tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo, m³/soat</th><th class="r">Hajm, m³</th><th class="r">Marta / soat</th><th class="r">Sovutish, kVt</th><th>Qurilma</th></tr>
     ${qatorlar.join('')}
@@ -197,8 +201,8 @@ function havoPanel() {
   </p></div>
   <div><h3>YECHIM</h3><p class="izoh">
     <b>1–3 va 5–7-xonalar</b> 7,7 m chuqur, deraza orqa devorda: tabiiy shamollatish (~2,5 × H ≈ 7,5 m) deyarli butun xonaga yetadi, lekin qish va yozda derazalar yopiq — har sinfga alohida <b>PV qurilma</b> (rekuperatorli, ~750 m³/soat, shovqin ≤ 35 dB(A)), deraza devori yonida shift ichida.<br>
-    <b>4-xona va xizmat xonalarida deraza yo'q</b> — mexanik ventilyatsiya va konditsioner majburiy. PV-4 havosi o'ng tashqi devor orqali (qo'shni bino bo'lsa — kanal bilan fasadga); PV-10 koworking chap devoridan olib, K1 shifti orqali XZ1–XZ4 ga beradi.<br>
-    <b>KW:</b> derazalar chap devorda; tadbirda ~70 kishi — PV-9 ~2 100 m³/soat.<br>
+    <b>4-xona va xizmat xonalarida deraza yo'q</b> — mexanik ventilyatsiya va konditsioner majburiy. O'ng devor qo'shni bino bilan umumiy, orqasida tor oraliq bor: PV-4 panjaralari shu oraliqqa chiqariladi — kirish va chiqish bir-biridan uzoq (7 m), oraliq eni joyida o'lchanadi; havo turg'un bo'lsa, kanal K2 shifti orqali fasadga. PV-9 koworking chap devoridan olib, K1 shifti orqali XZ1–XZ4 ga beradi.<br>
+    <b>KW:</b> derazalar chap devorda; tadbirda ~70 kishi — PV-8 ~2 100 m³/soat.<br>
     Toza havo doska tomonga beriladi, orqa tomondan so'riladi. CO₂ datchigi bilan boshqariladi; bo'sh xona o'chadi. Har sinfga 2 ta KD (kasseta yoki kanalli).<br>
     <b>V-1:</b> sanuzel chiqarish ventilyatsiyasi 4 × 50 = 200 m³/soat — mavjud shaxtani tekshirish. Tutun chiqarish talabini yong'in xavfsizligi mutaxassisi belgilaydi.
   </p></div>`;

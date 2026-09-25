@@ -1,7 +1,7 @@
 // Taqdimot uslubidagi reja (SVG): parket, plitka, mebel, o'simliklar, soyalar.
 // Geometriya model.mjs dan olinadi — o'lchamlar chizma bilan bir xil.
 import {
-  ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, ADM_JIHOZ, XIZMAT_JIHOZ,
+  ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ,
   KW_KUNDALIK, KW_TADBIR, sinflar, bolaklar,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
@@ -50,8 +50,8 @@ function osimliklar() {
     if (x.kod === 'SR4') { r.push([23550, 9750], [23500, 16200]); return; }
     r.push([x.x2 - 350, x.doska === 'past' ? x.y2 - 1950 : x.y1 + 1950]);
   });
-  XONALAR.filter(x => x.tur === 'xizmat').forEach(x => r.push([x.x2 - 320, x.y1 + 420]));
-  r.push([3900, 13950], [3700, 17650], [400, 23950]);
+  XONALAR.filter(x => x.tur === 'xizmat').forEach(x => r.push(x.kod === 'XZ1' ? [8750, 10600] : x.kod === 'XZ2' ? [11550, 11700] : [x.x2 - 320, x.y1 + 420]));
+  r.push([3900, 13950], [3700, 17650]);
   return r;
 }
 
@@ -69,7 +69,7 @@ export function renderSvg(o = {}) {
   // ---- pollar ----
   q.push(rect({ x1: 0, y1: 0, x2: ICHKI.x, y2: ICHKI.y }, `fill="url(#${id}plitka)"`));
   XONALAR.forEach(x => {
-    if (['sinf', 'ofis', 'xizmat', 'koworking'].includes(x.tur)) bolaklar(x).forEach(b => q.push(rect(b, `fill="url(#${id}parket)"`)));
+    if (['sinf', 'zaxira', 'xizmat', 'koworking'].includes(x.tur)) bolaklar(x).forEach(b => q.push(rect(b, `fill="url(#${id}parket)"`)));
     if (x.tur === 'sanuzel') q.push(rect(x, `fill="url(#${id}wc)"`));
     if (x.tur === 'zina') q.push(rect(x, `fill="#d8d5cf"`));
   });
@@ -100,15 +100,18 @@ export function renderSvg(o = {}) {
     j.push(use('ustozStol', ...markaz(x.j.ustozStoli), x.doska === 'past' ? 0 : 180));
     j.push(use('ofisStul', ...markaz(x.j.ustozStuli), x.doska === 'past' ? 0 : 180));
   });
-  ADM_JIHOZ.stol.forEach(p => j.push(use('ustozStol', ...markaz(p), 0)));
-  ADM_JIHOZ.stul.forEach(p => j.push(p.tur === 'xodim' ? use('ofisStul', ...markaz(p), 0) : use('stul', ...markaz(p), 180)));
   XIZMAT_JIHOZ.forEach(z => {
-    j.push(rect(z.stol, `fill="url(#${id}yogT)" stroke="#5f4630" stroke-width="8"`));
-    const [cx, cy] = markaz(z.stol);
-    j.push(`<rect x="${cx - 280}" y="${z.stol.y1 + 60}" width="560" height="60" rx="14" fill="#1f2329"/><rect x="${cx - 220}" y="${cy - 30}" width="440" height="140" rx="12" fill="#3b414b"/>`);
-    j.push(use('ofisStul', ...markaz(z.stul), 0));
-    z.mehmon.forEach(m => j.push(use('stul', ...markaz(m), 180)));
-    shkaf(z.shkaf);
+    const pastga = z.xodimYuz === 'past';            // xodim janubga (eshik tomonga) qaraydi
+    z.stollar.forEach(st => {
+      j.push(rect(st, `fill="url(#${id}yogT)" stroke="#5f4630" stroke-width="8"`));
+      const [cx, cy] = markaz(st);
+      const my = pastga ? st.y2 - 120 : st.y1 + 60;
+      j.push(`<rect x="${cx - 280}" y="${my}" width="560" height="60" rx="14" fill="#1f2329"/><rect x="${cx - 220}" y="${cy - 70}" width="440" height="140" rx="12" fill="#3b414b"/>`);
+    });
+    z.xodim.forEach(p => j.push(use('ofisStul', ...markaz(p), pastga ? 180 : 0)));
+    z.mehmon.forEach(m => j.push(use('stul', ...markaz(m), pastga ? 0 : 180)));
+    z.shkaflar.forEach(shkaf);
+    z.divanlar.forEach(r => j.push(rect(r, `rx="100" fill="#7d858f"`), rect({ ...r, x1: r.x2 - 160 }, `rx="70" fill="#626a74"`)));
   });
   // koworking / tadbirlar zali
   if (kwRejim === 'kundalik') {
@@ -149,7 +152,7 @@ export function renderSvg(o = {}) {
       leaf = { x: s.ilgak.x, y: e.yuz + e.yon * e.en };
       arcEnd = { x: e.ilgak === 'a' ? e.b : e.a, y: e.yuz };
       sweep = (e.ilgak === 'a') === (e.yon > 0) ? 0 : 1;
-      q.push(rect({ x1: s.ilgak.x - 20, x2: s.ilgak.x + 20, y1: Math.min(e.yuz, leaf.y), y2: Math.max(e.yuz, leaf.y) }, `fill="#a8804f"`));
+      q.push(rect({ x1: s.ilgak.x - 20, x2: s.ilgak.x + 20, y1: Math.min(e.yuz, leaf.y), y2: Math.max(e.yuz, leaf.y) }, e.shisha ? `fill="#9cc9e6" stroke="#5f93ba" stroke-width="8"` : `fill="#a8804f"`));
     } else {
       leaf = { x: e.yuz + e.yon * e.en, y: s.ilgak.y };
       arcEnd = { x: e.yuz, y: e.ilgak === 'a' ? e.b : e.a };
@@ -161,9 +164,13 @@ export function renderSvg(o = {}) {
 
   // ---- devorlar, ustunlar, derazalar (soya bilan) ----
   const w = [];
-  DEVORLAR.filter(d => d.holat !== 'buziladi').forEach(d => w.push(rect(d, `fill="${d.holat === 'tashqi' ? '#2b2d31' : '#34373c'}"`)));
+  DEVORLAR.filter(d => d.holat !== 'buziladi' && !d.shisha).forEach(d => w.push(rect(d, `fill="${d.holat === 'tashqi' ? '#2b2d31' : '#34373c'}"`)));
   USTUNLAR.forEach(u => w.push(rect(u, `fill="#8e9297" stroke="#2b2d31" stroke-width="30"`)));
   q.push(`<g filter="url(#${id}dsoya)">${w.join('')}</g>`);
+  DEVORLAR.filter(d => d.shisha).forEach(d => {
+    q.push(rect(d, `fill="#bfe0f4" stroke="#5f93ba" stroke-width="12"`));
+    q.push(`<line x1="${d.x1}" y1="${(d.y1 + d.y2) / 2}" x2="${d.x2}" y2="${(d.y1 + d.y2) / 2}" stroke="#fff" stroke-width="14"/>`);
+  });
   DERAZALAR.forEach(d => {
     q.push(rect(d, `fill="#cfe4f2" stroke="#f7fbfd" stroke-width="14"`));
     if (d.devor === 'chap') q.push(`<line x1="${(d.x1 + d.x2) / 2}" y1="${d.y1}" x2="${(d.x1 + d.x2) / 2}" y2="${d.y2}" stroke="#fff" stroke-width="18"/>`);
@@ -187,12 +194,14 @@ export function renderSvg(o = {}) {
     });
     XONALAR.filter(x => x.tur === 'xizmat').forEach(x => {
       const cx = (x.x1 + x.x2) / 2 - 150;
-      L.push(t(cx, 11300, 'Xizmat', 330, B), t(cx, 11680, `xonasi ${x.kod.slice(2)}`, 330, B), t(cx, 12080, `${xonaMaydoni(x).toFixed(1)} m²`, 300, R));
+      if (x.kod === 'XZ1') L.push(t(7650, 9800, 'Offline sotuv', 320, B), t(7650, 10130, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 250, R));
+      else if (x.kod === 'XZ2') L.push(t(10400, 12100, 'Admin', 380, B), t(10400, 12450, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 260, R));
+      else L.push(t(cx, 11300, 'Xizmat', 330, B), t(cx, 11680, `xonasi ${x.kod.slice(2)}`, 330, B), t(cx, 12080, `${xonaMaydoni(x).toFixed(1)} m²`, 300, R));
     });
     const kwx = XONALAR.find(x => x.kod === 'KW');
     L.push(t(2975, 9460, 'Koworking / Tadbirlar zali', 330, B), t(2975, 9820, `${xonaMaydoni(kwx).toFixed(1)} m²`, 300, R));
-    const adm = XONALAR.find(x => x.kod === 'ADM');
-    L.push(t(2975, 21820, 'Admin / sotuv', 380, B), t(2975, 22110, `${xonaMaydoni(adm).toFixed(1)} m² · 4 ish o'rni`, 230, G));
+    const x12 = XONALAR.find(x => x.kod === 'X12');
+    L.push(t(2975, 22800, '12-xona', 380, B), t(2975, 23200, `${xonaMaydoni(x12).toFixed(1)} m² · zaxira`, 260, G));
     L.push(t(1500, 5150, 'Zinapoya', 380, B), t(1500, 5650, '18.79 m²', 330, R));
     L.push(t(3725, 3200, 'WC (A)', 250, B), t(3725, 3520, '4.68 m²', 220, R));
     L.push(t(5175, 3200, 'WC (B)', 250, B), t(5175, 3520, '5.25 m²', 220, R));

@@ -78,6 +78,7 @@ export const DERAZALAR = [
 // ---------- Devorlar ----------
 // holat: tashqi | mavjud (saqlanadi) | yangi | buziladi
 const d = (x1, x2, y1, y2, holat, izoh = '') => ({ x1, x2, y1, y2, holat, izoh });
+const sh = (x1, x2, y1, y2) => ({ ...d(x1, x2, y1, y2, 'yangi', 'shisha devor'), shisha: true });
 
 const tashqi = [
   d(-DEVOR.chap, ICHKI.x + DEVOR.ong, -DEVOR.yuqori, 0, 'tashqi'),
@@ -128,12 +129,14 @@ const ichki = [
   d(13250, 18300, 7700, 7800, 'yangi'), d(19200, ICHKI.x, 7700, 7800, 'yangi'),
   d(19300, 19400, 7800, 9300, 'yangi'),
   // K1 janubiy devori (xizmat xonalari eshiklari bilan)
-  d(6250, 6400, 9300, 9400, 'yangi'), d(7300, 9300, 9300, 9400, 'yangi'), d(10200, 12300, 9300, 9400, 'yangi'),
+  d(6250, 12300, 9300, 9400, 'yangi'),
   d(13200, 15250, 9300, 9400, 'yangi'), d(16150, 19400, 9300, 9400, 'yangi'),
   // xizmat xonalari orasidagi devorlar
   d(9050, 9150, 9400, 15000, 'yangi'), d(15000, 15100, 9400, 15000, 'yangi'),
-  // K2 shimoliy devori
-  d(6250, 19400, 15000, 15100, 'yangi'),
+  // K2 shimoliy devori: XZ1 (offline sotuv) va XZ2 (admin) oldida shisha devor va shisha eshik —
+  // mijoz kirish zalidan chiqishi bilan ko'radi
+  sh(6250, 6400, 15000, 15100), sh(7300, 9050, 15000, 15100), d(9050, 9150, 15000, 15100, 'yangi'),
+  sh(9150, 9300, 15000, 15100), sh(10200, 11950, 15000, 15100), d(11950, 19400, 15000, 15100, 'yangi'),
   d(19300, 19400, 15100, 15300, 'yangi'), d(19300, 19400, 16200, 16600, 'yangi'),
   // K2 janubiy devori (5–7-xonalar doskasi) — eshiklar bilan
   d(6150, 6350, 16600, 16700, 'yangi'), d(7250, 12350, 16600, 16700, 'yangi'),
@@ -155,11 +158,11 @@ export const ESHIKLAR = [
   e('SR5', 'h', 18300, 19200, 16700, +1, 'a'),
   e('SR6', 'h', 12350, 13250, 16700, +1, 'a'),
   e('SR7', 'h', 6350, 7250, 16700, +1, 'a'),
-  e('XZ1', 'h', 6400, 7300, 9400, +1, 'a'),
-  e('XZ2', 'h', 9300, 10200, 9400, +1, 'a'),
+  { ...e('XZ1', 'h', 6400, 7300, 15000, -1, 'a'), shisha: true },
+  { ...e('XZ2', 'h', 9300, 10200, 15000, -1, 'a'), shisha: true },
   e('XZ3', 'h', 12300, 13200, 9400, +1, 'a'),
   e('XZ4', 'h', 15250, 16150, 9400, +1, 'a'),
-  e('ADM', 'h', 4550, 5450, 21250, -1, 'b', 'mavjud'),
+  e('X12', 'h', 4550, 5450, 21250, -1, 'b', 'mavjud'),
   e('SU6', 'h', 4450, 5150, 6500, +1, 'a', 'mavjud'),
   e('ZN1', 'v', 5300, 6100, 3100, +1, 'b', 'mavjud'),
   e('SU2', 'h', 3350, 3950, 1700, +1, 'a', 'mavjud'),
@@ -192,12 +195,12 @@ export const XONALAR = [
   { kod: 'SR5', nomi: 'Study Room 5', tur: 'sinf', x1: 18150, y1: 16700, x2: ICHKI.x, y2: ICHKI.y, doska: 'yuqori', eshik: 'SR5', eskiRaqam: '15', koridor: 'K2' },
   { kod: 'SR6', nomi: 'Study Room 6', tur: 'sinf', x1: 12150, y1: 16700, x2: 17950, y2: ICHKI.y, doska: 'yuqori', eshik: 'SR6', eskiRaqam: '14', koridor: 'K2' },
   { kod: 'SR7', nomi: 'Study Room 7', tur: 'sinf', x1: 6150, y1: 16700, x2: 11950, y2: ICHKI.y, doska: 'yuqori', eshik: 'SR7', eskiRaqam: '13', koridor: 'K2' },
-  { kod: 'XZ1', nomi: 'Xizmat xonasi 1', tur: 'xizmat', x1: 6250, y1: 9400, x2: 9050, y2: 15000, eshik: 'XZ1', eskiRaqam: '8, 13' },
-  { kod: 'XZ2', nomi: 'Xizmat xonasi 2', tur: 'xizmat', x1: 9150, y1: 9400, x2: 11950, y2: 15000, eshik: 'XZ2', eskiRaqam: '8, 13' },
-  { kod: 'XZ3', nomi: 'Xizmat xonasi 3', tur: 'xizmat', x1: 12150, y1: 9400, x2: 15000, y2: 15000, eshik: 'XZ3', eskiRaqam: '9, 14' },
-  { kod: 'XZ4', nomi: 'Xizmat xonasi 4', tur: 'xizmat', x1: 15100, y1: 9400, x2: 17950, y2: 15000, eshik: 'XZ4', eskiRaqam: '9, 14' },
+  { kod: 'XZ1', nomi: 'Offline sotuv bo\'limi', qisqa: 'sotuv', tur: 'xizmat', x1: 6250, y1: 9400, x2: 9050, y2: 15000, eshik: 'XZ1', eskiRaqam: '8, 13', odam: 6 },
+  { kod: 'XZ2', nomi: 'Admin', qisqa: 'admin', tur: 'xizmat', x1: 9150, y1: 9400, x2: 11950, y2: 15000, eshik: 'XZ2', eskiRaqam: '8, 13', odam: 4 },
+  { kod: 'XZ3', nomi: 'Xizmat xonasi 3', qisqa: 'xizmat', odam: 3, tur: 'xizmat', x1: 12150, y1: 9400, x2: 15000, y2: 15000, eshik: 'XZ3', eskiRaqam: '9, 14' },
+  { kod: 'XZ4', nomi: 'Xizmat xonasi 4', qisqa: 'xizmat', odam: 3, tur: 'xizmat', x1: 15100, y1: 9400, x2: 17950, y2: 15000, eshik: 'XZ4', eskiRaqam: '9, 14' },
   { kod: 'KW', nomi: 'Koworking / Tadbirlar zali', tur: 'koworking', x1: 0, y1: 6500, x2: 5950, y2: 18350, eskiRaqam: '7, 11' },
-  { kod: 'ADM', nomi: 'Admin va sotuv', tur: 'ofis', x1: 0, y1: 21450, x2: 5950, y2: ICHKI.y, eshik: 'ADM', eskiRaqam: '12', qotgan: true },
+  { kod: 'X12', nomi: '12-xona (zaxira)', tur: 'zaxira', x1: 0, y1: 21450, x2: 5950, y2: ICHKI.y, eshik: 'X12', eskiRaqam: '12', qotgan: true },
   { kod: 'K1', nomi: 'Koridor 1500', tur: 'koridor', x1: 5950, y1: 7800, x2: 19300, y2: 9300 },
   { kod: 'K2', nomi: 'Koridor 1500', tur: 'koridor', x1: 5950, y1: 15100, x2: 19300, y2: 16600 },
   { kod: 'ZL', nomi: 'Kirish zali', tur: 'koridor', x1: 3650, y1: 18350, x2: 5950, y2: 21250 },
@@ -264,25 +267,29 @@ export function sinflar() {
   return XONALAR.filter(x => x.tur === 'sinf').map(x => ({ ...x, j: joylash(x) }));
 }
 
-// Admin xonasi: 4 ish o'rni + mijozlar uchun stullar
-export const ADM_JIHOZ = (() => {
-  const stol = [], stul = [];
-  [350, 1700, 3050, 4400].forEach(x => {
-    stol.push({ x1: x, x2: x + 1200, y1: 22800, y2: 23400 });
-    stul.push({ x1: x + 375, x2: x + 825, y1: 23450, y2: 23900, tur: 'xodim' });
-    stul.push({ x1: x + 375, x2: x + 825, y1: 22250, y2: 22700, tur: 'mijoz' });
-  });
-  return { stol, stul };
-})();
+// Admin XZ2 ga ko'chdi; 12-xona hozircha bo'sh (zaxira)
+export const ADM_JIHOZ = { stol: [], stul: [] };
 
-// Xizmat xonalari: stol, ofis stuli, 2 ta mehmon stuli, shkaf
-export const XIZMAT_JIHOZ = XONALAR.filter(x => x.tur === 'xizmat').map(x => ({
-  kod: x.kod,
-  stol: { x1: x.x1 + 250, x2: x.x1 + 1650, y1: x.y2 - 1650, y2: x.y2 - 950 },
-  stul: { x1: x.x1 + 725, x2: x.x1 + 1175, y1: x.y2 - 900, y2: x.y2 - 450, tur: 'xodim' },
-  mehmon: [{ x1: x.x1 + 400, x2: x.x1 + 850, y1: x.y2 - 2250, y2: x.y2 - 1800 }, { x1: x.x1 + 1050, x2: x.x1 + 1500, y1: x.y2 - 2250, y2: x.y2 - 1800 }],
-  shkaf: { x1: x.x2 - 450, x2: x.x2, y1: 12600, y2: x.y2 - 300 },
-}));
+// Xizmat xonalari. xodimYuz — xodim qaysi tomonga qaraydi (eshik tomonga).
+const r4 = (x1, x2, y1, y2) => ({ x1, x2, y1, y2 });
+export const XIZMAT_JIHOZ = [
+  { kod: 'XZ1', xodimYuz: 'past',   // offline sotuv: 2 konsultant, har biriga 2 mijoz stuli, kutish divani
+    stollar: [r4(7050, 8250, 10900, 11600), r4(7050, 8250, 12800, 13500)],
+    xodim: [r4(7425, 7875, 10400, 10850), r4(7425, 7875, 12300, 12750)],
+    mehmon: [r4(7100, 7550, 11700, 12150), r4(7750, 8200, 11700, 12150), r4(7100, 7550, 13600, 14050), r4(7750, 8200, 13600, 14050)],
+    shkaflar: [r4(6250, 6700, 11900, 13900)], divanlar: [r4(8600, 9050, 14100, 14900)] },
+  { kod: 'XZ2', xodimYuz: 'past',   // admin: 2 ish o'rni
+    stollar: [r4(9250, 10450, 10000, 10700), r4(10650, 11850, 10000, 10700)],
+    xodim: [r4(9625, 10075, 9500, 9950), r4(11025, 11475, 9500, 9950)],
+    mehmon: [r4(9625, 10075, 10800, 11250), r4(11025, 11475, 10800, 11250)],
+    shkaflar: [r4(11500, 11950, 12600, 14700)], divanlar: [] },
+  ...XONALAR.filter(x => x.kod === 'XZ3' || x.kod === 'XZ4').map(x => ({ kod: x.kod, xodimYuz: 'yuqori',
+    stollar: [r4(x.x1 + 250, x.x1 + 1650, x.y2 - 1650, x.y2 - 950)],
+    xodim: [r4(x.x1 + 725, x.x1 + 1175, x.y2 - 900, x.y2 - 450)],
+    mehmon: [r4(x.x1 + 400, x.x1 + 850, x.y2 - 2250, x.y2 - 1800), r4(x.x1 + 1050, x.x1 + 1500, x.y2 - 2250, x.y2 - 1800)],
+    shkaflar: [r4(x.x2 - 450, x.x2, 12600, x.y2 - 300)], divanlar: [] })),
+];
+export const xizmatJihozlari = z => [...z.stollar, ...z.xodim, ...z.mehmon, ...z.shkaflar, ...z.divanlar];
 
 // Koworking / tadbirlar zali. O'ng tomonda (x 4300–5950) o'tish yo'lagi bo'sh qoladi:
 // sanuzel eshigi, K1/K2 koridorlari va kirish zali shu yo'lak orqali bog'lanadi.

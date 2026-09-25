@@ -1,7 +1,7 @@
 // Xonalar ko'rsatkichlari, havo almashinuvi hisobi va chizmaning avtomatik tekshiruvi.
 import {
   H, ICHKI, PARTA, STUL, STANDART, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR,
-  ADM_JIHOZ, XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, sinflar, maydon, bolaklar,
+  XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, sinflar, maydon, bolaklar, xizmatJihozlari,
 } from './model.mjs';
 
 // ---------- geometriya ----------
@@ -153,9 +153,7 @@ export function tekshiruv() {
     hammaJihoz.push({ r: j.ustozStoli, nom: `${x.kod} o'qituvchi stoli`, xona: x.kod });
     hammaJihoz.push({ r: j.ustozStuli, nom: `${x.kod} o'qituvchi stuli`, xona: x.kod });
   }
-  ADM_JIHOZ.stol.forEach((p, i) => hammaJihoz.push({ r: p, nom: `ADM stol ${i + 1}`, xona: 'ADM' }));
-  ADM_JIHOZ.stul.forEach((p, i) => hammaJihoz.push({ r: p, nom: `ADM stul ${i + 1}`, xona: 'ADM' }));
-  XIZMAT_JIHOZ.forEach(z => [z.stol, z.stul, ...z.mehmon, z.shkaf].forEach((p, i) => hammaJihoz.push({ r: p, nom: `${z.kod} jihoz ${i + 1}`, xona: z.kod })));
+  XIZMAT_JIHOZ.forEach(z => xizmatJihozlari(z).forEach((p, i) => hammaJihoz.push({ r: p, nom: `${z.kod} jihoz ${i + 1}`, xona: z.kod })));
   const kw = KW_KUNDALIK;
   [...kw.stollar, ...kw.dumaloq, ...kw.stullar, ...kw.divan, ...kw.kreslo, ...kw.jurnal, ...kw.shkaf]
     .forEach((p, i) => hammaJihoz.push({ r: p, nom: `KW jihoz ${i + 1}`, xona: 'KW' }));
@@ -249,13 +247,10 @@ export function ishlar() {
   };
 }
 
-export function admHavo() {
-  const x = XONALAR.find(r => r.kod === 'ADM');
-  return havoHisobi(x, 6, 4 * 0.1);
-}
-// Xizmat xonalari (har biri 3 kishi) va koworking (kundalik ~35, tadbirda ~70 kishi)
+
+// Xizmat xonalari (sotuv 6, admin 4, qolganlari 3 kishi) va koworking (kundalik ~35, tadbirda ~70 kishi)
 export function xizmatHavo() {
-  return XONALAR.filter(x => x.tur === 'xizmat').map(x => ({ kod: x.kod, ...havoHisobi(x, 3, 0.3) }));
+  return XONALAR.filter(x => x.tur === 'xizmat').map(x => ({ kod: x.kod, nomi: x.nomi, odam: x.odam, ...havoHisobi(x, x.odam, x.odam * 0.1) }));
 }
 export function kwHavo() {
   const x = XONALAR.find(r => r.kod === 'KW');
