@@ -1,7 +1,7 @@
 // Xonalar ko'rsatkichlari, havo almashinuvi hisobi va chizmaning avtomatik tekshiruvi.
 import {
   H, ICHKI, PARTA, STUL, STANDART, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR,
-  XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, sinflar, maydon, bolaklar, xizmatJihozlari,
+  XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, sinflar, maydon, bolaklar, xizmatJihozlari, lokal,
 } from './model.mjs';
 
 // ---------- geometriya ----------
@@ -59,13 +59,13 @@ function xonaDerazalari(xona) {
   }).filter(Boolean);
 }
 
-// o'quvchilar qaysi tomonga qaraydi: doska 'past' → +y, 'yuqori' → -y
+// deraza o'quvchiga nisbatan qayerda: o'quvchi doskaga qaraydi (f), chap qo'li — (f.y, -f.x)
 function derazaTomoni(xona, devor) {
-  const pastga = xona.doska === 'past';
-  if (devor === 'yuqori') return pastga ? 'orqada' : 'oldida';
-  if (devor === 'past') return pastga ? 'oldida' : 'orqada';
-  if (devor === 'chap') return pastga ? "o'ng tomonda" : 'chap tomonda';
-  return pastga ? 'chap tomonda' : "o'ng tomonda";
+  const { f } = lokal(xona);
+  const n = { yuqori: { x: 0, y: -1 }, past: { x: 0, y: 1 }, chap: { x: -1, y: 0 }, ong: { x: 1, y: 0 } }[devor];
+  if (n.x === f.x && n.y === f.y) return 'oldida';
+  if (n.x === -f.x && n.y === -f.y) return 'orqada';
+  return n.x === f.y && n.y === -f.x ? 'chap tomonda' : "o'ng tomonda";
 }
 
 export const HAVO = { kishiga: 30, rekuperator: 0.6, dh: 21 }; // m³/soat·kishi; FIK; yozgi entalpiya farqi kJ/kg
@@ -88,19 +88,18 @@ export function havoHisobi(xona, odam, jihozKvt) {
 
 export function korsatkichlar() {
   return sinflar().map(x => {
-    const j = x.j, s = j.s;
-    const D = x.y2 - x.y1;
+    const j = x.j, s = j.s, L = lokal(x);
+    const D = j.D;
     const orin = j.partalar.length;
     const qatorlar = [...new Set(j.partalar.map(p => p.qator))].map(q => j.partalar.filter(p => p.qator === q).length);
     const oxirgi = s.doska + (s.qatorlar - 1) * s.qadam + PARTA.chuq;
     const stulOrqasi = s.qadam - PARTA.chuq - STUL.oraliq - STUL.chuq;
-    // orqa zona: orqasida parta bo'lmagan har bir stuldan xona chegarasigacha (eng kichigi)
-    const orqada = (st, p) => p.x1 < st.x2 && st.x1 < p.x2 && (x.doska === 'yuqori' ? p.y1 > st.y2 : p.y2 < st.y1);
-    const orqaZona = Math.min(...j.stullar.filter(st => !j.partalar.some(p => orqada(st, p))).map(st => {
-      const cx = (st.x1 + st.x2) / 2, cy = (st.y1 + st.y2) / 2;
-      const b = bolaklar(x).find(r => cx >= r.x1 && cx <= r.x2 && cy >= r.y1 && cy <= r.y2) || x;
-      const pastki = bolaklar(x).filter(r => cx >= r.x1 && cx <= r.x2).reduce((a, r) => (x.doska === 'yuqori' ? Math.max(a, r.y2) : Math.min(a, r.y1)), x.doska === 'yuqori' ? b.y2 : b.y1);
-      return x.doska === 'yuqori' ? pastki - st.y2 : st.y1 - pastki;
+    // orqa zona: orqasida parta bo'lmagan har bir stuldan xona chegarasigacha (eng kichigi), lokal u/v da
+    const orqada = (st, p) => p.u1 < st.u2 && st.u1 < p.u2 && p.v1 > st.v2;
+    const partaL = j.partalar.map(L.T), bolakL = bolaklar(x).map(L.T);
+    const orqaZona = Math.min(...j.stullar.map(L.T).filter(st => !partaL.some(p => orqada(st, p))).map(st => {
+      const cu = (st.u1 + st.u2) / 2;
+      return Math.max(...bolakL.filter(b => cu >= b.u1 && cu <= b.u2).map(b => b.v2)) - st.v2;
     }));
     const yonChap = j.u0, yonOng = j.W - j.u0 - j.blokEni;
     // chetdagi o'quvchining qarash burchagi: old qatordagi chetki parta markazidan doska markaziga
@@ -115,7 +114,7 @@ export function korsatkichlar() {
     }));
     const esh = ESHIKLAR.find(e => e.kod === x.eshik);
     const eshMarkaz = esh.devor === 'h' ? { x: (esh.a + esh.b) / 2, y: esh.yuz } : { x: esh.yuz, y: (esh.a + esh.b) / 2 };
-    const eshV = x.doska === 'yuqori' ? eshMarkaz.y - x.y1 : x.y2 - eshMarkaz.y;
+    const eshV = L.U(eshMarkaz.x, eshMarkaz.y).v;
     const eshikOldda = eshV < s.doska;
     const odam = orin + 1;
     const havo = havoHisobi(x, odam, orin * 0.05 + 0.3);
@@ -177,9 +176,8 @@ export function tekshiruv() {
 
   // 2. Doskani to'suvchi ustun: har bir o'rindan doskaning ikki cheti va markaziga
   for (const x of sinf) {
-    const j = x.j, d = j.doska;
-    const yuz = x.doska === 'yuqori' ? d.y2 : d.y1;
-    const nuqtalar = [d.x1 + 50, (d.x1 + d.x2) / 2, d.x2 - 50].map(xx => ({ x: xx, y: yuz }));
+    const j = x.j, d = j.doska, L = lokal(x), dl = L.T(d);
+    const nuqtalar = [dl.u1 + 50, (dl.u1 + dl.u2) / 2, dl.u2 - 50].map(u => L.G(u, dl.v2));
     j.stullar.forEach((st, i) => {
       const koz = { x: (st.x1 + st.x2) / 2, y: (st.y1 + st.y2) / 2 };
       const tosilgan = nuqtalar.filter(n => ustunlar.some(u => kesmaKesadi(koz, n, u)));
@@ -187,22 +185,20 @@ export function tekshiruv() {
     });
     // 3. Beruniy ustun qoidasi: ustun parta oldi/orqasida bo'lsa kamida 500 mm
     ustunlar.filter(u => kesishadi(u, x)).forEach(u => {
-      j.partalar.forEach((p, i) => {
-        const ustma = p.x1 < u.x2 && u.x1 < p.x2;
+      const ul = L.T(u);
+      j.partalar.map(L.T).forEach((p, i) => {
+        const ustma = p.u1 < ul.u2 && ul.u1 < p.u2;
         if (ustma) {
-          const oraliq = Math.max(u.y1 - p.y2, p.y1 - u.y2);
+          const oraliq = Math.max(ul.v1 - p.v2, p.v1 - ul.v2);
           if (oraliq < 500) natija.ustunQoidasi.push(`${x.kod} parta ${i + 1}: ustungacha ${Math.round(oraliq)} mm`);
         }
       });
     });
-    // 5. Doska kar devorda: doska orqasidagi devor bo'lagi to'liq devor bilan qoplangan
-    const devorChizig = x.doska === 'yuqori' ? d.y1 : d.y2;
-    const qoplovchi = devorlar.filter(w => (x.doska === 'yuqori' ? Math.abs(w.y2 - devorChizig) < 1 : Math.abs(w.y1 - devorChizig) < 1));
-    let qoplangan = 0;
-    qoplovchi.forEach(w => { qoplangan += Math.max(0, Math.min(w.x2, d.x2) - Math.max(w.x1, d.x1)); });
-    const ustunQism = ustunlar.filter(u => (x.doska === 'yuqori' ? u.y1 < devorChizig && u.y2 >= devorChizig : u.y1 <= devorChizig && u.y2 > devorChizig))
-      .reduce((t, u) => t + Math.max(0, Math.min(u.x2, d.x2) - Math.max(u.x1, d.x1)), 0);
-    if (qoplangan + ustunQism < d.x2 - d.x1 - 1) natija.doskaDevor.push(`${x.kod}: doska ortida bo'shliq`);
+    // 5. Doska kar devorda: doska orqasidagi devor bo'lagi (lokal v = 0 chizig'i) to'liq devor bilan qoplangan
+    const qopla = (r, shart) => r.map(L.T).filter(shart).reduce((t, w) => t + Math.max(0, Math.min(w.u2, dl.u2) - Math.max(w.u1, dl.u1)), 0);
+    const qoplangan = qopla(devorlar, w => Math.abs(w.v2) < 1);
+    const ustunQism = qopla(ustunlar, u => u.v1 < 0 && u.v2 >= 0);
+    if (qoplangan + ustunQism < dl.u2 - dl.u1 - 1) natija.doskaDevor.push(`${x.kod}: doska ortida bo'shliq`);
     // 4. Eshik doskaga tegmasligi
     sektorlar.forEach(({ e, s }) => sektorKesadi(s, d) && natija.eshik.push(`${e.kod} eshigi ↔ ${x.kod} doskasi`));
   }

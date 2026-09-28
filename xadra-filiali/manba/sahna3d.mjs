@@ -1,6 +1,6 @@
 // 3D ko'rinishlar (three.js). Reja koordinatasi (x, y) → sahna (x, z), balandlik — y. Birlik: metr.
 import * as THREE from 'three';
-import { H, ICHKI, DEVORLAR, DERAZALAR, USTUNLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ, KW_KUNDALIK, sinflar } from './model.mjs';
+import { H, ICHKI, DEVORLAR, DERAZALAR, USTUNLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, lokal } from './model.mjs';
 
 const m = v => v / 1000;
 const HM = m(H);
@@ -111,16 +111,17 @@ function stul(r, orqa) {
   [[r.x1 + 20, r.y1 + 20], [r.x2 - 45, r.y1 + 20], [r.x1 + 20, r.y2 - 45], [r.x2 - 45, r.y2 - 45]]
     .forEach(([x, y]) => rQuti({ x1: x, x2: x + 25, y1: y, y2: y + 25 }, 0, 0.43, M.oyoq));
 }
+// stul suyanchig'i doskaga teskari tomonda; o'qituvchida — aksincha
+const SUYANCHIQ = { yuqori: 'bottom', past: 'top', ong: 'left', chap: 'right' };
+const TESKARI = { top: 'bottom', bottom: 'top', left: 'right', right: 'left' };
 sinflar().forEach(x => {
-  const j = x.j;
-  const orqa = x.doska === 'past' ? 'top' : 'bottom';   // stul suyanchig'i doskaga teskari tomonda
+  const j = x.j, L = lokal(x), dl = L.T(j.doska);
   j.partalar.forEach(p => parta(p));
-  j.stullar.forEach(p => stul(p, orqa));
+  j.stullar.forEach(p => stul(p, SUYANCHIQ[x.doska]));
   parta(j.ustozStoli, M.ustoz);
-  stul(j.ustozStuli, x.doska === 'past' ? 'bottom' : 'top');
-  const d = j.doska;
-  rQuti({ ...d, y1: x.doska === 'yuqori' ? d.y1 : d.y2 - 40, y2: x.doska === 'yuqori' ? d.y1 + 40 : d.y2 }, 0.88, 2.12, M.ramka);
-  rQuti({ ...d, x1: d.x1 + 30, x2: d.x2 - 30, y1: x.doska === 'yuqori' ? d.y1 : d.y2 - 50, y2: x.doska === 'yuqori' ? d.y1 + 50 : d.y2 }, 0.91, 2.09, M.doska);
+  stul(j.ustozStuli, TESKARI[SUYANCHIQ[x.doska]]);
+  rQuti(L.R(dl.u1, dl.u2, 0, 40), 0.88, 2.12, M.ramka);
+  rQuti(L.R(dl.u1 + 30, dl.u2 - 30, 0, 50), 0.91, 2.09, M.doska);
 });
 const YON_S = { n: 'top', s: 'bottom', w: 'left', e: 'right' };
 XIZMAT_JIHOZ.forEach(z => {
@@ -151,7 +152,7 @@ kw.shkaf.forEach(r => rQuti(r, 0, 0.9, M.parta));
 
 // ko'rinishlar
 const KORINISHLAR = {
-  sr1: { pos: [9.1, 1.3, 0.25], nishon: [9.1, 1.2, 7.7], fov: 78 },
+  sr1: { pos: [6.45, 1.35, 3.85], nishon: [11.95, 1.15, 3.85], fov: 72 },
   sr4: { pos: [21.4, 1.3, 15.9], nishon: [21.0, 1.2, 7.8], fov: 74 },
   sotuv: { pos: [4.3, 1.6, 16.3], nishon: [12.0, 1.1, 14.6], fov: 72 },
   k1: { pos: [6.6, 1.6, 8.55], nishon: [19.3, 1.2, 8.55], fov: 70 },

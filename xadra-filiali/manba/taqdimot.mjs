@@ -70,7 +70,7 @@ export function taqdimotHtml() {
             <li>Har bir sinfga <b>rekuperatorli PV qurilma</b> (~750 m³/soat) — ${HAVO.kishiga} m³/soat har bir kishiga, CO₂ ≤ 1000 ppm.</li>
             <li><b>4-xona, sotuv, admin, ustozlar va call-markazda deraza yo'q</b> — mexanik ventilyatsiya va konditsioner shart. 4-xona havosi o'ng devor ortidagi oraliqqa chiqariladi.</li>
             <li>Koworking: kundalik ~${kw.kundalik.Q} m³/soat, tadbirda ~${kw.tadbir.Q} m³/soat.</li>
-            <li>Toza havo doska tomonga beriladi, orqadan so'riladi. Har sinfga 2 ta konditsioner, CO₂ datchigi.</li>
+            <li>Doska yon devorda, deraza o'quvchilarning chap tomonida — yorug'lik doska va proyektorga tushmaydi. Toza havo doska oldida beriladi, orqada so'riladi. Har sinfga 2 ta konditsioner, CO₂ datchigi.</li>
           </ul></div>
       </div>
       <div class="jadval"><h2>Xonalar maydonlari</h2>

@@ -1,7 +1,7 @@
 // Reja chizmasi (SVG). Rejimlar: 'mavjud' (1-varaq), 'jihoz' (2-varaq), 'havo' (3-varaq), 'izoh' (A4 hujjat).
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, ESKI_XONALAR, ADM_JIHOZ,
-  XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, PARTA, bolaklar, xizmatJihozlari,
+  XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 
@@ -157,17 +157,25 @@ export function rejaSvg(o = {}) {
       const cx = (x.x1 + x.x2) / 2;
       let cy = (x.y1 + x.y2) / 2;
       if (x.tur === 'sinf') {
-        const K = kor[x.kod];
-        // yozuv doska oldidagi zonada: qatorlar va o'qituvchi stoli orasida
-        let lx = cx - 700;
-        cy = x.doska === 'past' ? x.y2 - 1900 : x.y1 + 1300;
-        if (x.kod === 'SR4') { lx = 21650; cy = 15500; }
+        const K = kor[x.kod], L = lokal(x);
         if (rejim === 'havo') {
-          q.push(matn(x.kod === 'SR4' ? 21650 : x.x1 + (x.x2 - x.x1) * 0.25, x.kod === 'SR4' ? 15700 : x.doska === 'past' ? 5900 : 18700, x.kod, 480, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
+          const p = x.kod === 'SR4' ? { x: 21650, y: 15700 } : L.G(L.W / 2, L.D * 0.55);
+          q.push(matn(p.x, p.y + 170, x.kod, 480, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
           return;
         }
-        q.push(matn(lx, cy, `${x.kod} · ${x.kod.slice(2)}-xona`, 440, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
-        q.push(matn(lx, cy + 400 * k, `${K.A.toFixed(1)} m² · ${K.orin} o'rin`, 240, `text-anchor="middle" fill="#666"`));
+        if (x.kod === 'SR4') {
+          q.push(matn(21650, 15500, `${x.kod} · 4-xona`, 440, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
+          q.push(matn(21650, 15500 + 400 * k, `${K.A.toFixed(1)} m² · ${K.orin} o'rin`, 240, `text-anchor="middle" fill="#666"`));
+          return;
+        }
+        // yozuv doska oldidagi bo'sh zonada (doska va 1-qator orasida), o'qituvchi stoli bilan eshik oralig'ida;
+        // o'lcham annotatsiyasi bor xonada — zanjirlardan chetroqda
+        const p = L.G(o.annotatsiya && x.kod === 'SR2' ? L.W * 0.69 : L.W / 2, K.doska / 2);
+        const ust = p.y - 380 * k;
+        q.push(matn(p.x, ust, x.kod, 440, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
+        q.push(matn(p.x, ust + 360 * k, `${x.kod.slice(2)}-xona`, 300, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
+        q.push(matn(p.x, ust + 680 * k, `${K.A.toFixed(1)} m²`, 240, `text-anchor="middle" fill="#666"`));
+        q.push(matn(p.x, ust + 960 * k, `${K.orin} o'rin`, 240, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'xizmat') {
         const ly = { XZ1: 9950, XZ2: 12200, XZ3: 14400, XZ4: 14350 }[x.kod];
         const lx = { XZ1: 7650, XZ2: 10400, XZ3: 13300, XZ4: 15950 }[x.kod];
@@ -252,31 +260,35 @@ function olchamlar(id, k, fam) {
 
 // ---- SR2 dagi qizil o'lcham annotatsiyasi (Beruniy namunasidagi kabi) ----
 function annotatsiya(id, k, fam, x) {
-  const j = x.j, q = [`<g ${fam} fill="${RANG.qizil}" stroke="${RANG.qizil}">`];
+  const j = x.j, L = lokal(x), q = [`<g ${fam} fill="${RANG.qizil}" stroke="${RANG.qizil}">`];
   const s = 6 * k, t = 150 * k;
-  // gorizontal: devor – partalar – yo'laklar – devor, 1-qator oldida
-  const y = j.partalar[0].y2 + 260;
-  const xs = [x.x1];
-  let u = x.x1 + j.u0;
-  xs.push(u);
-  j.s.bloklar.forEach((n, bi) => { for (let i = 0; i < n; i++) { u += PARTA.eni; xs.push(u); } if (bi < j.s.bloklar.length - 1) { u += j.s.yolak; xs.push(u); } });
-  xs.push(x.x2);
-  q.push(`<line x1="${xs[0]}" y1="${y}" x2="${xs.at(-1)}" y2="${y}" stroke-width="${s}"/>`);
-  xs.forEach(v => q.push(`<line x1="${v}" y1="${y - 80}" x2="${v}" y2="${y + 80}" stroke-width="${s}"/>`));
-  for (let i = 1; i < xs.length; i++) q.push(`<text x="${(xs[i - 1] + xs[i]) / 2}" y="${y + 230}" font-size="${t}" text-anchor="middle" stroke="none">${Math.round(xs[i] - xs[i - 1])}</text>`);
-  q.push(`<text x="${x.x1 + 150}" y="${y + 460}" font-size="${t}" stroke="none">parta qadami</text>`);
-  // vertikal: doska → 1-parta, keyin parta 500 / o'tish 800
-  const vx = x.x1 + j.u0 - 90;
-  const ys = [x.y2, x.y2 - j.s.doska];
-  for (let r = 0; r < j.s.qatorlar; r++) { const v = x.y2 - j.s.doska - r * j.s.qadam; ys.push(v - PARTA.chuq); if (r < j.s.qatorlar - 1) ys.push(v - j.s.qadam); }
-  q.push(`<line x1="${vx}" y1="${ys[0]}" x2="${vx}" y2="${ys.at(-1)}" stroke-width="${s}"/>`);
-  ys.forEach(v => q.push(`<line x1="${vx - 80}" y1="${v}" x2="${vx + 80}" y2="${v}" stroke-width="${s}"/>`));
-  for (let i = 1; i < ys.length; i++) {
-    const m = (ys[i - 1] + ys[i]) / 2;
-    q.push(`<text x="${vx - 60}" y="${m}" font-size="${t}" text-anchor="middle" stroke="none" transform="rotate(-90 ${vx - 60} ${m})">${Math.round(ys[i - 1] - ys[i])}</text>`);
-  }
-  const m = (ys[2] + ys.at(-1)) / 2;
-  q.push(`<text x="${vx + 170}" y="${m}" font-size="${t}" text-anchor="middle" stroke="none" transform="rotate(-90 ${vx + 170} ${m})">qator qadami</text>`);
+  // o'lcham zanjiri: lokal nuqtalar → chiziq, belgilar va qiymatlar (vertikal zanjirda matn buriladi)
+  const zanjir = (nuqtalar, izoh) => {
+    const P = nuqtalar.map(([u, v]) => L.G(u, v));
+    const vert = Math.abs(P[0].x - P.at(-1).x) < 1;
+    q.push(`<line x1="${f(P[0].x)}" y1="${f(P[0].y)}" x2="${f(P.at(-1).x)}" y2="${f(P.at(-1).y)}" stroke-width="${s}"/>`);
+    P.forEach(p => q.push(vert ? `<line x1="${f(p.x - 80)}" y1="${f(p.y)}" x2="${f(p.x + 80)}" y2="${f(p.y)}" stroke-width="${s}"/>`
+      : `<line x1="${f(p.x)}" y1="${f(p.y - 80)}" x2="${f(p.x)}" y2="${f(p.y + 80)}" stroke-width="${s}"/>`));
+    const yoz = (mx, my, matn) => q.push(vert
+      ? `<text x="${f(mx - 60)}" y="${f(my)}" font-size="${t}" text-anchor="middle" stroke="none" transform="rotate(-90 ${f(mx - 60)} ${f(my)})">${matn}</text>`
+      : `<text x="${f(mx)}" y="${f(my + 230)}" font-size="${t}" text-anchor="middle" stroke="none">${matn}</text>`);
+    for (let i = 1; i < P.length; i++) yoz((P[i - 1].x + P[i].x) / 2, (P[i - 1].y + P[i].y) / 2, Math.round(Math.hypot(P[i].x - P[i - 1].x, P[i].y - P[i - 1].y)));
+    const a = P[1], b = P.at(-2);
+    if (vert) yoz(a.x + 230, (a.y + b.y) / 2, izoh);
+    else yoz((a.x + b.x) / 2, a.y + 230, izoh);
+  };
+  // doska devori bo'ylab: devor – partalar – yo'laklar – devor, 1-qator oldida
+  const us = [0];
+  let u = j.u0;
+  us.push(u);
+  j.s.bloklar.forEach((n, bi) => { for (let i = 0; i < n; i++) { u += PARTA.eni; us.push(u); } if (bi < j.s.bloklar.length - 1) { u += j.s.yolak; us.push(u); } });
+  us.push(j.W);
+  zanjir(us.map(uu => [uu, j.s.doska - 260]), 'parta qadami');
+  // doskadan orqaga: doska → 1-parta, keyin parta / o'tish — o'rtadagi yo'lakda
+  const vs = [0, j.s.doska];
+  for (let r = 0; r < j.s.qatorlar; r++) { const v = j.s.doska + r * j.s.qadam; vs.push(v + PARTA.chuq); if (r < j.s.qatorlar - 1) vs.push(v + j.s.qadam); }
+  const ortaYolak = j.u0 + j.s.bloklar.slice(0, Math.floor(j.s.bloklar.length / 2)).reduce((t, n) => t + n * PARTA.eni + j.s.yolak, 0) - j.s.yolak / 2;
+  zanjir(vs.map(v => [ortaYolak - 200, v]), 'qator qadami');
   q.push('</g>');
   return q.join('');
 }
@@ -295,20 +307,21 @@ export const QURILMALAR = (() => {
         diffuzor: [[21025, 10300], [21025, 12250]], sorish: [[22100, 15700]],
         konditsioner: [[19700, 11600], [22400, 13900]], co2: [23500, 9000] });
     } else {
-      const orqa = x.doska === 'past' ? x.y1 : x.y2;       // deraza devori
-      const ich = x.doska === 'past' ? 1 : -1;
-      const qut = ich > 0 ? { y1: orqa + 250, y2: orqa + 900 } : { y1: orqa - 900, y2: orqa - 250 };
-      const der = DERAZALAR.find(dd => (dd.devor === (x.doska === 'past' ? 'yuqori' : 'past')) && dd.x1 >= x.x1 && dd.x2 <= x.x2);
-      const devY = ich > 0 ? { y1: -DEVOR.yuqori, y2: 0 } : { y1: ICHKI.y, y2: ICHKI.y + DEVOR.past };
-      const oldi = x.doska === 'past' ? x.y2 : x.y1;       // doska devori
-      const v = n => oldi - ich * n;                     // doskadan n mm
-      Object.assign(d, { qurilma: { x1: cx - 650, x2: cx + 650, ...qut }, devor: x.doska === 'past' ? 'yuqori' : 'past',
+      // qurilma deraza devori yonida shift ichida; toza havo doska tomonda beriladi, orqa devor yonida so'riladi
+      const L = lokal(x), D = L.D, W = L.W;
+      const der = DERAZALAR.find(dd => dd.devor === x.deraza && dd.x1 >= x.x1 && dd.x2 <= x.x2);
+      const devY = x.deraza === 'yuqori' ? { y1: -DEVOR.yuqori, y2: 0 } : { y1: ICHKI.y, y2: ICHKI.y + DEVOR.past };
+      const oyna = L.U(cx, x.deraza === 'yuqori' ? x.y1 : x.y2).u;   // deraza devorining u koordinatasi
+      const w = n => (oyna === 0 ? n : W - n);                        // deraza devoridan n mm
+      const P = (u, v) => { const p = L.G(u, v); return [p.x, p.y]; };
+      const [qx, qy] = P(w(575), D / 2);
+      Object.assign(d, { qurilma: { x1: cx - 650, x2: cx + 650, y1: qy - 325, y2: qy + 325 }, devor: x.deraza,
         kirish: { x1: (x.x1 + der.x1) / 2 - 300, x2: (x.x1 + der.x1) / 2 + 300, ...devY },
         chiqish: { x1: (der.x2 + x.x2) / 2 - 300, x2: (der.x2 + x.x2) / 2 + 300, ...devY },
-        kanallar: [[[cx, (qut.y1 + qut.y2) / 2], [cx, v(2700)]]],
-        diffuzor: [[cx, v(2800)], [cx, v(5000)]], sorish: [[cx + 1500, orqa + ich * 600]],
-        konditsioner: [[x.x1 + (x.x2 - x.x1) / 4, v(3900)], [x.x1 + 3 * (x.x2 - x.x1) / 4, v(3900)]],
-        co2: [x.x2 - 450, v(1700)] });
+        kanallar: [[[qx, qy], P(w(575), 1800), P(w(W * 2 / 3), 1800)], [[qx, qy], P(w(575), D - 400), P(w(W * 2 / 3), D - 400)]],
+        diffuzor: [P(w(W / 3), 1800), P(w(W * 2 / 3), 1800)], sorish: [P(w(W / 3), D - 400), P(w(W * 2 / 3), D - 400)],
+        konditsioner: [P(w(W / 4), D * 0.55), P(w(W * 3 / 4), D * 0.55)],
+        co2: P(w(W - 350), D / 2) });
     }
     r.push(d);
   });
@@ -365,10 +378,12 @@ function havoQatlami(id, k, sinf) {
   });
   // xonadagi havo oqimi strelkalari (doskadan orqaga)
   sinf.forEach(x => {
-    const W = x.x2 - x.x1;
-    const oldi = x.doska === 'past' ? x.y2 : x.y1, ich = x.doska === 'past' ? 1 : -1;
-    const D = x.kod === 'SR4' ? 7000 : x.y2 - x.y1;
-    [x.x1 + W * 0.12, x.x2 - W * 0.12].forEach(xx => q.push(`<path d="M${xx},${oldi - ich * 2600} L${xx},${oldi - ich * (D - 700)}" stroke="#5b8fd6" stroke-width="${30 * k}" stroke-dasharray="${160 * k} ${90 * k}" fill="none" marker-end="url(#${id}ah)"/>`));
+    const L = lokal(x);
+    const [v1, v2] = x.kod === 'SR4' ? [2600, 6300] : [2200, L.D - 700];
+    [L.W * 0.12, L.W * 0.88].forEach(u => {
+      const a = L.G(u, v1), b = L.G(u, v2);
+      q.push(`<path d="M${f(a.x)},${f(a.y)} L${f(b.x)},${f(b.y)}" stroke="#5b8fd6" stroke-width="${30 * k}" stroke-dasharray="${160 * k} ${90 * k}" fill="none" marker-end="url(#${id}ah)"/>`);
+    });
   });
   // sanuzel chiqarish ventilyatsiyasi
   q.push(`<circle cx="3725" cy="3350" r="${340 * k}" fill="#fff" stroke="${RANG.havoQ}" stroke-width="${18 * k}"/>`,

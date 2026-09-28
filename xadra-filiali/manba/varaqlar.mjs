@@ -94,7 +94,7 @@ function xonalarJadvali() {
     <tr><td>XZ4 · call-markaz</td><td>2.85 × 5.60</td><td class="r">${v(xonaMaydoni(xz[3]))}</td><td class="r">6</td><td class="r">—</td><td>devor bo'ylab 6 ish o'rni</td></tr>
     <tr><td>CEO (12-xona)</td><td>5.95 × 2.95</td><td class="r">${v(xonaMaydoni(x12))}</td><td class="r">1</td><td class="r">—</td><td>ish stoli + 4 kishilik stol, derazali</td></tr>
     <tr><td>KW</td><td>5.95 × 11.85</td><td class="r">${v(xonaMaydoni(XONALAR.find(r => r.kod === 'KW')))}</td><td class="r">~35</td><td class="r">—</td><td>koworking; tadbirda 66 o'rin</td></tr>
-    <tr class="jami"><td>Jami</td><td></td><td class="r">${v(kor.reduce((t, k) => t + k.A, 0))}</td><td class="r">${kor.reduce((t, k) => t + k.orin, 0)}</td><td></td><td>6 × 24 + 1 × 20</td></tr></table>`;
+    <tr class="jami"><td>Jami</td><td></td><td class="r">${v(kor.reduce((t, k) => t + k.A, 0))}</td><td class="r">${kor.reduce((t, k) => t + k.orin, 0)}</td><td></td><td>${[...new Set(kor.map(k => k.orin))].sort((a, b) => b - a).map(o => `${kor.filter(k => k.orin === o).length} × ${o}`).join(' + ')}</td></tr></table>`;
 }
 
 function ustunJadvali() {
@@ -112,6 +112,7 @@ function partaQoidasi() {
     qator qadami ${son(STANDART.qadam)} (parta 500 + o'tish 800) · 4 qator<br>
     doskadan 1-partagacha ${son(STANDART.doska)} · oxirgi parta ${son(STANDART.oxirgi)} · sig'im 24<br>
     ustundan: oldi/orqa 500 · yon 0<br>
+    <span class="qizil">ISTISNO: SR1–3, SR5–7 — doska yon devorda (deraza chapda): 2+2+2+2 × 3 qator, qadam 1&nbsp;250, doskadan 2&nbsp;050; SR3 — 22 o'rin</span><br>
     <span class="qizil">ISTISNO: SR4 (4-xona) — 6 + 6 + 6 + 2 (4-qatorda faqat o'ng blok), sig'im 20; eshik orqa tomonda</span><br>
     Doska 3000 kar devorda; eshiklar 900, ichkariga ochiladi.<br>
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100, ovoz izolyatsiyali.<br>
@@ -172,7 +173,7 @@ function mavjudPanel() {
   <div><h3>O'ZGARISHLAR</h3><p class="izoh">
     <b>O'zgarmaydi</b> (buyurtmachi talabi): ZN1 va ZN2 zinalari, sanuzel bloki (2–6), 12-xona.<br>
     <b>Buziladi:</b> eski o'rta devor (8–10 va 13–15-xonalar orasida); 7 va 11-xonalar orasidagi devor; K1, K2 koridorlariga tushgan devor bo'laklari.<br>
-    <b>Quriladi:</b> K1 va K2 koridorlarining devorlari (1–3 va 5–7-xonalarning doskalari shu devorlarda), o'rta qatordagi 4 ta ofis xonasi (sotuv, admin, ustozlar, call-markaz) va 4-xona devorlari; xonalar orasidagi bo'shliqlar yopiladi.
+    <b>Quriladi:</b> K1 va K2 koridorlarining devorlari (1–3 va 5–7-xonalar eshiklari shu devorlarda; doskalar yon devorlarda), o'rta qatordagi 4 ta ofis xonasi (sotuv, admin, ustozlar, call-markaz) va 4-xona devorlari; xonalar orasidagi bo'shliqlar yopiladi.
   </p></div>
   <div><h3>ISHLAR HAJMI (taxminiy)</h3><table>
     <tr><td>Yangi devor, GKL 100</td><td class="r">${v(ish.yangiUz)} m · ≈ ${Math.round(ish.yangiUz * H / 1000)} m²</td></tr>
@@ -202,10 +203,10 @@ function havoPanel() {
     Hajm — toza balandlik ${H} mm (taxmin) bo'yicha. Sovutish — odamlar, noutbuklar, proyektor, yoritish, derazadan quyosh va toza havo (rekuperator FIK ${HAVO.rekuperator * 100}%) yig'indisi, Toshkent yozi (+40 °C) uchun dastlabki baho.
   </p></div>
   <div><h3>YECHIM</h3><p class="izoh">
-    <b>1–3 va 5–7-xonalar</b> 7,7 m chuqur, deraza orqa devorda: tabiiy shamollatish (~2,5 × H ≈ 7,5 m) deyarli butun xonaga yetadi, lekin qish va yozda derazalar yopiq — har sinfga alohida <b>PV qurilma</b> (rekuperatorli, ~750 m³/soat, shovqin ≤ 35 dB(A)), deraza devori yonida shift ichida.<br>
+    <b>1–3 va 5–7-xonalar:</b> deraza yon devorda, qarama-qarshi devorgacha 7,7 m: tabiiy shamollatish (~2,5 × H ≈ 7,5 m) deyarli butun xonaga yetadi, lekin qish va yozda derazalar yopiq — har sinfga alohida <b>PV qurilma</b> (rekuperatorli, ~750 m³/soat, shovqin ≤ 35 dB(A)), deraza devori yonida shift ichida.<br>
     <b>4-xona va xizmat xonalarida deraza yo'q</b> — mexanik ventilyatsiya va konditsioner majburiy. O'ng devor qo'shni bino bilan umumiy, orqasida tor oraliq bor: PV-4 panjaralari shu oraliqqa chiqariladi — kirish va chiqish bir-biridan uzoq (7 m), oraliq eni joyida o'lchanadi; havo turg'un bo'lsa, kanal K2 shifti orqali fasadga. PV-9 koworking chap devoridan olib, K1 shifti orqali XZ1–XZ4 ga beradi.<br>
     <b>KW:</b> derazalar chap devorda; tadbirda ~70 kishi — PV-8 ~2 100 m³/soat.<br>
-    Toza havo doska tomonga beriladi, orqa tomondan so'riladi. CO₂ datchigi bilan boshqariladi; bo'sh xona o'chadi. Har sinfga 2 ta KD (kasseta yoki kanalli).<br>
+    Toza havo doska oldida beriladi, orqa devor yonida so'riladi. CO₂ datchigi bilan boshqariladi; bo'sh xona o'chadi. Har sinfga 2 ta KD (kasseta yoki kanalli).<br>
     <b>V-1:</b> sanuzel chiqarish ventilyatsiyasi 4 × 50 = 200 m³/soat — mavjud shaxtani tekshirish. Tutun chiqarish talabini yong'in xavfsizligi mutaxassisi belgilaydi.
   </p></div>`;
 }

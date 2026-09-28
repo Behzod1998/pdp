@@ -124,9 +124,9 @@ const ichki = [
   d(17950, 18150, 12500, 15000, 'mavjud'), d(17950, 18150, 15100, 16600, 'buziladi', 'K2 koridori'),
   d(17950, 18150, 16700, 18850, 'mavjud'), d(17950, 18150, 18850, 21600, 'yangi', 'bo\'shliq yopiladi'),
   d(17950, 18150, 21600, ICHKI.y, 'mavjud'),
-  // K1 shimoliy devori (1–3-xonalar doskasi) — eshiklar bilan
-  d(6250, 6450, 7700, 7800, 'yangi'), d(7350, 12350, 7700, 7800, 'yangi'),
-  d(13250, 18300, 7700, 7800, 'yangi'), d(19200, ICHKI.x, 7700, 7800, 'yangi'),
+  // K1 shimoliy devori — eshiklar bilan (1, 2-xona eshigi doska tomonda, 3-xonaniki orqada)
+  d(6250, 10850, 7700, 7800, 'yangi'), d(11750, 16850, 7700, 7800, 'yangi'),
+  d(17750, 18300, 7700, 7800, 'yangi'), d(19200, ICHKI.x, 7700, 7800, 'yangi'),
   d(19300, 19400, 7800, 9300, 'yangi'),
   // K1 janubiy devori (xizmat xonalari eshiklari bilan)
   d(6250, 12300, 9300, 9400, 'yangi'),
@@ -138,7 +138,7 @@ const ichki = [
   sh(6250, 6400, 15000, 15100), sh(7300, 9050, 15000, 15100), d(9050, 9150, 15000, 15100, 'yangi'),
   sh(9150, 9300, 15000, 15100), sh(10200, 11950, 15000, 15100), d(11950, 19400, 15000, 15100, 'yangi'),
   d(19300, 19400, 15100, 15300, 'yangi'), d(19300, 19400, 16200, 16600, 'yangi'),
-  // K2 janubiy devori (5–7-xonalar doskasi) — eshiklar bilan
+  // K2 janubiy devori (5–7-xonalar) — eshiklar bilan
   d(6150, 6350, 16600, 16700, 'yangi'), d(7250, 12350, 16600, 16700, 'yangi'),
   d(13250, 18300, 16600, 16700, 'yangi'), d(19200, ICHKI.x, 16600, 16700, 'yangi'),
 ];
@@ -151,8 +151,8 @@ export const DEVORLAR = [...tashqi, ...qotgan, ...ichki];
 // ilgak: 'a' | 'b' — qaysi uchida ilgak.
 const e = (kod, devor, a, b, yuz, yon, ilgak, holat = 'yangi') => ({ kod, devor, a, b, yuz, yon, ilgak, holat, en: b - a });
 export const ESHIKLAR = [
-  e('SR1', 'h', 6450, 7350, 7700, -1, 'a'),
-  e('SR2', 'h', 12350, 13250, 7700, -1, 'a'),
+  e('SR1', 'h', 10850, 11750, 7700, -1, 'b'),
+  e('SR2', 'h', 16850, 17750, 7700, -1, 'b'),
   e('SR3', 'h', 18300, 19200, 7700, -1, 'a'),
   e('SR4', 'v', 15300, 16200, 19400, +1, 'b'),
   e('SR5', 'h', 18300, 19200, 16700, +1, 'a'),
@@ -182,19 +182,25 @@ export const ZINALAR = [
 ];
 
 // ---------- Xonalar ----------
-// doska: 'yuqori' (y1 devori) | 'past' (y2 devori)
+// doska: 'yuqori' (y1 devori) | 'past' (y2 devori) | 'chap' (x1 devori) | 'ong' (x2 devori)
+// deraza: xonaning derazali devori. Doska derazaga qarama-qarshi emas, yon devorda —
+// deraza o'quvchilarning chap tomonida qoladi, yorug'lik doska va proyektor ekraniga tushmaydi.
 // SR1–SR7 = namunadagi 1–7-xona (yuqori qator 1–3, o'ngda 4, pastki qator o'ngdan chapga 5–7).
+// Yon devordagi doska uchun to'r: 7.70 m devor bo'ylab 4 guruh × 2 parta, 5.70–5.80 m chuqurlikda 3 qator.
+const YON_TOR = { bloklar: [2, 2, 2, 2], yolak: 600, doska: 2050, qadam: 1250, qatorlar: 3 };
 export const XONALAR = [
-  { kod: 'SR1', nomi: 'Study Room 1', tur: 'sinf', x1: 6250, y1: 0, x2: 11950, y2: 7700, doska: 'past', eshik: 'SR1', eskiRaqam: '8', koridor: 'K1' },
-  { kod: 'SR2', nomi: 'Study Room 2', tur: 'sinf', x1: 12150, y1: 0, x2: 17950, y2: 7700, doska: 'past', eshik: 'SR2', eskiRaqam: '9', koridor: 'K1' },
-  { kod: 'SR3', nomi: 'Study Room 3', tur: 'sinf', x1: 18150, y1: 0, x2: ICHKI.x, y2: 7700, doska: 'past', eshik: 'SR3', eskiRaqam: '10', koridor: 'K1' },
+  { kod: 'SR1', nomi: 'Study Room 1', tur: 'sinf', x1: 6250, y1: 0, x2: 11950, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR1', eskiRaqam: '8', koridor: 'K1', sinf: YON_TOR },
+  { kod: 'SR2', nomi: 'Study Room 2', tur: 'sinf', x1: 12150, y1: 0, x2: 17950, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR2', eskiRaqam: '9', koridor: 'K1', sinf: YON_TOR },
+  // 3-xona eshigi faqat K1 uchida (x < 19300) bo'lishi mumkin — orqa tomonda; eshik oldidagi 2 o'rin olinadi
+  { kod: 'SR3', nomi: 'Study Room 3', tur: 'sinf', x1: 18150, y1: 0, x2: ICHKI.x, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR3', eskiRaqam: '10', koridor: 'K1',
+    sinf: { ...YON_TOR, sxema: [[2, 2, 2, 2], [2, 2, 2, 2], [2, 2, 2, 0]] } },
   { kod: 'SR4', nomi: 'Study Room 4', tur: 'sinf', x1: 18150, y1: 7800, x2: ICHKI.x, y2: 16600, doska: 'yuqori', eshik: 'SR4', eskiRaqam: '10 va 15 (o\'rta qism)', koridor: 'K2',
     bolaklar: [{ x1: 19400, x2: ICHKI.x, y1: 7800, y2: 9400 }, { x1: 18150, x2: ICHKI.x, y1: 9400, y2: 15000 }, { x1: 19400, x2: ICHKI.x, y1: 15000, y2: 16600 }],
     kontur: [[19400, 7800], [ICHKI.x, 7800], [ICHKI.x, 16600], [19400, 16600], [19400, 15000], [18150, 15000], [18150, 9400], [19400, 9400]],
     sinf: { sxema: [[2, 2, 2], [2, 2, 2], [2, 2, 2], [0, 0, 2]] } },
-  { kod: 'SR5', nomi: 'Study Room 5', tur: 'sinf', x1: 18150, y1: 16700, x2: ICHKI.x, y2: ICHKI.y, doska: 'yuqori', eshik: 'SR5', eskiRaqam: '15', koridor: 'K2' },
-  { kod: 'SR6', nomi: 'Study Room 6', tur: 'sinf', x1: 12150, y1: 16700, x2: 17950, y2: ICHKI.y, doska: 'yuqori', eshik: 'SR6', eskiRaqam: '14', koridor: 'K2' },
-  { kod: 'SR7', nomi: 'Study Room 7', tur: 'sinf', x1: 6150, y1: 16700, x2: 11950, y2: ICHKI.y, doska: 'yuqori', eshik: 'SR7', eskiRaqam: '13', koridor: 'K2' },
+  { kod: 'SR5', nomi: 'Study Room 5', tur: 'sinf', x1: 18150, y1: 16700, x2: ICHKI.x, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR5', eskiRaqam: '15', koridor: 'K2', sinf: YON_TOR },
+  { kod: 'SR6', nomi: 'Study Room 6', tur: 'sinf', x1: 12150, y1: 16700, x2: 17950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR6', eskiRaqam: '14', koridor: 'K2', sinf: YON_TOR },
+  { kod: 'SR7', nomi: 'Study Room 7', tur: 'sinf', x1: 6150, y1: 16700, x2: 11950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR7', eskiRaqam: '13', koridor: 'K2', sinf: YON_TOR },
   { kod: 'XZ1', nomi: 'Offline sotuv bo\'limi', qisqa: 'sotuv', tur: 'xizmat', x1: 6250, y1: 9400, x2: 9050, y2: 15000, eshik: 'XZ1', eskiRaqam: '8, 13', odam: 6 },
   { kod: 'XZ2', nomi: 'Admin', qisqa: 'admin', tur: 'xizmat', x1: 9150, y1: 9400, x2: 11950, y2: 15000, eshik: 'XZ2', eskiRaqam: '8, 13', odam: 4 },
   { kod: 'XZ3', nomi: 'Ustozlar xonasi', qisqa: 'ustozlar', odam: 8, tur: 'xizmat', x1: 12150, y1: 9400, x2: 15000, y2: 15000, eshik: 'XZ3', eskiRaqam: '9, 14' },
@@ -225,14 +231,37 @@ export const ESKI_XONALAR = [
 ];
 
 // ---------- Jihozlar ----------
+// Sinfning lokal koordinatalari: u — doska devori bo'ylab, v — doskadan xona ichiga.
+// G(u, v) → nuqta, R(u1, u2, v1, v2) → to'rtburchak, U(x, y) → { u, v }; f — o'quvchining qarash yo'nalishi.
+export function lokal(x) {
+  const t = x.doska, gor = t === 'yuqori' || t === 'past';
+  const W = gor ? x.x2 - x.x1 : x.y2 - x.y1;
+  const D = gor ? x.y2 - x.y1 : x.x2 - x.x1;
+  const G = (u, v) => t === 'yuqori' ? { x: x.x1 + u, y: x.y1 + v }
+    : t === 'past' ? { x: x.x1 + u, y: x.y2 - v }
+    : t === 'chap' ? { x: x.x1 + v, y: x.y1 + u }
+    : { x: x.x2 - v, y: x.y1 + u };
+  const R = (u1, u2, v1, v2) => {
+    const a = G(u1, v1), b = G(u2, v2);
+    return { x1: Math.min(a.x, b.x), x2: Math.max(a.x, b.x), y1: Math.min(a.y, b.y), y2: Math.max(a.y, b.y) };
+  };
+  const U = (px, py) => t === 'yuqori' ? { u: px - x.x1, v: py - x.y1 }
+    : t === 'past' ? { u: px - x.x1, v: x.y2 - py }
+    : t === 'chap' ? { u: py - x.y1, v: px - x.x1 }
+    : { u: py - x.y1, v: x.x2 - px };
+  const T = r => {
+    const a = U(r.x1, r.y1), b = U(r.x2, r.y2);
+    return { u1: Math.min(a.u, b.u), u2: Math.max(a.u, b.u), v1: Math.min(a.v, b.v), v2: Math.max(a.v, b.v) };
+  };
+  const f = { yuqori: { x: 0, y: -1 }, past: { x: 0, y: 1 }, chap: { x: -1, y: 0 }, ong: { x: 1, y: 0 } }[t];
+  return { W, D, G, R, U, T, f };
+}
+
 function joylash(xona) {
   const s = { ...STANDART, doskaEni: 3000, ...(xona.sinf || {}) };
-  const W = xona.x2 - xona.x1;
+  const { W, D, R: L, U } = lokal(xona);
   const blokEni = s.bloklar.reduce((t, n) => t + n * PARTA.eni, 0) + (s.bloklar.length - 1) * s.yolak;
   const u0 = (W - blokEni) / 2;
-  const L = (u1, u2, v1, v2) => xona.doska === 'yuqori'
-    ? { x1: xona.x1 + u1, x2: xona.x1 + u2, y1: xona.y1 + v1, y2: xona.y1 + v2 }
-    : { x1: xona.x1 + u1, x2: xona.x1 + u2, y1: xona.y2 - v2, y2: xona.y2 - v1 };
   const partalar = [], stullar = [];
   const sxema = s.sxema || Array.from({ length: s.qatorlar }, () => s.bloklar);
   s.qatorlar = sxema.length;
@@ -254,13 +283,13 @@ function joylash(xona) {
   });
   const dc = W / 2;
   const doska = { ...L(dc - s.doskaEni / 2, dc + s.doskaEni / 2, 0, 60) };
-  // o'qituvchi stoli — eshikka qarama-qarshi old burchakda
+  // o'qituvchi stoli — doska oldida, eshikdan uzoq chetda
   const esh = ESHIKLAR.find(x => x.kod === xona.eshik);
-  const eshikChapda = esh.devor === 'h' ? (esh.a + esh.b) / 2 < (xona.x1 + xona.x2) / 2 : esh.yuz < (xona.x1 + xona.x2) / 2;
-  const tu = eshikChapda ? W - 150 - 1200 : 150;
+  const em = esh.devor === 'h' ? U((esh.a + esh.b) / 2, esh.yuz) : U(esh.yuz, (esh.a + esh.b) / 2);
+  const tu = em.u < W / 2 ? W - 150 - 1200 : 150;
   const ustozStoli = L(tu, tu + 1200, 700, 1300);
   const ustozStuli = L(tu + 375, tu + 825, 220, 670);
-  return { s, W, blokEni, u0, partalar, stullar, doska, ustozStoli, ustozStuli };
+  return { s, W, D, blokEni, u0, partalar, stullar, doska, ustozStoli, ustozStuli };
 }
 
 export function sinflar() {

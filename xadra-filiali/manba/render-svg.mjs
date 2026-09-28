@@ -2,7 +2,7 @@
 // Geometriya model.mjs dan olinadi — o'lchamlar chizma bilan bir xil.
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ,
-  KW_KUNDALIK, KW_TADBIR, sinflar, bolaklar,
+  KW_KUNDALIK, KW_TADBIR, sinflar, bolaklar, lokal,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 
@@ -42,14 +42,13 @@ function defs(id) {
 
 // stul qaysi tomonda turganiga qarab burilishi (belgida suyanchiq +y da, o'tirgan odam -y ga qaraydi)
 const BURISH = { n: 180, s: 0, w: 90, e: -90 };
+// sinfda o'quvchi doskaga qaraydi: doska qaysi devorda bo'lsa, belgi shunga buriladi
+const DOSKA_BURISH = { yuqori: 0, past: 180, ong: 90, chap: -90 };
 
-// o'simliklar: o'qituvchi stoli oldidagi burchakda (sinflar zich — orqa zona tor)
+// o'simliklar: 4-xona, ofis xonalari va koworkingda (yon devordagi doskali sinflarda joy tor)
 function osimliklar() {
   const r = [];
-  sinflar().forEach(x => {
-    if (x.kod === 'SR4') { r.push([23550, 9750], [23500, 16200]); return; }
-    r.push([x.x2 - 350, x.doska === 'past' ? x.y2 - 1950 : x.y1 + 1950]);
-  });
+  r.push([23550, 9750], [23500, 16200]);
   r.push([8750, 10600], [11550, 11700], [14700, 9800], [17550, 11900]);
   r.push([3900, 13950], [3700, 17650], [5650, 24050]);
   return r;
@@ -94,11 +93,11 @@ export function renderSvg(o = {}) {
       j.push(gor ? `<line x1="${t}" y1="${r.y1}" x2="${t}" y2="${r.y2}" stroke="#9c7649" stroke-width="7"/>` : `<line x1="${r.x1}" y1="${t}" x2="${r.x2}" y2="${t}" stroke="#9c7649" stroke-width="7"/>`);
   };
   sinf.forEach(x => {
-    const orqa = x.doska === 'past' ? 180 : 0;   // o'quvchi doskaga qaraydi
+    const orqa = DOSKA_BURISH[x.doska];   // o'quvchi doskaga qaraydi, o'qituvchi — o'quvchilarga
     x.j.partalar.forEach(p => j.push(use('parta', ...markaz(p), orqa)));
     x.j.stullar.forEach(p => j.push(use('stul', ...markaz(p), orqa)));
-    j.push(use('ustozStol', ...markaz(x.j.ustozStoli), x.doska === 'past' ? 0 : 180));
-    j.push(use('ofisStul', ...markaz(x.j.ustozStuli), x.doska === 'past' ? 0 : 180));
+    j.push(use('ustozStol', ...markaz(x.j.ustozStoli), orqa + 180));
+    j.push(use('ofisStul', ...markaz(x.j.ustozStuli), orqa + 180));
   });
   XIZMAT_JIHOZ.forEach(z => {
     z.stollar.forEach(st => {
@@ -141,8 +140,8 @@ export function renderSvg(o = {}) {
   q.push(`<g filter="url(#${id}soya)">${j.join('')}</g>`);
   // doskalar va ekran
   sinf.forEach(x => {
-    const d = x.j.doska;
-    q.push(rect({ ...d, y1: x.doska === 'yuqori' ? d.y1 : d.y2 - 90, y2: x.doska === 'yuqori' ? d.y1 + 90 : d.y2 }, `fill="#fdfdfd" stroke="#8d949c" stroke-width="12"`));
+    const L = lokal(x), dl = L.T(x.j.doska);
+    q.push(rect(L.R(dl.u1, dl.u2, 0, 90), `fill="#fdfdfd" stroke="#8d949c" stroke-width="12"`));
   });
   if (kwRejim === 'tadbir') q.push(rect({ ...KW_TADBIR.ekran, y2: KW_TADBIR.ekran.y1 + 110 }, `fill="#fdfdfd" stroke="#555" stroke-width="16"`));
   else q.push(rect({ x1: 1200, x2: 3000, y1: 6500, y2: 6590 }, `fill="#1f2329"`));   // koworkingdagi ekran
@@ -190,11 +189,16 @@ export function renderSvg(o = {}) {
     const kor = Object.fromEntries(korsatkichlar().map(z => [z.kod, z]));
     sinf.forEach(x => {
       const K = kor[x.kod];
-      // yozuv doska oldidagi bo'sh zonada (qatorlar va o'qituvchi stoli orasida)
-      let cx = (x.x1 + x.x2) / 2 - 500, cy = x.doska === 'past' ? x.y2 - 1650 : x.y1 + 1350;
-      if (x.kod === 'SR4') { cx = 21650; cy = 15650; }
-      L.push(t(cx, cy, XONA_NOMI[x.kod], 440, B));
-      L.push(t(cx, cy + 400 * k, `${K.A.toFixed(1)} m² · ${K.orin} o'rin`, 300, R));
+      if (x.kod === 'SR4') {
+        L.push(t(21650, 15650, XONA_NOMI[x.kod], 440, B));
+        L.push(t(21650, 15650 + 400 * k, `${K.A.toFixed(1)} m² · ${K.orin} o'rin`, 300, R));
+        return;
+      }
+      // yozuv doska oldidagi bo'sh zonada (doska va 1-qator orasida), o'qituvchi stoli bilan eshik oralig'ida
+      const p = lokal(x).G(x.j.W / 2, x.j.s.doska / 2);
+      L.push(t(p.x, p.y - 300 * k, XONA_NOMI[x.kod], 440, B));
+      L.push(t(p.x, p.y + 100 * k, `${K.A.toFixed(1)} m²`, 300, R));
+      L.push(t(p.x, p.y + 450 * k, `${K.orin} o'rin`, 300, R));
     });
     XONALAR.filter(x => x.tur === 'xizmat').forEach(x => {
       const cx = (x.x1 + x.x2) / 2 - 150;
