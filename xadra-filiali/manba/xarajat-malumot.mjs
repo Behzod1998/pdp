@@ -46,4 +46,6 @@ const ofislar = [
     { nom: "Zinapoya va kirish zali bilan orasidagi devor (eshikli)", uz: xona('X12').x2 - xona('X12').x1, eshik: true },
     { nom: "7-xona bilan orasidagi devor", uz: xona('X12').y2 - xona('X12').y1 }] },
 ];
-console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar }, null, 0));
+// buziladigan devorlar (uzunligi va izohi)
+const buziladi = DEVORLAR.filter(w => w.holat === 'buziladi').map(w => ({ uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), izoh: w.izoh }));
+console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi }, null, 0));

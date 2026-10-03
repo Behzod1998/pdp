@@ -116,7 +116,7 @@ function partaQoidasi() {
     ustundan: oldi/orqa 500 · yon 0. Doska 3000 yon (kar) devorda, deraza o'quvchilarning chap tomonida; eshiklar 900.<br>
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100; sinflarning koridor tomoni — akustik shisha.<br>
     KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (sanuzel, K1, K2, kirish zali).<br>
-    XZ1 (offline sotuv) va XZ2 (admin): K2 tomonda shisha devor va shisha eshik — kirish zalidan ko'rinadi.<br>
+    Ofis xonalari (XZ1–XZ4): eshik tomoni shisha devor; barcha yangi eshiklar shisha.<br>
     XZ3 — ustozlar xonasi, XZ4 — call-markaz va online sotuv; 12-xona — CEO (mavjud holicha).<br>
     Zinalar mavjud holicha; 1-qavatda zina oldida resepshn va turniket.
   </p>`;

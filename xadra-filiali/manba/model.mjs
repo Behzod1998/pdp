@@ -132,9 +132,10 @@ const ichki = [
   sh(6250, 10850, 7700, 7800), d(11750, 12150, 7700, 7800, 'yangi'), sh(12150, 16850, 7700, 7800),
   d(17750, 18300, 7700, 7800, 'yangi'), d(19200, ICHKI.x, 7700, 7800, 'yangi'),
   sh(19300, 19400, 7800, 9300),
-  // K1 janubiy devori (xizmat xonalari eshiklari bilan; 4-xona oldida shisha)
-  d(6250, 12300, 9300, 9400, 'yangi'),
-  d(13200, 15250, 9300, 9400, 'yangi'), d(16150, 18150, 9300, 9400, 'yangi'),
+  // K1 janubiy devori: sotuv va admin orqasi kar; ustozlar va call-markaz oldi (eshik tomoni) shisha; 4-xona oldida shisha
+  d(6250, 12150, 9300, 9400, 'yangi'),
+  sh(12150, 12300, 9300, 9400), sh(13200, 15000, 9300, 9400), d(15000, 15100, 9300, 9400, 'yangi'),
+  sh(15100, 15250, 9300, 9400), sh(16150, 17950, 9300, 9400), d(17950, 18150, 9300, 9400, 'yangi'),
   sh(18150, 19300, 9300, 9400), d(19300, 19400, 9300, 9400, 'yangi'),
   // xizmat xonalari orasidagi devorlar
   d(9050, 9150, 9400, 15000, 'yangi'), d(15000, 15100, 9400, 15000, 'yangi'),
@@ -154,8 +155,8 @@ export const DEVORLAR = [...tashqi, ...qotgan, ...ichki];
 // ---------- Eshiklar ----------
 // devor: 'h' (gorizontal devorda, a..b bo'yicha X) yoki 'v' (vertikal devorda, a..b bo'yicha Y).
 // yuz — eshik polotnosi ochiladigan tomondagi devor yuzasi koordinatasi; yon: +1/-1 ochilish yo'nalishi.
-// ilgak: 'a' | 'b' — qaysi uchida ilgak.
-const e = (kod, devor, a, b, yuz, yon, ilgak, holat = 'yangi') => ({ kod, devor, a, b, yuz, yon, ilgak, holat, en: b - a });
+// ilgak: 'a' | 'b' — qaysi uchida ilgak. Yangi eshiklarning hammasi shisha (buyurtmachi).
+const e = (kod, devor, a, b, yuz, yon, ilgak, holat = 'yangi') => ({ kod, devor, a, b, yuz, yon, ilgak, holat, en: b - a, shisha: holat === 'yangi' });
 export const ESHIKLAR = [
   e('SR1', 'h', 10850, 11750, 7700, -1, 'b'),
   e('SR2', 'h', 16850, 17750, 7700, -1, 'b'),
@@ -164,8 +165,8 @@ export const ESHIKLAR = [
   e('SR5', 'h', 18300, 19200, 16700, +1, 'a'),
   e('SR6', 'h', 12350, 13250, 16700, +1, 'a'),
   e('SR7', 'h', 6350, 7250, 16700, +1, 'a'),
-  { ...e('XZ1', 'h', 6400, 7300, 15000, -1, 'a'), shisha: true },
-  { ...e('XZ2', 'h', 9300, 10200, 15000, -1, 'a'), shisha: true },
+  e('XZ1', 'h', 6400, 7300, 15000, -1, 'a'),
+  e('XZ2', 'h', 9300, 10200, 15000, -1, 'a'),
   e('XZ3', 'h', 12300, 13200, 9400, +1, 'a'),
   e('XZ4', 'h', 15250, 16150, 9400, +1, 'a'),
   e('X12', 'h', 4550, 5450, 21250, -1, 'b', 'mavjud'),

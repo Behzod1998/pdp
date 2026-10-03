@@ -1,5 +1,6 @@
 # Xarajatlar jadvali (Excel): chizmadagi yangi devorlar, shisha, bambuk panel, interaktiv doska, perila,
-# yoritish, videokuzatuv va logotiplar.
+# shisha eshiklar, yoritish, videokuzatuv, logotiplar, matli plyonka, yong'in xavfsizligi, buzish ishlari va
+# 10% kutilmagan xarajat. So'mdagi narxlar «Narxlar» varag'idagi kurs bo'yicha dollarga o'tkaziladi.
 # Uzunliklar model.mjs dan (xarajat-malumot.mjs orqali), narx va balandliklar «Narxlar» varag'ida —
 # ularni Excelda o'zgartirsa, butun hisob formulalar bilan qayta hisoblanadi.
 #   python3 xarajatlar.py            → ../hisob/Xadra_2-qavat_xarajatlar_v1.0.xlsx
@@ -22,7 +23,7 @@ XONALAR = [
     ('XZ1', "Offline sotuv (XZ1)"), ('XZ2', "Admin (XZ2)"), ('XZ3', "Ustozlar xonasi (XZ3)"), ('XZ4', "Call-markaz (XZ4)"),
     ('X12', "CEO xonasi (12-xona)"),
     ('K1', "K1 koridori"), ('K2', "K2 koridori"), ('KW', "Koworking zali"), ('ZL', "Kirish zali"),
-    ('ZINA', "Zinapoya"), ('BQ', "Butun qavat (kamera, logotip)"), ('YQ', "Yuqori qavat o'quv xonasi (5.45 × 8.60)"),
+    ('ZINA', "Zinapoya"), ('BQ', "Butun qavat (umumiy ishlar)"), ('YQ', "Yuqori qavat o'quv xonasi (5.45 × 8.60)"),
 ]
 NOM = dict(XONALAR)
 BOLIM = [("O'quv xonalari", ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'YQ']),
@@ -48,6 +49,13 @@ NARX_QATORLAR = [
     ('nvr', "NVR (videoregistrator)", 840, "$/dona", "Buyurtmachi"),
     ('kabel', "Kamera kabellari (jami)", 303, "$/komplekt", "Buyurtmachi: jami summa"),
     ('logo', "Logotiplar (jami)", 2500, "$/komplekt", "Buyurtmachi: jami summa"),
+    ('kurs', "Dollar kursi", 12700, "so'm/$", "TAXMIN — joriy kursni yozing; so'mdagi narxlar shu kurs bo'yicha $ ga o'tadi"),
+    ('plyonka', "Matli plyonka (shisha devorga)", 800000, "so'm/dona", "Buyurtmachi"),
+    ('plyonkaSoni', "Matli plyonka soni", 8, "dona", "Buyurtmachi"),
+    ('yongin', "Yong'in xavfsizligi (signalizatsiya, o't o'chirgich, belgilar, avariya chiroqlari)", 18000000, "so'm/komplekt", "Buyurtmachi: jami summa"),
+    ('buzish', "Devor buzish", 50000, "so'm/m²", "Buyurtmachi"),
+    ('chiqindi', "Qurilish chiqindisini olib chiqish", 1200000, "so'm/komplekt", "Buyurtmachi: jami summa"),
+    ('zaxira', "Kutilmagan xarajatlar", 0.10, "ulush", "Buyurtmachi: umumiy summadan 10%"),
     ('H', "Devor balandligi (poldan shiftgacha)", 3.5, "m", "Buyurtmachi: bino balandligi 3.5 m"),
     ('Hsh', "Shisha qism balandligi", 2.5, "m", "Buyurtmachi"),
     ('Hust', "Shisha ustidagi GKL", '=C{H}-C{Hsh}', "m", "Hisob: devor balandligi − shisha"),
@@ -97,10 +105,13 @@ for w in d['devorlar']:
             joy = f"{nomlar(boshqa)} bilan orasidagi devor" + (" — mavjud devordagi bo'shliqni yopish" if w['izoh'] else '')
         qosh(f['kod'], 'Gips karton (GKL)', joy, f['l'] / 1000, 'H', narx='gkl')
 
+# Yangi eshiklar shisha: eshik (2.1 m) va ustidagi shisha (0.4 m) — shisha devor bilan bir chiziqda 2.5 m gacha;
+# ustida, shisha devordagi kabi, 1 m GKL ikki tomondan.
 for e in d['eshiklar']:
     kor = KORIDOR.get(e['kod']) or next(s['koridor'] for s in d['sinflar'] if s['kod'] == e['kod'])
-    qosh(e['kod'], 'Gips karton (GKL)', f"Eshik ustidagi GKL ({NOM[kor]} bilan orasida)", 'eshEn', 'HeUst', narx='gkl')
-    qosh(kor, 'Gips karton (GKL)', f"Eshik ustidagi GKL ({NOM[e['kod']]} eshigi)", 'eshEn', 'HeUst', narx='gkl')
+    qosh(e['kod'], 'Shisha devor', f"Shisha eshik va ustidagi shisha ({NOM[kor]} tomoni)", 'eshEn', 'Hsh', narx='shisha')
+    qosh(e['kod'], 'Gips karton (GKL)', f"Eshik ustidagi GKL ({NOM[kor]} bilan orasida)", 'eshEn', 'Hust', narx='gkl')
+    qosh(kor, 'Gips karton (GKL)', f"Eshik ustidagi GKL ({NOM[e['kod']]} eshigi)", 'eshEn', 'Hust', narx='gkl')
 
 for s in d['sinflar']:
     qosh(s['kod'], 'Bambuk panel', "Doska devori", s['doskaDevor'] / 1000, 'Hb', narx='bambuk')
@@ -131,8 +142,16 @@ qosh('BQ', 'Kamera tizimi', "Kamera o'rnatish", miqdor='kameraSoni', birlik='don
 qosh('BQ', 'Kamera tizimi', "NVR (videoregistrator)", miqdor=1, birlik='dona', narx='nvr')
 qosh('BQ', 'Kamera tizimi', "Kabellar (jami)", miqdor=1, birlik='komplekt', narx='kabel')
 qosh('BQ', 'Logotip', "Logotiplar (jami)", miqdor=1, birlik='komplekt', narx='logo')
+# So'mdagi ishlar (narx $ = so'm ÷ kurs)
+qosh('BQ', 'Matli plyonka', "Shisha devorlarga matli plyonka", miqdor='plyonkaSoni', birlik='dona', narx=('som', 'plyonka'))
+qosh('BQ', "Yong'in xavfsizligi", "Signalizatsiya, o't o'chirgichlar, evakuatsiya belgilari, avariya chiroqlari (jami)", miqdor=1, birlik='komplekt', narx=('som', 'yongin'))
+for w in d['buziladi']:
+    joy = f"{w['izoh']} o'rnidagi bo'lak" if 'koridori' in w['izoh'] else w['izoh']
+    qosh('BQ', 'Buzish ishlari', f"Devorni buzish — {joy}", w['uz'] / 1000, 'H', narx=('som', 'buzish'))
+qosh('BQ', 'Buzish ishlari', "Qurilish chiqindisini olib chiqish (jami)", miqdor=1, birlik='komplekt', narx=('som', 'chiqindi'))
 
-TURLAR = ['Shisha devor', 'Gips karton (GKL)', 'Bambuk panel', 'Interaktiv doska', 'Perila', 'Yoritish', 'Kamera tizimi', 'Logotip']
+TURLAR = ['Shisha devor', 'Gips karton (GKL)', 'Bambuk panel', 'Interaktiv doska', 'Perila', 'Yoritish', 'Kamera tizimi', 'Logotip',
+          'Matli plyonka', "Yong'in xavfsizligi", 'Buzish ishlari']
 JUFT = TURLAR[:5]    # «Xonalar bo'yicha» varag'ida miqdor va summa ustunlari bilan
 YAKKA = TURLAR[5:]   # faqat summa ustuni bilan
 for k in qatorlar:
@@ -189,14 +208,15 @@ for i, (k, nom, qiymat, birlik, manba) in enumerate(NARX_QATORLAR):
             q.fill = fill_sariq   # sukut bo'yicha devor balandligi, lekin o'zgartirish mumkin
     else:
         q.font, q.fill = f_kok, fill_sariq
-    q.number_format = USD if birlik.startswith('$') else ('0' if birlik == 'dona' else '0.00')
+    q.number_format = (USD if birlik.startswith('$') else '#,##0 "so\'m"' if birlik.startswith("so'm/") else '#,##0' if birlik == "so'm/$"
+                       else '0%' if birlik == 'ulush' else '0' if birlik == 'dona' else '0.00')
     wn.cell(row=rr, column=1).alignment = Alignment(horizontal='center')
 oxir = r + len(NARX_QATORLAR)
 izohlar = [
     "Hisoblash qoidalari",
     "• Gips karton (GKL) devor: uzunlik × balandlik. Devorning har bir tomoni o'zi qaragan xonaga yoziladi (xona tomoni — xonaga, koridor tomoni — koridorga).",
     "• Shisha devor: shisha qism (2.5 m) xonaga yoziladi; ustidagi GKL (1 m) ikki tomonlama — xona va koridor tomoni alohida.",
-    "• Eshik ustida (eshik tepasidan shiftgacha) GKL — ikki tomonlama. Eshikning o'zi narxi berilmagani uchun kiritilmadi.",
+    "• Eshiklar shisha: eshik (2.1 m) va ustidagi shisha (0.4 m) — 2.5 m gacha shisha narxida; ustida 1 m GKL ikki tomondan. Eshik furniturasi (ilgak, qulf, tutqich, dovodchik) kirmagan.",
     "• Bambuk panel, poldan shiftgacha: o'quv xonalarida doska devori va orqa devor (interaktiv doska orqasi ayirilmagan); ofis xonalarida ikkala uzun yon devor; CEO xonasida ikkita ichki kar devor, eshik o'rni ayiriladi. Derazali tashqi va shisha devorlarga qilinmaydi.",
     "• Yuqori qavat o'quv xonasi (5.45 × 8.60 m, buyurtmachi chizmasi): bambuk panel 3 devorga, 2.5 m balandlikda — doska devori, orqa devor va eshikli uzun devor (eshik o'rni ayiriladi); derazali uzun devorga qilinmaydi.",
     "• Interaktiv doska: 7 ta shu qavat sinflariga va 1 ta yuqori qavatdagi o'quv xonasiga — jami 8 ta.",
@@ -204,7 +224,10 @@ izohlar = [
     "• Uzunliklar chizma v1.0 dan (mavjud holat chizmasining fotosi asosida) — ish boshlanishidan oldin joyida o'lchanadi.",
     "• Yoritish: koridorlar (K1, K2) va koworking zaliga 336 $ dan, o'quv xonalari (7), ofis xonalari (4) va CEO xonasiga 168 $ dan. Kirish zali, WC va yuqori qavat xonasi kiritilmagan.",
     "• Videokuzatuv: 16 ta kamera (40 $) va o'rnatish (21 $ dan), NVR, kabellar jami; logotiplar jami — «Butun qavat» qatorida.",
-    "• Kirmagan: eshiklar, pol, shift, bo'yoq, rozetka va elektr kabellari (yoritishdan tashqari), internet/Wi-Fi, ventilyatsiya va konditsioner, mebel, ish haqi (agar narxga kirmagan bo'lsa).",
+    "• So'mdagi narxlar (matli plyonka, yong'in xavfsizligi, devor buzish va chiqindi) «Dollar kursi» katagi bo'yicha $ ga o'tkaziladi — kursni tekshiring.",
+    "• Devor buzish: chizmadagi buziladigan devorlar uzunligi × devor balandligi (3.5 m) × 50 000 so'm/m².",
+    "• Kutilmagan xarajatlar: umumiy summadan 10% — «Xonalar bo'yicha» varag'ining oxirida.",
+    "• Kirmagan: konditsioner va ventilyatsiya (usta bilan keyin aniqlanadi); mebel va pol (kafel) mavjud; internet — mavjud; eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
     "Ranglar: ko'k — qo'lda kiritilgan qiymat; yashil — boshqa varaqdan olingan; qora — formula; sariq fon — o'zgartirish mumkin bo'lgan kataklar.",
 ]
 for i, t in enumerate(izohlar):
@@ -215,6 +238,8 @@ for col, w in zip('ABCDE', [5, 38, 12, 9, 80]):
 
 
 def narx_havola(k):
+    if isinstance(k, tuple):   # ('som', kalit) — so'mdagi narx, kurs bo'yicha $ ga
+        return f"=Narxlar!$C${N[k[1]]}/Narxlar!$C${N['kurs']}"
     return f"=Narxlar!$C${N[k]}"
 
 
@@ -295,9 +320,9 @@ ws['A1'] = "PDP Academy · Xadra filiali — 2-qavat: xarajatlar, xonalar bo'yic
 ws['A1'].font = f_sarlavha
 ws['A2'] = "Har bir qator «Hisob (batafsil)» varag'idan olinadi (SUMIFS). Narxlarni «Narxlar» varag'ida o'zgartiring."
 ws['A2'].font = f_kichik
-UST = ['Xona', 'Shisha devor, m²', 'Shisha devor, $', 'Gips karton (GKL), m²', 'Gips karton (GKL), $',
+UST = ['Xona', 'Shisha (devor va eshik), m²', 'Shisha (devor va eshik), $', 'Gips karton (GKL), m²', 'Gips karton (GKL), $',
        'Bambuk panel, m²', 'Bambuk panel, $', 'Interaktiv doska, dona', 'Interaktiv doska, $', 'Perila, m', 'Perila, $',
-       'Yoritish, $', 'Kamera tizimi, $', 'Logotip, $', 'Jami, $']
+       'Yoritish, $', 'Kamera tizimi, $', 'Logotip, $', 'Matli plyonka, $', "Yong'in xavfsizligi, $", 'Buzish ishlari, $', 'Jami, $']
 NC = len(UST)                      # ustunlar soni
 JAMI_UST = get_column_letter(NC)   # «Jami, $» ustuni
 for i, h in enumerate(UST, 1):
@@ -355,7 +380,22 @@ for j in range(1, NC + 1):
     ws.cell(row=r, column=j).fill = PatternFill('solid', fgColor='D9E1F2')
     ws.cell(row=r, column=j).border = chegara
 JAMI_QATOR = r
-r += 2
+# kutilmagan xarajatlar va umumiy jami ($ va so'mda)
+yakun = [
+    (f'="Kutilmagan xarajatlar ("&TEXT(Narxlar!$C${N["zaxira"]},"0%")&" — «Narxlar» varag\'idan)"', f"={JAMI_UST}{JAMI_QATOR}*Narxlar!$C${N['zaxira']}", USD0, False),
+    ("UMUMIY JAMI (kutilmagan xarajatlar bilan), $", f"={JAMI_UST}{JAMI_QATOR}+{JAMI_UST}{JAMI_QATOR + 1}", USD0, True),
+    ("UMUMIY JAMI, so'm (kurs bo'yicha)", f"={JAMI_UST}{JAMI_QATOR + 2}*Narxlar!$C${N['kurs']}", '#,##0 "so\'m"', True),
+]
+for i, (nom, formula, fmt, qalin) in enumerate(yakun):
+    rr = JAMI_QATOR + 1 + i
+    ws.cell(row=rr, column=1, value=nom).font = Font(name=SHRIFT, size=11 if qalin else 10, bold=qalin)
+    c = ws.cell(row=rr, column=NC, value=formula)
+    c.font, c.number_format = Font(name=SHRIFT, size=11 if qalin else 10, bold=qalin), fmt
+    for j in range(1, NC + 1):
+        ws.cell(row=rr, column=j).fill = PatternFill('solid', fgColor='D9E1F2' if qalin else 'F2F2F2')
+        ws.cell(row=rr, column=j).border = chegara
+    ws.merge_cells(start_row=rr, start_column=1, end_row=rr, end_column=NC - 1)
+r = JAMI_QATOR + len(yakun) + 2
 ws.cell(row=r, column=1, value="Tekshiruv: batafsil varaqdagi jami bilan farq (0 bo'lishi kerak)").font = f_kichik
 c = ws.cell(row=r, column=NC, value=f"={JAMI_UST}{JAMI_QATOR}-{D_}!J{OXIRGI + 1}")
 c.font, c.number_format = f_kichik, USD
