@@ -1,5 +1,5 @@
 // Xarajatlar jadvali uchun ma'lumot: har bir yangi devorning qaysi xonaga qaragan yuzlari va uzunligi,
-// yangi eshiklar, sinflardagi bambuk panel devorlari. Natija JSON — xarajatlar.py o'qiydi.
+// yangi eshiklar, sinflar, ofis xonalari va CEO xonasidagi bambuk panel devorlari. Natija JSON — xarajatlar.py o'qiydi.
 import { DEVORLAR, XONALAR, ESHIKLAR, bolaklar, lokal } from './model.mjs';
 const xonalar = XONALAR.flatMap(x => bolaklar(x).map(b => ({ kod: x.kod, ...b })));
 const ustma = (a1, a2, b1, b2) => Math.max(0, Math.min(a2, b2) - Math.max(a1, b1));
@@ -32,4 +32,18 @@ const sinflar = XONALAR.filter(x => x.tur === 'sinf').map(x => {
   const orqa = x.kod === 'SR4' ? 15000 - 9400 : W;
   return { kod: x.kod, doskaDevor: W, orqaDevor: orqa, koridor: x.koridor };
 });
-console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar }, null, 0));
+// bambuk panel ofis xonalarida va CEO xonasida — sinflardagi kabi ikkita devor:
+// ofis xonalarida ikkala uzun yon devor (2.8 × 5.6 m xonada 5.6 m lik devorlar, eshik ularda yo'q);
+// CEO xonasida ikkita ichki kar devor (derazali tashqi devorlarga qilinmaydi), eshik o'rni ayiriladi.
+const xona = kod => XONALAR.find(r => r.kod === kod);
+const uzun = kod => xona(kod).y2 - xona(kod).y1;
+const ofislar = [
+  { kod: 'XZ1', devorlar: [{ nom: "Koworking bilan orasidagi devor", uz: uzun('XZ1') }, { nom: "Admin (XZ2) bilan orasidagi devor", uz: uzun('XZ1') }] },
+  { kod: 'XZ2', devorlar: [{ nom: "Offline sotuv (XZ1) bilan orasidagi devor", uz: uzun('XZ2') }, { nom: "Ustozlar xonasi (XZ3) bilan orasidagi devor", uz: uzun('XZ2') }] },
+  { kod: 'XZ3', devorlar: [{ nom: "Admin (XZ2) bilan orasidagi devor", uz: uzun('XZ3') }, { nom: "Call-markaz (XZ4) bilan orasidagi devor", uz: uzun('XZ3') }] },
+  { kod: 'XZ4', devorlar: [{ nom: "Ustozlar xonasi (XZ3) bilan orasidagi devor", uz: uzun('XZ4') }, { nom: "4-xona bilan orasidagi devor", uz: uzun('XZ4') }] },
+  { kod: 'X12', devorlar: [
+    { nom: "Zinapoya va kirish zali bilan orasidagi devor (eshikli)", uz: xona('X12').x2 - xona('X12').x1, eshik: true },
+    { nom: "7-xona bilan orasidagi devor", uz: xona('X12').y2 - xona('X12').y1 }] },
+];
+console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar }, null, 0));

@@ -19,12 +19,13 @@ XONALAR = [
     ('SR1', "1-xona"), ('SR2', "2-xona"), ('SR3', "3-xona"), ('SR4', "4-xona"),
     ('SR5', "5-xona"), ('SR6', "6-xona"), ('SR7', "7-xona"),
     ('XZ1', "Offline sotuv (XZ1)"), ('XZ2', "Admin (XZ2)"), ('XZ3', "Ustozlar xonasi (XZ3)"), ('XZ4', "Call-markaz (XZ4)"),
+    ('X12', "CEO xonasi (12-xona)"),
     ('K1', "K1 koridori"), ('K2', "K2 koridori"), ('KW', "Koworking zali"), ('ZL', "Kirish zali"),
     ('ZINA', "Zinapoya"), ('YQ', "Yuqori qavat o'quv xonasi"),
 ]
 NOM = dict(XONALAR)
 BOLIM = [("O'quv xonalari", ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'YQ']),
-         ("Ofis xonalari", ['XZ1', 'XZ2', 'XZ3', 'XZ4']),
+         ("Ofis xonalari", ['XZ1', 'XZ2', 'XZ3', 'XZ4', 'X12']),
          ("Umumiy joylar", ['K1', 'K2', 'KW', 'ZL', 'ZINA'])]
 KORIDOR = {'XZ1': 'K2', 'XZ2': 'K2', 'XZ3': 'K1', 'XZ4': 'K1'}
 UMUMIY = {'K1', 'K2', 'KW', 'ZL'}
@@ -51,8 +52,9 @@ NARX_QATORLAR = [
 qatorlar = {k: [] for k, _ in XONALAR}
 
 
-def qosh(xona, tur, joy, uz=None, bal=None, miqdor=None, birlik='m²', narx=None):
-    qatorlar[xona].append(dict(tur=tur, joy=joy, uz=uz, bal=bal, miqdor=miqdor, birlik=birlik, narx=narx))
+def qosh(xona, tur, joy, uz=None, bal=None, miqdor=None, birlik='m²', narx=None, manfiy=False):
+    # manfiy=True — ayiriladigan maydon (masalan, eshik o'rni)
+    qatorlar[xona].append(dict(tur=tur, joy=joy, uz=uz, bal=bal, miqdor=miqdor, birlik=birlik, narx=narx, manfiy=manfiy))
 
 
 def nomlar(kodlar):
@@ -94,6 +96,11 @@ for s in d['sinflar']:
     qosh(s['kod'], 'Bambuk panel', "Doska devori", s['doskaDevor'] / 1000, 'Hb', narx='bambuk')
     qosh(s['kod'], 'Bambuk panel', "Orqa devor" + (" (L shaklining keng qismi)" if s['kod'] == 'SR4' else ''), s['orqaDevor'] / 1000, 'Hb', narx='bambuk')
     qosh(s['kod'], 'Interaktiv doska', "Doska devoriga", miqdor=1, birlik='dona', narx='doska')
+for o in d['ofislar']:
+    for dv in o['devorlar']:
+        qosh(o['kod'], 'Bambuk panel', dv['nom'], dv['uz'] / 1000, 'Hb', narx='bambuk')
+        if dv.get('eshik'):
+            qosh(o['kod'], 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEn', 'Hesh', narx='bambuk', manfiy=True)
 qosh('YQ', 'Interaktiv doska', "Yuqori qavatdagi o'quv xonasi uchun", miqdor=1, birlik='dona', narx='doska')
 qosh('ZINA', 'Perila', "Perila (buyurtmachi bergan uzunlik)", 'perilaUz', None, birlik='m', narx='perila')
 
@@ -160,7 +167,7 @@ izohlar = [
     "• Gips karton (GKL) devor: uzunlik × balandlik. Devorning har bir tomoni o'zi qaragan xonaga yoziladi (xona tomoni — xonaga, koridor tomoni — koridorga).",
     "• Shisha devor: shisha qism (2.5 m) xonaga yoziladi; ustidagi GKL (1 m) ikki tomonlama — xona va koridor tomoni alohida.",
     "• Eshik ustida (eshik tepasidan shiftgacha) GKL — ikki tomonlama. Eshikning o'zi narxi berilmagani uchun kiritilmadi.",
-    "• Bambuk panel: har bir o'quv xonasining doska devori va orqa devori, poldan shiftgacha. Interaktiv doska orqasidagi qism ayirilmagan.",
+    "• Bambuk panel, poldan shiftgacha: o'quv xonalarida doska devori va orqa devor (interaktiv doska orqasi ayirilmagan); ofis xonalarida ikkala uzun yon devor; CEO xonasida ikkita ichki kar devor, eshik o'rni ayiriladi. Derazali tashqi va shisha devorlarga qilinmaydi.",
     "• Interaktiv doska: 7 ta shu qavat sinflariga va 1 ta yuqori qavatdagi o'quv xonasiga — jami 8 ta.",
     "• Perila: buyurtmachi bergan uzunlik (24 m), «Zinapoya» qatorida.",
     "• Uzunliklar chizma v1.0 dan (mavjud holat chizmasining fotosi asosida) — ish boshlanishidan oldin joyida o'lchanadi.",
@@ -208,7 +215,7 @@ for kod, nom in XONALAR:
         uz_val = narx_havola(uz) if isinstance(uz, str) else uz
         bal_val = narx_havola(q['bal']) if q['bal'] else None
         if q['birlik'] == 'm²':
-            miqdor = f"=E{r}*F{r}"
+            miqdor = f"=-E{r}*F{r}" if q['manfiy'] else f"=E{r}*F{r}"
         elif q['birlik'] == 'm':
             miqdor = f"=E{r}"
         else:
