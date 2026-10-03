@@ -2,13 +2,23 @@
 // Geometriya model.mjs dan olinadi — o'lchamlar chizma bilan bir xil.
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ,
-  KW_KUNDALIK, KW_TADBIR, sinflar, bolaklar, lokal,
+  KW_KUNDALIK, KW_TADBIR, sinflar, bolaklar, lokal, PARTA,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 
 let N = 0;
 const f = v => Math.round(v * 10) / 10;
 export const XONA_NOMI = { SR1: '1-xona', SR2: '2-xona', SR3: '3-xona', SR4: '4-xona', SR5: '5-xona', SR6: '6-xona', SR7: '7-xona' };
+
+// parta belgisi: ikki kishilik partada har o'rin oldida noutbuk (o'quvchi +y tomonda o'tiradi)
+function partaBelgi(id) {
+  const w = PARTA.eni, d = PARTA.chuq, oe = w / PARTA.kishi, dy = d / 2 - 250;
+  const noutbuk = Array.from({ length: PARTA.kishi }, (_, k) => {
+    const cx = -w / 2 + (k + 0.5) * oe;
+    return `<rect x="${cx - 160}" y="${dy - 35}" width="320" height="215" rx="16" fill="#737b88"/><rect x="${cx - 145}" y="${dy - 20}" width="290" height="115" rx="8" fill="#949cab"/><rect x="${cx - 160}" y="${dy - 72}" width="320" height="36" rx="10" fill="#22262d"/>`;
+  }).join('');
+  return `<rect x="${-w / 2}" y="${-d / 2}" width="${w}" height="${d}" fill="url(#${id}yog)" stroke="#a88155" stroke-width="7"/>${noutbuk}`;
+}
 
 function defs(id) {
   const parket = [];
@@ -28,8 +38,7 @@ function defs(id) {
     <filter id="${id}soya" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="30" dy="45" stdDeviation="40" flood-color="#2a2016" flood-opacity=".30"/></filter>
     <filter id="${id}dsoya" x="-5%" y="-5%" width="110%" height="110%"><feDropShadow dx="40" dy="60" stdDeviation="70" flood-color="#000" flood-opacity=".35"/></filter>
     <g id="${id}stul"><rect x="-190" y="-195" width="380" height="350" rx="75" fill="#475569"/><rect x="-205" y="130" width="410" height="95" rx="45" fill="#303b4b"/><ellipse cx="-45" cy="-60" rx="110" ry="75" fill="#fff" opacity=".10"/></g>
-    <g id="${id}parta"><rect x="-345" y="-250" width="690" height="500" fill="url(#${id}yog)" stroke="#a88155" stroke-width="7"/>
-      <rect x="-160" y="-35" width="320" height="215" rx="16" fill="#737b88"/><rect x="-145" y="-20" width="290" height="115" rx="8" fill="#949cab"/><rect x="-160" y="-72" width="320" height="36" rx="10" fill="#22262d"/></g>
+    <g id="${id}parta">${partaBelgi(id)}</g>
     <g id="${id}ustozStol"><rect x="-600" y="-300" width="1200" height="600" fill="url(#${id}yogT)" stroke="#5f4630" stroke-width="8"/>
       <rect x="-280" y="-230" width="560" height="60" rx="14" fill="#1f2329"/><rect x="-220" y="-40" width="440" height="140" rx="12" fill="#3b414b"/><circle cx="330" cy="40" r="55" fill="#e9e4dc"/></g>
     <g id="${id}ofisStul"><circle r="230" fill="#353b45"/><path d="M-230,60 A235,235 0 0 0 230,60 L200,130 A220,220 0 0 1 -200,130 Z" fill="#1f242b"/><ellipse cx="-50" cy="-60" rx="110" ry="80" fill="#fff" opacity=".08"/></g>

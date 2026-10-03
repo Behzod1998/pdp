@@ -36,7 +36,7 @@ table { width: 100%; border-collapse: collapse; }
 .sarlavha b { font-size: 14pt; }
 .sarlavha span { font-size: 9pt; font-weight: 700; }
 .ikki { display: grid; grid-template-columns: 60mm 1fr; gap: 5mm; margin-top: 4mm; align-items: start; }
-.kor td, .kor th { border-bottom: .2mm solid #d9dde4; padding: .95mm 1.5mm; vertical-align: top; font-size: 7.6pt; }
+.kor td, .kor th { border-bottom: .2mm solid #d9dde4; padding: .85mm 1.5mm; vertical-align: top; font-size: 7.6pt; }
 .kor th { background: #eef1f5; text-align: left; color: #444; }
 .kor td:first-child { color: #444; width: 32%; }
 .kor td:nth-child(2) { font-weight: 700; }
@@ -70,7 +70,7 @@ function bet1(kor, t) {
   const jamiOrin = kor.reduce((s, k) => s + k.orin, 0);
   const jamiA = kor.reduce((s, k) => s + k.A, 0);
   const qator = k => `<tr><td>${k.kod}</td><td style="white-space:nowrap">${mm(k.W)} × ${mm(k.D)}</td><td>${b1(k.A)}</td><td>${k.kishiga.toFixed(2)}</td>
-    <td class="${new Set(k.qatorlar).size > 1 ? 'og' : ''}">${new Set(k.qatorlar).size > 1 ? k.qatorlar.join('+') : `${k.qatorlar[0]}×${k.qatorlar.length}`}</td><td>${sm(k.qadam)}</td><td>${sm(k.doska)}</td><td>${mm(k.oxirgi)}</td>
+    <td class="${new Set(k.partaQator).size > 1 ? 'og' : ''}">${k.parta} (${k.orin})</td><td>${sm(k.qadam)}</td><td>${sm(k.doska)}</td><td>${mm(k.oxirgi)}</td>
     <td class="${Math.min(k.yonChap, k.yonOng) < 200 ? 'og' : ''}">${sm(k.yonChap)}–${sm(k.yonOng)}</td><td class="${k.orqaZona < 650 ? 'og' : ''}">${sm(k.orqaZona)}</td><td class="${bahoKlass(baho(k))}">${baho(k)}</td></tr>`;
   const plan = rejaSvg({ rejim: 'izoh', vb: { x1: -700, y1: -700, x2: ICHKI.x + 700, y2: ICHKI.y + 700 }, k: 1.5 });
   const sigim = [...new Set(kor.map(k => k.orin))].sort((a, b) => b - a)
@@ -88,11 +88,11 @@ function bet1(kor, t) {
     <div style="width:122mm;margin:0 auto">${plan}</div>
     <h2 style="margin-top:3mm">Xonalar solishtiruvi</h2>
     <table class="solish">
-      <tr><th>Xona</th><th>O'lcham, m</th><th>Maydon, m²</th><th>1 kishiga, m²</th><th>Partalar</th><th>Qator qadami, sm</th><th>Doska → 1-parta, sm</th><th>Oxirgi parta, m</th><th>Yon chekka, sm</th><th>Orqa zona, sm</th><th>Baho</th></tr>
+      <tr><th>Xona</th><th>O'lcham, m</th><th>Maydon, m²</th><th>1 kishiga, m²</th><th>Partalar (o'rin)</th><th>Qator qadami, sm</th><th>Doska → 1-parta, sm</th><th>Oxirgi parta, m</th><th>Yon chekka, sm</th><th>Orqa zona, sm</th><th>Baho</th></tr>
       ${kor.map(qator).join('')}
-      <tr class="std"><td>Beruniy</td><td>—</td><td>—</td><td>—</td><td>6×4</td><td>130</td><td>244</td><td>6.84</td><td>—</td><td>—</td><td>standart</td></tr>
+      <tr class="std"><td>Beruniy</td><td>—</td><td>—</td><td>—</td><td>24 (24)</td><td>130</td><td>244</td><td>6.84</td><td>—</td><td>—</td><td>standart</td></tr>
     </table>
-    <p class="izohm">1–3 va 5–7-xonalarda doska yon devorda (deraza o'quvchilarning chap tomonida): o'lcham — doska devori bo'ylab × doskadan orqa devorgacha. Qator qadami = parta (50 sm) + stul va o'tish joyi. Oxirgi parta = doskadan eng orqa partaning orqa chetigacha. Yon chekka = eng chetdagi partadan devorgacha. Orqa zona = oxirgi stuldan orqa devorgacha bo'sh joy. Baho: A'lo — to'liq standart va yon chekka ≥ 40 sm; Yaxshi — standart qadam va masofalar, lekin yon chekka tor; Qoniqarli — qadam yoki masofa standartdan kam.</p>
+    <p class="izohm">1–3 va 5–7-xonalarda doska yon devorda (deraza o'quvchilarning chap tomonida): o'lcham — doska devori bo'ylab × doskadan orqa devorgacha. Partalar ikki kishilik, ${PARTA.eni / 10} × ${PARTA.chuq / 10} sm (Beruniyda bir kishilik, ${STANDART.parta.eni / 10} × ${STANDART.parta.chuq / 10} sm). Qator qadami = parta (${PARTA.chuq / 10} sm) + stul va o'tish joyi. Oxirgi parta = doskadan eng orqa partaning orqa chetigacha. Yon chekka = eng chetdagi partadan devorgacha. Orqa zona = oxirgi stuldan orqa devorgacha bo'sh joy. Baho: A'lo — to'liq standart va yon chekka ≥ 40 sm; Yaxshi — standart qadam va masofalar, lekin yon chekka tor; Qoniqarli — qadam yoki masofa standartdan kam.</p>
   `);
 }
 
@@ -134,19 +134,19 @@ function xonaMatni(k, ev) {
     if (ustunlar.length) q.push(`${ustunMatn} ustuni orqa devorda, guruhlar orasidagi yo'lak ro'parasida — doskani to'smaydi.`);
     n.push(`<b>Derazasiz</b>: tabiiy yorug'lik va shamollatish yo'q — PV qurilma va konditsioner majburiy, yoritish kunduzgi spektrda (4000 K).`);
     n.push(`O'ng devor qo'shni bino bilan umumiy; egasining aytishicha orqasida tor oraliq bor — PV-4 panjaralari shu oraliqqa chiqariladi (kirish va chiqish bir-biridan ~7 m uzoq). Oraliq eni joyida o'lchanadi; havo turg'un bo'lsa, kanal K2 shifti orqali fasadga.`);
-    n.push(`L shaklidagi xona: 1–2-qatorlar butun uzunlik bo'ylab (8 parta), 3-qator faqat keng qismda (4 parta) — tor uchlari 4.5 m chuqur.`);
-    n.push(`Doska → 1-parta ${sm(k.doska)} sm, qator qadami ${sm(k.qadam)} sm, chetki old o'rindan qarash burchagi ${b1(k.burchak)}° (Beruniy: ${sm(STANDART.doska)} sm, ${sm(STANDART.qadam)} sm, 39.8°) — Beruniy mezoni bo'yicha "Qoniqarli"; orqa bo'sh zona ${sm(k.orqaZona)} sm.`);
+    n.push(`L shaklidagi xona: 1–2-qatorlar butun uzunlik bo'ylab (4 tadan parta, 8 o'rin), 3-qator faqat keng qismda (2 parta, 4 o'rin) — tor uchlari 4.5 m chuqur.`);
+    n.push(`Doska → 1-parta ${sm(k.doska)} sm, stul orqasidan keyingi partagacha ${sm(k.stulOrqasi)} sm, chetki old o'rindan qarash burchagi ${b1(k.burchak)}° (Beruniy: ${sm(STANDART.doska)} sm, 36 sm, 39.8°) — Beruniy mezoni bo'yicha "Qoniqarli"; orqa bo'sh zona ${sm(k.orqaZona)} sm.`);
     tavsiya = `${shishaTavsiya}Devorlar va shift och rangda, yoritish ≥ 500 lk. CO₂ datchigi majburiy.`;
   } else {
     const devor = x.kod === 'SR3' ? "o'ng tashqi devorda (qo'shni bino tomoni)" : x.kod === 'SR7' ? 'kirish zali va CEO xonasi bilan umumiy devorda' : "qo'shni sinf bilan umumiy mavjud devorda";
     q.push(`Doska derazaga qarama-qarshi emas — <b>yon devorda</b>: deraza o'quvchilarning chap tomonida, kunduzgi yorug'lik doska va proyektor ekraniga tushmaydi, yozayotgan qo'l soya tashlamaydi.`);
     q.push(`Noutbuk ekranlariga ham deraza aksi tushmaydi — yorug'lik yondan keladi.`);
     q.push(`Oxirgi parta doskadan ${mm(k.oxirgi)} m (Beruniy — ${mm(STANDART.oxirgi)} m): orqa qatordan ham doska yaqin. Oxirgi partadan orqa devorgacha ${sm(k.D - k.oxirgi)} sm — Beruniy qoidasi (≥ 65 sm) bajarilgan.`);
-    q.push(`4 guruh × 2 parta, guruhlar orasida ${sm(k.yolak)} sm yo'lak — har bir o'rinning yonida yo'lak yoki bitta sherik.`);
+    q.push(`Qatorda ${Math.max(...k.partaQator)} ta ikki kishilik parta (${PARTA.eni / 10} × ${PARTA.chuq / 10} sm), oralarida ${sm(k.yolak)} sm yo'lak — har bir o'rinning yonida yo'lak yoki bitta sherik.`);
     if (ustunlar.length) q.push(`Ustun xona ichida emas: ${ustunMatn} devorda, partalardan ${sm(Math.min(...ustunlar.map(u => u.partagacha)))} sm narida — doskani to'smaydi.`);
     q.push(`Derazadan qarama-qarshi devorgacha ${mm(k.W)} m — tabiiy shamollatish (≈ 2.5 × H) deyarli butun xonaga yetadi.`);
     n.push(`Chetdagi old partadan doskaga qarash burchagi <b>${b1(k.burchak)}°</b> (Beruniy — 39.8°): doska devori uzun (${mm(k.W)} m), 1-qatorning chetki o'rinlaridan doska qiyaroq ko'rinadi.`);
-    n.push(`Doska → 1-parta ${sm(k.doska)} sm, qator qadami ${sm(k.qadam)} sm (standart ${sm(STANDART.doska)} va ${sm(STANDART.qadam)} sm) — 3 qator ${mm(k.D)} m chuqurlikka sig'ishi uchun; Beruniy mezoni bo'yicha "Qoniqarli".`);
+    n.push(`Parta ${PARTA.chuq / 10} sm chuqur (Beruniyda ${STANDART.parta.chuq / 10} sm): 3 qator ${mm(k.D)} m ga sig'ishi uchun doska → 1-parta ${sm(k.doska)} sm (standart ${sm(STANDART.doska)}), stul orqasidan keyingi partagacha ${sm(k.stulOrqasi)} sm (standart 36) — Beruniy mezoni bo'yicha "Qoniqarli".`);
     n.push(`1 kishiga <b>${k.kishiga.toFixed(2)} m²</b>; orqa bo'sh zona <b>${sm(k.orqaZona)} sm</b> — oxirgi qator orqasidan o'tib bo'lmaydi, shkaf uchun joy yo'q.`);
     n.push(`Deraza tomonidagi partalar devordan ${sm(k.partadanOynagacha ?? yon)} sm — radiator joyi joyida tekshiriladi (kerak bo'lsa yupqa panel radiator).`);
     n.push(k.eshikOldda ? `Eshik doska tomonda — kechikkan o'quvchi sinf oldidan kiradi.`
@@ -169,13 +169,14 @@ function xonaBeti(k, i, ev) {
   const ustunMatn = ustun.length ? `${ustun.map(u => u.kod + (u.holat === 'taxminiy' ? '*' : '')).join(', ')} devordan 10 sm chiqadi; eng yaqin partagacha ${sm(Math.min(...ustun.map(u => u.partagacha)))} sm (${x.kod === 'SR4' ? 'orqa devorda, yo\'lak ro\'parasida' : 'yon tomonda'})` : 'yo\'q';
   const esh = `${x.koridor} koridori devorida, ${k.eshikOldda ? 'old tomonda (doska yonida)' : 'orqa tomonda'}, 90 sm`;
   const std = STANDART;
-  const qatorMatn = new Set(k.qatorlar).size > 1 ? `${k.qatorlar.join(' + ')} (${k.bloklar.join(' + ')})` : `${k.qatorlar[0]}×${k.qatorlar.length} (${k.bloklar.join(' + ')})`;
+  const tekis = new Set(k.partaQator).size === 1;
+  const qatorMatn = tekis ? `${k.partaQator.length} qator × ${k.partaQator[0]} parta` : `${k.partaQator.join(' + ')} parta`;
   const r = (a, b, c, og = false) => `<tr><td>${a}</td><td class="${og ? 'og' : ''}">${b}</td><td>${c}</td></tr>`;
   const pv = QURILMALAR[i];
   const rows = [
     r("O'lcham", `${mm(k.W)} × ${mm(k.D)} m`, '—'),
     r('1 kishiga maydon', `${k.kishiga.toFixed(2)} m²`, '—'),
-    r('Partalar joylashuvi', qatorMatn, '6×4 (4 qator)', new Set(k.qatorlar).size > 1),
+    r('Partalar joylashuvi', `${qatorMatn}, ${PARTA.eni / 10}×${PARTA.chuq / 10} sm (${PARTA.kishi} kishilik)`, `4 × 6, ${STANDART.parta.eni / 10}×${STANDART.parta.chuq / 10}`, !tekis),
     r('Doska → 1-parta', `${sm(k.doska)} sm`, `${sm(std.doska)} sm`, k.doska < std.doska),
     r('Qator qadami', `${sm(k.qadam)} sm`, `${sm(std.qadam)} sm`, k.qadam < std.qadam),
     r('Stul orqasi → keyingi parta', `${sm(k.stulOrqasi)} sm`, '36 sm'),
@@ -195,7 +196,7 @@ function xonaBeti(k, i, ev) {
   ];
   const { q, n, tavsiya } = xonaMatni(k, ev);
   return bet(i + 3, `
-    <div class="sarlavha"><b>${k.kod} — ${TAVSIF[k.kod]}</b><span>${b1(k.A)} m² · ${k.orin} o'rin · ${qatorMatn}</span></div>
+    <div class="sarlavha"><b>${k.kod} — ${TAVSIF[k.kod]}</b><span>${b1(k.A)} m² · ${k.orin} o'rin · ${k.parta} parta</span></div>
     <div class="ikki"><div>${plan}<p class="izohm">Eski ${x.eskiRaqam}-xona o'rnida. Qizil ramka — xona chegarasi.</p></div>
       <table class="kor"><tr><th>Ko'rsatkich</th><th>${k.kod}</th><th style="text-align:center">Beruniy</th></tr>${rows.join('')}</table></div>
     <div class="qn"><div class="qulay"><h4>Qulayliklar</h4><ul>${q.map(t => `<li>${t}</li>`).join('')}</ul></div>
@@ -218,12 +219,16 @@ export function kesimSvg(m = 1) {
   // yon devordagi doska — kesim ortida (orqa fonda)
   const d1 = L / 2 - j.s.doskaEni / 2;
   s.push(`<rect x="${d1}" y="900" width="${j.s.doskaEni}" height="1200" fill="#2e5e45" opacity=".28" stroke="#2e5e45" stroke-width="20" stroke-dasharray="70 40"/>`);
-  // partalar va o'quvchilar (bir qator: 4 guruh × 2)
+  // partalar va o'quvchilar (bir qator: 4 ta ikki kishilik parta)
   let u = j.u0;
   j.s.bloklar.forEach(n => {
     for (let i = 0; i < n; i++) {
-      s.push(`<rect x="${u}" y="${Hh - 750}" width="${PARTA.eni}" height="30" fill="#c9a36e"/><rect x="${u + 150}" y="${Hh - 470}" width="390" height="40" fill="#7f9cd6"/>`);
-      s.push(`<circle cx="${u + 345}" cy="${Hh - 1250}" r="120" fill="#c7cbd3"/><rect x="${u + 245}" y="${Hh - 1130}" width="200" height="650" rx="80" fill="#c7cbd3"/>`);
+      s.push(`<rect x="${u}" y="${Hh - 750}" width="${PARTA.eni}" height="30" fill="#c9a36e"/>`);
+      for (let o = 0; o < PARTA.kishi; o++) {
+        const c = u + (o + 0.5) * j.orinEni;
+        s.push(`<rect x="${c - 195}" y="${Hh - 470}" width="390" height="40" fill="#7f9cd6"/>`);
+        s.push(`<circle cx="${c}" cy="${Hh - 1250}" r="120" fill="#c7cbd3"/><rect x="${c - 100}" y="${Hh - 1130}" width="200" height="650" rx="80" fill="#c7cbd3"/>`);
+      }
       u += PARTA.eni;
     }
     u += j.s.yolak;
@@ -294,7 +299,7 @@ function qavatBeti(kor, t, ev, n) {
     <table class="masala">
       ${m('Evakuatsiya', `Ikkala zina (ZN1, ZN2) qavatning chap qismida, ikkala koridor koworking zaliga chiqadi. K1 va K2 ning o'ng uchlari berk: koworkinggacha ${berk.toFixed(1)} m. Eng uzoq o'rindan (${eng.kod}) eng yaqin zinagacha ~${Math.round(Math.min(eng.gacha1, eng.gacha2) / 1000)} m. ZN1 ga faqat xo'jalik xonasi (6) orqali, ~70 sm eshik bilan chiqiladi. Koworking o'ng tomonidagi ~1.6 m yo'lak doim bo'sh turishi kerak. ${t.orinlar} o'quvchi va xodimlar uchun evakuatsiya yo'llarini yong'in xavfsizligi mutaxassisi bilan tasdiqlatish kerak.`)}
       ${m('Derazasiz xonalar', `4-xona (20 o'rin), offline sotuv, admin, ustozlar xonasi va call-markazda tabiiy yorug'lik va shamollatish yo'q; xodimlar kun bo'yi o'tiradi. Mexanik ventilyatsiya, konditsioner va yaxshi yoritish majburiy (10-bet). CEO xonasi derazali (2 devor).`)}
-      ${m('Doska va yorug\'lik', `1–3 va 5–7-xonalarda doska derazaga qarama-qarshi devordan <b>yon devorga</b> ko'chirildi: deraza o'quvchilarning chap tomonida, yorug'lik doska va proyektor ekraniga tushmaydi. Evaziga xona doska bo'ylab keng (7.7 m) va sayoz (${mm(Math.min(...yon.map(k => k.D)))}–${mm(Math.max(...yon.map(k => k.D)))} m) bo'lib qoldi: 3 qator × 8 parta, doska → 1-parta ${sm(yon[0].doska)} sm, qator qadami ${sm(yon[0].qadam)} sm, chetki old o'rindan qarash burchagi ~${Math.round(yon[0].burchak)}° (Beruniy — 244 sm, 130 sm, 39.8°). 3-xonada eshik faqat orqa tomonda bo'la oladi — 22 o'rin. 4-xonada doska o'ng asosiy (tashqi) devorda, eshik orqada (K2 dan).`)}
+      ${m('Doska va yorug\'lik', `1–3 va 5–7-xonalarda doska derazaga qarama-qarshi devordan <b>yon devorga</b> ko'chirildi: deraza o'quvchilarning chap tomonida, yorug'lik doska va proyektor ekraniga tushmaydi. Evaziga xona doska bo'ylab keng (7.7 m) va sayoz (${mm(Math.min(...yon.map(k => k.D)))}–${mm(Math.max(...yon.map(k => k.D)))} m) bo'lib qoldi: 3 qator × 4 ta ikki kishilik parta (${PARTA.eni / 10} × ${PARTA.chuq / 10} sm), doska → 1-parta ${sm(yon[0].doska)} sm, stul orqasidan keyingi partagacha ${sm(yon[0].stulOrqasi)} sm, chetki old o'rindan qarash burchagi ~${Math.round(yon[0].burchak)}° (Beruniy — 244 sm, 36 sm, 39.8°). 3-xonada eshik faqat orqa tomonda bo'la oladi — 22 o'rin. 4-xonada doska o'ng asosiy (tashqi) devorda, eshik orqada (K2 dan).`)}
       ${m('Shisha devorlar', `Sinflarning koridor tomonidagi devorlari shisha (jami ~${b1(kor.reduce((s, k) => s + k.shisha, 0) / 1000)} m; 3 va 5-xonada koridorga faqat eshik chiqadi). Eshiklar yog'och (ovoz uchun). Shisha — laminatlangan akustik (kamida 2 × 6 mm), 1.0–1.6 m balandlikda matli polosa; doskalar shisha devorda emas.`)}
       ${m('Sinflar zichligi', `1–3 va 5–7-xonalarda 1 kishiga ~${b1(yon.reduce((s, k) => s + k.kishiga, 0) / yon.length)} m², orqa bo'sh zona ${sm(Math.min(...yon.map(k => k.orqaZona)))}–${sm(Math.max(...yon.map(k => k.orqaZona)))} sm — Beruniy qoidasi (oxirgi partadan devorgacha ≥ 65 sm) bajariladi, lekin shkaf uchun joy yo'q.`)}
       ${m('Hojatxona yetishmaydi', `WC (A) va WC (B) da jami 4 ta unitaz. ${t.orinlar} o'quvchi va ~10 xodimga taxminan 6–8 unitaz kerak (1 unitaz 20–30 kishiga). Yechim: tanaffuslarni xonalar bo'yicha 5–10 daqiqa farq bilan qo'yish; 1-qavatdagi hojatxonalardan foydalanish imkonini ijaraga beruvchi bilan aniqlash.`)}

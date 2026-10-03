@@ -28,9 +28,11 @@ export const OQLAR = {
 const OX = Object.fromEntries(OQLAR.x), OY = Object.fromEntries(OQLAR.y);
 
 // ---------- Standart (Beruniy) ----------
-export const PARTA = { eni: 690, chuq: 500 };
+// Xadra filialidagi partalar — ikki kishilik, 140 × 60 sm (buyurtmachi ma'lumoti)
+export const PARTA = { eni: 1400, chuq: 600, kishi: 2 };
 export const STUL = { eni: 380, chuq: 420, oraliq: 20 };
-export const STANDART = { bloklar: [2, 2, 2], yolak: 600, doska: 2440, qadam: 1300, qatorlar: 4, oxirgi: 6840 };
+// Beruniy standarti (solishtirish uchun): bir kishilik parta 69 × 50 sm, 2 + 2 + 2, 4 qator
+export const STANDART = { parta: { eni: 690, chuq: 500 }, bloklar: [2, 2, 2], yolak: 600, doska: 2440, qadam: 1300, qatorlar: 4, oxirgi: 6840 };
 
 // ---------- Ustunlar ----------
 const ustun = (kod, ox, oy, holat = 'mavjud') => ({ kod, ox, oy, x: OX[ox], y: OY[oy], o: 400, holat });
@@ -190,20 +192,21 @@ export const ZINALAR = [
 // deraza: xonaning derazali devori. Doska derazaga qarama-qarshi emas, yon devorda —
 // deraza o'quvchilarning chap tomonida qoladi, yorug'lik doska va proyektor ekraniga tushmaydi.
 // SR1–SR7 = namunadagi 1–7-xona (yuqori qator 1–3, o'ngda 4, pastki qator o'ngdan chapga 5–7).
-// Yon devordagi doska uchun to'r: 7.70 m devor bo'ylab 4 guruh × 2 parta, 5.70–5.80 m chuqurlikda 3 qator.
-const YON_TOR = { bloklar: [2, 2, 2, 2], yolak: 600, doska: 2050, qadam: 1250, qatorlar: 3 };
+// Yon devordagi doska uchun to'r: 7.70 m devor bo'ylab 4 ta ikki kishilik parta (oralarida 60 sm yo'lak),
+// 5.70–5.80 m chuqurlikda 3 qator. Deraza tomonda devorgacha 20 sm (radiator), qolgani koridor tomonda.
+const YON_TOR = { bloklar: [1, 1, 1, 1], yolak: 600, doska: 1850, qadam: 1300, qatorlar: 3, oynaChekka: 200 };
 export const XONALAR = [
   { kod: 'SR1', nomi: 'Study Room 1', tur: 'sinf', x1: 6250, y1: 0, x2: 11950, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR1', eskiRaqam: '8', koridor: 'K1', sinf: YON_TOR },
   { kod: 'SR2', nomi: 'Study Room 2', tur: 'sinf', x1: 12150, y1: 0, x2: 17950, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR2', eskiRaqam: '9', koridor: 'K1', sinf: YON_TOR },
-  // 3-xona eshigi faqat K1 uchida (x < 19300) bo'lishi mumkin — orqa tomonda; eshik oldidagi 2 o'rin olinadi
+  // 3-xona eshigi faqat K1 uchida (x < 19300) bo'lishi mumkin — orqa tomonda; eshik oldidagi parta (2 o'rin) olinadi
   { kod: 'SR3', nomi: 'Study Room 3', tur: 'sinf', x1: 18150, y1: 0, x2: ICHKI.x, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR3', eskiRaqam: '10', koridor: 'K1',
-    sinf: { ...YON_TOR, sxema: [[2, 2, 2, 2], [2, 2, 2, 2], [2, 2, 2, 0]] } },
-  // 4-xona: doska o'ng asosiy (tashqi) devorda. 1–2-qatorlar butun uzunlik bo'ylab (8 parta),
-  // 3-qator faqat keng qismda (4 parta) — L shaklining tor uchlari 4.5 m chuqur.
+    sinf: { ...YON_TOR, sxema: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 0]] } },
+  // 4-xona: doska o'ng asosiy (tashqi) devorda. 1–2-qatorlar butun uzunlik bo'ylab (4 parta),
+  // 3-qator faqat keng qismda (2 parta) — L shaklining tor uchlari 4.5 m chuqur.
   { kod: 'SR4', nomi: 'Study Room 4', tur: 'sinf', x1: 18150, y1: 7800, x2: ICHKI.x, y2: 16600, doska: 'ong', eshik: 'SR4', eskiRaqam: '10 va 15 (o\'rta qism)', koridor: 'K2',
     bolaklar: [{ x1: 19400, x2: ICHKI.x, y1: 7800, y2: 9400 }, { x1: 18150, x2: ICHKI.x, y1: 9400, y2: 15000 }, { x1: 19400, x2: ICHKI.x, y1: 15000, y2: 16600 }],
     kontur: [[19400, 7800], [ICHKI.x, 7800], [ICHKI.x, 16600], [19400, 16600], [19400, 15000], [18150, 15000], [18150, 9400], [19400, 9400]],
-    sinf: { ...YON_TOR, sxema: [[2, 2, 2, 2], [2, 2, 2, 2], [0, 2, 2, 0]] } },
+    sinf: { ...YON_TOR, sxema: [[1, 1, 1, 1], [1, 1, 1, 1], [0, 1, 1, 0]] } },
   { kod: 'SR5', nomi: 'Study Room 5', tur: 'sinf', x1: 18150, y1: 16700, x2: ICHKI.x, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR5', eskiRaqam: '15', koridor: 'K2', sinf: YON_TOR },
   { kod: 'SR6', nomi: 'Study Room 6', tur: 'sinf', x1: 12150, y1: 16700, x2: 17950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR6', eskiRaqam: '14', koridor: 'K2', sinf: YON_TOR },
   { kod: 'SR7', nomi: 'Study Room 7', tur: 'sinf', x1: 6150, y1: 16700, x2: 11950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR7', eskiRaqam: '13', koridor: 'K2', sinf: YON_TOR },
@@ -267,7 +270,13 @@ function joylash(xona) {
   const s = { ...STANDART, doskaEni: 3000, ...(xona.sinf || {}) };
   const { W, D, R: L, U } = lokal(xona);
   const blokEni = s.bloklar.reduce((t, n) => t + n * PARTA.eni, 0) + (s.bloklar.length - 1) * s.yolak;
-  const u0 = (W - blokEni) / 2;
+  let u0 = (W - blokEni) / 2;
+  // derazali xonada deraza tomondagi chekka belgilangan (radiator uchun), qolgani qarama-qarshi tomonga
+  if (s.oynaChekka != null && xona.deraza) {
+    const ou = { yuqori: U((xona.x1 + xona.x2) / 2, xona.y1), past: U((xona.x1 + xona.x2) / 2, xona.y2), chap: U(xona.x1, (xona.y1 + xona.y2) / 2) }[xona.deraza].u;
+    u0 = ou < W / 2 ? s.oynaChekka : W - blokEni - s.oynaChekka;
+  }
+  const orinEni = PARTA.eni / PARTA.kishi;   // bitta o'quvchiga parta eni
   const partalar = [], stullar = [];
   const sxema = s.sxema || Array.from({ length: s.qatorlar }, () => s.bloklar);
   s.qatorlar = sxema.length;
@@ -278,9 +287,11 @@ function joylash(xona) {
       for (let i = 0; i < n; i++) {
         if (i < qator[bi]) {
           partalar.push({ ...L(u, u + PARTA.eni, v, v + PARTA.chuq), qator: q + 1, blok: bi });
-          const su = u + (PARTA.eni - STUL.eni) / 2;
           const sv = v + PARTA.chuq + STUL.oraliq;
-          stullar.push({ ...L(su, su + STUL.eni, sv, sv + STUL.chuq), qator: q + 1 });
+          for (let k = 0; k < PARTA.kishi; k++) {
+            const su = u + k * orinEni + (orinEni - STUL.eni) / 2;
+            stullar.push({ ...L(su, su + STUL.eni, sv, sv + STUL.chuq), qator: q + 1 });
+          }
         }
         u += PARTA.eni;
       }
@@ -295,7 +306,7 @@ function joylash(xona) {
   const tu = em.u < W / 2 ? W - 150 - 1200 : 150;
   const ustozStoli = L(tu, tu + 1200, 700, 1300);
   const ustozStuli = L(tu + 375, tu + 825, 220, 670);
-  return { s, W, D, blokEni, u0, partalar, stullar, doska, ustozStoli, ustozStuli };
+  return { s, W, D, blokEni, u0, orinEni, partalar, stullar, doska, ustozStoli, ustozStuli };
 }
 
 export function sinflar() {

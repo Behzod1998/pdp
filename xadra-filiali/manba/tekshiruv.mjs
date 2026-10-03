@@ -90,8 +90,10 @@ export function korsatkichlar() {
   return sinflar().map(x => {
     const j = x.j, s = j.s, L = lokal(x);
     const D = j.D;
-    const orin = j.partalar.length;
-    const qatorlar = [...new Set(j.partalar.map(p => p.qator))].map(q => j.partalar.filter(p => p.qator === q).length);
+    const orin = j.stullar.length;   // o'rin = stul (ikki kishilik partada 2 ta)
+    const qatorRaqam = [...new Set(j.partalar.map(p => p.qator))];
+    const qatorlar = qatorRaqam.map(q => j.stullar.filter(p => p.qator === q).length);
+    const partaQator = qatorRaqam.map(q => j.partalar.filter(p => p.qator === q).length);
     const oxirgi = s.doska + (s.qatorlar - 1) * s.qadam + PARTA.chuq;
     const stulOrqasi = s.qadam - PARTA.chuq - STUL.oraliq - STUL.chuq;
     // orqa zona: orqasida parta bo'lmagan har bir stuldan xona chegarasigacha (eng kichigi), lokal u/v da
@@ -103,7 +105,7 @@ export function korsatkichlar() {
     }));
     const yonChap = j.u0, yonOng = j.W - j.u0 - j.blokEni;
     // chetdagi o'quvchining qarash burchagi: old qatordagi chetki parta markazidan doska markaziga
-    const chetki = Math.max(j.W / 2 - (j.u0 + PARTA.eni / 2), (j.u0 + j.blokEni - PARTA.eni / 2) - j.W / 2);
+    const chetki = Math.max(j.W / 2 - (j.u0 + j.orinEni / 2), (j.u0 + j.blokEni - j.orinEni / 2) - j.W / 2);
     const burchak = Math.atan(chetki / (s.doska + 350)) * 180 / Math.PI;
     const derazalar = xonaDerazalari(x).map(d => ({ ...d, tomon: derazaTomoni(x, d.devor) }));
     const partadanOynagacha = derazalar.length ? Math.min(...derazalar.flatMap(d => j.partalar.map(p => masofa(p, d)))) : null;
@@ -126,7 +128,7 @@ export function korsatkichlar() {
       return s + (tegadi ? Math.max(0, ustma) : 0);
     }, 0), 0);
     return {
-      kod: x.kod, nomi: x.nomi, xona: x, W: j.W, D, A: sofMaydon(x), orin, qatorlar, bloklar: s.bloklar,
+      kod: x.kod, nomi: x.nomi, xona: x, W: j.W, D, A: sofMaydon(x), orin, qatorlar, partaQator, parta: j.partalar.length, bloklar: s.bloklar,
       qadam: s.qadam, doska: s.doska, yolak: s.yolak, oxirgi, stulOrqasi, orqaZona, yonChap, yonOng,
       burchak, derazalar, partadanOynagacha, ustunlar, eshik: esh, eshikOldda, havo, odam, shisha,
       kishiga: sofMaydon(x) / orin, koridor: x.koridor,
@@ -153,7 +155,7 @@ export function tekshiruv() {
   const hammaJihoz = [];
   for (const x of sinf) {
     const j = x.j;
-    natija.orinlar += j.partalar.length;
+    natija.orinlar += j.stullar.length;
     j.partalar.forEach((p, i) => hammaJihoz.push({ r: p, nom: `${x.kod} parta ${i + 1}`, xona: x.kod }));
     j.stullar.forEach((p, i) => hammaJihoz.push({ r: p, nom: `${x.kod} stul ${i + 1}`, xona: x.kod }));
     hammaJihoz.push({ r: j.ustozStoli, nom: `${x.kod} o'qituvchi stoli`, xona: x.kod });

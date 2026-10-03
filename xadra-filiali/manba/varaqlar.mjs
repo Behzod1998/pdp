@@ -85,7 +85,7 @@ function maydonJadvali() {
 function xonalarJadvali() {
   const kor = korsatkichlar();
   const x12 = XONALAR.find(r => r.kod === 'X12');
-  const rows = kor.map(k => `<tr><td>${k.kod} · ${k.kod.slice(2)}-xona</td><td>${(k.W / 1000).toFixed(2)} × ${(k.D / 1000).toFixed(2)}${k.xona.bolaklar ? ' (L)' : ''}</td><td class="r">${v(k.A)}</td><td class="r">${k.orin}</td><td class="r">${v(k.kishiga)}</td><td>${k.qatorlar.join('+')}</td></tr>`).join('');
+  const rows = kor.map(k => `<tr><td>${k.kod} · ${k.kod.slice(2)}-xona</td><td>${(k.W / 1000).toFixed(2)} × ${(k.D / 1000).toFixed(2)}${k.xona.bolaklar ? ' (L)' : ''}</td><td class="r">${v(k.A)}</td><td class="r">${k.orin}</td><td class="r">${v(k.kishiga)}</td><td>${k.partaQator.join('+')}</td></tr>`).join('');
   const xz = XONALAR.filter(r => r.tur === 'xizmat');
   return `<h3>XONALAR</h3><table><tr><th>Xona</th><th>O'lcham, m</th><th class="r">m²</th><th class="r">O'rin</th><th class="r">m²/kishi</th><th>Partalar</th></tr>${rows}
     <tr><td>XZ1 · sotuv</td><td>2.80 × 5.60</td><td class="r">${v(xonaMaydoni(xz[0]))}</td><td class="r">2</td><td class="r">—</td><td>2 stol + 4 mijoz stuli, shisha devor</td></tr>
@@ -105,16 +105,15 @@ function ustunJadvali() {
 }
 
 function partaQoidasi() {
-  const blok = STANDART.bloklar.reduce((t, n) => t + n * PARTA.eni, 0) + (STANDART.bloklar.length - 1) * STANDART.yolak;
-  return `<h3>PARTA TO'RI (Beruniy standarti)</h3><p class="izoh">
-    parta ${PARTA.eni} × ${PARTA.chuq} · stul ${STUL.eni} × ${STUL.chuq}<br>
-    qatorda 6 parta: 2 + 2 + 2 · guruhlar orasi ${STANDART.yolak} · blok eni ${son(blok)}<br>
-    qator qadami ${son(STANDART.qadam)} (parta 500 + o'tish 800) · 4 qator<br>
-    doskadan 1-partagacha ${son(STANDART.doska)} · oxirgi parta ${son(STANDART.oxirgi)} · sig'im 24<br>
-    ustundan: oldi/orqa 500 · yon 0<br>
-    <span class="qizil">ISTISNO: SR1–3, SR5–7 — doska yon devorda (deraza chapda): 2+2+2+2 × 3 qator, qadam 1&nbsp;250, doskadan 2&nbsp;050; SR3 — 22 o'rin</span><br>
-    <span class="qizil">ISTISNO: SR4 — doska o'ng tashqi devorda, 8 + 8 + 4 (3-qator keng qismda), sig'im 20; eshik orqada</span><br>
-    Doska 3000 kar devorda; eshiklar 900, ichkariga ochiladi.<br>
+  const t = XONALAR.find(r => r.kod === 'SR1').sinf, n = t.bloklar.length;
+  return `<h3>PARTA TO'RI (Xadra filiali)</h3><p class="izoh">
+    parta ${PARTA.eni} × ${PARTA.chuq} (${PARTA.kishi} kishilik) · stul ${STUL.eni} × ${STUL.chuq}<br>
+    qatorda ${n} parta (${n * PARTA.kishi} o'rin) · yo'lak ${t.yolak} · deraza tomonda devorgacha ${t.oynaChekka}<br>
+    ${t.qatorlar} qator · qadam ${son(t.qadam)} (parta ${PARTA.chuq} + stul va o'tish ${t.qadam - PARTA.chuq})<br>
+    doskadan 1-partagacha ${son(t.doska)} · oxirgi parta ${son(t.doska + (t.qatorlar - 1) * t.qadam + PARTA.chuq)} · sig'im ${n * PARTA.kishi * t.qatorlar}<br>
+    <span class="qizil">ISTISNO: SR3 — 4 + 4 + 3 parta, 22 o'rin (eshik orqada); SR4 — 4 + 4 + 2 parta, 20 o'rin (doska o'ng tashqi devorda)</span><br>
+    <span style="color:#777">Beruniy standarti: parta ${STANDART.parta.eni} × ${STANDART.parta.chuq} (1 kishilik), 2 + 2 + 2 × ${STANDART.qatorlar} qator, qadam ${son(STANDART.qadam)}, doskadan ${son(STANDART.doska)}, oxirgi ${son(STANDART.oxirgi)}</span><br>
+    ustundan: oldi/orqa 500 · yon 0. Doska 3000 yon (kar) devorda, deraza o'quvchilarning chap tomonida; eshiklar 900.<br>
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100; sinflarning koridor tomoni — akustik shisha.<br>
     KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (sanuzel, K1, K2, kirish zali).<br>
     XZ1 (offline sotuv) va XZ2 (admin): K2 tomonda shisha devor va shisha eshik — kirish zalidan ko'rinadi.<br>
@@ -143,7 +142,7 @@ function belgilar(rejim) {
     sw(`background:${RANG.ustun};width:3.2mm`, 'ustun'),
   ];
   else if (rejim === 'jihoz') q = [...umumiy,
-    sw(`background:${RANG.parta};border-color:${RANG.partaCh}`, `parta ${PARTA.eni} × ${PARTA.chuq}`),
+    sw(`background:${RANG.parta};border-color:${RANG.partaCh}`, `parta ${PARTA.eni} × ${PARTA.chuq} (${PARTA.kishi} kishilik)`),
     sw(`background:${RANG.stul};border-color:${RANG.stulCh};width:3.2mm`, `stul ${STUL.eni} × ${STUL.chuq}`),
     sw(`background:${RANG.doska};height:1.2mm`, 'doska (kar devorda)'),
     sw(`background:${RANG.ustoz}`, 'o\'qituvchi / xodim stoli'),
