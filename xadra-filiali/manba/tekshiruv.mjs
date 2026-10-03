@@ -118,10 +118,17 @@ export function korsatkichlar() {
     const eshikOldda = eshV < s.doska;
     const odam = orin + 1;
     const havo = havoHisobi(x, odam, orin * 0.05 + 0.3);
+    // koridor tomonidagi shisha devor uzunligi (xona chegarasiga tegib turgan shisha devorlar)
+    const shisha = DEVORLAR.filter(w => w.shisha).reduce((t, w) => t + bolaklar(x).reduce((s, b) => {
+      const gor = w.x2 - w.x1 > w.y2 - w.y1;
+      const tegadi = gor ? (w.y2 === b.y1 || w.y1 === b.y2) : (w.x2 === b.x1 || w.x1 === b.x2);
+      const ustma = gor ? Math.min(w.x2, b.x2) - Math.max(w.x1, b.x1) : Math.min(w.y2, b.y2) - Math.max(w.y1, b.y1);
+      return s + (tegadi ? Math.max(0, ustma) : 0);
+    }, 0), 0);
     return {
       kod: x.kod, nomi: x.nomi, xona: x, W: j.W, D, A: sofMaydon(x), orin, qatorlar, bloklar: s.bloklar,
       qadam: s.qadam, doska: s.doska, yolak: s.yolak, oxirgi, stulOrqasi, orqaZona, yonChap, yonOng,
-      burchak, derazalar, partadanOynagacha, ustunlar, eshik: esh, eshikOldda, havo, odam,
+      burchak, derazalar, partadanOynagacha, ustunlar, eshik: esh, eshikOldda, havo, odam, shisha,
       kishiga: sofMaydon(x) / orin, koridor: x.koridor,
     };
   });
@@ -196,7 +203,7 @@ export function tekshiruv() {
     });
     // 5. Doska kar devorda: doska orqasidagi devor bo'lagi (lokal v = 0 chizig'i) to'liq devor bilan qoplangan
     const qopla = (r, shart) => r.map(L.T).filter(shart).reduce((t, w) => t + Math.max(0, Math.min(w.u2, dl.u2) - Math.max(w.u1, dl.u1)), 0);
-    const qoplangan = qopla(devorlar, w => Math.abs(w.v2) < 1);
+    const qoplangan = qopla(devorlar.filter(w => !w.shisha), w => Math.abs(w.v2) < 1);
     const ustunQism = qopla(ustunlar, u => u.v1 < 0 && u.v2 >= 0);
     if (qoplangan + ustunQism < dl.u2 - dl.u1 - 1) natija.doskaDevor.push(`${x.kod}: doska ortida bo'shliq`);
     // 4. Eshik doskaga tegmasligi
@@ -234,10 +241,12 @@ export function evakuatsiya() {
 // ---------- devor ishlari hajmi ----------
 export function ishlar() {
   const uz = w => Math.max(w.x2 - w.x1, w.y2 - w.y1) / 1000;
-  const yangi = DEVORLAR.filter(w => w.holat === 'yangi');
+  const yangi = DEVORLAR.filter(w => w.holat === 'yangi' && !w.shisha);
+  const shisha = DEVORLAR.filter(w => w.shisha);
   const buz = DEVORLAR.filter(w => w.holat === 'buziladi');
   return {
     yangiUz: yangi.reduce((t, w) => t + uz(w), 0),
+    shishaUz: shisha.reduce((t, w) => t + uz(w), 0),
     buzUz: buz.reduce((t, w) => t + uz(w), 0),
     yangiEshik: ESHIKLAR.filter(e => e.holat === 'yangi').length,
   };

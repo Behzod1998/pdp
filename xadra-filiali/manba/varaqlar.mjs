@@ -113,9 +113,9 @@ function partaQoidasi() {
     doskadan 1-partagacha ${son(STANDART.doska)} · oxirgi parta ${son(STANDART.oxirgi)} · sig'im 24<br>
     ustundan: oldi/orqa 500 · yon 0<br>
     <span class="qizil">ISTISNO: SR1–3, SR5–7 — doska yon devorda (deraza chapda): 2+2+2+2 × 3 qator, qadam 1&nbsp;250, doskadan 2&nbsp;050; SR3 — 22 o'rin</span><br>
-    <span class="qizil">ISTISNO: SR4 (4-xona) — 6 + 6 + 6 + 2 (4-qatorda faqat o'ng blok), sig'im 20; eshik orqa tomonda</span><br>
+    <span class="qizil">ISTISNO: SR4 — doska o'ng tashqi devorda, 8 + 8 + 4 (3-qator keng qismda), sig'im 20; eshik orqada</span><br>
     Doska 3000 kar devorda; eshiklar 900, ichkariga ochiladi.<br>
-    K1, K2 koridorlari 1500. Yangi devorlar — GKL 100, ovoz izolyatsiyali.<br>
+    K1, K2 koridorlari 1500. Yangi devorlar — GKL 100; sinflarning koridor tomoni — akustik shisha.<br>
     KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (sanuzel, K1, K2, kirish zali).<br>
     XZ1 (offline sotuv) va XZ2 (admin): K2 tomonda shisha devor va shisha eshik — kirish zalidan ko'rinadi.<br>
     XZ3 — ustozlar xonasi, XZ4 — call-markaz va online sotuv; 12-xona — CEO (mavjud holicha).<br>
@@ -136,6 +136,7 @@ function belgilar(rejim) {
     sw(`background:${RANG.devorI}`, 'saqlanadigan devor'),
     sw(`background:#fff;border:.35mm dashed ${RANG.buz}`, 'buziladigan devor'),
     sw(`background:${RANG.yangi}`, 'yangi devor (GKL 100 / bo\'shliqni yopish)'),
+    sw(`background:#cfe6f7;border:.3mm solid ${RANG.yangi}`, 'yangi shisha devor (koridor tomoni)'),
     sw(`background:repeating-linear-gradient(45deg,#b9b4a8 0 .4mm,#fff .4mm 1.6mm)`, 'o\'zgarmaydigan qism'),
     sw(`border:0;border-top:.5mm solid ${RANG.yangi}`, 'yangi eshik (900)'),
     sw(`background:${RANG.devorT}`, 'tashqi devor'),
@@ -146,7 +147,7 @@ function belgilar(rejim) {
     sw(`background:${RANG.stul};border-color:${RANG.stulCh};width:3.2mm`, `stul ${STUL.eni} × ${STUL.chuq}`),
     sw(`background:${RANG.doska};height:1.2mm`, 'doska (kar devorda)'),
     sw(`background:${RANG.ustoz}`, 'o\'qituvchi / xodim stoli'),
-    sw(`background:#e3f2fb;border:.3mm solid #2f78b7;height:1.4mm`, 'shisha devor va eshik (XZ1, XZ2)'),
+    sw(`background:#e3f2fb;border:.3mm solid #2f78b7;height:1.4mm`, 'shisha devor (koridor tomoni)'),
   ];
   else q = [
     sw(`background:#fff;border:.35mm dashed #222`, 'PV — rekuperatorli kiritish-chiqarish qurilmasi (shift ichida)'),
@@ -173,10 +174,11 @@ function mavjudPanel() {
   <div><h3>O'ZGARISHLAR</h3><p class="izoh">
     <b>O'zgarmaydi</b> (buyurtmachi talabi): ZN1 va ZN2 zinalari, sanuzel bloki (2–6), 12-xona.<br>
     <b>Buziladi:</b> eski o'rta devor (8–10 va 13–15-xonalar orasida); 7 va 11-xonalar orasidagi devor; K1, K2 koridorlariga tushgan devor bo'laklari.<br>
-    <b>Quriladi:</b> K1 va K2 koridorlarining devorlari (1–3 va 5–7-xonalar eshiklari shu devorlarda; doskalar yon devorlarda), o'rta qatordagi 4 ta ofis xonasi (sotuv, admin, ustozlar, call-markaz) va 4-xona devorlari; xonalar orasidagi bo'shliqlar yopiladi.
+    <b>Quriladi:</b> K1 va K2 koridorlarining devorlari (sinflar tomoni — shisha; doskalar yon va tashqi devorlarda), o'rta qatordagi 4 ta ofis xonasi (sotuv, admin, ustozlar, call-markaz) va 4-xona devorlari; xonalar orasidagi bo'shliqlar yopiladi.
   </p></div>
   <div><h3>ISHLAR HAJMI (taxminiy)</h3><table>
     <tr><td>Yangi devor, GKL 100</td><td class="r">${v(ish.yangiUz)} m · ≈ ${Math.round(ish.yangiUz * H / 1000)} m²</td></tr>
+    <tr><td>Shisha devor (koridor tomoni)</td><td class="r">${v(ish.shishaUz)} m · ≈ ${Math.round(ish.shishaUz * H / 1000)} m²</td></tr>
     <tr><td>Buziladigan devor</td><td class="r">${v(ish.buzUz)} m</td></tr>
     <tr><td>Yangi eshik, 900 × 2100</td><td class="r">${ish.yangiEshik} ta</td></tr>
   </table></div>

@@ -172,7 +172,8 @@ export function renderSvg(o = {}) {
   q.push(`<g filter="url(#${id}dsoya)">${w.join('')}</g>`);
   DEVORLAR.filter(d => d.shisha).forEach(d => {
     q.push(rect(d, `fill="#bfe0f4" stroke="#5f93ba" stroke-width="12"`));
-    q.push(`<line x1="${d.x1}" y1="${(d.y1 + d.y2) / 2}" x2="${d.x2}" y2="${(d.y1 + d.y2) / 2}" stroke="#fff" stroke-width="14"/>`);
+    if (d.x2 - d.x1 > d.y2 - d.y1) q.push(`<line x1="${d.x1}" y1="${(d.y1 + d.y2) / 2}" x2="${d.x2}" y2="${(d.y1 + d.y2) / 2}" stroke="#fff" stroke-width="14"/>`);
+    else q.push(`<line x1="${(d.x1 + d.x2) / 2}" y1="${d.y1}" x2="${(d.x1 + d.x2) / 2}" y2="${d.y2}" stroke="#fff" stroke-width="14"/>`);
   });
   DERAZALAR.forEach(d => {
     q.push(rect(d, `fill="#cfe4f2" stroke="#f7fbfd" stroke-width="14"`));
@@ -189,11 +190,6 @@ export function renderSvg(o = {}) {
     const kor = Object.fromEntries(korsatkichlar().map(z => [z.kod, z]));
     sinf.forEach(x => {
       const K = kor[x.kod];
-      if (x.kod === 'SR4') {
-        L.push(t(21650, 15650, XONA_NOMI[x.kod], 440, B));
-        L.push(t(21650, 15650 + 400 * k, `${K.A.toFixed(1)} m² · ${K.orin} o'rin`, 300, R));
-        return;
-      }
       // yozuv doska oldidagi bo'sh zonada (doska va 1-qator orasida), o'qituvchi stoli bilan eshik oralig'ida
       const p = lokal(x).G(x.j.W / 2, x.j.s.doska / 2);
       L.push(t(p.x, p.y - 300 * k, XONA_NOMI[x.kod], 440, B));

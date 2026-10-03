@@ -51,7 +51,12 @@ sahna.add(shift);
 // devorlar (tashqi devorlarda deraza teshiklari)
 const SEP = 0.9, LINT = 2.4;
 DEVORLAR.filter(w => w.holat !== 'buziladi').forEach(w => {
-  if (w.shisha) { rQuti(w, 0, 2.7, M.shisha); rQuti(w, 2.7, HM, M.devor); rQuti({ ...w, y1: w.y1 + 30, y2: w.y2 - 30 }, 0, 0.1, M.ramka); return; }
+  if (w.shisha) {
+    const gor = w.x2 - w.x1 > w.y2 - w.y1;
+    rQuti(w, 0, 2.7, M.shisha); rQuti(w, 2.7, HM, M.devor);
+    rQuti(gor ? { ...w, y1: w.y1 + 30, y2: w.y2 - 30 } : { ...w, x1: w.x1 + 30, x2: w.x2 - 30 }, 0, 0.1, M.ramka);
+    return;
+  }
   const material = w.holat === 'tashqi' ? M.tashqi : w.holat === 'yangi' ? M.yangi : M.devor;
   if (w.holat !== 'tashqi') return rQuti(w, 0, HM, material);
   const gorizontal = w.x2 - w.x1 > w.y2 - w.y1;
@@ -153,7 +158,7 @@ kw.shkaf.forEach(r => rQuti(r, 0, 0.9, M.parta));
 // ko'rinishlar
 const KORINISHLAR = {
   sr1: { pos: [6.45, 1.35, 3.85], nishon: [11.95, 1.15, 3.85], fov: 72 },
-  sr4: { pos: [21.4, 1.3, 15.9], nishon: [21.0, 1.2, 7.8], fov: 74 },
+  sr4: { pos: [18.45, 1.4, 12.2], nishon: [23.9, 1.15, 12.2], fov: 74 },
   sotuv: { pos: [4.3, 1.6, 16.3], nishon: [12.0, 1.1, 14.6], fov: 72 },
   k1: { pos: [6.6, 1.6, 8.55], nishon: [19.3, 1.2, 8.55], fov: 70 },
   kw: { pos: [5.3, 1.65, 18.1], nishon: [1.6, 0.9, 8.5], fov: 74 },

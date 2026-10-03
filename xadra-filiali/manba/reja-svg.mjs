@@ -66,11 +66,12 @@ export function rejaSvg(o = {}) {
     if (wl.holat === 'tashqi') return q.push(rect(wl, `fill="${RANG.devorT}"`));
     if (rejim === 'mavjud') {
       if (wl.holat === 'mavjud') q.push(rect(wl, `fill="${RANG.devorI}"`));
-      if (wl.holat === 'yangi') q.push(rect(wl, `fill="${RANG.yangi}"`));
+      if (wl.holat === 'yangi') q.push(rect(wl, wl.shisha ? `fill="#cfe6f7" stroke="${RANG.yangi}" stroke-width="${12 * k}"` : `fill="${RANG.yangi}"`));
       if (wl.holat === 'buziladi') q.push(rect(wl, `fill="#fff" stroke="${RANG.buz}" stroke-width="${14 * k}" stroke-dasharray="${60 * k} ${40 * k}"`));
     } else if (wl.shisha) {
       q.push(rect(wl, `fill="#e3f2fb" stroke="#2f78b7" stroke-width="${10 * k}"`));
-      q.push(chiziq(wl.x1, (wl.y1 + wl.y2) / 2, wl.x2, (wl.y1 + wl.y2) / 2, `stroke="#2f78b7" stroke-width="${7 * k}"`));
+      if (wl.x2 - wl.x1 > wl.y2 - wl.y1) q.push(chiziq(wl.x1, (wl.y1 + wl.y2) / 2, wl.x2, (wl.y1 + wl.y2) / 2, `stroke="#2f78b7" stroke-width="${7 * k}"`));
+      else q.push(chiziq((wl.x1 + wl.x2) / 2, wl.y1, (wl.x1 + wl.x2) / 2, wl.y2, `stroke="#2f78b7" stroke-width="${7 * k}"`));
     } else if (wl.holat !== 'buziladi') {
       q.push(rect(wl, `fill="${rejim === 'havo' ? '#5d6472' : RANG.devorI}"`));
     }
@@ -159,13 +160,8 @@ export function rejaSvg(o = {}) {
       if (x.tur === 'sinf') {
         const K = kor[x.kod], L = lokal(x);
         if (rejim === 'havo') {
-          const p = x.kod === 'SR4' ? { x: 21650, y: 15700 } : L.G(L.W / 2, L.D * 0.55);
+          const p = L.G(L.W / 2, L.D * 0.55);
           q.push(matn(p.x, p.y + 170, x.kod, 480, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
-          return;
-        }
-        if (x.kod === 'SR4') {
-          q.push(matn(21650, 15500, `${x.kod} · 4-xona`, 440, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
-          q.push(matn(21650, 15500 + 400 * k, `${K.A.toFixed(1)} m² · ${K.orin} o'rin`, 240, `text-anchor="middle" fill="#666"`));
           return;
         }
         // yozuv doska oldidagi bo'sh zonada (doska va 1-qator orasida), o'qituvchi stoli bilan eshik oralig'ida;
@@ -300,12 +296,16 @@ export const QURILMALAR = (() => {
     const cx = (x.x1 + x.x2) / 2;
     const d = { kod: `PV-${i + 1}`, xona: x.kod };
     if (x.kod === 'SR4') {
-      // derazasiz xona: havo o'ng tashqi devor orqali (qo'shni bino bo'lsa — kanal bilan fasadga)
-      Object.assign(d, { qurilma: { x1: 22900, x2: 23700, y1: 11600, y2: 12900 }, devor: 'ong', taxminiy: true,
+      // derazasiz xona: havo o'ng devor ortidagi oraliq orqali. Doska ham o'ng devorda — qurilma
+      // doskadan chetda (yuqori burchakda), toza havo doska oldida beriladi, orqa devor yonida so'riladi;
+      // chiqarish kanali o'ng devor bo'ylab shift ichida pastki uchidagi panjaraga boradi.
+      const L = lokal(x), P = (u, v) => { const p = L.G(u, v); return [p.x, p.y]; };
+      const [d1, d2] = [P(L.W / 3, 1800), P(2 * L.W / 3, 1800)], [s1, s2] = [P(L.W / 3, L.D - 400), P(2 * L.W / 3, L.D - 400)];
+      Object.assign(d, { qurilma: { x1: 22700, x2: 23600, y1: 8800, y2: 10100 }, devor: 'ong', taxminiy: true,
         kirish: { x1: ICHKI.x, x2: ICHKI.x + 400, y1: 8300, y2: 8900 }, chiqish: { x1: ICHKI.x, x2: ICHKI.x + 400, y1: 15700, y2: 16300 },
-        kanallar: [[[22900, 12250], [21025, 12250], [21025, 10200]]],
-        diffuzor: [[21025, 10300], [21025, 12250]], sorish: [[22100, 15700]],
-        konditsioner: [[19700, 11600], [22400, 13900]], co2: [23500, 9000] });
+        kanallar: [[[22700, 9500], [d1[0], 9500], d2], [s2, s1, [19900, s1[1]], [19900, 9000], [22700, 9000]], [[23300, 10100], [23300, 16000], [ICHKI.x, 16000]]],
+        diffuzor: [d1, d2], sorish: [s1, s2],
+        konditsioner: [P(L.W / 4, L.D * 0.55), P(3 * L.W / 4, L.D * 0.55)], co2: [23680, 14800] });
     } else {
       // qurilma deraza devori yonida shift ichida; toza havo doska tomonda beriladi, orqa devor yonida so'riladi
       const L = lokal(x), D = L.D, W = L.W;
@@ -379,8 +379,10 @@ function havoQatlami(id, k, sinf) {
   // xonadagi havo oqimi strelkalari (doskadan orqaga)
   sinf.forEach(x => {
     const L = lokal(x);
-    const [v1, v2] = x.kod === 'SR4' ? [2600, 6300] : [2200, L.D - 700];
-    [L.W * 0.12, L.W * 0.88].forEach(u => {
+    // 4-xonada strelkalar L shaklining keng qismida (tor uchlari 4.5 m chuqur)
+    const us = x.kod === 'SR4' ? [L.W * 0.3, L.W * 0.7] : [L.W * 0.12, L.W * 0.88];
+    us.forEach(u => {
+      const [v1, v2] = [2200, L.D - 700];
       const a = L.G(u, v1), b = L.G(u, v2);
       q.push(`<path d="M${f(a.x)},${f(a.y)} L${f(b.x)},${f(b.y)}" stroke="#5b8fd6" stroke-width="${30 * k}" stroke-dasharray="${160 * k} ${90 * k}" fill="none" marker-end="url(#${id}ah)"/>`);
     });

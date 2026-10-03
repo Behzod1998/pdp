@@ -124,23 +124,27 @@ const ichki = [
   d(17950, 18150, 12500, 15000, 'mavjud'), d(17950, 18150, 15100, 16600, 'buziladi', 'K2 koridori'),
   d(17950, 18150, 16700, 18850, 'mavjud'), d(17950, 18150, 18850, 21600, 'yangi', 'bo\'shliq yopiladi'),
   d(17950, 18150, 21600, ICHKI.y, 'mavjud'),
+  // Sinflarning koridor tomonidagi devorlari — shisha; eshik yonidagi ustunchalar (kesaklar) va
+  // mavjud devor uchlari kar qoladi.
   // K1 shimoliy devori — eshiklar bilan (1, 2-xona eshigi doska tomonda, 3-xonaniki orqada)
-  d(6250, 10850, 7700, 7800, 'yangi'), d(11750, 16850, 7700, 7800, 'yangi'),
+  sh(6250, 10850, 7700, 7800), d(11750, 12150, 7700, 7800, 'yangi'), sh(12150, 16850, 7700, 7800),
   d(17750, 18300, 7700, 7800, 'yangi'), d(19200, ICHKI.x, 7700, 7800, 'yangi'),
-  d(19300, 19400, 7800, 9300, 'yangi'),
-  // K1 janubiy devori (xizmat xonalari eshiklari bilan)
+  sh(19300, 19400, 7800, 9300),
+  // K1 janubiy devori (xizmat xonalari eshiklari bilan; 4-xona oldida shisha)
   d(6250, 12300, 9300, 9400, 'yangi'),
-  d(13200, 15250, 9300, 9400, 'yangi'), d(16150, 19400, 9300, 9400, 'yangi'),
+  d(13200, 15250, 9300, 9400, 'yangi'), d(16150, 18150, 9300, 9400, 'yangi'),
+  sh(18150, 19300, 9300, 9400), d(19300, 19400, 9300, 9400, 'yangi'),
   // xizmat xonalari orasidagi devorlar
   d(9050, 9150, 9400, 15000, 'yangi'), d(15000, 15100, 9400, 15000, 'yangi'),
   // K2 shimoliy devori: XZ1 (offline sotuv) va XZ2 (admin) oldida shisha devor va shisha eshik —
   // mijoz kirish zalidan chiqishi bilan ko'radi
   sh(6250, 6400, 15000, 15100), sh(7300, 9050, 15000, 15100), d(9050, 9150, 15000, 15100, 'yangi'),
-  sh(9150, 9300, 15000, 15100), sh(10200, 11950, 15000, 15100), d(11950, 19400, 15000, 15100, 'yangi'),
-  d(19300, 19400, 15100, 15300, 'yangi'), d(19300, 19400, 16200, 16600, 'yangi'),
+  sh(9150, 9300, 15000, 15100), sh(10200, 11950, 15000, 15100), d(11950, 18250, 15000, 15100, 'yangi'),
+  // 4-xona: eshik K2 shimoliy devorida (orqa tomonda), K2 uchidagi devor shisha
+  d(19150, 19400, 15000, 15100, 'yangi'), sh(19300, 19400, 15100, 16600),
   // K2 janubiy devori (5–7-xonalar) — eshiklar bilan
-  d(6150, 6350, 16600, 16700, 'yangi'), d(7250, 12350, 16600, 16700, 'yangi'),
-  d(13250, 18300, 16600, 16700, 'yangi'), d(19200, ICHKI.x, 16600, 16700, 'yangi'),
+  d(6150, 6350, 16600, 16700, 'yangi'), sh(7250, 11950, 16600, 16700), d(11950, 12350, 16600, 16700, 'yangi'),
+  sh(13250, 17950, 16600, 16700), d(17950, 18300, 16600, 16700, 'yangi'), d(19200, ICHKI.x, 16600, 16700, 'yangi'),
 ];
 
 export const DEVORLAR = [...tashqi, ...qotgan, ...ichki];
@@ -154,7 +158,7 @@ export const ESHIKLAR = [
   e('SR1', 'h', 10850, 11750, 7700, -1, 'b'),
   e('SR2', 'h', 16850, 17750, 7700, -1, 'b'),
   e('SR3', 'h', 18300, 19200, 7700, -1, 'a'),
-  e('SR4', 'v', 15300, 16200, 19400, +1, 'b'),
+  e('SR4', 'h', 18250, 19150, 15000, -1, 'a'),
   e('SR5', 'h', 18300, 19200, 16700, +1, 'a'),
   e('SR6', 'h', 12350, 13250, 16700, +1, 'a'),
   e('SR7', 'h', 6350, 7250, 16700, +1, 'a'),
@@ -194,10 +198,12 @@ export const XONALAR = [
   // 3-xona eshigi faqat K1 uchida (x < 19300) bo'lishi mumkin — orqa tomonda; eshik oldidagi 2 o'rin olinadi
   { kod: 'SR3', nomi: 'Study Room 3', tur: 'sinf', x1: 18150, y1: 0, x2: ICHKI.x, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR3', eskiRaqam: '10', koridor: 'K1',
     sinf: { ...YON_TOR, sxema: [[2, 2, 2, 2], [2, 2, 2, 2], [2, 2, 2, 0]] } },
-  { kod: 'SR4', nomi: 'Study Room 4', tur: 'sinf', x1: 18150, y1: 7800, x2: ICHKI.x, y2: 16600, doska: 'yuqori', eshik: 'SR4', eskiRaqam: '10 va 15 (o\'rta qism)', koridor: 'K2',
+  // 4-xona: doska o'ng asosiy (tashqi) devorda. 1–2-qatorlar butun uzunlik bo'ylab (8 parta),
+  // 3-qator faqat keng qismda (4 parta) — L shaklining tor uchlari 4.5 m chuqur.
+  { kod: 'SR4', nomi: 'Study Room 4', tur: 'sinf', x1: 18150, y1: 7800, x2: ICHKI.x, y2: 16600, doska: 'ong', eshik: 'SR4', eskiRaqam: '10 va 15 (o\'rta qism)', koridor: 'K2',
     bolaklar: [{ x1: 19400, x2: ICHKI.x, y1: 7800, y2: 9400 }, { x1: 18150, x2: ICHKI.x, y1: 9400, y2: 15000 }, { x1: 19400, x2: ICHKI.x, y1: 15000, y2: 16600 }],
     kontur: [[19400, 7800], [ICHKI.x, 7800], [ICHKI.x, 16600], [19400, 16600], [19400, 15000], [18150, 15000], [18150, 9400], [19400, 9400]],
-    sinf: { sxema: [[2, 2, 2], [2, 2, 2], [2, 2, 2], [0, 0, 2]] } },
+    sinf: { ...YON_TOR, sxema: [[2, 2, 2, 2], [2, 2, 2, 2], [0, 2, 2, 0]] } },
   { kod: 'SR5', nomi: 'Study Room 5', tur: 'sinf', x1: 18150, y1: 16700, x2: ICHKI.x, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR5', eskiRaqam: '15', koridor: 'K2', sinf: YON_TOR },
   { kod: 'SR6', nomi: 'Study Room 6', tur: 'sinf', x1: 12150, y1: 16700, x2: 17950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR6', eskiRaqam: '14', koridor: 'K2', sinf: YON_TOR },
   { kod: 'SR7', nomi: 'Study Room 7', tur: 'sinf', x1: 6150, y1: 16700, x2: 11950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR7', eskiRaqam: '13', koridor: 'K2', sinf: YON_TOR },
