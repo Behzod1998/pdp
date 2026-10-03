@@ -21,7 +21,7 @@ XONALAR = [
     ('XZ1', "Offline sotuv (XZ1)"), ('XZ2', "Admin (XZ2)"), ('XZ3', "Ustozlar xonasi (XZ3)"), ('XZ4', "Call-markaz (XZ4)"),
     ('X12', "CEO xonasi (12-xona)"),
     ('K1', "K1 koridori"), ('K2', "K2 koridori"), ('KW', "Koworking zali"), ('ZL', "Kirish zali"),
-    ('ZINA', "Zinapoya"), ('YQ', "Yuqori qavat o'quv xonasi"),
+    ('ZINA', "Zinapoya"), ('YQ', "Yuqori qavat o'quv xonasi (5.45 × 8.60)"),
 ]
 NOM = dict(XONALAR)
 BOLIM = [("O'quv xonalari", ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'YQ']),
@@ -46,6 +46,7 @@ NARX_QATORLAR = [
     ('HeUst', "Eshik ustidagi GKL", '=C{H}-C{Hesh}', "m", "Hisob: devor balandligi − eshik"),
     ('eshEn', "Eshik eni", 0.9, "m", "Chizmadan"),
     ('Hb', "Bambuk panel balandligi", '=C{H}', "m", "Taxmin: poldan shiftgacha. Pastroq bo'lsa, shu katakka raqam yozing"),
+    ('HbYQ', "Bambuk panel balandligi — yuqori qavat o'quv xonasi", 2.5, "m", "Buyurtmachi"),
 ]
 
 # ---------- Batafsil qatorlar ----------
@@ -101,6 +102,12 @@ for o in d['ofislar']:
         qosh(o['kod'], 'Bambuk panel', dv['nom'], dv['uz'] / 1000, 'Hb', narx='bambuk')
         if dv.get('eshik'):
             qosh(o['kod'], 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEn', 'Hesh', narx='bambuk', manfiy=True)
+# Yuqori qavatdagi o'quv xonasi (buyurtmachi bergan chizma: 5.45 × 8.60 m, 46.87 m²) — 3 devorga 2.5 m balandlikda:
+# doska devori va unga qarama-qarshi devor (5.45 m), eshikli uzun devor (8.60 m); derazali uzun devorga qilinmaydi.
+qosh('YQ', 'Bambuk panel', "Doska devori (eni)", 5.45, 'HbYQ', narx='bambuk')
+qosh('YQ', 'Bambuk panel', "Orqa devor (eni)", 5.45, 'HbYQ', narx='bambuk')
+qosh('YQ', 'Bambuk panel', "Uzun devor (eshikli)", 8.60, 'HbYQ', narx='bambuk')
+qosh('YQ', 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEn', 'Hesh', narx='bambuk', manfiy=True)
 qosh('YQ', 'Interaktiv doska', "Yuqori qavatdagi o'quv xonasi uchun", miqdor=1, birlik='dona', narx='doska')
 qosh('ZINA', 'Perila', "Perila (buyurtmachi bergan uzunlik)", 'perilaUz', None, birlik='m', narx='perila')
 
@@ -168,6 +175,7 @@ izohlar = [
     "• Shisha devor: shisha qism (2.5 m) xonaga yoziladi; ustidagi GKL (1 m) ikki tomonlama — xona va koridor tomoni alohida.",
     "• Eshik ustida (eshik tepasidan shiftgacha) GKL — ikki tomonlama. Eshikning o'zi narxi berilmagani uchun kiritilmadi.",
     "• Bambuk panel, poldan shiftgacha: o'quv xonalarida doska devori va orqa devor (interaktiv doska orqasi ayirilmagan); ofis xonalarida ikkala uzun yon devor; CEO xonasida ikkita ichki kar devor, eshik o'rni ayiriladi. Derazali tashqi va shisha devorlarga qilinmaydi.",
+    "• Yuqori qavat o'quv xonasi (5.45 × 8.60 m, buyurtmachi chizmasi): bambuk panel 3 devorga, 2.5 m balandlikda — doska devori, orqa devor va eshikli uzun devor (eshik o'rni ayiriladi); derazali uzun devorga qilinmaydi.",
     "• Interaktiv doska: 7 ta shu qavat sinflariga va 1 ta yuqori qavatdagi o'quv xonasiga — jami 8 ta.",
     "• Perila: buyurtmachi bergan uzunlik (24 m), «Zinapoya» qatorida.",
     "• Uzunliklar chizma v1.0 dan (mavjud holat chizmasining fotosi asosida) — ish boshlanishidan oldin joyida o'lchanadi.",
