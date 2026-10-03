@@ -1,4 +1,5 @@
-# Xarajatlar jadvali (Excel): chizmadagi yangi devorlar, shisha, bambuk panel, interaktiv doska, perila.
+# Xarajatlar jadvali (Excel): chizmadagi yangi devorlar, shisha, bambuk panel, interaktiv doska, perila,
+# yoritish, videokuzatuv va logotiplar.
 # Uzunliklar model.mjs dan (xarajat-malumot.mjs orqali), narx va balandliklar «Narxlar» varag'ida —
 # ularni Excelda o'zgartirsa, butun hisob formulalar bilan qayta hisoblanadi.
 #   python3 xarajatlar.py            → ../hisob/Xadra_2-qavat_xarajatlar_v1.0.xlsx
@@ -21,12 +22,12 @@ XONALAR = [
     ('XZ1', "Offline sotuv (XZ1)"), ('XZ2', "Admin (XZ2)"), ('XZ3', "Ustozlar xonasi (XZ3)"), ('XZ4', "Call-markaz (XZ4)"),
     ('X12', "CEO xonasi (12-xona)"),
     ('K1', "K1 koridori"), ('K2', "K2 koridori"), ('KW', "Koworking zali"), ('ZL', "Kirish zali"),
-    ('ZINA', "Zinapoya"), ('YQ', "Yuqori qavat o'quv xonasi (5.45 × 8.60)"),
+    ('ZINA', "Zinapoya"), ('BQ', "Butun qavat (kamera, logotip)"), ('YQ', "Yuqori qavat o'quv xonasi (5.45 × 8.60)"),
 ]
 NOM = dict(XONALAR)
 BOLIM = [("O'quv xonalari", ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'YQ']),
          ("Ofis xonalari", ['XZ1', 'XZ2', 'XZ3', 'XZ4', 'X12']),
-         ("Umumiy joylar", ['K1', 'K2', 'KW', 'ZL', 'ZINA'])]
+         ("Umumiy joylar", ['K1', 'K2', 'KW', 'ZL', 'ZINA', 'BQ'])]
 KORIDOR = {'XZ1': 'K2', 'XZ2': 'K2', 'XZ3': 'K1', 'XZ4': 'K1'}
 UMUMIY = {'K1', 'K2', 'KW', 'ZL'}
 
@@ -39,6 +40,14 @@ NARX_QATORLAR = [
     ('doska', "Interaktiv doska", 1032, "$/dona", "Buyurtmachi; 7 ta shu qavat sinflariga + 1 ta yuqori qavatdagi sinfga = 8 ta"),
     ('perila', "Perila", 84, "$/m", "Buyurtmachi"),
     ('perilaUz', "Perila uzunligi", 24, "m", "Buyurtmachi"),
+    ('yorKatta', "Yoritish — koridor va koworking (har biriga)", 336, "$/joy", "Buyurtmachi: K1, K2 koridorlari va koworking zali"),
+    ('yorXona', "Yoritish — xona (har biriga)", 168, "$/xona", "Buyurtmachi: 7 ta o'quv xonasi, 4 ta ofis xonasi va CEO xonasi"),
+    ('kamera', "Videokamera", 40, "$/dona", "Buyurtmachi"),
+    ('kameraSoni', "Videokameralar soni", 16, "dona", "Buyurtmachi"),
+    ('kameraOrn', "Kamera o'rnatish (har biri)", 21, "$/dona", "Buyurtmachi"),
+    ('nvr', "NVR (videoregistrator)", 840, "$/dona", "Buyurtmachi"),
+    ('kabel', "Kamera kabellari (jami)", 303, "$/komplekt", "Buyurtmachi: jami summa"),
+    ('logo', "Logotiplar (jami)", 2500, "$/komplekt", "Buyurtmachi: jami summa"),
     ('H', "Devor balandligi (poldan shiftgacha)", 3.5, "m", "Buyurtmachi: bino balandligi 3.5 m"),
     ('Hsh', "Shisha qism balandligi", 2.5, "m", "Buyurtmachi"),
     ('Hust', "Shisha ustidagi GKL", '=C{H}-C{Hsh}', "m", "Hisob: devor balandligi − shisha"),
@@ -111,7 +120,21 @@ qosh('YQ', 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEn', 'Hesh', narx='bam
 qosh('YQ', 'Interaktiv doska', "Yuqori qavatdagi o'quv xonasi uchun", miqdor=1, birlik='dona', narx='doska')
 qosh('ZINA', 'Perila', "Perila (buyurtmachi bergan uzunlik)", 'perilaUz', None, birlik='m', narx='perila')
 
-TURLAR = ['Shisha devor', 'Gips karton (GKL)', 'Bambuk panel', 'Interaktiv doska', 'Perila']
+# Yoritish (buyurtmachi narxi joy boshiga): koridorlar va koworking — katta, xonalar — kichik komplekt
+for kod in ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2', 'XZ3', 'XZ4', 'X12']:
+    qosh(kod, 'Yoritish', "Lampalar (xona uchun)", miqdor=1, birlik='komplekt', narx='yorXona')
+for kod in ['K1', 'K2', 'KW']:
+    qosh(kod, 'Yoritish', "Lampalar", miqdor=1, birlik='komplekt', narx='yorKatta')
+# Videokuzatuv va logotiplar — butun qavat uchun
+qosh('BQ', 'Kamera tizimi', "Videokamera", miqdor='kameraSoni', birlik='dona', narx='kamera')
+qosh('BQ', 'Kamera tizimi', "Kamera o'rnatish", miqdor='kameraSoni', birlik='dona', narx='kameraOrn')
+qosh('BQ', 'Kamera tizimi', "NVR (videoregistrator)", miqdor=1, birlik='dona', narx='nvr')
+qosh('BQ', 'Kamera tizimi', "Kabellar (jami)", miqdor=1, birlik='komplekt', narx='kabel')
+qosh('BQ', 'Logotip', "Logotiplar (jami)", miqdor=1, birlik='komplekt', narx='logo')
+
+TURLAR = ['Shisha devor', 'Gips karton (GKL)', 'Bambuk panel', 'Interaktiv doska', 'Perila', 'Yoritish', 'Kamera tizimi', 'Logotip']
+JUFT = TURLAR[:5]    # «Xonalar bo'yicha» varag'ida miqdor va summa ustunlari bilan
+YAKKA = TURLAR[5:]   # faqat summa ustuni bilan
 for k in qatorlar:
     qatorlar[k].sort(key=lambda q: TURLAR.index(q['tur']))
 
@@ -166,7 +189,7 @@ for i, (k, nom, qiymat, birlik, manba) in enumerate(NARX_QATORLAR):
             q.fill = fill_sariq   # sukut bo'yicha devor balandligi, lekin o'zgartirish mumkin
     else:
         q.font, q.fill = f_kok, fill_sariq
-    q.number_format = USD if birlik.startswith('$') else '0.00'
+    q.number_format = USD if birlik.startswith('$') else ('0' if birlik == 'dona' else '0.00')
     wn.cell(row=rr, column=1).alignment = Alignment(horizontal='center')
 oxir = r + len(NARX_QATORLAR)
 izohlar = [
@@ -179,7 +202,9 @@ izohlar = [
     "• Interaktiv doska: 7 ta shu qavat sinflariga va 1 ta yuqori qavatdagi o'quv xonasiga — jami 8 ta.",
     "• Perila: buyurtmachi bergan uzunlik (24 m), «Zinapoya» qatorida.",
     "• Uzunliklar chizma v1.0 dan (mavjud holat chizmasining fotosi asosida) — ish boshlanishidan oldin joyida o'lchanadi.",
-    "• Kirmagan: eshiklar, pol, shift, bo'yoq, elektr, ventilyatsiya va konditsioner, mebel, ish haqi (agar narxga kirmagan bo'lsa).",
+    "• Yoritish: koridorlar (K1, K2) va koworking zaliga 336 $ dan, o'quv xonalari (7), ofis xonalari (4) va CEO xonasiga 168 $ dan. Kirish zali, WC va yuqori qavat xonasi kiritilmagan.",
+    "• Videokuzatuv: 16 ta kamera (40 $) va o'rnatish (21 $ dan), NVR, kabellar jami; logotiplar jami — «Butun qavat» qatorida.",
+    "• Kirmagan: eshiklar, pol, shift, bo'yoq, rozetka va elektr kabellari (yoritishdan tashqari), internet/Wi-Fi, ventilyatsiya va konditsioner, mebel, ish haqi (agar narxga kirmagan bo'lsa).",
     "Ranglar: ko'k — qo'lda kiritilgan qiymat; yashil — boshqa varaqdan olingan; qora — formula; sariq fon — o'zgartirish mumkin bo'lgan kataklar.",
 ]
 for i, t in enumerate(izohlar):
@@ -227,7 +252,7 @@ for kod, nom in XONALAR:
         elif q['birlik'] == 'm':
             miqdor = f"=E{r}"
         else:
-            miqdor = q['miqdor']
+            miqdor = narx_havola(q['miqdor']) if isinstance(q['miqdor'], str) else q['miqdor']
         vals = [n, nom, q['tur'], q['joy'], uz_val, bal_val, miqdor, q['birlik'], narx_havola(q['narx']), f"=G{r}*I{r}"]
         for j, v in enumerate(vals, 1):
             c = wd.cell(row=r, column=j, value=v)
@@ -235,12 +260,12 @@ for kod, nom in XONALAR:
         wd.cell(row=r, column=5).font = f_yashil if isinstance(uz, str) else f_kok
         if bal_val:
             wd.cell(row=r, column=6).font = f_yashil
-        if q['birlik'] == 'dona':
-            wd.cell(row=r, column=7).font = f_kok
+        if q['birlik'] not in ('m²', 'm'):
+            wd.cell(row=r, column=7).font = f_yashil if isinstance(q['miqdor'], str) else f_kok
         wd.cell(row=r, column=9).font = f_yashil
         wd.cell(row=r, column=1).alignment = Alignment(horizontal='center')
         wd.cell(row=r, column=8).alignment = Alignment(horizontal='center')
-        for j, fmt in [(5, SON), (6, SON), (7, SON if q['birlik'] != 'dona' else DONA), (9, USD), (10, USD)]:
+        for j, fmt in [(5, SON), (6, SON), (7, SON if q['birlik'] in ('m²', 'm') else DONA), (9, USD), (10, USD)]:
             wd.cell(row=r, column=j).number_format = fmt
         r += 1
     c = wd.cell(row=r, column=4, value=f"Jami: {nom}")
@@ -271,7 +296,10 @@ ws['A1'].font = f_sarlavha
 ws['A2'] = "Har bir qator «Hisob (batafsil)» varag'idan olinadi (SUMIFS). Narxlarni «Narxlar» varag'ida o'zgartiring."
 ws['A2'].font = f_kichik
 UST = ['Xona', 'Shisha devor, m²', 'Shisha devor, $', 'Gips karton (GKL), m²', 'Gips karton (GKL), $',
-       'Bambuk panel, m²', 'Bambuk panel, $', 'Interaktiv doska, dona', 'Interaktiv doska, $', 'Perila, m', 'Perila, $', 'Jami, $']
+       'Bambuk panel, m²', 'Bambuk panel, $', 'Interaktiv doska, dona', 'Interaktiv doska, $', 'Perila, m', 'Perila, $',
+       'Yoritish, $', 'Kamera tizimi, $', 'Logotip, $', 'Jami, $']
+NC = len(UST)                      # ustunlar soni
+JAMI_UST = get_column_letter(NC)   # «Jami, $» ustuni
 for i, h in enumerate(UST, 1):
     c = ws.cell(row=4, column=i, value=h)
     c.font, c.fill, c.border = f_bosh, fill_bosh, chegara
@@ -284,53 +312,57 @@ bolim_jami = []
 for bolim, kodlar in BOLIM:
     c = ws.cell(row=r, column=1, value=bolim)
     c.font = f_qalin
-    for j in range(1, 13):
+    for j in range(1, NC + 1):
         ws.cell(row=r, column=j).fill = fill_guruh
     r += 1
     bosh = r
     for kod in kodlar:
         nom = NOM[kod]
         ws.cell(row=r, column=1, value=nom).font = f_oddiy
-        for t, tur in enumerate(TURLAR):
+        for t, tur in enumerate(JUFT):
             mq = ws.cell(row=r, column=2 + 2 * t, value=f'=SUMIFS({rng("G")},{rng("B")},$A{r},{rng("C")},"{tur}")')
             sm = ws.cell(row=r, column=3 + 2 * t, value=f'=SUMIFS({rng("J")},{rng("B")},$A{r},{rng("C")},"{tur}")')
             mq.font = sm.font = f_yashil
             mq.number_format = DONA if tur == 'Interaktiv doska' else SON
             sm.number_format = USD0
-        jm = ws.cell(row=r, column=12, value=f"=C{r}+E{r}+G{r}+I{r}+K{r}")
+        for t, tur in enumerate(YAKKA):
+            sm = ws.cell(row=r, column=2 + 2 * len(JUFT) + t, value=f'=SUMIFS({rng("J")},{rng("B")},$A{r},{rng("C")},"{tur}")')
+            sm.font, sm.number_format = f_yashil, USD0
+        summa_ust = [get_column_letter(3 + 2 * t) for t in range(len(JUFT))] + [get_column_letter(2 + 2 * len(JUFT) + t) for t in range(len(YAKKA))]
+        jm = ws.cell(row=r, column=NC, value='=' + '+'.join(f"{L}{r}" for L in summa_ust))
         jm.font, jm.number_format = f_qalin, USD0
-        for j in range(1, 13):
+        for j in range(1, NC + 1):
             ws.cell(row=r, column=j).border = chegara
         r += 1
     ws.cell(row=r, column=1, value=f"{bolim} — jami").font = f_qalin
-    for j in range(2, 13):
+    for j in range(2, NC + 1):
         L = get_column_letter(j)
         c = ws.cell(row=r, column=j, value=f"=SUM({L}{bosh}:{L}{r - 1})")
         c.font = f_qalin
         c.number_format = ws.cell(row=r - 1, column=j).number_format
-    for j in range(1, 13):
+    for j in range(1, NC + 1):
         ws.cell(row=r, column=j).fill = fill_jami
         ws.cell(row=r, column=j).border = chegara
     bolim_jami.append(r)
     r += 2
 ws.cell(row=r, column=1, value="JAMI").font = Font(name=SHRIFT, size=11, bold=True)
-for j in range(2, 13):
+for j in range(2, NC + 1):
     L = get_column_letter(j)
     c = ws.cell(row=r, column=j, value='=' + '+'.join(f"{L}{x}" for x in bolim_jami))
     c.font = Font(name=SHRIFT, size=11, bold=True)
     c.number_format = ws.cell(row=bolim_jami[0], column=j).number_format
-for j in range(1, 13):
+for j in range(1, NC + 1):
     ws.cell(row=r, column=j).fill = PatternFill('solid', fgColor='D9E1F2')
     ws.cell(row=r, column=j).border = chegara
 JAMI_QATOR = r
 r += 2
 ws.cell(row=r, column=1, value="Tekshiruv: batafsil varaqdagi jami bilan farq (0 bo'lishi kerak)").font = f_kichik
-c = ws.cell(row=r, column=12, value=f"=L{JAMI_QATOR}-{D_}!J{OXIRGI + 1}")
+c = ws.cell(row=r, column=NC, value=f"={JAMI_UST}{JAMI_QATOR}-{D_}!J{OXIRGI + 1}")
 c.font, c.number_format = f_kichik, USD
 ws.column_dimensions['A'].width = 28
-for j in range(2, 13):
-    ws.column_dimensions[get_column_letter(j)].width = 13
-ws.column_dimensions['L'].width = 14
+for j in range(2, NC + 1):
+    ws.column_dimensions[get_column_letter(j)].width = 12
+ws.column_dimensions[JAMI_UST].width = 14
 ws.freeze_panes = 'B5'
 
 for sh in wb.worksheets:
