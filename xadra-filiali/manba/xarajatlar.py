@@ -75,6 +75,18 @@ NARX_QATORLAR = [
     ('kafelUsta', "Kafel yotqizish (usta)", 100000, "so'm/m²", "Buyurtmachi"),
     ('kafelDevor', "Kafel — erkaklar hojatxonasi devori", 58, "m²", "Buyurtmachi"),
     ('kafelPol', "Kafel — erkaklar hojatxonasi poli", 16, "m²", "Buyurtmachi"),
+    ('kabina', "Hojatxona kabinasi", 1200000, "so'm/dona", "Buyurtmachi"),
+    ('kabinaSoni', "Hojatxona kabinalari soni", 4, "dona", "Buyurtmachi: erkaklar hojatxonasi (3-qavat)"),
+    ('issiqQuvur', "Issiq suv quvuri", 25000, "so'm/m", "Buyurtmachi"),
+    ('issiqUz', "Issiq suv quvuri uzunligi", 40, "m", "Buyurtmachi"),
+    ('sovuqQuvur', "Sovuq suv quvuri", 12000, "so'm/m", "Buyurtmachi «12 0000» deb yozgan — 12 000 deb olindi (issiq suv quvuridan arzon); tekshiring"),
+    ('sovuqUz', "Sovuq suv quvuri uzunligi", 40, "m", "Buyurtmachi"),
+    ('aksessuar', "Quvur aksessuarlari (fitinglar)", 5000, "so'm/dona", "Buyurtmachi"),
+    ('aksessuarSoni', "Quvur aksessuarlari soni", 100, "dona", "Buyurtmachi: jami 500 000 so'm"),
+    ('kanal', "Kanalizatsiya quvuri (40 m) va otvodlar", 4000000, "so'm/komplekt", "Buyurtmachi: jami summa"),
+    ('kond2', "Konditsioner — 2-qavat (2 ta, 100 mingtalik, o'rnatish bilan)", 7000, "$/komplekt", "Buyurtmachi: 2 ta uchun jami, o'rnatish bilan"),
+    ('vozdux', "Havo kanallari (vozduxovod), 200 m²", 7000, "$/komplekt", "Buyurtmachi: jami summa"),
+    ('kond3', "Konditsioner — 3-qavat o'quv xonasi", 1000, "$/dona", "Buyurtmachi"),
     ('zaxira', "Kutilmagan xarajatlar", 0.10, "ulush", "Buyurtmachi: umumiy summadan 10%"),
     ('H', "Devor balandligi (poldan shiftgacha)", 3.5, "m", "Buyurtmachi: bino balandligi 3.5 m"),
     ('Hsh', "Shisha qism balandligi", 2.5, "m", "Buyurtmachi"),
@@ -158,6 +170,11 @@ for kalit, nom in [('chashagen', "Chashagen — 3 ta erkaklar (3-qavat), 1 ta ay
                    ('rakovinaSm', "Rakovina smesiteli — har bir rakovinaga")]:
     qosh('HJ', 'Santexnika', nom, miqdor=f'{kalit}Soni', birlik='dona', narx=('som', kalit))
 qosh('HJ', 'Santexnika', "Santexnika nuqtalari — usta ishi (suv va kanalizatsiya)", miqdor='tochkaSoni', birlik='nuqta', narx=('som', 'tochka'))
+qosh('HJ', 'Santexnika', "Hojatxona kabinalari (erkaklar, 3-qavat)", miqdor='kabinaSoni', birlik='dona', narx=('som', 'kabina'))
+qosh('HJ', 'Santexnika', "Issiq suv quvuri", miqdor='issiqUz', birlik='m', narx=('som', 'issiqQuvur'))
+qosh('HJ', 'Santexnika', "Sovuq suv quvuri", miqdor='sovuqUz', birlik='m', narx=('som', 'sovuqQuvur'))
+qosh('HJ', 'Santexnika', "Quvur aksessuarlari (fitinglar)", miqdor='aksessuarSoni', birlik='dona', narx=('som', 'aksessuar'))
+qosh('HJ', 'Santexnika', "Kanalizatsiya quvuri (40 m) va otvodlar (jami)", miqdor=1, birlik='komplekt', narx=('som', 'kanal'))
 qosh('HJ', 'Kafel', "Erkaklar hojatxonasi devori — kafel (material)", miqdor='kafelDevor', birlik='m²', narx=('som', 'kafel'))
 qosh('HJ', 'Kafel', "Erkaklar hojatxonasi devori — yotqizish (usta)", miqdor='kafelDevor', birlik='m²', narx=('som', 'kafelUsta'))
 qosh('HJ', 'Kafel', "Erkaklar hojatxonasi poli — kafel (material)", miqdor='kafelPol', birlik='m²', narx=('som', 'kafel'))
@@ -182,9 +199,13 @@ for w in d['buziladi']:
     joy = f"{w['izoh']} o'rnidagi bo'lak" if 'koridori' in w['izoh'] else w['izoh']
     qosh('BQ', 'Buzish ishlari', f"Devorni buzish — {joy}", w['uz'] / 1000, 'H', narx=('som', 'buzish'))
 qosh('BQ', 'Buzish ishlari', "Qurilish chiqindisini olib chiqish (jami)", miqdor=1, birlik='komplekt', narx=('som', 'chiqindi'))
+# Konditsioner va ventilyatsiya (buyurtmachi summalari, o'rnatish bilan)
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Konditsioner — 2 ta, 100 mingtalik, o'rnatish bilan (jami)", miqdor=1, birlik='komplekt', narx='kond2')
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Havo kanallari (vozduxovod), 200 m² (jami)", miqdor=1, birlik='komplekt', narx='vozdux')
+qosh('YQ', 'Konditsioner va ventilyatsiya', "Konditsioner (o'quv xonasi)", miqdor=1, birlik='dona', narx='kond3')
 
 TURLAR = ['Shisha devor', 'Gips karton (GKL)', 'Bambuk panel', 'Interaktiv doska', 'Perila', 'Yoritish', 'Kamera tizimi', 'Logotip',
-          'Matli plyonka', "Yong'in xavfsizligi", 'Buzish ishlari', 'Santexnika', 'Kafel']
+          'Matli plyonka', "Yong'in xavfsizligi", 'Buzish ishlari', 'Santexnika', 'Kafel', 'Konditsioner va ventilyatsiya']
 JUFT = TURLAR[:5]    # «Xonalar bo'yicha» varag'ida miqdor va summa ustunlari bilan
 YAKKA = TURLAR[5:]   # faqat summa ustuni bilan
 for k in qatorlar:
@@ -261,7 +282,9 @@ izohlar = [
     "• Devor buzish: chizmadagi buziladigan devorlar uzunligi × devor balandligi (3.5 m) × 50 000 so'm/m².",
     "• Kutilmagan xarajatlar: umumiy summadan 10% — «Xonalar bo'yicha» varag'ining oxirida.",
     "• 3-qavat: 5-xona — o'quv xonasi (24 o'rin, bambuk panel va interaktiv doska); 2-xona — erkaklar hojatxonasi. Santexnika soni ikkala hojatxona uchun jami (2-qavatdagisi — ayollar: 2 unitaz, 1 chashagen); kafel faqat erkaklar hojatxonasi uchun (devor 58 m², pol 16 m²).",
-    "• Kirmagan: konditsioner va ventilyatsiya (usta bilan keyin aniqlanadi); mebel va pol (kafel) mavjud; internet — mavjud; eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
+    "• Konditsioner va ventilyatsiya (buyurtmachi summalari, o'rnatish bilan): 2-qavatga 2 ta 100 mingtalik konditsioner va 200 m² havo kanali — «Butun qavat» qatorida; 3-qavat o'quv xonasiga 1 ta konditsioner.",
+    "• Santexnika: 4 ta kabina, issiq va sovuq suv quvurlari (40 m dan), 100 ta aksessuar, kanalizatsiya quvuri va otvodlar — «Hojatxonalar» qatorida.",
+    "• Kirmagan: mebel va pol (kafel) mavjud; internet — mavjud; eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
     "Ranglar: ko'k — qo'lda kiritilgan qiymat; yashil — boshqa varaqdan olingan; qora — formula; sariq fon — o'zgartirish mumkin bo'lgan kataklar.",
 ]
 for i, t in enumerate(izohlar):
@@ -357,7 +380,7 @@ ws['A2'].font = f_kichik
 UST = ['Xona', 'Shisha (devor va eshik), m²', 'Shisha (devor va eshik), $', 'Gips karton (GKL), m²', 'Gips karton (GKL), $',
        'Bambuk panel, m²', 'Bambuk panel, $', 'Interaktiv doska, dona', 'Interaktiv doska, $', 'Perila, m', 'Perila, $',
        'Yoritish, $', 'Kamera tizimi, $', 'Logotip, $', 'Matli plyonka, $', "Yong'in xavfsizligi, $", 'Buzish ishlari, $',
-       'Santexnika, $', 'Kafel, $', 'Jami, $']
+       'Santexnika, $', 'Kafel, $', 'Konditsioner va ventilyatsiya, $', 'Jami, $']
 NC = len(UST)                      # ustunlar soni
 JAMI_UST = get_column_letter(NC)   # «Jami, $» ustuni
 for i, h in enumerate(UST, 1):
@@ -439,6 +462,67 @@ for j in range(2, NC + 1):
     ws.column_dimensions[get_column_letter(j)].width = 12
 ws.column_dimensions[JAMI_UST].width = 14
 ws.freeze_panes = 'B5'
+
+# ---------- 0. Yakuniy: xarajat turlari va bo'limlar bo'yicha jami ----------
+wy = wb.create_sheet('Yakuniy', 0)
+wy['A1'] = "PDP Academy · Xadra filiali (2 va 3-qavat): jami xarajatlar — yakuniy"
+wy['A1'].font = f_sarlavha
+wy['A2'] = "Barcha summalar «Hisob (batafsil)» varag'idan formulalar bilan olinadi; so'm — «Narxlar» varag'idagi kurs bo'yicha."
+wy['A2'].font = f_kichik
+KURS = f"Narxlar!$C${N['kurs']}"
+def sarlavha(row, nomlar):
+    for i, h in enumerate(nomlar, 1):
+        c = wy.cell(row=row, column=i, value=h)
+        c.font, c.fill, c.border = f_bosh, fill_bosh, chegara
+        c.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+def qator(row, vals, fmts, font=f_oddiy, fill=None):
+    for i, (v, fm) in enumerate(zip(vals, fmts), 1):
+        c = wy.cell(row=row, column=i, value=v)
+        c.font, c.border = font, chegara
+        if fm: c.number_format = fm
+        if fill: c.fill = fill
+    wy.cell(row=row, column=1).alignment = Alignment(horizontal='center')
+SOM = '#,##0 "so\'m"'
+r = 4
+wy.cell(row=r, column=1, value="1. Xarajat turlari bo'yicha").font = f_qalin
+r += 1
+sarlavha(r, ['№', 'Xarajat turi', 'Summa, $', "Summa, so'm", 'Ulush'])
+r += 1
+tur_bosh = r
+for i, tur in enumerate(TURLAR, 1):
+    qator(r, [i, tur, f'=SUMIFS({rng("J")},{rng("C")},"{tur}")', f"=C{r}*{KURS}", f"=IF($C${tur_bosh + len(TURLAR)}=0,0,C{r}/$C${tur_bosh + len(TURLAR)})"],
+          [None, None, USD, SOM, '0.0%'])
+    wy.cell(row=r, column=3).font = f_yashil
+    r += 1
+JY = r
+qator(r, ['', 'JAMI', f"=SUM(C{tur_bosh}:C{r - 1})", f"=C{r}*{KURS}", f"=SUM(E{tur_bosh}:E{r - 1})"], [None, None, USD, SOM, '0.0%'], f_qalin, fill_jami)
+r += 1
+qator(r, ['', f'="Kutilmagan xarajatlar ("&TEXT(Narxlar!$C${N["zaxira"]},"0%")&")"', f"=C{JY}*Narxlar!$C${N['zaxira']}", f"=C{r}*{KURS}", ''], [None, None, USD, SOM, None], f_oddiy, fill_jami)
+r += 1
+UY = r
+qator(r, ['', 'UMUMIY JAMI', f"=C{JY}+C{JY + 1}", f"=C{r}*{KURS}", ''], [None, None, USD, SOM, None], Font(name=SHRIFT, size=11, bold=True), PatternFill('solid', fgColor='D9E1F2'))
+r += 2
+wy.cell(row=r, column=1, value="2. Qavat va bo'limlar bo'yicha").font = f_qalin
+r += 1
+sarlavha(r, ['№', "Bo'lim", 'Summa, $', "Summa, so'm", 'Ulush'])
+r += 1
+b_bosh = r
+SX = "'Xonalar bo''yicha'"
+for i, ((bolim, _), qq) in enumerate(zip(BOLIM, bolim_jami), 1):
+    qator(r, [i, bolim, f"={SX}!${JAMI_UST}${qq}", f"=C{r}*{KURS}", f"=IF($C${b_bosh + len(BOLIM)}=0,0,C{r}/$C${b_bosh + len(BOLIM)})"], [None, None, USD, SOM, '0.0%'])
+    wy.cell(row=r, column=3).font = f_yashil
+    r += 1
+qator(r, ['', 'JAMI', f"=SUM(C{b_bosh}:C{r - 1})", f"=C{r}*{KURS}", f"=SUM(E{b_bosh}:E{r - 1})"], [None, None, USD, SOM, '0.0%'], f_qalin, fill_jami)
+r += 2
+wy.cell(row=r, column=2, value="Tekshiruv: ikki jadval jamisi farqi (0 bo'lishi kerak)").font = f_kichik
+c = wy.cell(row=r, column=3, value=f"=C{JY}-C{r - 2}")
+c.font, c.number_format = f_kichik, USD
+r += 1
+wy.cell(row=r, column=2, value="Dollar kursi (so'm/$) — «Narxlar» varag'idan").font = f_kichik
+c = wy.cell(row=r, column=3, value=f"={KURS}")
+c.font, c.number_format = f_yashil, '#,##0'
+for col, w in zip('ABCDE', [5, 46, 16, 20, 9]):
+    wy.column_dimensions[col].width = w
 
 for sh in wb.worksheets:
     sh.page_setup.orientation = 'landscape'
