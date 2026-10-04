@@ -20,7 +20,7 @@ function partaBelgi(id) {
   return `<rect x="${-w / 2}" y="${-d / 2}" width="${w}" height="${d}" fill="url(#${id}yog)" stroke="#a88155" stroke-width="7"/>${noutbuk}`;
 }
 
-function defs(id) {
+export function defs(id) {
   const parket = [];
   const ranglar = ['#e6cda5', '#dfc49a', '#e9d3ae', '#dbbd90', '#e3c89f'];
   [0, 450, 900, 225, 675, 1125].forEach((o, i) => {

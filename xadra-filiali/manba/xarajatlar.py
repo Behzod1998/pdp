@@ -3,7 +3,7 @@
 # 10% kutilmagan xarajat. So'mdagi narxlar «Narxlar» varag'idagi kurs bo'yicha dollarga o'tkaziladi.
 # Uzunliklar model.mjs dan (xarajat-malumot.mjs orqali), narx va balandliklar «Narxlar» varag'ida —
 # ularni Excelda o'zgartirsa, butun hisob formulalar bilan qayta hisoblanadi.
-#   python3 xarajatlar.py            → ../hisob/Xadra_2-qavat_xarajatlar_v1.0.xlsx
+#   python3 xarajatlar.py            → ../hisob/Xadra_xarajatlar_v1.0.xlsx (2 va 3-qavat)
 import json
 import subprocess
 from pathlib import Path
@@ -13,7 +13,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 BU = Path(__file__).resolve().parent
-CHIQISH = BU.parent / 'hisob' / 'Xadra_2-qavat_xarajatlar_v1.0.xlsx'
+CHIQISH = BU.parent / 'hisob' / 'Xadra_xarajatlar_v1.0.xlsx'
 
 d = json.loads(subprocess.check_output(['node', str(BU / 'xarajat-malumot.mjs')], text=True))
 
@@ -23,12 +23,14 @@ XONALAR = [
     ('XZ1', "Offline sotuv (XZ1)"), ('XZ2', "Admin (XZ2)"), ('XZ3', "Ustozlar xonasi (XZ3)"), ('XZ4', "Call-markaz (XZ4)"),
     ('X12', "CEO xonasi (12-xona)"),
     ('K1', "K1 koridori"), ('K2', "K2 koridori"), ('KW', "Koworking zali"), ('ZL', "Kirish zali"),
-    ('ZINA', "Zinapoya"), ('BQ', "Butun qavat (umumiy ishlar)"), ('YQ', "Yuqori qavat o'quv xonasi (5.45 × 8.60)"),
+    ('ZINA', "Zinapoya"), ('BQ', "Butun qavat (umumiy ishlar)"), ('YQ', "3-qavat 5-xona — o'quv xonasi (24 o'rin)"),
+    ('HJ', "Hojatxonalar (3-qavat erkaklar, 2-qavat ayollar)"),
 ]
 NOM = dict(XONALAR)
-BOLIM = [("O'quv xonalari", ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'YQ']),
-         ("Ofis xonalari", ['XZ1', 'XZ2', 'XZ3', 'XZ4', 'X12']),
-         ("Umumiy joylar", ['K1', 'K2', 'KW', 'ZL', 'ZINA', 'BQ'])]
+BOLIM = [("2-qavat: o'quv xonalari", ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7']),
+         ("2-qavat: ofis xonalari", ['XZ1', 'XZ2', 'XZ3', 'XZ4', 'X12']),
+         ("2-qavat: umumiy joylar", ['K1', 'K2', 'KW', 'ZL', 'ZINA', 'BQ']),
+         ("3-qavat va hojatxonalar", ['YQ', 'HJ'])]
 KORIDOR = {'XZ1': 'K2', 'XZ2': 'K2', 'XZ3': 'K1', 'XZ4': 'K1'}
 UMUMIY = {'K1', 'K2', 'KW', 'ZL'}
 
@@ -55,6 +57,24 @@ NARX_QATORLAR = [
     ('yongin', "Yong'in xavfsizligi (signalizatsiya, o't o'chirgich, belgilar, avariya chiroqlari)", 18000000, "so'm/komplekt", "Buyurtmachi: jami summa"),
     ('buzish', "Devor buzish", 50000, "so'm/m²", "Buyurtmachi"),
     ('chiqindi', "Qurilish chiqindisini olib chiqish", 1200000, "so'm/komplekt", "Buyurtmachi: jami summa"),
+    ('chashagen', "Chashagen", 700000, "so'm/dona", "Buyurtmachi"),
+    ('chashagenSoni', "Chashagen soni", 4, "dona", "Buyurtmachi: 3 ta erkaklar (3-qavat), 1 ta ayollar (2-qavat)"),
+    ('unitaz', "Unitaz", 1200000, "so'm/dona", "Buyurtmachi"),
+    ('unitazSoni', "Unitaz soni", 3, "dona", "Buyurtmachi: 1 ta erkaklar, 2 ta ayollar"),
+    ('rakovina', "Rakovina", 650000, "so'm/dona", "Buyurtmachi"),
+    ('rakovinaSoni', "Rakovina soni", 4, "dona", "Buyurtmachi: 2 ta erkaklar hojatxonasida, qolgan 2 tasi ayollarnikida"),
+    ('mustahab', "Mustahab", 200000, "so'm/dona", "Buyurtmachi"),
+    ('mustahabSoni', "Mustahab soni", 7, "dona", "Buyurtmachi: har bir unitaz va chashagenga (4 + 3)"),
+    ('taxoratSm', "Taxorat smesiteli", 400000, "so'm/dona", "Buyurtmachi"),
+    ('taxoratSmSoni', "Taxorat smesiteli soni", 4, "dona", "Buyurtmachi: 3 tasi erkaklar taxorat joyida, 1 tasi ayollarnikida"),
+    ('rakovinaSm', "Rakovina smesiteli", 400000, "so'm/dona", "Buyurtmachi"),
+    ('rakovinaSmSoni', "Rakovina smesiteli soni", 4, "dona", "Buyurtmachi: har bir rakovinaga"),
+    ('tochka', "Santexnika nuqtasi (usta ishi)", 1000000, "so'm/nuqta", "Buyurtmachi"),
+    ('tochkaSoni', "Santexnika nuqtalari soni", 16, "nuqta", "Buyurtmachi"),
+    ('kafel', "Kafel (material)", 100000, "so'm/m²", "Buyurtmachi"),
+    ('kafelUsta', "Kafel yotqizish (usta)", 100000, "so'm/m²", "Buyurtmachi"),
+    ('kafelDevor', "Kafel — erkaklar hojatxonasi devori", 58, "m²", "Buyurtmachi"),
+    ('kafelPol', "Kafel — erkaklar hojatxonasi poli", 16, "m²", "Buyurtmachi"),
     ('zaxira', "Kutilmagan xarajatlar", 0.10, "ulush", "Buyurtmachi: umumiy summadan 10%"),
     ('H', "Devor balandligi (poldan shiftgacha)", 3.5, "m", "Buyurtmachi: bino balandligi 3.5 m"),
     ('Hsh', "Shisha qism balandligi", 2.5, "m", "Buyurtmachi"),
@@ -128,7 +148,20 @@ qosh('YQ', 'Bambuk panel', "Doska devori (eni)", 5.45, 'HbYQ', narx='bambuk')
 qosh('YQ', 'Bambuk panel', "Orqa devor (eni)", 5.45, 'HbYQ', narx='bambuk')
 qosh('YQ', 'Bambuk panel', "Uzun devor (eshikli)", 8.60, 'HbYQ', narx='bambuk')
 qosh('YQ', 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEn', 'Hesh', narx='bambuk', manfiy=True)
-qosh('YQ', 'Interaktiv doska', "Yuqori qavatdagi o'quv xonasi uchun", miqdor=1, birlik='dona', narx='doska')
+qosh('YQ', 'Interaktiv doska', "Shimoliy devorga (eshikdan kirganda chapda)", miqdor=1, birlik='dona', narx='doska')
+# Hojatxonalar: santexnika ikkala qavat uchun jami (buyurtmachi bergan sonlar), kafel — faqat erkaklar hojatxonasi
+for kalit, nom in [('chashagen', "Chashagen — 3 ta erkaklar (3-qavat), 1 ta ayollar (2-qavat)"),
+                   ('unitaz', "Unitaz — 1 ta erkaklar, 2 ta ayollar"),
+                   ('rakovina', "Rakovina — 2 ta erkaklar, 2 ta ayollar"),
+                   ('mustahab', "Mustahab — har bir unitaz va chashagenga"),
+                   ('taxoratSm', "Taxorat smesiteli — 3 ta erkaklar taxorat joyida, 1 ta ayollar"),
+                   ('rakovinaSm', "Rakovina smesiteli — har bir rakovinaga")]:
+    qosh('HJ', 'Santexnika', nom, miqdor=f'{kalit}Soni', birlik='dona', narx=('som', kalit))
+qosh('HJ', 'Santexnika', "Santexnika nuqtalari — usta ishi (suv va kanalizatsiya)", miqdor='tochkaSoni', birlik='nuqta', narx=('som', 'tochka'))
+qosh('HJ', 'Kafel', "Erkaklar hojatxonasi devori — kafel (material)", miqdor='kafelDevor', birlik='m²', narx=('som', 'kafel'))
+qosh('HJ', 'Kafel', "Erkaklar hojatxonasi devori — yotqizish (usta)", miqdor='kafelDevor', birlik='m²', narx=('som', 'kafelUsta'))
+qosh('HJ', 'Kafel', "Erkaklar hojatxonasi poli — kafel (material)", miqdor='kafelPol', birlik='m²', narx=('som', 'kafel'))
+qosh('HJ', 'Kafel', "Erkaklar hojatxonasi poli — yotqizish (usta)", miqdor='kafelPol', birlik='m²', narx=('som', 'kafelUsta'))
 qosh('ZINA', 'Perila', "Perila (buyurtmachi bergan uzunlik)", 'perilaUz', None, birlik='m', narx='perila')
 
 # Yoritish (buyurtmachi narxi joy boshiga): koridorlar va koworking — katta, xonalar — kichik komplekt
@@ -151,7 +184,7 @@ for w in d['buziladi']:
 qosh('BQ', 'Buzish ishlari', "Qurilish chiqindisini olib chiqish (jami)", miqdor=1, birlik='komplekt', narx=('som', 'chiqindi'))
 
 TURLAR = ['Shisha devor', 'Gips karton (GKL)', 'Bambuk panel', 'Interaktiv doska', 'Perila', 'Yoritish', 'Kamera tizimi', 'Logotip',
-          'Matli plyonka', "Yong'in xavfsizligi", 'Buzish ishlari']
+          'Matli plyonka', "Yong'in xavfsizligi", 'Buzish ishlari', 'Santexnika', 'Kafel']
 JUFT = TURLAR[:5]    # «Xonalar bo'yicha» varag'ida miqdor va summa ustunlari bilan
 YAKKA = TURLAR[5:]   # faqat summa ustuni bilan
 for k in qatorlar:
@@ -182,7 +215,7 @@ wb = Workbook()
 # ---------- 1. Narxlar ----------
 wn = wb.active
 wn.title = 'Narxlar'
-wn['A1'] = "PDP Academy · Xadra filiali — 2-qavat: narxlar va o'lchamlar"
+wn['A1'] = "PDP Academy · Xadra filiali (2 va 3-qavat): narxlar va o'lchamlar"
 wn['A1'].font = f_sarlavha
 wn['A2'] = "Sariq kataklardagi narx va balandliklarni o'zgartirsangiz, «Hisob (batafsil)» va «Xonalar bo'yicha» varaqlari avtomatik qayta hisoblanadi."
 wn['A2'].font = f_kichik
@@ -209,7 +242,7 @@ for i, (k, nom, qiymat, birlik, manba) in enumerate(NARX_QATORLAR):
     else:
         q.font, q.fill = f_kok, fill_sariq
     q.number_format = (USD if birlik.startswith('$') else '#,##0 "so\'m"' if birlik.startswith("so'm/") else '#,##0' if birlik == "so'm/$"
-                       else '0%' if birlik == 'ulush' else '0' if birlik == 'dona' else '0.00')
+                       else '0%' if birlik == 'ulush' else '0' if birlik in ('dona', 'nuqta') else '0.00')
     wn.cell(row=rr, column=1).alignment = Alignment(horizontal='center')
 oxir = r + len(NARX_QATORLAR)
 izohlar = [
@@ -227,6 +260,7 @@ izohlar = [
     "• So'mdagi narxlar (matli plyonka, yong'in xavfsizligi, devor buzish va chiqindi) «Dollar kursi» katagi bo'yicha (11 900 so'm/$) $ ga o'tkaziladi.",
     "• Devor buzish: chizmadagi buziladigan devorlar uzunligi × devor balandligi (3.5 m) × 50 000 so'm/m².",
     "• Kutilmagan xarajatlar: umumiy summadan 10% — «Xonalar bo'yicha» varag'ining oxirida.",
+    "• 3-qavat: 5-xona — o'quv xonasi (24 o'rin, bambuk panel va interaktiv doska); 2-xona — erkaklar hojatxonasi. Santexnika soni ikkala hojatxona uchun jami (2-qavatdagisi — ayollar: 2 unitaz, 1 chashagen); kafel faqat erkaklar hojatxonasi uchun (devor 58 m², pol 16 m²).",
     "• Kirmagan: konditsioner va ventilyatsiya (usta bilan keyin aniqlanadi); mebel va pol (kafel) mavjud; internet — mavjud; eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
     "Ranglar: ko'k — qo'lda kiritilgan qiymat; yashil — boshqa varaqdan olingan; qora — formula; sariq fon — o'zgartirish mumkin bo'lgan kataklar.",
 ]
@@ -245,7 +279,7 @@ def narx_havola(k):
 
 # ---------- 2. Hisob (batafsil) ----------
 wd = wb.create_sheet('Hisob (batafsil)')
-wd['A1'] = "PDP Academy · Xadra filiali — 2-qavat: xarajatlar hisobi, xonalar bo'yicha batafsil"
+wd['A1'] = "PDP Academy · Xadra filiali (2 va 3-qavat): xarajatlar hisobi, xonalar bo'yicha batafsil"
 wd['A1'].font = f_sarlavha
 wd['A2'] = "Uzunliklar chizmadan (m). Balandlik va narx «Narxlar» varag'idan olinadi (yashil). Miqdor = uzunlik × balandlik; summa = miqdor × narx."
 wd['A2'].font = f_kichik
@@ -272,12 +306,12 @@ for kod, nom in XONALAR:
         uz = q['uz']
         uz_val = narx_havola(uz) if isinstance(uz, str) else uz
         bal_val = narx_havola(q['bal']) if q['bal'] else None
-        if q['birlik'] == 'm²':
-            miqdor = f"=-E{r}*F{r}" if q['manfiy'] else f"=E{r}*F{r}"
-        elif q['birlik'] == 'm':
-            miqdor = f"=E{r}"
-        else:
+        if q['miqdor'] is not None:
             miqdor = narx_havola(q['miqdor']) if isinstance(q['miqdor'], str) else q['miqdor']
+        elif q['birlik'] == 'm²':
+            miqdor = f"=-E{r}*F{r}" if q['manfiy'] else f"=E{r}*F{r}"
+        else:
+            miqdor = f"=E{r}"
         vals = [n, nom, q['tur'], q['joy'], uz_val, bal_val, miqdor, q['birlik'], narx_havola(q['narx']), f"=G{r}*I{r}"]
         for j, v in enumerate(vals, 1):
             c = wd.cell(row=r, column=j, value=v)
@@ -285,7 +319,7 @@ for kod, nom in XONALAR:
         wd.cell(row=r, column=5).font = f_yashil if isinstance(uz, str) else f_kok
         if bal_val:
             wd.cell(row=r, column=6).font = f_yashil
-        if q['birlik'] not in ('m²', 'm'):
+        if q['miqdor'] is not None:
             wd.cell(row=r, column=7).font = f_yashil if isinstance(q['miqdor'], str) else f_kok
         wd.cell(row=r, column=9).font = f_yashil
         wd.cell(row=r, column=1).alignment = Alignment(horizontal='center')
@@ -316,13 +350,14 @@ wd.freeze_panes = 'A5'
 
 # ---------- 3. Xonalar bo'yicha ----------
 ws = wb.create_sheet("Xonalar bo'yicha", 0)
-ws['A1'] = "PDP Academy · Xadra filiali — 2-qavat: xarajatlar, xonalar bo'yicha"
+ws['A1'] = "PDP Academy · Xadra filiali (2 va 3-qavat): xarajatlar, xonalar bo'yicha"
 ws['A1'].font = f_sarlavha
 ws['A2'] = "Har bir qator «Hisob (batafsil)» varag'idan olinadi (SUMIFS). Narxlarni «Narxlar» varag'ida o'zgartiring."
 ws['A2'].font = f_kichik
 UST = ['Xona', 'Shisha (devor va eshik), m²', 'Shisha (devor va eshik), $', 'Gips karton (GKL), m²', 'Gips karton (GKL), $',
        'Bambuk panel, m²', 'Bambuk panel, $', 'Interaktiv doska, dona', 'Interaktiv doska, $', 'Perila, m', 'Perila, $',
-       'Yoritish, $', 'Kamera tizimi, $', 'Logotip, $', 'Matli plyonka, $', "Yong'in xavfsizligi, $", 'Buzish ishlari, $', 'Jami, $']
+       'Yoritish, $', 'Kamera tizimi, $', 'Logotip, $', 'Matli plyonka, $', "Yong'in xavfsizligi, $", 'Buzish ishlari, $',
+       'Santexnika, $', 'Kafel, $', 'Jami, $']
 NC = len(UST)                      # ustunlar soni
 JAMI_UST = get_column_letter(NC)   # «Jami, $» ustuni
 for i, h in enumerate(UST, 1):
