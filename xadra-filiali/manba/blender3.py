@@ -735,5 +735,6 @@ sc.render.resolution_x, sc.render.resolution_y = KOR['sinf']['res']
 sc.cycles.samples = 72
 bpy.data.collections.remove(K['vaqtincha'])
 if not TEZ or '--blend' in argv:
+    bpy.context.preferences.filepaths.save_version = 0      # .blend1 zaxira fayli yaratilmasin
     bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(os.path.join(CHIQ, 'Xadra_3-qavat.blend')), compress=True)
 print('tayyor')
