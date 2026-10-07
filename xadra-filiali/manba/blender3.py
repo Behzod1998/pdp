@@ -657,7 +657,9 @@ def quyosh(azimut, balandlik, kuch):
     QUYOSH.data.energy = kuch
 
 # ---------------- kameralar ----------------
+KAMERA_NUQTA = {}
 def kamera(nom, joy, nishon, lens):
+    KAMERA_NUQTA[nom] = [joy, nishon]
     c = bpy.data.cameras.new(nom); c.lens = lens; c.sensor_width = 36; c.clip_start = 0.05; c.clip_end = 300
     ob = bpy.data.objects.new(nom, c); sc.collection.objects.link(ob)
     ob.location = P(*joy)
@@ -701,14 +703,15 @@ K['vaqtincha'].hide_render = True
 os.makedirs(CHIQ, exist_ok=True)
 # umumiy ko'rinishdagi xona nomlari uchun nuqtalar (rasmdagi ulush: 0..1, chapdan va tepadan)
 from bpy_extras.object_utils import world_to_camera_view
-BELGI = {'1': (4375, 3300), '2': (8825, 2000), '3': (2350, 7700), '4': (3025, 10700), '5': (8825, 4950), 'Z': (1600, 3100)}
+# (x, y, z): hojatxona nomi shimoliy devor ortida (kabinalarni yopmasligi uchun)
+BELGI = {'1': (4375, 3300, 0), '2': (8825, -700, KESIM), '3': (2350, 7700, 0), '4': (3025, 10700, 0), '5': (8825, 4700, 0), 'Z': (1600, 3100, 0)}
 sc.render.resolution_x, sc.render.resolution_y = KOR['umumiy']['res']
 bpy.context.view_layer.update()
 belgi = {}
-for kod, (x, y) in BELGI.items():
-    v = world_to_camera_view(sc, KOR['umumiy']['cam'], P(x, y, 0))
+for kod, (x, y, z) in BELGI.items():
+    v = world_to_camera_view(sc, KOR['umumiy']['cam'], P(x, y, z))
     belgi[kod] = [round(v.x, 4), round(1 - v.y, 4)]
-json.dump(belgi, open(os.path.join(CHIQ, 'umumiy-belgilar.json'), 'w'))
+json.dump({'belgi': belgi, 'kamera': KAMERA_NUQTA}, open(os.path.join(CHIQ, 'umumiy-belgilar.json'), 'w'))
 for nom, k in KOR.items():
     if FAQAT and nom not in FAQAT: continue
     ichki = k['ichki']
@@ -728,6 +731,8 @@ for nom, k in KOR.items():
 for kk in ('tepa', 'chiroq', 'toliq', 'tashqi'): kor_yashir(kk, False)
 for kk in ('kesim', 'taglik'): kor_yashir(kk, True)
 sc.camera = KOR['sinf']['cam']
+sc.render.resolution_x, sc.render.resolution_y = KOR['sinf']['res']
+sc.cycles.samples = 72
 bpy.data.collections.remove(K['vaqtincha'])
 if not TEZ or '--blend' in argv:
     bpy.ops.wm.save_as_mainfile(filepath=os.path.abspath(os.path.join(CHIQ, 'Xadra_3-qavat.blend')), compress=True)
