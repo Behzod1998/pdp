@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="uz" data-brand="academy" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDP Academy — sotuv taqdimoti</title>
+<!-- PDP Design System: shriftlar (design.pdp.uz/ds/fonts nusxasi) → Academy tokenlari (design.pdp.uz/ds/taqdimot/ai.md) -->
+<link rel="stylesheet" href="fonts/fonts.css">
+<link rel="stylesheet" href="https://design.pdp.uz/ds/tokens/academy.css">
+<style>
+  /* Taqdimot qoidalari (design.pdp.uz/ds/taqdimot/#taqdimot-taqdimot-qoidalari):
+     1920 × 1080; chap/o‘ng 96, tepa 64, past 88; shapka lentasi 176 (Light’da qora);
+     sarlavha: muqova 128, slayd 64, kichik 40; matn 32 (Inter); yorliq 24 (IBM Plex Mono);
+     katta raqam 240–320; karta radiusi 32, ichki 40, oraliq 24–32. */
+  :root {
+    --black: var(--eco-color-black, #141414);
+    --white: var(--eco-color-white, #FFFFFF);
+    --green: var(--eco-color-academy-green, #00B533);
+    --green-text: var(--eco-color-green-done, #00A603);
+    --yellow: var(--eco-color-academy-yellow, #FFCC19);
+    --n50: var(--eco-color-neutral-50, #F7F7F7);
+    --n200: var(--eco-color-neutral-200, #E1E1E1);
+    --n500: var(--eco-color-neutral-500, #767676);
+    --n600: var(--eco-color-neutral-600, #5B5B5B);
+    --display: var(--eco-font-display, "PDP Display", system-ui, sans-serif);
+    --track: var(--eco-font-display--letter-spacing, -0.04em);
+    --body: "Inter", system-ui, sans-serif;           /* taqdimot shabloni — Inter */
+    --mono: "IBM Plex Mono", ui-monospace, monospace;  /* yorliq, manba, raqam */
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #000; }
+  body { overflow: hidden; font-family: var(--body); -webkit-font-smoothing: antialiased; }
+
+  .deck { position: fixed; inset: 0; display: grid; place-items: center; }
+  .slide {
+    position: absolute; left: 50%; top: 50%;
+    width: 1920px; height: 1080px;
+    transform: translate(-50%, -50%) scale(var(--s, 1));
+    overflow: hidden; display: none;
+  }
+  .slide.is-active { display: block; }
+
+  /* --- Umumiy --- */
+  .eyebrow { font-family: var(--mono); font-weight: 500; font-size: 24px; letter-spacing: .12em; text-transform: uppercase; }
+  h1, h2, h3, .big { font-family: var(--display); font-weight: 500; letter-spacing: var(--track); }
+  p { font-size: 32px; line-height: 1.4; }
+  .foot {
+    position: absolute; left: 96px; right: 96px; bottom: 40px;
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-weight: 500; font-size: 24px; line-height: 48px;
+  }
+
+  /* --- Dark: muqova va yakun --- */
+  .dark { background: var(--black); color: var(--white); }
+  .dark .foot { color: var(--n500); }
+  .logo-primary { position: absolute; left: 96px; top: 64px; height: 96px; width: auto; }
+
+  .cover .content { position: absolute; left: 96px; right: 96px; top: 340px; }
+  .cover .eyebrow { color: var(--n500); margin-bottom: 40px; }
+  .cover h1 { font-size: 128px; line-height: 1.05; max-width: 1500px; }
+  .cover p { margin-top: 48px; max-width: 1180px; color: rgba(255,255,255,.72); }
+
+  /* --- Light: kontent slaydlari --- */
+  .light { background: var(--white); color: var(--black); }
+  .light .foot { color: var(--n600); }
+  .band {
+    height: 176px; background: var(--black); color: var(--white);
+    padding: 0 96px; display: flex; align-items: center; justify-content: space-between; gap: 64px;
+  }
+  .band .eyebrow { color: var(--n500); margin-bottom: 12px; }
+  .band h2 { font-size: 64px; line-height: 1.05; }
+  .band .accent { color: var(--yellow); }           /* aksent — faqat qora lenta ustida, bitta */
+  .logo-inline { height: 44px; width: auto; flex: none; }
+  .body { position: absolute; left: 96px; right: 96px; top: 240px; bottom: 152px; }
+
+  .card { background: var(--n50); border-radius: 32px; padding: 40px; }
+  .card h3 { font-size: 40px; line-height: 1.1; color: var(--green-text); margin-bottom: 16px; }
+  .card .eyebrow { color: var(--n600); margin-bottom: 20px; }
+
+  /* 2-slayd */
+  .who { display: grid; grid-template-columns: 720px 1fr; gap: 32px; }
+  .who .num { display: flex; flex-direction: column; justify-content: center; }
+  .who .big { font-size: 280px; line-height: .9; }
+  .who .num p { margin-top: 24px; max-width: 620px; }
+  .who .quotes { display: grid; grid-template-rows: 1fr 1fr; gap: 32px; }
+  .who .quotes p { font-size: 40px; line-height: 1.25; font-family: var(--display); letter-spacing: var(--track); font-weight: 400; }
+
+  /* 3-slayd */
+  .grid4 { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 32px; }
+  .grid4 .card { padding-top: 64px; }
+
+  /* 4-slayd */
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+  .steps .card { min-height: 456px; }
+  .steps .n { font-family: var(--mono); font-weight: 500; font-size: 24px; color: var(--n600); margin-bottom: 112px; }
+  .note {
+    margin-top: 32px; border: 2px solid var(--n200); border-radius: 32px; padding: 32px 40px;
+    display: flex; gap: 64px; font-size: 32px; line-height: 1.4;
+  }
+  .note b { font-weight: 600; }
+
+  /* 5-slayd */
+  .end .content { position: absolute; left: 96px; right: 96px; top: 320px; }
+  .end h1 { font-size: 128px; line-height: 1.05; }
+  .end p { margin-top: 40px; color: rgba(255,255,255,.72); }
+  .end .phone { margin-top: 72px; font-family: var(--display); font-weight: 500; letter-spacing: var(--track); font-size: 112px; line-height: 1; color: var(--yellow); }
+  .end .links { margin-top: 32px; font-family: var(--mono); font-weight: 500; font-size: 24px; letter-spacing: .04em; color: var(--white); }
+
+  /* Navigatsiya */
+  .nav { position: fixed; left: 50%; transform: translateX(-50%); bottom: 12px; opacity: .55; display: flex; gap: 8px; z-index: 5; font: 500 14px/1 var(--mono); color: #fff; align-items: center; }
+  .nav button { width: 40px; height: 40px; border-radius: 999px; border: 0; background: rgba(255,255,255,.14); color: #fff; font-size: 18px; cursor: pointer; }
+  .nav:hover, .nav:focus-within { opacity: 1; }
+  .nav button:focus-visible { outline: 1.5px solid var(--yellow); outline-offset: 2px; }
+
+  @media print {
+    @page { size: 1920px 1080px; margin: 0; }
+    html, body { height: auto; overflow: visible; background: none; }
+    .deck { position: static; display: block; }
+    .slide { display: block !important; position: relative; left: 0; top: 0; transform: none; page-break-after: always; break-after: page; }
+    .nav { display: none; }
+  }
+</style>
+</head>
+<body>
+<main class="deck" aria-label="PDP Academy sotuv taqdimoti">
+
+  <!-- 01 · Muqova (Dark) -->
+  <section class="slide dark cover is-active" aria-label="1-slayd: muqova">
+    <img class="logo-primary" src="logos/pdp-academy-primary-on-dark.svg" alt="PDP Academy">
+    <div class="content">
+      <div class="eyebrow">Taqdimot · 2026</div>
+      <h1>IT kasbini noldan o‘rganing</h1>
+      <p>Amaldagi dasturchi-mentorlar bilan real loyiha va portfolio orqali ishga tayyorlaymiz.</p>
+    </div>
+    <div class="foot"><span>Toshkent · [sana]</span><span>01</span></div>
+  </section>
+
+  <!-- 02 · Biz kimmiz (Light) -->
+  <section class="slide light" aria-label="2-slayd: biz kimmiz">
+    <header class="band">
+      <div>
+        <div class="eyebrow">01 — Biz kimmiz</div>
+        <h2>PDP ekotizimi <span class="accent">shu akademiyadan</span> boshlangan</h2>
+      </div>
+      <img class="logo-inline" src="logos/pdp-academy-inline-on-dark.svg" alt="PDP Academy">
+    </header>
+    <div class="body who">
+      <div class="num">
+        <div class="big">2017</div>
+        <p>yildan beri IT kasbiga noldan olib kiramiz.</p>
+      </div>
+      <div class="quotes">
+        <div class="card">
+          <div class="eyebrow">Missiya</div>
+          <p>«IT yordamida dunyoni yaxshi tarafga o‘zgartira oladigan mutaxassislarni tayyorlash.»</p>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Shior</div>
+          <p>«Dasturlashni qulay muhitda o‘rganing»</p>
+        </div>
+      </div>
+    </div>
+    <div class="foot"><span>Manba: PDP Academy brendbuki, design.pdp.uz</span><span>02</span></div>
+  </section>
+
+  <!-- 03 · Afzalliklar (Light) -->
+  <section class="slide light" aria-label="3-slayd: afzalliklar">
+    <header class="band">
+      <div>
+        <div class="eyebrow">02 — Nega PDP Academy</div>
+        <h2>Har bir kurs <span class="accent">real loyiha</span> bilan tugaydi</h2>
+      </div>
+      <img class="logo-inline" src="logos/pdp-academy-inline-on-dark.svg" alt="PDP Academy">
+    </header>
+    <div class="body grid4">
+      <div class="card"><h3>Amaldagi mentorlar</h3><p>EPAM, Itransition va boshqa kompaniyalarda ishlayotgan dasturchilar.</p></div>
+      <div class="card"><h3>Karyera markazi</h3><p>Intervyuga tayyorlov, CV, portfolio va vakansiya qidirish.</p></div>
+      <div class="card"><h3>Talabchan va intensiv</h3><p>Kurs oxiriga saralangan o‘quvchilar yetib boradi.</p></div>
+      <div class="card"><h3>Yo‘l davom etadi</h3><p>PDP University va ekotizim loyihalarida o‘qishni davom ettirish mumkin.</p></div>
+    </div>
+    <div class="foot"><span>Manba: PDP Academy brendbuki, design.pdp.uz</span><span>03</span></div>
+  </section>
+
+  <!-- 04 · Qanday boshlanadi (Light) -->
+  <section class="slide light" aria-label="4-slayd: qabul bosqichlari">
+    <header class="band">
+      <div>
+        <div class="eyebrow">03 — Qabul</div>
+        <h2>To‘rt qadamda <span class="accent">yangi kasb</span> sari</h2>
+      </div>
+      <img class="logo-inline" src="logos/pdp-academy-inline-on-dark.svg" alt="PDP Academy">
+    </header>
+    <div class="body">
+      <div class="steps">
+        <div class="card"><div class="n">01</div><h3>Ro‘yxatdan o‘ting</h3><p>Telefon yoki sayt orqali.</p></div>
+        <div class="card"><div class="n">02</div><h3>Sinov darsi</h3><p>Bepul. Yo‘nalishni mentor bilan tanlaysiz.</p></div>
+        <div class="card"><div class="n">03</div><h3>[5] oy o‘qish</h3><p>Har modul real loyiha bilan tugaydi.</p></div>
+        <div class="card"><div class="n">04</div><h3>Ishga tayyorlov</h3><p>Karyera markazi CV va intervyuga tayyorlaydi.</p></div>
+      </div>
+      <div class="note">
+        <span><b>Yo‘nalishlar:</b> [Frontend, Backend, kiberxavfsizlik]</span>
+        <span><b>Narx:</b> [1 200 000] so‘m / oy</span>
+      </div>
+    </div>
+    <div class="foot"><span>[ ] — tasdiqlangan ma’lumot bilan to‘ldiriladi</span><span>04</span></div>
+  </section>
+
+  <!-- 05 · Yakun / chaqiriq (Dark) -->
+  <section class="slide dark end" aria-label="5-slayd: ro‘yxatdan o‘tish">
+    <img class="logo-primary" src="logos/pdp-academy-primary-on-dark.svg" alt="PDP Academy">
+    <div class="content">
+      <h1>Hoziroq ro‘yxatdan o‘ting</h1>
+      <p>Yangi guruhlar [5-oktabr]dan boshlanadi. Sinov darsi bepul.</p>
+      <div class="phone">78 777 47 47</div>
+      <div class="links">academy.pdp.uz · #pdpacademy · Toshkent, Beruniy ko‘chasi 3A</div>
+    </div>
+    <div class="foot"><span>PDP Academy · 2026</span><span>05</span></div>
+  </section>
+
+</main>
+
+<nav class="nav" aria-label="Slaydlar">
+  <button type="button" id="prev" aria-label="Oldingi slayd">←</button>
+  <span id="count" aria-live="polite">1 / 5</span>
+  <button type="button" id="next" aria-label="Keyingi slayd">→</button>
+</nav>
+
+<script>
+  (function () {
+    var slides = document.querySelectorAll('.slide'), i = 0;
+    function fit() {
+      var s = Math.min(innerWidth / 1920, innerHeight / 1080);
+      document.documentElement.style.setProperty('--s', s);
+    }
+    function go(n) {
+      i = Math.max(0, Math.min(slides.length - 1, n));
+      slides.forEach(function (el, k) { el.classList.toggle('is-active', k === i); });
+      document.getElementById('count').textContent = (i + 1) + ' / ' + slides.length;
+    }
+    document.getElementById('prev').onclick = function () { go(i - 1); };
+    document.getElementById('next').onclick = function () { go(i + 1); };
+    addEventListener('keydown', function (e) {
+      if (['ArrowRight', 'PageDown', ' '].indexOf(e.key) > -1) { e.preventDefault(); go(i + 1); }
+      if (['ArrowLeft', 'PageUp'].indexOf(e.key) > -1) { e.preventDefault(); go(i - 1); }
+      if (e.key === 'Home') go(0);
+      if (e.key === 'End') go(slides.length - 1);
+    });
+    addEventListener('resize', fit); fit();
+  })();
+</script>
+</body>
+</html>
