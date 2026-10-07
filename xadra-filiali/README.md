@@ -10,6 +10,8 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 | `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.0.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
 | `Xadra_2-qavat_xonalar_izoh_v1.0.pdf` | A4, 11 bet: umumiy ko'rsatkichlar, 3D ko'rinishlar, har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
 | `Xadra_3-qavat_reja_v1.0.pdf` / `.png` | A3 landshaft, 1:50: 3-qavat — 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi, buyurtmachi chizgan ko'rinishda); 1, 3, 4-xonalar o'zgarmaydi |
+| `Xadra_3-qavat_3D_v1.0.pdf` / `.png` | A3 landshaft: 3-qavatning Blender 3D ko'rinishlari — umumiy (shiftsiz, xona nomlari bilan), 5-xona doska tomonga, hojatxona ichidan (2 ta ko'rinish) |
+| `3d/` | Alohida 3D rasmlar (JPG, 1-umumiy, 2-sinf-doska, 3-hojatxona-rakovinalar, 4-hojatxona-taxorat) va `Xadra_3-qavat.blend` (Blender 4.2, 4 ta kamera) |
 | `../hisob/Xadra_xarajatlar_v1.0.xlsx` | Xarajatlar (Excel), 2 va 3-qavat: xonalar bo'yicha jami, har bir xonaning batafsil hisobi (shisha devor va eshiklar, gips karton, bambuk panel, interaktiv doska, perila, yoritish, kamera, santexnika, kafel, buzish ishlari va b.), 10% kutilmagan xarajat va narxlar varag'i (so'mdagi narxlar kurs bo'yicha) — narx yoki balandlik o'zgarsa, formulalar qayta hisoblaydi |
 
 ## Asosiy yechim
@@ -48,6 +50,11 @@ cd manba
 npm install          # three.js (3D ko'rinishlar uchun)
 node build.mjs       # chizma/ ichidagi barcha PDF va taqdimot PNG qayta yaratiladi; --png — boshqa varaqlarning rasmi ham
 python3 xarajatlar.py   # hisob/ ichidagi xarajatlar jadvali — 2 va 3-qavat (openpyxl kerak)
+
+# 3-qavat 3D (Blender 4.2; bpy moduli: pip install bpy==4.2.0, Python 3.11)
+node blender3-malumot.mjs > 3qavat.json
+python blender3.py 3qavat.json ../chizma/3d     # renderlar va .blend; --tez — tez sinov
+node qavat3-3d.mjs                              # chizma/Xadra_3-qavat_3D_v1.0.pdf
 ```
 
 Playwright Chromium bilan o'rnatilgan bo'lishi kerak. Generator avval tekshiruvni bajaradi: partalar, devorlar, ustunlar, eshiklar va doskalar orasidagi to'qnashuvlar.
@@ -61,4 +68,5 @@ Playwright Chromium bilan o'rnatilgan bo'lishi kerak. Generator avval tekshiruvn
 | `render-svg.mjs`, `taqdimot.mjs` | taqdimot uslubidagi rangli reja va A3 portret varaq |
 | `sahna3d.html`, `sahna3d.mjs` | 3D ko'rinishlar (three.js) |
 | `qavat3.mjs` | 3-qavat: geometriya, 5-xona partalari, hojatxona jihozlari, A3 varaq |
+| `blender3-malumot.mjs`, `blender3.py`, `qavat3-3d.mjs` | 3-qavat 3D: geometriya JSON'i, Blender sahnasi (materiallar, jihozlar, kameralar, Cycles render) va A3 varaq |
 | `xarajat-malumot.mjs`, `xarajatlar.py` | xarajatlar jadvali: devor yuzlari xonalar bo'yicha, Excel (formulalar bilan) |
