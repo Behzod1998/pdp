@@ -99,9 +99,9 @@ q.box(xe['x1'] + 10, xe['x2'] - 10, xe['y1'] + 20, xe['y2'] - 20, 100, 1080, M['
 q.cyl((xe['x1'] - 20, xe['y2'] - 120, 900), (xe['x1'] - 20, xe['y2'] - 260, 900), 10, M['xrom'])
 q.obj('resepshn', 'asos')
 LS = R['logoStol']
-bu.logo_panel(x0, (LS['y1'] + LS['y2']) / 2, 90, LS['en'], 600, 'inline-on-dark', kuch=3.5, halqa=0.8, nom='logo_stoyka', ofset=22)
+bu.logo_panel(x0, (LS['y1'] + LS['y2']) / 2, 90, LS['en'], 600, 'inline-on-dark', kuch=2.0, halqa=0.3, nom='logo_stoyka', ofset=22)
 bu.joyla(bu.kreslo_mesh(), 'resepshn_kreslo', 'asos', mk(R['kreslo']), 90)
-bu.logo_panel(6235, (LD['y1'] + LD['y2']) / 2, 90, LD['en'], 1900, 'primary-on-dark', kuch=4.0, halqa=1.6, nom='logo_devor')
+bu.logo_panel(6235, (LD['y1'] + LD['y2']) / 2, 90, LD['en'], 1900, 'primary-on-dark', kuch=2.2, halqa=0.5, nom='logo_devor')
 
 # ---------------- turniketlar, to'siq, evakuatsiya darvozasi ----------------
 q = Q()

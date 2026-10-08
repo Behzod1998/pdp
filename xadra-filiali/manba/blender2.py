@@ -121,7 +121,7 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
 # ---------------- koridor: logotip, doskalar ----------------
 for i, l in enumerate(D['logo']):
     ym = (l['y1'] + l['y2']) / 2
-    bu.logo_panel(l['x'] - 15, ym, 90, l['en'], l['z'], 'primary-on-dark', kuch=4.0, halqa=1.5, nom=f"logo_{l['koridor']}")
+    bu.logo_panel(l['x'] - 15, ym, 90, l['en'], l['z'], 'primary-on-dark', kuch=2.2, halqa=0.5, nom=f"logo_{l['koridor']}")
     bu.spot(l['x'] - 700, ym, H - 40, 60, (l['x'] - 15, ym, 1300), 70, f"logo_spot_{l['koridor']}")
 for b in D['doskalar']:
     rot = 180 if b['yon'] < 0 else 0
