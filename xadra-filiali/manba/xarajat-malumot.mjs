@@ -22,7 +22,7 @@ const yuzlar = w => {
   return r;
 };
 const out = DEVORLAR.filter(w => w.holat === 'yangi').map(w => ({
-  x1: w.x1, x2: w.x2, y1: w.y1, y2: w.y2, shisha: !!w.shisha, izoh: w.izoh,
+  x1: w.x1, x2: w.x2, y1: w.y1, y2: w.y2, shisha: !!w.shisha, izoh: w.izoh, logo: w.logo || null,
   uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), yuz: yuzlar(w),
 }));
 const esh = ESHIKLAR.filter(e => e.holat === 'yangi').map(e => ({ kod: e.kod, en: e.en, shisha: !!e.shisha }));
