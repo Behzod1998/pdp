@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="uz"><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--black:#141414;--white:#fff;--green:#00B533;--yellow:#FFCC19;--n200:#E1E1E1;--n500:#767676;--n600:#5B5B5B;
+--display:"PDP Display",sans-serif;--body:"Inter",sans-serif;--mono:"IBM Plex Mono",monospace}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:var(--black);color:var(--white);font-family:var(--body)}
+.scene{position:absolute;inset:0;opacity:0}
+.a{will-change:transform,opacity}
+.label{font-family:var(--mono);font-size:22px;letter-spacing:.08em;text-transform:uppercase;color:var(--green)}
+h1,h2{font-family:var(--display);letter-spacing:-.04em;font-weight:700;line-height:1}
+.bar-top{position:absolute;left:0;top:0;height:8px;background:var(--green)}
+.foot{position:absolute;left:80px;right:80px;bottom:40px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:18px;color:var(--n500);letter-spacing:.06em}
+/* intro */
+#s1 .logo{position:absolute;left:160px;top:180px;width:520px}
+#s1 h1{position:absolute;left:160px;top:430px;font-size:150px}
+#s1 .sub{position:absolute;left:164px;top:620px;font-size:40px;color:var(--n200)}
+#s1 .lbl{position:absolute;left:164px;top:740px}
+#s1 .stripe{position:absolute;right:0;top:0;bottom:0;width:560px;background:var(--green);transform-origin:right}
+#s1 .stripe img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9;mix-blend-mode:normal}
+/* numbers */
+#s2 h2{position:absolute;left:120px;top:150px;font-size:84px}
+#s2 .lbl{position:absolute;left:124px;top:110px}
+.tiles{position:absolute;left:120px;right:120px;top:380px;display:grid;grid-template-columns:repeat(4,1fr);gap:32px}
+.tile{border-top:6px solid var(--green);background:#1d1d1d;padding:40px 36px 44px;height:420px;display:flex;flex-direction:column;justify-content:space-between}
+.tile.y{border-color:var(--yellow)}
+.tile .n{font-family:var(--display);font-weight:700;font-size:118px;letter-spacing:-.05em;line-height:1}
+.tile .t{font-size:30px;color:var(--n200);line-height:1.3}
+.tile .m{font-family:var(--mono);font-size:20px;color:var(--n500)}
+/* plan */
+.planbox{position:absolute;left:60px;top:60px;width:960px;height:960px;background:#fff;overflow:hidden;border-radius:6px}
+.planbox .inner{position:absolute;inset:0;transform-origin:50% 50%}
+.planbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.hl{position:absolute;border:5px solid var(--green);background:rgba(0,181,51,.18);border-radius:4px;opacity:0}
+.hl.y{border-color:var(--yellow);background:rgba(255,204,25,.2)}
+.side{position:absolute;left:1100px;top:90px;width:740px}
+.side h2{font-size:76px;margin:18px 0 48px}
+.pt{display:flex;gap:24px;margin-bottom:34px;align-items:flex-start}
+.pt .k{flex:0 0 52px;height:52px;border-radius:50%;background:var(--green);color:var(--black);font-family:var(--display);font-weight:700;font-size:28px;display:flex;align-items:center;justify-content:center}
+.pt .tx{font-size:31px;line-height:1.3}
+.pt .tx b{font-weight:700}
+.pt .tx span{display:block;font-size:24px;color:var(--n500);margin-top:4px}
+/* 3d */
+.ph{position:absolute;inset:0;overflow:hidden;opacity:0}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cap{position:absolute;left:80px;bottom:80px;background:rgba(20,20,20,.86);padding:28px 40px;border-left:8px solid var(--green)}
+.cap .label{font-size:20px}
+.cap .c{font-family:var(--display);font-weight:700;font-size:56px;letter-spacing:-.03em;margin-top:8px}
+/* budget */
+#s6 .lbl{position:absolute;left:120px;top:90px}
+#s6 h2{position:absolute;left:120px;top:130px;font-size:80px}
+.bars{position:absolute;left:120px;top:290px;width:1060px}
+.br{display:grid;grid-template-columns:330px 1fr;align-items:center;height:66px}
+.br .nm{font-size:26px;color:var(--n200)}
+.br .tr{position:relative;height:40px}
+.br .fl{position:absolute;left:0;top:0;bottom:0;background:var(--green);border-radius:3px}
+.br .vl{position:absolute;top:2px;font-family:var(--mono);font-size:24px;white-space:nowrap}
+.tot{position:absolute;left:1300px;top:290px;width:520px}
+.card{background:#1d1d1d;padding:34px 38px;margin-bottom:26px;border-top:6px solid var(--yellow)}
+.card .label{color:var(--n500);font-size:18px}
+.card .big{font-family:var(--display);font-weight:700;font-size:92px;letter-spacing:-.05em;margin-top:10px;line-height:1}
+.card .sm{font-size:26px;color:var(--n200);margin-top:12px}
+.row{display:flex;justify-content:space-between;font-size:24px;padding:10px 0;border-bottom:1px solid #2c2c2c}
+.row span:last-child{font-family:var(--mono)}
+/* outro */
+#s7 .lbl{position:absolute;left:160px;top:170px}
+#s7 h2{position:absolute;left:160px;top:215px;font-size:110px}
+.steps{position:absolute;left:160px;top:420px;width:1100px}
+.st{display:flex;gap:30px;align-items:center;margin-bottom:40px}
+.st .k{flex:0 0 72px;height:72px;border:4px solid var(--green);border-radius:50%;font-family:var(--display);font-weight:700;font-size:34px;display:flex;align-items:center;justify-content:center;color:var(--green)}
+.st .tx{font-size:38px}
+.st .tx span{display:block;font-size:26px;color:var(--n500);margin-top:6px}
+#s7 .logo{position:absolute;right:160px;bottom:140px;width:420px}
+.prog{position:absolute;left:0;bottom:0;height:6px;background:var(--yellow);z-index:9}
+</style></head><body>
+
+<!-- 1. Intro -->
+<div class="scene" id="s1">
+  <div class="stripe a" data-fx="wipe" data-in="0"><img src="img/Xadra_3-qavat_3D_2-sinf-doska.jpg"></div>
+  <img class="logo a" src="logos/pdp-academy-primary-on-dark.svg" data-fx="up" data-in="0.3">
+  <h1 class="a" data-fx="up" data-in="0.7">Xadra filiali</h1>
+  <div class="sub a" data-fx="up" data-in="1.1">Yangi bino · 2 va 3-qavatni jihozlash loyihasi</div>
+  <div class="lbl label a" data-fx="up" data-in="1.5">Founder uchun taqdimot · v1.0</div>
+</div>
+
+<!-- 2. Numbers -->
+<div class="scene" id="s2">
+  <div class="lbl label a" data-fx="up" data-in="0">Loyiha qisqacha</div>
+  <h2 class="a" data-fx="up" data-in="0.15">Asosiy koʻrsatkichlar</h2>
+  <div class="tiles">
+    <div class="tile a" data-fx="up" data-in="0.5"><div class="m">Oʻquv xonalari</div><div class="n" data-count="8" data-in="0.6">0</div><div class="t">7 ta 2-qavatda,<br>1 ta 3-qavatda</div></div>
+    <div class="tile a" data-fx="up" data-in="0.75"><div class="m">Oʻquv oʻrinlari</div><div class="n" data-count="186" data-in="0.85">0</div><div class="t">162 + 24 oʻrin,<br>ikki kishilik partalar</div></div>
+    <div class="tile a" data-fx="up" data-in="1.0"><div class="m">2-qavat maydoni</div><div class="n"><span data-count="558" data-in="1.1">0</span><span style="font-size:56px"> m²</span></div><div class="t">Foydali maydon<br>(557.74 m²)</div></div>
+    <div class="tile y a" data-fx="up" data-in="1.25"><div class="m">Umumiy byudjet</div><div class="n">$<span data-count="65.9" data-dec="1" data-in="1.35">0</span>k</div><div class="t">≈ 784 mln soʻm,<br>10% zaxira bilan</div></div>
+  </div>
+  <div class="foot"><span>PDP ACADEMY · XADRA FILIALI</span><span>01 / 05</span></div>
+</div>
+
+<!-- 3. Floor 2 -->
+<div class="scene" id="s3">
+  <div class="planbox a" data-fx="fade" data-in="0">
+    <div class="inner" id="zoom2">
+      <img src="img/plan2.jpg">
+      <!-- normalized rects: x0=52,w=846; y0=118,h=860 (thumb px) -->
+      <div class="hl" data-g="1" style="left:26.4%;top:2.6%;width:71.5%;height:30.2%"></div>
+      <div class="hl" data-g="1" style="left:26.4%;top:67.1%;width:71.5%;height:30.9%"></div>
+      <div class="hl" data-g="1" style="left:73.6%;top:32.8%;width:24.3%;height:34.3%"></div>
+      <div class="hl y" data-g="2" style="left:26.4%;top:32.8%;width:52.2%;height:6.6%"></div>
+      <div class="hl y" data-g="2" style="left:26.4%;top:61.2%;width:52.2%;height:6.4%"></div>
+      <div class="hl" data-g="3" style="left:26.4%;top:39.2%;width:47.4%;height:22.1%"></div>
+      <div class="hl" data-g="3" style="left:2.1%;top:85.6%;width:24.3%;height:12.3%"></div>
+      <div class="hl y" data-g="4" style="left:2.1%;top:28.1%;width:24.3%;height:59.9%"></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="label a" data-fx="up" data-in="0.2">02 · 2-qavat rejasi</div>
+    <h2 class="a" data-fx="up" data-in="0.35">7 xona, 162 oʻrin</h2>
+    <div class="pt a" data-fx="left" data-in="1.0"><div class="k">1</div><div class="tx"><b>7 ta sinf</b> — 22–24 oʻrinli<span>Doska yon devorda: deraza yorugʻligi ekranga tushmaydi</span></div></div>
+    <div class="pt a" data-fx="left" data-in="4.0"><div class="k">2</div><div class="tx"><b>Shisha devorlar</b> va 1.5 m koridorlar<span>Akustik shisha, matli polosa — ochiq va zamonaviy</span></div></div>
+    <div class="pt a" data-fx="left" data-in="6.5"><div class="k">3</div><div class="tx"><b>Ofis xonalari</b><span>Offline sotuv, admin, ustozlar, call-markaz, CEO xonasi</span></div></div>
+    <div class="pt a" data-fx="left" data-in="9.0"><div class="k">4</div><div class="tx"><b>Koworking / tadbirlar zali</b> — 70.5 m²<span>Kundalik ~35 oʻrin, tadbirda 66 oʻrin</span></div></div>
+    <div class="pt a" data-fx="left" data-in="11.5"><div class="k">5</div><div class="tx"><b>Har sinfda rekuperatorli ventilyatsiya</b><span>30 m³/soat har bir kishiga, CO₂ ≤ 1000 ppm</span></div></div>
+  </div>
+</div>
+
+<!-- 4. Floor 3 -->
+<div class="scene" id="s4">
+  <div class="planbox a" data-fx="fade" data-in="0">
+    <div class="inner" id="zoom3">
+      <img src="img/plan3.jpg">
+      <!-- x0=68,w=810; y0=128,h=840 -->
+      <div class="hl" data-g="1" style="left:50.9%;top:28.2%;width:54%;height:68.7%;width:46.2%"></div>
+      <div class="hl y" data-g="2" style="left:50.9%;top:3.0%;width:46.2%;height:24.4%"></div>
+    </div>
+  </div>
+  <div class="side">
+    <div class="label a" data-fx="up" data-in="0.2">03 · 3-qavat rejasi</div>
+    <h2 class="a" data-fx="up" data-in="0.35">Sinf va hojatxona</h2>
+    <div class="pt a" data-fx="left" data-in="1.0"><div class="k">1</div><div class="tx"><b>5-xona</b> — oʻquv xonasi, 46.9 m²<span>24 oʻrin, interaktiv doska, 3 devorda bambuk panel</span></div></div>
+    <div class="pt a" data-fx="left" data-in="3.8"><div class="k">2</div><div class="tx"><b>Erkaklar hojatxonasi</b> — 15.5 m²<span>4 kabina, 2 rakovina, 3 joʻmrakli taxorat joyi</span></div></div>
+    <div class="pt a" data-fx="left" data-in="5.2"><div class="k">3</div><div class="tx"><b>1, 3, 4-xonalar oʻzgarmaydi</b><span>Koridor, qozonxona va bino egasining xonasi</span></div></div>
+  </div>
+</div>
+
+<!-- 5. 3D -->
+<div class="scene" id="s5" style="opacity:1">
+  <div class="ph" data-i="0"><img src="img/Xadra_3-qavat_3D_1-umumiy.jpg"><div class="cap"><div class="label">3D · 3-qavat</div><div class="c">Umumiy koʻrinish</div></div></div>
+  <div class="ph" data-i="1"><img src="img/Xadra_3-qavat_3D_2-sinf-doska.jpg"><div class="cap"><div class="label">3D · 5-xona</div><div class="c">Sinf — doska tomonga</div></div></div>
+  <div class="ph" data-i="2"><img src="img/Xadra_3-qavat_3D_3-hojatxona-rakovinalar.jpg"><div class="cap"><div class="label">3D · 2-xona</div><div class="c">Hojatxona — rakovinalar</div></div></div>
+  <div class="ph" data-i="3"><img src="img/Xadra_3-qavat_3D_4-hojatxona-taxorat.jpg"><div class="cap"><div class="label">3D · 2-xona</div><div class="c">Taxorat joyi</div></div></div>
+</div>
+
+<!-- 6. Budget -->
+<div class="scene" id="s6">
+  <div class="lbl label a" data-fx="up" data-in="0">04 · Xarajatlar</div>
+  <h2 class="a" data-fx="up" data-in="0.15">Byudjet qayerga ketadi</h2>
+  <div class="bars" id="bars"></div>
+  <div class="tot">
+    <div class="card a" data-fx="up" data-in="2.6"><div class="label">Umumiy jami · 10% zaxira bilan</div><div class="big">$65 910</div><div class="sm">≈ 784.3 mln soʻm · kurs 11 900</div></div>
+    <div class="a" data-fx="up" data-in="3.2">
+      <div class="row"><span>2-qavat: oʻquv xonalari</span><span>$20 081</span></div>
+      <div class="row"><span>2-qavat: ofis xonalari</span><span>$6 971</span></div>
+      <div class="row"><span>2-qavat: umumiy joylar</span><span>$25 470</span></div>
+      <div class="row"><span>3-qavat va hojatxonalar</span><span>$7 395</span></div>
+      <div class="row" style="border:0;color:var(--n500)"><span>Kutilmagan xarajat (10%)</span><span>$5 992</span></div>
+    </div>
+  </div>
+  <div class="foot"><span>Manba: Xadra_xarajatlar_v1.0.xlsx</span><span>04 / 05</span></div>
+</div>
+
+<!-- 7. Outro -->
+<div class="scene" id="s7">
+  <div class="lbl label a" data-fx="up" data-in="0">05 · Keyingi qadamlar</div>
+  <h2 class="a" data-fx="up" data-in="0.15">Tasdiqlashga tayyor</h2>
+  <div class="steps">
+    <div class="st a" data-fx="left" data-in="0.7"><div class="k">1</div><div class="tx">Rejani va byudjetni tasdiqlash</div></div>
+    <div class="st a" data-fx="left" data-in="1.2"><div class="k">2</div><div class="tx">Joyida oʻlchash<span>Derazalar joyi, toza balandlik (3.0 m), devor qalinligi</span></div></div>
+    <div class="st a" data-fx="left" data-in="1.7"><div class="k">3</div><div class="tx">Smetani yakunlash va ishni boshlash</div></div>
+  </div>
+  <img class="logo a" src="logos/pdp-academy-primary-on-dark.svg" data-fx="fade" data-in="2.4">
+</div>
+
+<div class="prog" id="prog"></div>
+
+<script>
+const T = {s1:[0,5.5], s2:[5.5,12.5], s3:[12.5,27.5], s4:[27.5,35.5], s5:[35.5,50], s6:[50,59.5], s7:[59.5,66]};
+const DUR = 66, XF = 0.5;
+const cl = v => Math.max(0, Math.min(1, v));
+const ease = v => 1 - Math.pow(1 - cl(v), 3);
+const io = v => { v = cl(v); return v < .5 ? 4*v*v*v : 1 - Math.pow(-2*v+2, 3)/2; };
+
+// budget bars
+const B = [["Konditsioner va ventilyatsiya",15000],["Bambuk panel",9404],["Interaktiv doska",8256],["Shisha devor",5562],["Gips karton",4898],["Santexnika",3393],["Yoritish",3024],["Logotip",2500],["Boshqa (6 tur)",7881]];
+const max = 15000, bars = document.getElementById('bars');
+B.forEach(([n,v],i) => bars.insertAdjacentHTML('beforeend',
+  `<div class="br"><div class="nm">${n}</div><div class="tr"><div class="fl" data-v="${v}" data-i="${i}"></div><div class="vl" data-v="${v}" data-i="${i}"></div></div></div>`));
+const fmt = n => '$' + Math.round(n).toLocaleString('en').replace(/,/g,' ');
+
+function sceneAlpha(id, t){ const [a,b] = T[id]; return Math.min(cl((t-a)/XF + (a===0?1:0)), cl((b-t)/XF + (b===DUR?1:0))); }
+
+function fx(el, lt){
+  const d = +el.dataset.in, p = ease((lt - d)/0.7), f = el.dataset.fx;
+  el.style.opacity = f==='wipe' ? 1 : p;
+  if (f==='up') el.style.transform = `translateY(${(1-p)*40}px)`;
+  if (f==='left') el.style.transform = `translateX(${(1-p)*-40}px)`;
+  if (f==='wipe') el.style.transform = `scaleX(${p})`;
+}
+
+window.render = function(t){
+  for (const id in T){
+    const s = document.getElementById(id), lt = t - T[id][0];
+    if (id !== 's5') s.style.opacity = sceneAlpha(id, t);
+    s.style.visibility = (t >= T[id][0]-0.01 && t <= T[id][1]+0.01) ? 'visible' : 'hidden';
+    s.querySelectorAll('.a').forEach(e => fx(e, lt));
+    s.querySelectorAll('[data-count]').forEach(e => {
+      const v = +e.dataset.count * io((lt - +e.dataset.in)/1.4);
+      e.textContent = e.dataset.dec ? v.toFixed(1) : Math.round(v);
+    });
+  }
+  // floor 2 highlights & zoom
+  let lt = t - T.s3[0];
+  const g2 = [[1,1.0,3.8],[2,4.0,6.3],[3,6.5,8.8],[4,9.0,11.3]];
+  hl('#s3', g2, lt);
+  const z2 = [[0,1,.5,.5],[1.0,1.0,.5,.5],[4.0,1.25,.52,.5],[6.5,1.3,.45,.6],[9.0,1.3,.2,.55],[11.5,1.0,.5,.5]];
+  zoom('zoom2', z2, lt);
+  lt = t - T.s4[0];
+  hl('#s4', [[1,1.0,3.6],[2,3.8,5.0]], lt);
+  zoom('zoom3', [[0,1,.5,.5],[1.0,1.15,.72,.6],[3.8,1.3,.72,.2],[5.2,1,.5,.5]], lt);
+  // 3D Ken Burns
+  lt = t - T.s5[0];
+  const per = (T.s5[1]-T.s5[0]) / 4;
+  document.querySelectorAll('#s5 .ph').forEach(ph => {
+    const i = +ph.dataset.i, a = i*per, b = a+per, x = lt - a;
+    ph.style.opacity = Math.min(cl(x/0.6), i===3 ? cl((per - x)/XF) : 1) * (lt < b + 0.6 ? 1 : 0);
+    ph.style.zIndex = i;
+    const k = cl(x/(per+0.6));
+    ph.querySelector('img').style.transform = `scale(${1.04 + 0.08*k}) translateX(${(i%2?1:-1)*(k-.5)*30}px)`;
+    const c = ph.querySelector('.cap'), q = ease((x-0.5)/0.7);
+    c.style.opacity = q; c.style.transform = `translateY(${(1-q)*30}px)`;
+  });
+  // bars
+  lt = t - T.s6[0];
+  document.querySelectorAll('#bars .fl').forEach(e => {
+    const p = io((lt - 0.6 - e.dataset.i*0.12)/1.2), w = (+e.dataset.v/max)*600*p;
+    e.style.width = w + 'px';
+    const v = e.nextElementSibling; v.style.left = (w + 16) + 'px'; v.textContent = fmt(+e.dataset.v*p); v.style.opacity = p>0 ? 1 : 0;
+    e.style.background = e.dataset.i==0 ? 'var(--yellow)' : 'var(--green)';
+  });
+  document.getElementById('prog').style.width = (t/DUR*1920) + 'px';
+};
+
+function hl(sel, groups, lt){
+  document.querySelectorAll(sel + ' .hl').forEach(h => {
+    const g = groups.find(x => x[0] == h.dataset.g); if (!g) return;
+    h.style.opacity = Math.min(ease((lt-g[1])/0.5), cl((g[2]-lt)/0.4));
+  });
+}
+function zoom(id, keys, lt){
+  let k = keys[0];
+  let s = k[1], x = k[2], y = k[3];
+  for (let i = 1; i < keys.length; i++){
+    const [t0,s0,x0,y0] = keys[i-1], [t1,s1,x1,y1] = keys[i];
+    if (lt >= t0){ const p = io((lt - t0)/1.2); s = s0+(s1-s0)*p; x = x0+(x1-x0)*p; y = y0+(y1-y0)*p; }
+  }
+  // keep view inside the image: translate so (x,y) is centered, clamped
+  const lim = (s-1)/(2*s);
+  const cx = Math.max(.5-lim, Math.min(.5+lim, x)), cy = Math.max(.5-lim, Math.min(.5+lim, y));
+  document.getElementById(id).style.transform = `scale(${s}) translate(${(.5-cx)*100}%, ${(.5-cy)*100}%)`;
+}
+window.DUR = DUR;
+render(0);
+</script>
+</body></html>
