@@ -12,6 +12,7 @@ import { taqdimotHtml } from './taqdimot.mjs';
 import { tekshiruv } from './tekshiruv.mjs';
 import { LOYIHA } from './model.mjs';
 import { qavat3Html, tekshiruv3 } from './qavat3.mjs';
+import { qavat1Html, tekshiruv1 } from './qavat1.mjs';
 
 const require = createRequire(import.meta.url);
 let chromium;
@@ -41,6 +42,9 @@ xatolar.forEach(x => console.log('  ! ' + x));
 const t3 = tekshiruv3();
 console.log(`3-qavat: o'rinlar ${t3.orin}, xatolar ${t3.xato.length}`);
 t3.xato.forEach(x => console.log('  ! ' + x));
+const t1 = tekshiruv1();
+console.log(`1-qavat: xatolar ${t1.xato.length}`);
+t1.xato.forEach(x => console.log('  ! ' + x));
 
 await mkdir(CHIQISH, { recursive: true });
 const brauzer = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
@@ -94,6 +98,17 @@ const q3Nom = `Xadra_3-qavat_reja_${LOYIHA.versiya}`;
 await q3.pdf({ path: join(CHIQISH, `${q3Nom}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
 await (await q3.$('section.varaq')).screenshot({ path: join(CHIQISH, `${q3Nom}.png`) });
 await q3.close();
+
+// 6. 1-qavat rejasi (A3 landshaft) — PDF va PNG; Blender rasmi bo'lsa, varaqqa qo'shiladi
+const q1Rasm = join(CHIQISH, '3d', 'Xadra_1-qavat_3D_2-resepshn.jpg');
+const q1 = await brauzer.newPage({ viewport: { width: 1587, height: 1123 }, deviceScaleFactor: 2.5 });
+let rasm1;
+try { rasm1 = `data:image/jpeg;base64,${(await readFile(q1Rasm)).toString('base64')}`; } catch { rasm1 = null; }
+await q1.setContent(qavat1Html({ rasm: rasm1 }), { waitUntil: 'load' });
+const q1Nom = `Xadra_1-qavat_reja_${LOYIHA.versiya}`;
+await q1.pdf({ path: join(CHIQISH, `${q1Nom}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
+await (await q1.$('section.varaq')).screenshot({ path: join(CHIQISH, `${q1Nom}.png`) });
+await q1.close();
 
 await brauzer.close();
 server.close();

@@ -9,14 +9,14 @@ export const LOYIHA = {
   filial: 'Xadra filiali',
   qavat: '2-qavat',
   manzil: 'Toshkent sh., Xadra',
-  versiya: 'v1.0',
-  sana: '25.09.2026',
-  sanaISO: '2026-09-25',
+  versiya: 'v1.1',
+  sana: '08.10.2026',
+  sanaISO: '2026-10-08',
   umumiy: 617,       // chizmadagi "Umumiy maydoni"
   foydali: 557.74,   // chizmadagi "Foydali maydoni"
 };
 
-export const H = 3000; // toza balandlik — taxmin, joyida o'lchanadi
+export const H = 3500; // poldan shiftgacha — buyurtmachi: bino balandligi 3.5 m
 export const ICHKI = { x: 23900, y: 24400 };
 export const DEVOR = { chap: 400, ong: 400, yuqori: 300, past: 300 };
 
@@ -81,6 +81,8 @@ export const DERAZALAR = [
 // holat: tashqi | mavjud (saqlanadi) | yangi | buziladi
 const d = (x1, x2, y1, y2, holat, izoh = '') => ({ x1, x2, y1, y2, holat, izoh });
 const sh = (x1, x2, y1, y2) => ({ ...d(x1, x2, y1, y2, 'yangi', 'shisha devor'), shisha: true });
+// koridor oxiridagi GKL devor — markazida yorituvchi PDP Academy logotipi (koridor boshidan ko'rinadi)
+const lg = (x1, x2, y1, y2, koridor) => ({ ...d(x1, x2, y1, y2, 'yangi'), logo: koridor });
 
 const tashqi = [
   d(-DEVOR.chap, ICHKI.x + DEVOR.ong, -DEVOR.yuqori, 0, 'tashqi'),
@@ -131,7 +133,7 @@ const ichki = [
   // K1 shimoliy devori — eshiklar bilan (1, 2-xona eshigi doska tomonda, 3-xonaniki orqada)
   sh(6250, 10850, 7700, 7800), d(11750, 12150, 7700, 7800, 'yangi'), sh(12150, 16850, 7700, 7800),
   d(17750, 18300, 7700, 7800, 'yangi'), d(19200, ICHKI.x, 7700, 7800, 'yangi'),
-  sh(19300, 19400, 7800, 9300),
+  lg(19300, 19400, 7800, 9300, 'K1'),
   // K1 janubiy devori: sotuv va admin orqasi kar; ustozlar va call-markaz oldi (eshik tomoni) shisha; 4-xona oldida shisha
   d(6250, 12150, 9300, 9400, 'yangi'),
   sh(12150, 12300, 9300, 9400), sh(13200, 15000, 9300, 9400), d(15000, 15100, 9300, 9400, 'yangi'),
@@ -143,14 +145,32 @@ const ichki = [
   // mijoz kirish zalidan chiqishi bilan ko'radi
   sh(6250, 6400, 15000, 15100), sh(7300, 9050, 15000, 15100), d(9050, 9150, 15000, 15100, 'yangi'),
   sh(9150, 9300, 15000, 15100), sh(10200, 11950, 15000, 15100), d(11950, 18250, 15000, 15100, 'yangi'),
-  // 4-xona: eshik K2 shimoliy devorida (orqa tomonda), K2 uchidagi devor shisha
-  d(19150, 19400, 15000, 15100, 'yangi'), sh(19300, 19400, 15100, 16600),
+  // 4-xona: eshik K2 shimoliy devorida (orqa tomonda); K2 uchidagi devor GKL, logotip bilan
+  d(19150, 19400, 15000, 15100, 'yangi'), lg(19300, 19400, 15100, 16600, 'K2'),
   // K2 janubiy devori (5–7-xonalar) — eshiklar bilan
   d(6150, 6350, 16600, 16700, 'yangi'), sh(7250, 11950, 16600, 16700), d(11950, 12350, 16600, 16700, 'yangi'),
   sh(13250, 17950, 16600, 16700), d(17950, 18300, 16600, 16700, 'yangi'), d(19200, ICHKI.x, 16600, 16700, 'yangi'),
 ];
 
 export const DEVORLAR = [...tashqi, ...qotgan, ...ichki];
+
+// ---------- Koridorlar: logotip devori va doskalar ----------
+// Ikkala koridor (K1, K2) oxirida 4-xonaning devori GKL; markazida yorituvchi (ichidan yoritilgan) PDP Academy logotipi —
+// koridor boshidan (koworkingdan) to'g'ri qaraganda ko'rinadi. Logotip design.pdp.uz dan (asosiy, to'q fon uchun).
+// en — logotip eni, bal — balandligi, z — markazi poldan, mm.
+export const KORIDOR_LOGO = DEVORLAR.filter(w => w.logo).map(w => ({
+  koridor: w.logo, x: w.x1, y1: w.y1, y2: w.y2, en: 1200, bal: 352, z: 1650, panel: { en: 1500, z1: 0, z2: H },
+}));
+// Koridorlarning kar (GKL) devorlarida: e'lonlar doskasi va e'tirof doskasi (faxriylar, oy o'quvchisi nomzodlari).
+// K1 — sotuv va admin xonalarining orqa devori (janubiy tomon), K2 — ustozlar va call-markaz orqa devori (shimoliy tomon).
+// y — devor yuzi, yon — koridor qaysi tomonda (−1: yuqorida, +1: pastda); z1..z2 — balandlik.
+export const DOSKALAR = [
+  { kod: 'E1', tur: 'elon', koridor: 'K1', x1: 6750, x2: 8550, y: 9300, yon: -1, z1: 950, z2: 1950 },
+  { kod: 'T1', tur: 'etirof', koridor: 'K1', x1: 9650, x2: 11450, y: 9300, yon: -1, z1: 950, z2: 1950 },
+  { kod: 'E2', tur: 'elon', koridor: 'K2', x1: 12675, x2: 14475, y: 15100, yon: +1, z1: 950, z2: 1950 },
+  { kod: 'T2', tur: 'etirof', koridor: 'K2', x1: 15625, x2: 17425, y: 15100, yon: +1, z1: 950, z2: 1950 },
+];
+export const DOSKA_NOMI = { elon: "E'lonlar", etirof: "E'tirof doskasi" };
 
 // ---------- Eshiklar ----------
 // devor: 'h' (gorizontal devorda, a..b bo'yicha X) yoki 'v' (vertikal devorda, a..b bo'yicha Y).

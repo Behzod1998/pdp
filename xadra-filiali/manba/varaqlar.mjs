@@ -1,6 +1,6 @@
 // A3 chizma varaqlari (HTML → PDF): 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi.
 import { LOYIHA, ICHKI, USTUNLAR, OQLAR, STANDART, PARTA, STUL, H, ESKI_XONALAR, XONALAR } from './model.mjs';
-import { rejaSvg, RANG, QURILMALAR, son } from './reja-svg.mjs';
+import { rejaSvg, RANG, QURILMALAR, son, KOR_RANG } from './reja-svg.mjs';
 import { korsatkichlar, ishlar, xizmatHavo, kwHavo, ceoHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
 
 const VB = { x1: -2500, y1: -2300, x2: 25600, y2: 25700 };
@@ -78,7 +78,7 @@ function maydonJadvali() {
     <tr><td>CEO xonasi (12-xona, o'zgarmaydi)</td><td class="r">${m2(x('X12'))}</td></tr>
     <tr><td>Koridorlar K1, K2 va kirish zali ZL</td><td class="r">${m2(kor2)}</td></tr>
     <tr><td>Zinalar va sanuzel bloki (o'zgarmaydi)</td><td class="r">${m2(x('ZN1') + x('ZN2') + ['2', '3', '4', '5', '6'].reduce((t, k2) => t + x(k2), 0))}</td></tr>
-    <tr><td>Toza balandlik</td><td class="r">${H} mm <span class="qizil">(taxmin)</span></td></tr>
+    <tr><td>Balandlik (poldan shiftgacha)</td><td class="r">${H} mm (buyurtmachi)</td></tr>
   </table>`;
 }
 
@@ -147,6 +147,9 @@ function belgilar(rejim) {
     sw(`background:${RANG.doska};height:1.2mm`, 'doska (kar devorda)'),
     sw(`background:${RANG.ustoz}`, 'o\'qituvchi / xodim stoli'),
     sw(`background:#e3f2fb;border:.3mm solid #2f78b7;height:1.4mm`, 'shisha devor (koridor tomoni)'),
+    sw(`background:${KOR_RANG.logo};height:1.2mm;border:0`, 'yorituvchi logotip (koridor oxiri, GKL devor)'),
+    sw(`background:${KOR_RANG.elon};height:1.2mm;border:0`, "e'lonlar doskasi"),
+    sw(`background:${KOR_RANG.etirof};height:1.2mm;border:0`, "e'tirof doskasi (faxriylar, oy o'quvchisi)"),
   ];
   else q = [
     sw(`background:#fff;border:.35mm dashed #222`, 'PV — rekuperatorli kiritish-chiqarish qurilmasi (shift ichida)'),
@@ -201,7 +204,7 @@ function havoPanel() {
   </table></div>
   <div><h3>HISOB ASOSI</h3><p class="izoh">
     <b>${HAVO.kishiga} m³/soat har bir kishiga</b> (o'quvchilar + o'qituvchi). Bir kishi soatiga ~18 l CO₂ chiqaradi: 18 l ÷ (1000 − 420) ppm ≈ 31 m³/soat — xonada CO₂ 1000 ppm dan oshmaydi.<br>
-    Hajm — toza balandlik ${H} mm (taxmin) bo'yicha. Sovutish — odamlar, noutbuklar, proyektor, yoritish, derazadan quyosh va toza havo (rekuperator FIK ${HAVO.rekuperator * 100}%) yig'indisi, Toshkent yozi (+40 °C) uchun dastlabki baho.
+    Hajm — balandlik ${H} mm (buyurtmachi) bo'yicha. Sovutish — odamlar, noutbuklar, proyektor, yoritish, derazadan quyosh va toza havo (rekuperator FIK ${HAVO.rekuperator * 100}%) yig'indisi, Toshkent yozi (+40 °C) uchun dastlabki baho.
   </p></div>
   <div><h3>YECHIM</h3><p class="izoh">
     <b>1–3 va 5–7-xonalar:</b> deraza yon devorda, qarama-qarshi devorgacha 7,7 m: tabiiy shamollatish (~2,5 × H ≈ 7,5 m) deyarli butun xonaga yetadi, lekin qish va yozda derazalar yopiq — har sinfga alohida <b>PV qurilma</b> (rekuperatorli, ~750 m³/soat, shovqin ≤ 35 dB(A)), deraza devori yonida shift ichida.<br>

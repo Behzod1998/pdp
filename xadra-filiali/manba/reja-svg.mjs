@@ -1,7 +1,7 @@
 // Reja chizmasi (SVG). Rejimlar: 'mavjud' (1-varaq), 'jihoz' (2-varaq), 'havo' (3-varaq), 'izoh' (A4 hujjat).
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, ESKI_XONALAR, ADM_JIHOZ,
-  XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal,
+  XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 
@@ -13,6 +13,26 @@ export const RANG = {
 };
 
 let IDN = 0;
+
+// Koridor oxiridagi yorituvchi logotip (GKL devorda) va e'lon / e'tirof doskalari — texnik va taqdimot rejalari uchun.
+export const KOR_RANG = { logo: '#00B533', nuqta: '#FFCC19', elon: '#8a7d66', etirof: '#d9a300' };
+export function koridorElementlar(k = 1, qoshimcha = '') {
+  const q = [];
+  const fam = `font-family="Liberation Sans, Arial, sans-serif" ${qoshimcha}`;
+  KORIDOR_LOGO.forEach(l => {
+    const ym = (l.y1 + l.y2) / 2, cx = l.x - 380, r = 150;
+    q.push(`<rect x="${l.x - 45}" y="${ym - l.en / 2}" width="45" height="${l.en}" fill="${KOR_RANG.logo}"/>`);
+    q.push(`<circle cx="${cx}" cy="${ym}" r="${r}" fill="none" stroke="${KOR_RANG.logo}" stroke-width="${r * 0.42}"/><circle cx="${cx + r * 0.3}" cy="${ym - r * 0.3}" r="${r * 0.33}" fill="${KOR_RANG.nuqta}"/>`);
+    q.push(`<text x="${cx - 260}" y="${ym + 65 * k}" font-size="${190 * k}" stroke-width="${190 * k * 0.28}" text-anchor="end" font-weight="700" fill="#1d7a35" ${fam}>Logotip</text>`);
+  });
+  DOSKALAR.forEach(b => {
+    const t = 50, y1 = b.yon < 0 ? b.y - t : b.y;
+    q.push(`<rect x="${b.x1}" y="${y1}" width="${b.x2 - b.x1}" height="${t}" fill="${KOR_RANG[b.tur]}"/>`);
+    const ty = b.yon < 0 ? b.y - 140 : b.y + 290;
+    q.push(`<text x="${(b.x1 + b.x2) / 2}" y="${ty}" font-size="${170 * k}" stroke-width="${170 * k * 0.28}" text-anchor="middle" fill="${b.tur === 'etirof' ? '#8a6a00' : '#5e5444'}" ${fam}>${DOSKA_NOMI[b.tur]}</text>`);
+  });
+  return q.join('');
+}
 const f = n => Math.round(n * 10) / 10;
 const son = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
@@ -138,6 +158,7 @@ export function rejaSvg(o = {}) {
     [...kw.divan, ...kw.kreslo].forEach(p => q.push(rect(p, `rx="120" fill="#c9ccd2" stroke="#8a8f99" stroke-width="${8 * k}"`)));
     kw.stullar.forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));
     q.push('</g>');
+    if (rejim !== 'havo') q.push(koridorElementlar(k));
   }
 
   // ---- havo almashinuvi ----

@@ -107,7 +107,7 @@ function bet2(rasm) {
     ${r('k1', 'K1 koridori — koworkingdan o\'ngga: chapda 1–3-xonaning shisha devorlari, o\'ngda xizmat xonalari')}
     ${r('tepa', 'Butun qavat — tepadan umumiy ko\'rinish (to\'q sariq — yangi devorlar)')}
   </div>
-  <p class="izohm" style="margin-top:4mm">3D model chizmadagi o'lchamlardan qurilgan; derazalar joyi va toza balandlik (${H / 1000} m) taxminiy. To'sinlar fotoda ko'rsatilmagan — joyida o'lchanadi.</p>`);
+  <p class="izohm" style="margin-top:4mm">3D model chizmadagi o'lchamlardan qurilgan; derazalar joyi taxminiy, balandlik ${H / 1000} m (buyurtmachi ma'lumoti). To'sinlar fotoda ko'rsatilmagan — joyida o'lchanadi.</p>`);
 }
 
 // ---------- xona sahifalari ----------
@@ -271,7 +271,7 @@ function havoBeti(kor, n) {
     <h2>Hisob</h2>
     <table class="havo"><tr><th>Xona</th><th>Odam</th><th>Maydon, m²</th><th>Hajm, m³</th><th>Havo, m³/soat</th><th>Marta / soat</th><th>Sovutish, kVt</th><th>Deraza</th><th>Qurilma</th></tr>
       ${rows.join('')}<tr class="jami"><td>Jami</td><td></td><td></td><td></td><td>${jamiQ}</td><td></td><td>${b1(jamiS)}</td><td></td><td>9 ta PV</td></tr></table>
-    <p class="izohm">${HAVO.kishiga} m³/soat har bir kishiga: bir kishi soatiga ~18 l CO₂ chiqaradi, 18 l ÷ (1000 − 420) ppm ≈ 31 m³/soat — shunda xonada CO₂ 1000 ppm dan oshmaydi. Hajm toza balandlik ${H / 1000} m (taxmin) bo'yicha. Sovutish — odamlar, noutbuklar, proyektor, yoritish, derazadan quyosh va toza havo (rekuperator FIK ${HAVO.rekuperator * 100}%) yig'indisi; OV loyihachisi aniqlashtiradi.</p>
+    <p class="izohm">${HAVO.kishiga} m³/soat har bir kishiga: bir kishi soatiga ~18 l CO₂ chiqaradi, 18 l ÷ (1000 − 420) ppm ≈ 31 m³/soat — shunda xonada CO₂ 1000 ppm dan oshmaydi. Hajm balandlik ${H / 1000} m (buyurtmachi) bo'yicha. Sovutish — odamlar, noutbuklar, proyektor, yoritish, derazadan quyosh va toza havo (rekuperator FIK ${HAVO.rekuperator * 100}%) yig'indisi; OV loyihachisi aniqlashtiradi.</p>
     <h2>Yechim</h2>
     <div style="margin:1mm auto 2mm;width:76%">${kesimSvg(1.1)}</div>
     <ul>
@@ -301,10 +301,11 @@ function qavatBeti(kor, t, ev, n) {
       ${m('Derazasiz xonalar', `4-xona (20 o'rin), offline sotuv, admin, ustozlar xonasi va call-markazda tabiiy yorug'lik va shamollatish yo'q; xodimlar kun bo'yi o'tiradi. Mexanik ventilyatsiya, konditsioner va yaxshi yoritish majburiy (10-bet). CEO xonasi derazali (2 devor).`)}
       ${m('Doska va yorug\'lik', `1–3 va 5–7-xonalarda doska derazaga qarama-qarshi devordan <b>yon devorga</b> ko'chirildi: deraza o'quvchilarning chap tomonida, yorug'lik doska va proyektor ekraniga tushmaydi. Evaziga xona doska bo'ylab keng (7.7 m) va sayoz (${mm(Math.min(...yon.map(k => k.D)))}–${mm(Math.max(...yon.map(k => k.D)))} m) bo'lib qoldi: 3 qator × 4 ta ikki kishilik parta (${PARTA.eni / 10} × ${PARTA.chuq / 10} sm), doska → 1-parta ${sm(yon[0].doska)} sm, stul orqasidan keyingi partagacha ${sm(yon[0].stulOrqasi)} sm, chetki old o'rindan qarash burchagi ~${Math.round(yon[0].burchak)}° (Beruniy — 244 sm, 36 sm, 39.8°). 3-xonada eshik faqat orqa tomonda bo'la oladi — 22 o'rin. 4-xonada doska o'ng asosiy (tashqi) devorda, eshik orqada (K2 dan).`)}
       ${m('Shisha devorlar', `Sinflarning koridor tomonidagi devorlari shisha (jami ~${b1(kor.reduce((s, k) => s + k.shisha, 0) / 1000)} m; 3 va 5-xonada koridorga faqat eshik chiqadi). Eshiklar ham shisha; ofis xonalarining eshik tomoni ham shisha. Shisha — laminatlangan akustik (kamida 2 × 6 mm), 1.0–1.6 m balandlikda matli polosa; doskalar shisha devorda emas.`)}
+      ${m('Koridorlar', `Ikkala koridor (K1, K2) oxirida 4-xonaning devori — GKL (avval shisha edi). Markazida ichidan yoritilgan PDP Academy logotipi (~1.2 × 0.35 m, design.pdp.uz dagi asosiy logotip, to'q fon uchun): koridor boshidan, koworkingdan to'g'ri qaraganda ko'rinadi; ikkala koridorda bir xil. Koridorlarning kar (GKL) devorlarida — e'lonlar doskasi va e'tirof doskasi (faxriylar, oy o'quvchisi nomzodlari): K1 da sotuv va admin xonalarining orqa devorida, K2 da ustozlar xonasi va call-markazning orqa devorida. Koridor yorug' va zamonaviy: shiftda chiziqli LED chiroqlar, och devor va pol, shisha devorlarda matli polosa.`)}
       ${m('Sinflar zichligi', `1–3 va 5–7-xonalarda 1 kishiga ~${b1(yon.reduce((s, k) => s + k.kishiga, 0) / yon.length)} m², orqa bo'sh zona ${sm(Math.min(...yon.map(k => k.orqaZona)))}–${sm(Math.max(...yon.map(k => k.orqaZona)))} sm — Beruniy qoidasi (oxirgi partadan devorgacha ≥ 65 sm) bajariladi, lekin shkaf uchun joy yo'q.`)}
       ${m('Hojatxona yetishmaydi', `WC (A) va WC (B) da jami 4 ta unitaz. ${t.orinlar} o'quvchi va ~10 xodimga taxminan 6–8 unitaz kerak (1 unitaz 20–30 kishiga). Yechim: tanaffuslarni xonalar bo'yicha 5–10 daqiqa farq bilan qo'yish; 1-qavatdagi hojatxonalardan foydalanish imkonini ijaraga beruvchi bilan aniqlash.`)}
-      ${m('Yangi devorlar', `~${ish.yangiUz.toFixed(1)} m GKL 100 (≈ ${Math.round(ish.yangiUz * 3)} m²) va ~${ish.shishaUz.toFixed(1)} m shisha devor (sinflar, sotuv va admin), ${ish.buzUz.toFixed(1)} m devor buziladi (eski o'rta devor va koridorlarga tushgan bo'laklar), ${ish.yangiEshik} ta yangi eshik. Doskalar mavjud yoki tashqi devorlarda (3 va 4-xonada — o'ng tashqi devorda).`)}
-      ${m('Joyida o\'lchanmagan', `Derazalar joyi va o'lchami; U8, U9 ustunlari (fotoda ko'rinmaydi); devor qalinliklari; toza balandlik (hisobda ${H / 1000} m); to'sinlar; radiatorlar; o'ng devor ortidagi oraliq eni.`)}
+      ${m('Yangi devorlar', `~${ish.yangiUz.toFixed(1)} m GKL 100 (≈ ${Math.round(ish.yangiUz * H / 1000)} m²) va ~${ish.shishaUz.toFixed(1)} m shisha devor (sinflar, sotuv va admin), ${ish.buzUz.toFixed(1)} m devor buziladi (eski o'rta devor va koridorlarga tushgan bo'laklar), ${ish.yangiEshik} ta yangi eshik. Doskalar mavjud yoki tashqi devorlarda (3 va 4-xonada — o'ng tashqi devorda).`)}
+      ${m('Joyida o\'lchanmagan', `Derazalar joyi va o'lchami; U8, U9 ustunlari (fotoda ko'rinmaydi); devor qalinliklari; to'sinlar (balandlik buyurtmachi ma'lumoti bo'yicha ${H / 1000} m); radiatorlar; o'ng devor ortidagi oraliq eni.`)}
       ${m('Hujjatlar', `Mavjud chizmada: «Xonalar ichki qismi loyiha hujjatlarisiz qayta ta'mirlangan». Devorlarni buzish va qurishdan oldin ijaraga beruvchining yozma roziligi olinadi. 8-xonaning raqami fotoda ko'rinmaydi.`)}
     </table>
     <h2>Chizma tekshiruvi (avtomatik)</h2>

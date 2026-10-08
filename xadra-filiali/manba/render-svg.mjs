@@ -5,6 +5,7 @@ import {
   KW_KUNDALIK, KW_TADBIR, sinflar, bolaklar, lokal, PARTA,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
+import { koridorElementlar } from './reja-svg.mjs';
 
 let N = 0;
 const f = v => Math.round(v * 10) / 10;
@@ -260,6 +261,7 @@ export function renderSvg(o = {}) {
     zY(Rx + 450, [0, 7700, 7800, 9300, 9400, 15000, 15100, 16600, 16700, ICHKI.y]);
     q.push(d.join(''));
   }
+  if (o.yozuv !== false) q.push(koridorElementlar(k, 'paint-order="stroke" stroke="#fbf6ee" stroke-opacity=".85" stroke-linejoin="round"'));
   if (o.qoshimcha) q.push(o.qoshimcha);
 
   // burish (koworking kichik ko'rinishlari uchun): -90° — yuqori devor chapga o'tadi

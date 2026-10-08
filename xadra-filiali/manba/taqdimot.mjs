@@ -85,7 +85,7 @@ export function taqdimotHtml() {
         </table>
         <p style="margin-top:2mm">Umumiy foydali maydon (hujjat):</p>
         <div class="katta">${LOYIHA.foydali} m²</div>
-        <p style="margin-top:1mm;font-size:6.2pt;color:#777">O'lchamlar mavjud holat chizmasidan. Derazalar joyi va toza balandlik (${H / 1000} m) joyida aniqlanadi.</p></div>
+        <p style="margin-top:1mm;font-size:6.2pt;color:#777">O'lchamlar mavjud holat chizmasidan. Derazalar joyi joyida aniqlanadi; balandlik ${H / 1000} m.</p></div>
     </div>
   </section></body></html>`;
 }
