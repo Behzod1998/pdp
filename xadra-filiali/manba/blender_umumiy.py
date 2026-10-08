@@ -128,6 +128,32 @@ def gisht(nom, oq, c1, c2, choc, en, boy, siljish, choc_en, rough=0.5, coat=0.0,
     return m
 
 
+def nuqtali_pol(nom, qadam, d, c1, c2, rough=0.25, coat=0.3, romb=True):
+    """Plitka va burchaklarida kichik to'q romb (oktagon plitka) yoki doira: qadam, d — mm."""
+    m, n, l, b = yangi_mat(nom)
+    tc = n.new('ShaderNodeTexCoord'); sp = n.new('ShaderNodeSeparateXYZ'); l.new(tc.outputs['Object'], sp.inputs[0])
+    def masofa(kanal):
+        dv = n.new('ShaderNodeMath'); dv.operation = 'DIVIDE'; dv.inputs[1].default_value = qadam / 1000
+        l.new(sp.outputs[kanal], dv.inputs[0])
+        ad = n.new('ShaderNodeMath'); ad.operation = 'ADD'; ad.inputs[1].default_value = 0.5; l.new(dv.outputs[0], ad.inputs[0])
+        fr = n.new('ShaderNodeMath'); fr.operation = 'FRACT'; l.new(ad.outputs[0], fr.inputs[0])
+        sb = n.new('ShaderNodeMath'); sb.operation = 'SUBTRACT'; sb.inputs[1].default_value = 0.5; l.new(fr.outputs[0], sb.inputs[0])
+        ab = n.new('ShaderNodeMath'); ab.operation = 'ABSOLUTE'; l.new(sb.outputs[0], ab.inputs[0])
+        if not romb:
+            sq = n.new('ShaderNodeMath'); sq.operation = 'POWER'; sq.inputs[1].default_value = 2; l.new(ab.outputs[0], sq.inputs[0]); return sq
+        return ab
+    fx, fy = masofa('X'), masofa('Y')
+    sm = n.new('ShaderNodeMath'); sm.operation = 'ADD'; l.new(fx.outputs[0], sm.inputs[0]); l.new(fy.outputs[0], sm.inputs[1])
+    lt = n.new('ShaderNodeMath'); lt.operation = 'LESS_THAN'; lt.inputs[1].default_value = (d / qadam) if romb else (d / qadam) ** 2
+    l.new(sm.outputs[0], lt.inputs[0])
+    mx = n.new('ShaderNodeMixRGB'); mx.inputs['Color1'].default_value = lin(c1); mx.inputs['Color2'].default_value = lin(c2)
+    l.new(lt.outputs[0], mx.inputs['Fac']); l.new(mx.outputs['Color'], b.inputs['Base Color'])
+    b.inputs['Roughness'].default_value = rough
+    if coat: b.inputs['Coat Weight'].default_value = coat; b.inputs['Coat Roughness'].default_value = 0.08
+    m.diffuse_color = lin(c1)
+    return m
+
+
 def rasm_mat(nom, fayl, kuch=0.0, rang_kuch=1.0):
     """PNG (alfa bilan) — plastinka materiali. kuch > 0 bo'lsa, rasm o'zi nur sochadi (yorituvchi logotip)."""
     m, n, l, b = yangi_mat(nom)
@@ -208,6 +234,12 @@ def materiallar():
         pol_parket=gisht('pol_parket', 'yx', '#c8a273', '#b98f5f', '#8a6a46', 1.2, 0.16, 0.5, 0.0012, 0.4, shovqin=0.15, bump=0.4, tolqin=0.8),
         pol_plitka=gisht('pol_plitka', 'xy', '#d9d5ce', '#d1ccc4', '#b0aba3', 0.6, 0.6, 0.0, 0.002, 0.35, shovqin=0.05),
         pol_keramogranit=gisht('pol_keramogranit', 'xy', '#e2dfda', '#dcd8d2', '#c2bdb5', 0.6, 0.6, 0.0, 0.0015, 0.22, coat=0.25, shovqin=0.04),
+        oktagon_pol=nuqtali_pol('oktagon_pol', 600, 70, '#efe6d6', '#3b302a'),
+        tambur_pol=nuqtali_pol('tambur_pol', 150, 22, '#f4f2ee', '#1d1d1f', romb=False),
+        devor_bej=mat('devor_bej', '#eadfca', 0.85),
+        plintus=mat('plintus', '#4a3426', 0.4),
+        granit_toq=mat('granit_toq', '#3a2a22', 0.15, coat=0.5),
+        perila_krem=mat('perila_krem', '#e3d6b8', 0.3, 0.6),
         wc_pol=gisht('wc_pol', 'xy', '#9fa4a9', '#989da2', '#7d8287', 0.6, 0.6, 0.0, 0.002, 0.3, shovqin=0.06),
     )
     for o in ('x', 'y'):
@@ -494,14 +526,40 @@ def eshik(e, theta=0.0, ustki_shisha=False, kab_z=(150, 2000)):
     return ob
 
 
-def perila(q, a, b, qadam=120, bal=900):
+def perila(q, a, b, qadam=120, bal=900, tutqich=None, ustun=None):
     """a, b — (x, y, z_pol) — perila ostidagi chiziq."""
-    q.cyl((a[0], a[1], a[2] + bal), (b[0], b[1], b[2] + bal), 25, M['eshik_yogoch'])
+    q.cyl((a[0], a[1], a[2] + bal), (b[0], b[1], b[2] + bal), 25, tutqich or M['eshik_yogoch'])
     L = math.dist(a[:2], b[:2]); n = max(1, int(L // qadam))
     for i in range(n + 1):
         t = i / n
         x, y, z = (a[j] + (b[j] - a[j]) * t for j in range(3))
-        q.cyl((x, y, z), (x, y, z + bal), 7 if i % 8 else 14, M['qora_metall'], 8)
+        q.cyl((x, y, z), (x, y, z + bal), 7 if i % 8 else 14, ustun or M['qora_metall'], 8)
+
+
+def qiya_plita(q, x1, x2, y1, y2, za1, za2, t, m):
+    """Qiya plita (zina marshi osti): x bo'ylab za1 (x1 da) dan za2 (x2 da) gacha, qalinligi t."""
+    vs = [q.bm.verts.new(P(x, y, z)) for x, y, z in (
+        (x1, y1, za1 - t), (x2, y1, za2 - t), (x2, y2, za2 - t), (x1, y2, za1 - t),
+        (x1, y1, za1), (x2, y1, za2), (x2, y2, za2), (x1, y2, za1))]
+    for idx in ((0, 3, 2, 1), (4, 5, 6, 7), (0, 1, 5, 4), (1, 2, 6, 5), (2, 3, 7, 6), (3, 0, 4, 7)):
+        f = q.bm.faces.new([vs[i] for i in idx]); f.material_index = q.mi(m)
+    bmesh.ops.recalc_face_normals(q.bm, faces=list({f for v in vs for f in v.link_faces}))
+
+
+def doira_chiroqlar(nuqtalar, nom='downlight', kuch=30, r=90, z=None):
+    """Shiftdagi dumaloq chiroqlar (yorug'lik diski va ostida maydon chirog'i)."""
+    z = z or H
+    q = Q()
+    for x, y in nuqtalar:
+        q.cyl((x, y, z - 10), (x, y, z), r, M['led'], 24)
+        q.cyl((x, y, z - 6), (x, y, z - 0.5), r + 15, M['ramka'], 24)
+    q.obj(nom + '_disk', 'tepa')
+    for i, (x, y) in enumerate(nuqtalar):
+        L = bpy.data.lights.new(f'{nom}_{i}', 'AREA'); L.shape = 'DISK'; L.size = 2 * r / 1000; L.energy = kuch
+        L.color = (1.0, 0.94, 0.86)
+        ob = bpy.data.objects.new(f'{nom}_{i}', L); K['chiroq'].objects.link(ob)
+        ob.visible_camera = False; ob.visible_glossy = False
+        ob.location = P(x, y, z - 15)
 
 
 # ---------------- mebel (lokal koordinata, markaz — 0, 0) ----------------

@@ -101,9 +101,11 @@ NARX_QATORLAR = [
     ('interyerXZ2', "Admin xonasi interyeri: dekor, o'simliklar", 300, "$/komplekt", "TAXMIN"),
     ('elonDoska', "E'lonlar doskasi 1.8 × 1.0 m (probka/magnit, alyuminiy ramka)", 120, "$/dona", "TAXMIN"),
     ('etirofDoska', "E'tirof doskasi 1.8 × 1.0 m (brend panel, A4 akril cho'ntaklar — faxriylar, oy o'quvchisi nomzodlari)", 250, "$/dona", "TAXMIN"),
-    ('resepshn', "Resepshn stoykasi 2.2 m (buyurtma: peshtaxta 1.10 m, old panelda logotip uchun joy)", 1500, "$/dona", "TAXMIN — buyurtma asosida yasaladi"),
+    ('resepshn', "Resepshn stoykasi 1.8 m (buyurtma: peshtaxta 1.10 m, zal tomonidagi panelda logotip uchun joy)", 1500, "$/dona", "TAXMIN — buyurtma asosida yasaladi"),
+    ('resepshnPanel', "Resepshn to'siq panellari (past, L shaklida ~3.4 m) va xodim eshikchasi", 500, "$/komplekt", "TAXMIN"),
     ('logoDevor1', "1-qavat: devordagi yorituvchi logotip ~1.5 m (to'q panelda)", 500, "$/dona", "TAXMIN"),
     ('logoStol1', "1-qavat: resepshn stoykasidagi logotip ~1.0 m (yoritilgan)", 250, "$/dona", "TAXMIN"),
+    ('turniketSoni', "Turniketlar (buyurtmachida mavjud: kirish va chiqish)", 2, "dona", "Buyurtmachi: mavjud — narxi hisobga kirmaydi"),
     ('zaxira', "Kutilmagan xarajatlar", 0.10, "ulush", "Buyurtmachi: umumiy summadan 10%"),
     ('H', "Devor balandligi (poldan shiftgacha)", 3.5, "m", "Buyurtmachi: bino balandligi 3.5 m"),
     ('Hsh', "Shisha qism balandligi", 2.5, "m", "Buyurtmachi"),
@@ -244,11 +246,12 @@ for kor, xonalar_ in (('K1', "sotuv va admin xonalari orqa devorida"), ('K2', "u
     qosh(kor, "E'lon va e'tirof doskalari", f"E'tirof doskasi — faxriylar, oy o'quvchisi nomzodlari ({xonalar_})", miqdor=1, birlik='dona', narx='etirofDoska')
 # 1-qavat: resepshn, mehmonlar joyi, logotiplar — taxminiy; turniket buyurtmachida mavjud
 qosh('Q1', 'Mebel va interyer', "Resepshn stoykasi (buyurtma asosida)", miqdor=1, birlik='dona', narx='resepshn')
+qosh('Q1', 'Mebel va interyer', "Resepshn to'siq panellari va xodim eshikchasi (L shaklida)", miqdor=1, birlik='komplekt', narx='resepshnPanel')
 qosh('Q1', 'Mebel va interyer', "Resepshn xodimi kreslosi", miqdor=1, birlik='dona', narx='kreslo')
 qosh('Q1', 'Mebel va interyer', "Mehmonlar divani", miqdor=1, birlik='dona', narx='divan')
 qosh('Q1', 'Mebel va interyer', "Jurnal stolchasi", miqdor=1, birlik='dona', narx='stolcha')
-qosh('Q1', 'Logotip', "Stoyka orqasidagi devorda yorituvchi logotip", miqdor=1, birlik='dona', narx='logoDevor1')
-qosh('Q1', 'Logotip', "Resepshn stoykasining old panelidagi logotip", miqdor=1, birlik='dona', narx='logoStol1')
+qosh('Q1', 'Logotip', "Resepshn orqasidagi o'ng devorda yorituvchi logotip", miqdor=1, birlik='dona', narx='logoDevor1')
+qosh('Q1', 'Logotip', "Resepshn stoykasining zal tomonidagi panelidagi logotip", miqdor=1, birlik='dona', narx='logoStol1')
 
 TURLAR = ['Shisha devor', 'Gips karton (GKL)', 'Bambuk panel', 'Interaktiv doska', 'Perila', 'Yoritish', 'Kamera tizimi', 'Logotip',
           'Matli plyonka', "Yong'in xavfsizligi", 'Buzish ishlari', 'Santexnika', 'Kafel', 'Konditsioner va ventilyatsiya',
@@ -334,7 +337,7 @@ izohlar = [
     "• Santexnika: 4 ta kabina, issiq va sovuq suv quvurlari (40 m dan), 100 ta aksessuar, kanalizatsiya quvuri va otvodlar — «Hojatxonalar» qatorida.",
     "• 2-qavat koridorlari: 4-xonaning koridor oxiridagi devorlari GKL (avval shisha edi), markazida yorituvchi logotip; e'lonlar va e'tirof doskalari — K1 va K2 qatorlarida.",
     "• TAXMINIY narxlar (to'q sariq fon): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, 1-qavat resepshn stoykasi, mehmonlar mebeli va logotiplari — Toshkent bozori bo'yicha dastlabki baho; mebelchi va reklama ustasi narxi bilan almashtiring. «Yakuniy» varag'ida taxminiy qism alohida ko'rsatilgan.",
-    "• Kirmagan: o'quv xonalari, ustozlar xonasi, call-markaz, CEO va koworking mebeli — mavjud; pol (kafel) va internet — mavjud; turniket — mavjud (o'rnatish, to'siq va evakuatsiya darvozasi alohida aniqlanadi); eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
+    "• Kirmagan: o'quv xonalari, ustozlar xonasi, call-markaz, CEO va koworking mebeli — mavjud; pol (kafel) va internet — mavjud; turniketlar (2 ta) — mavjud (o'rnatish, to'siq va evakuatsiya darvozasi alohida aniqlanadi); eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
     "Ranglar: ko'k — qo'lda kiritilgan qiymat; yashil — boshqa varaqdan olingan; qora — formula; sariq fon — o'zgartirish mumkin bo'lgan kataklar.",
 ]
 for i, t in enumerate(izohlar):

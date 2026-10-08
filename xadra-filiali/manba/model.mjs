@@ -134,18 +134,19 @@ const ichki = [
   sh(6250, 10850, 7700, 7800), d(11750, 12150, 7700, 7800, 'yangi'), sh(12150, 16850, 7700, 7800),
   d(17750, 18300, 7700, 7800, 'yangi'), d(19200, ICHKI.x, 7700, 7800, 'yangi'),
   lg(19300, 19400, 7800, 9300, 'K1'),
-  // K1 janubiy devori: sotuv va admin orqasi kar; ustozlar va call-markaz oldi (eshik tomoni) shisha; 4-xona oldida shisha
+  // K1 janubiy devori: sotuv va admin orqasi kar; ustozlar va call-markaz oldi (eshik tomoni) shisha;
+  // 4-xonaning barcha devorlari GKL (buyurtmachi: eshikdan tashqari) — K1 tomonidagi devori ham kar
   d(6250, 12150, 9300, 9400, 'yangi'),
   sh(12150, 12300, 9300, 9400), sh(13200, 15000, 9300, 9400), d(15000, 15100, 9300, 9400, 'yangi'),
   sh(15100, 15250, 9300, 9400), sh(16150, 17950, 9300, 9400), d(17950, 18150, 9300, 9400, 'yangi'),
-  sh(18150, 19300, 9300, 9400), d(19300, 19400, 9300, 9400, 'yangi'),
+  d(18150, 19300, 9300, 9400, 'yangi'), d(19300, 19400, 9300, 9400, 'yangi'),
   // xizmat xonalari orasidagi devorlar
   d(9050, 9150, 9400, 15000, 'yangi'), d(15000, 15100, 9400, 15000, 'yangi'),
   // K2 shimoliy devori: XZ1 (offline sotuv) va XZ2 (admin) oldida shisha devor va shisha eshik —
   // mijoz kirish zalidan chiqishi bilan ko'radi
   sh(6250, 6400, 15000, 15100), sh(7300, 9050, 15000, 15100), d(9050, 9150, 15000, 15100, 'yangi'),
   sh(9150, 9300, 15000, 15100), sh(10200, 11950, 15000, 15100), d(11950, 18250, 15000, 15100, 'yangi'),
-  // 4-xona: eshik K2 shimoliy devorida (orqa tomonda); K2 uchidagi devor GKL, logotip bilan
+  // 4-xona: eshik K2 shimoliy devorida (orqa tomonda, shisha); K2 uchidagi devor GKL, logotip bilan
   d(19150, 19400, 15000, 15100, 'yangi'), lg(19300, 19400, 15100, 16600, 'K2'),
   // K2 janubiy devori (5–7-xonalar) — eshiklar bilan
   d(6150, 6350, 16600, 16700, 'yangi'), sh(7250, 11950, 16600, 16700), d(11950, 12350, 16600, 16700, 'yangi'),

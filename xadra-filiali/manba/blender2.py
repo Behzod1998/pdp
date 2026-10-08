@@ -305,5 +305,5 @@ BELGI = {k: (*mk(X[k]), 0) for k in ('SR1', 'SR2', 'SR3', 'SR5', 'SR6', 'SR7', '
 BELGI['SR4'] = (21600, 12200, 0); BELGI['K1'] = (9000, 8550, 0); BELGI['K2'] = (14000, 15850, 0)
 BELGI['ZN1'] = (1500, 3000, 0); BELGI['ZL'] = (4800, 19800, 0)
 bu.belgilar(KOR['umumiy']['cam'], KOR['umumiy']['res'], BELGI, os.path.join(A['chiq'], 'umumiy-belgilar-2.json'))
-bu.renderla(KOR, A['chiq'], 'Xadra_2-qavat_3D', FAYL, A['tez'], A['faqat'])
+bu.renderla(KOR, A['chiq'], 'Xadra_2-qavat_3D', FAYL, A['tez'], A['faqat'], namuna=(48, 40))
 bu.saqla(A['chiq'], 'Xadra_2-qavat.blend', KOR['k1']['cam'], tez=A['tez'], blend=A['blend'])

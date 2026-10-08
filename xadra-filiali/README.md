@@ -1,72 +1,89 @@
-# PDP Academy — Xadra filiali, 2-qavat
+# PDP Academy — Xadra filiali (1, 2 va 3-qavat)
 
-Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Beruniy filiali jihozlash rejasi va Quyluq filiali xonalar izohi.
+Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Beruniy filiali jihozlash rejasi va Quyluq filiali xonalar izohi. Barcha qavatlar bitta albomda.
 
 ## Hujjatlar (`chizma/`)
 
 | Fayl | Mazmuni |
 |---|---|
-| `Xadra_2-qavat_taqdimot_reja_v1.0.pdf` / `.png` | A3 portret, namuna formatida (`manba/namuna-format.webp`): rangli reja, koworking zalining ikki rejimi (kundalik va tadbir), havo aylanishi, xonalar maydonlari |
-| `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.0.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
-| `Xadra_2-qavat_xonalar_izoh_v1.0.pdf` | A4, 11 bet: umumiy ko'rsatkichlar, 3D ko'rinishlar, har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
-| `Xadra_3-qavat_reja_v1.0.pdf` / `.png` | A3 landshaft, 1:50: 3-qavat — 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi, buyurtmachi chizgan ko'rinishda); 1, 3, 4-xonalar o'zgarmaydi |
-| `Xadra_3-qavat_3D_v1.0.pdf` / `.png` | A3 landshaft: 3-qavatning Blender 3D ko'rinishlari — umumiy (shiftsiz, xona nomlari bilan), 5-xona doska tomonga, hojatxona ichidan (2 ta ko'rinish) |
-| `3d/` | Alohida 3D rasmlar (JPG, 1-umumiy, 2-sinf-doska, 3-hojatxona-rakovinalar, 4-hojatxona-taxorat) va `Xadra_3-qavat.blend` (Blender 4.2, 4 ta kamera) |
-| `../hisob/Xadra_xarajatlar_v1.0.xlsx` | Xarajatlar (Excel), 2 va 3-qavat: xonalar bo'yicha jami, har bir xonaning batafsil hisobi (shisha devor va eshiklar, gips karton, bambuk panel, interaktiv doska, perila, yoritish, kamera, santexnika, kafel, buzish ishlari va b.), 10% kutilmagan xarajat va narxlar varag'i (so'mdagi narxlar kurs bo'yicha) — narx yoki balandlik o'zgarsa, formulalar qayta hisoblaydi |
+| **`Xadra_filiali_loyiha_albomi_v1.1.pdf`** | **Hammasi bitta PDF'da:** muqova va mundarija, 1-qavat (reja va 3D), 2-qavat (taqdimot rejasi, 3 ta chizma varag'i, 3D, xonalar izohi), 3-qavat (reja va 3D), xarajatlar xulosasi |
+| `Xadra_1-qavat_reja_v1.1.pdf` / `.png` | A3, 1:50: kirish zali — mavjud zina, turniketlar (kirish va chiqish), evakuatsiya darvozasi, o'ng devor bo'ylab L shaklidagi resepshn, logotiplar, mehmonlar joyi |
+| `Xadra_1-qavat_3D_v1.1.pdf` | A3: 1-qavatning Blender 3D ko'rinishlari — umumiy, eshikdan kirganda, resepshn |
+| `Xadra_2-qavat_taqdimot_reja_v1.1.pdf` / `.png` | A3 portret, namuna formatida (`manba/namuna-format.webp`): rangli reja, koworking zalining ikki rejimi, havo aylanishi, xonalar maydonlari |
+| `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.1.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
+| `Xadra_2-qavat_3D_v1.1.pdf` | A3, 2 varaq: 2-qavatning Blender 3D ko'rinishlari — umumiy, K1 va K2 koridorlari, yorituvchi logotip devori, e'lon va e'tirof doskalari, sotuv va admin xonalari, sinf, koworking |
+| `Xadra_2-qavat_xonalar_izoh_v1.1.pdf` | A4, 11 bet: umumiy ko'rsatkichlar, 3D (sxematik), har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
+| `Xadra_3-qavat_reja_v1.1.pdf` / `.png` | A3, 1:50: 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi); 1, 3, 4-xonalar o'zgarmaydi |
+| `Xadra_3-qavat_3D_v1.1.pdf` / `.png` | A3: 3-qavatning Blender 3D ko'rinishlari — umumiy, 5-xona doska tomonga, hojatxona ichidan |
+| `Xadra_xarajatlar_xulosa_v1.1.pdf` | A3: xarajatlar — turlar, qavatlar va xonalar bo'yicha jami |
+| `3d/` | Alohida 3D rasmlar (JPG) va Blender fayllari: `Xadra_1-qavat.blend`, `Xadra_2-qavat.blend`, `Xadra_3-qavat.blend` (Blender 4.2, kameralar bilan, logotip rasmlari faylga qadalgan) |
+| `../hisob/Xadra_xarajatlar_v1.1.xlsx` | Xarajatlar (Excel), 1, 2 va 3-qavat: yakuniy, xonalar bo'yicha, batafsil hisob, narxlar varag'i (so'mdagi narxlar kurs bo'yicha). Narxi noma'lum qismlar (sotuv va admin mebeli, doskalar, resepshn, 1-qavat logotiplari) — to'q sariq fonda, taxminiy. Narx yoki balandlik o'zgarsa, formulalar qayta hisoblaydi |
 
 ## Asosiy yechim
 
+### 1-qavat — kirish zali
+- **Zina mavjud holicha** (video bo'yicha): pastki marsh shimoliy devor bo'ylab sharqqa, sharqiy maydoncha, yuqori marsh uning oldidan g'arbga — 2-qavatga.
+- **Turniket chizig'i** zal bo'ylab (buyurtmachi sxemasi): o'ngda kirish (resepshn yonida), chaprog'ida chiqish; chapda evakuatsiya darvozasi (90 sm, chiqishga ochiladi), qolgani to'siq. Turniketlar buyurtmachida mavjud.
+- **Resepshn** o'ng devor bo'ylab L shaklida: 1.8 m stoyka zalga qaragan, qolgani past to'siq panellari; xodim turniketdan o'tgan zonadan kiradi.
+- **Logotiplar** (design.pdp.uz): xodim orqasidagi devorda ichidan yoritilgan katta logotip, stoyka panelida ikkinchisi. Mehmonlar uchun divan.
+
+### 2-qavat
 Xonalarga bo'linish buyurtmachi yuborgan namuna (`manba/namuna-format.webp`) bo'yicha qilingan. O'lchamlar real chizmadan olingan.
 
 - **Talab:** 22–24 o'rinli 6 ta xona, 18–20 o'rinli 1 ta xona, 4 kishilik admin/sotuv xonasi (15–20 m²). Ikkala zina va ular yonidagi kichik xonalar o'zgarmaydi.
-- **Yuqori qator:** 1, 2, 3-xona (SR1–SR3), 5.70–5.80 × 7.70 m; 1 va 2-xona 24 o'rin, 3-xona 22 o'rin (eshigi faqat orqa tomonda bo'la oladi, eshik oldidagi parta olingan).
-- **Pastki qator:** 7, 6, 5-xona (SR7–SR5), har biri 24 o'rin, 5.70–5.80 × 7.70 m.
-- **Doska yon devorda:** 1–3 va 5–7-xonalarda doska derazaga qarama-qarshi devorda emas, yon devorda. Deraza o'quvchilarning chap tomonida qoladi, kunduzgi yorug'lik doska va proyektor ekraniga tushmaydi. Partalar ikki kishilik, 140 × 60 sm (Beruniy namunasida bir kishilik 69 × 50 sm). To'r: qatorda 4 parta (8 o'rin), oralarida 60 sm yo'lak, 3 qator; deraza tomonda devorgacha 20 sm. Doskadan 1-partagacha 1.85 m, qator qadami 1.30 m (stul orqasidan keyingi partagacha 26 sm), oxirgi parta doskadan 5.05 m. Chetki old o'rindan qarash burchagi ~57° (Beruniy standartida 39.8°).
-- **O'rta qator:** XZ1 — offline sotuv bo'limi (2 konsultant, mijoz stullari, kutish divani) va XZ2 — admin (2 ish o'rni). Ikkalasining K2 tomonidagi devori va eshigi shishadan: kirish zalidan chiqqan mijoz darhol ko'radi. XZ3 — ustozlar xonasi (umumiy stol, 9 o'rin, lokerlar), XZ4 — call-markaz va online sotuv (6 ish o'rni). O'ngda 4-xona (SR4) — sinf, 20 o'rin, L shaklida, derazasiz. Doskasi o'ng asosiy (tashqi) devorda; 1–2-qatorlar butun uzunlik bo'ylab (4 tadan parta), 3-qator faqat keng qismda (2 parta). Eshigi K2 tomonda, orqada.
-- **Shisha devorlar:** sinflarning koridor tomonidagi devorlari shisha (eshik yonidagi kesaklar kar). 3 va 5-xonada koridorga faqat eshik chiqadi. Eshiklar ham shisha. Ofis xonalarining (XZ1–XZ4) eshik tomoni ham shisha devor. Shisha laminatlangan akustik, 1.0–1.6 m balandlikda matli polosa bilan. Doskalar shisha devorda emas.
-- **4-xona havosi:** o'ng devor qo'shni bino bilan umumiy, orqasida tor oraliq bor (egasining aytishicha). PV-4 panjaralari shu oraliqqa chiqariladi; oraliq eni joyida o'lchanadi.
-- **Koridorlar:** ikkita gorizontal koridor K1 va K2, har biri 1500 mm. Ikkalasi ham koworking zaliga chiqadi.
-- **Koworking / tadbirlar zali (KW):** chap qanotda, 70.5 m². Kundalik rejimda ~35 o'rin, tadbirda 66 o'rin.
-- **Qolgan xonalar:** WC (A), WC (B) va xo'jalik xonasi mavjud holicha qoladi. 12-xona (17.6 m², derazali) — CEO xonasi: ish stoli, 2 mehmon stuli, 4 kishilik uchrashuv stoli.
-- **Havo almashinuvi:** har bir sinfga alohida rekuperatorli PV qurilma, hisob 30 m³/soat har bir kishiga. Derazasiz xonalar (4-xona va xizmat xonalari) uchun mexanik ventilyatsiya majburiy.
-- **Jami:** 7 xona, 162 o'rin (5 × 24 + 22 + 20). Avtomatik tekshiruv: to'qnashuv 0, doskani to'suvchi ustun 0.
+- **Yuqori qator:** 1, 2, 3-xona (SR1–SR3), 5.70–5.80 × 7.70 m; 1 va 2-xona 24 o'rin, 3-xona 22 o'rin.
+- **Pastki qator:** 7, 6, 5-xona (SR7–SR5), har biri 24 o'rin.
+- **Doska yon devorda:** deraza o'quvchilarning chap tomonida, yorug'lik doskaga tushmaydi. Partalar ikki kishilik, 140 × 60 sm; qatorda 4 parta, 3 qator.
+- **O'rta qator:** XZ1 — offline sotuv, XZ2 — admin (K2 tomoni shisha), XZ3 — ustozlar xonasi, XZ4 — call-markaz (K1 tomoni shisha). O'ngda 4-xona (SR4) — sinf, 20 o'rin, L shaklida, derazasiz, doskasi o'ng tashqi devorda.
+- **4-xona:** barcha devorlari gips karton (GKL), faqat eshigi shisha (buyurtmachi qarori).
+- **Koridorlar (K1, K2, 1.5 m):** yorug' va zamonaviy — chiziqli LED, och devor va pol. Ikkala koridor oxirida 4-xonaning GKL devorida ichidan yoritilgan PDP Academy logotipi (koridor boshidan ko'rinadi). Kar devorlarda e'lonlar va e'tirof doskalari (faxriylar, oy o'quvchisi nomzodlari): K1 da sotuv va admin orqa devorida, K2 da ustozlar va call-markaz orqa devorida.
+- **Shisha devorlar:** sinflarning koridor tomonidagi devorlari shisha (2.5 m, ustida 1 m GKL), 1.0–1.6 m da matli polosa. Eshiklar shisha.
+- **Sotuv va admin xonalari:** mebel va interyer (brend devor, bambuk panel) — narxi taxminiy.
+- **Koworking / tadbirlar zali:** 70.5 m², kundalik ~35, tadbirda 66 o'rin. CEO xonasi — 12-xona.
+- **Jami:** 7 xona, 162 o'rin. Avtomatik tekshiruv: to'qnashuv 0.
+
+### 3-qavat
+- 5-xona — o'quv xonasi, 24 o'rin, bambuk panel 3 devorda (2.5 m), interaktiv doska.
+- 2-xona — erkaklar hojatxonasi: 2 rakovina, 4 kabina (1 unitaz, 3 chashagen), taxorat joyi.
 
 ## Taxminlar (joyida o'lchanadi)
 
-O'lchamlar mavjud holat chizmasining fotosidan olingan (`manba/mavjud-holat-2-qavat.jpg`). Quyidagilar taxminiy:
-
-- derazalar joyi;
-- toza balandlik — 3,0 m;
-- devor qalinliklari;
-- U8 va U9 ustunlari (fotoda ko'rinmaydi);
-- dunyo tomonlari.
+- Balandlik 3.5 m (buyurtmachi: bino balandligi).
+- Derazalar joyi, devor qalinliklari, U8 va U9 ustunlari (2-qavat).
+- 1-qavat: ustunlar va zina o'lchamlari foto va videodan.
 
 ## Qayta yig'ish
 
-O'lcham yoki talab o'zgarsa, `manba/model.mjs` tahrirlanadi. Keyin quyidagi buyruqlar ishga tushiriladi:
+O'lcham yoki talab o'zgarsa, `manba/model.mjs` (2-qavat), `manba/qavat1.mjs`, `manba/qavat3.mjs` tahrirlanadi. Keyin:
 
 ```sh
 cd manba
-npm install          # three.js (3D ko'rinishlar uchun)
-node build.mjs       # chizma/ ichidagi barcha PDF va taqdimot PNG qayta yaratiladi; --png — boshqa varaqlarning rasmi ham
-python3 xarajatlar.py   # hisob/ ichidagi xarajatlar jadvali — 2 va 3-qavat (openpyxl kerak)
+npm install             # three.js, pdf-lib
+node build.mjs          # chizma/ ichidagi rejalar, chizmalar va izoh (PDF, PNG); --png — boshqa varaqlarning rasmi ham
+python3 xarajatlar.py   # hisob/ ichidagi xarajatlar jadvali (openpyxl kerak), so'ng LibreOffice bilan qayta hisoblanadi
 
-# 3-qavat 3D (Blender 4.2; bpy moduli: pip install bpy==4.2.0, Python 3.11)
-node blender3-malumot.mjs > 3qavat.json
-python blender3.py 3qavat.json ../chizma/3d     # renderlar va .blend; --tez — tez sinov
-node qavat3-3d.mjs                              # chizma/Xadra_3-qavat_3D_v1.0.pdf
+# 3D (Blender 4.2; bpy moduli: pip install bpy==4.2.0, Python 3.11). --tez — tez sinov
+node logo-png.mjs                                   # logotip teksturalari (design.pdp.uz SVG → PNG)
+node blender1-malumot.mjs > 1qavat.json && python blender1.py 1qavat.json ../chizma/3d
+node blender2-malumot.mjs > 2qavat.json && python blender2.py 2qavat.json ../chizma/3d
+node blender3-malumot.mjs > 3qavat.json && python blender3.py 3qavat.json ../chizma/3d
+
+node albom.mjs          # 3D varaqlar, xarajatlar xulosasi va bitta albom PDF
 ```
 
 Playwright Chromium bilan o'rnatilgan bo'lishi kerak. Generator avval tekshiruvni bajaradi: partalar, devorlar, ustunlar, eshiklar va doskalar orasidagi to'qnashuvlar.
 
 | Fayl | Vazifasi |
 |---|---|
-| `model.mjs` | geometriya: devorlar (mavjud / yangi / buziladi), ustunlar, derazalar, eshiklar, xonalar, parta to'ri |
+| `model.mjs` | 2-qavat geometriyasi: devorlar (mavjud / yangi / buziladi, logotip devorlari), ustunlar, derazalar, eshiklar, xonalar, parta to'ri, koridor logotiplari va doskalari |
 | `tekshiruv.mjs` | xona ko'rsatkichlari, havo hisobi, avtomatik tekshiruv, evakuatsiya yo'li |
-| `reja-svg.mjs` | reja chizmasi (SVG) |
-| `varaqlar.mjs`, `izoh.mjs` | A3 varaqlar va A4 izoh (HTML) |
+| `reja-svg.mjs`, `varaqlar.mjs`, `izoh.mjs` | 2-qavat chizmalari (SVG), A3 varaqlar va A4 izoh |
 | `render-svg.mjs`, `taqdimot.mjs` | taqdimot uslubidagi rangli reja va A3 portret varaq |
-| `sahna3d.html`, `sahna3d.mjs` | 3D ko'rinishlar (three.js) |
+| `sahna3d.html`, `sahna3d.mjs` | izohdagi sxematik 3D (three.js) |
+| `qavat1.mjs` | 1-qavat: geometriya, zina, turniketlar, resepshn, logotiplar, A3 varaq |
 | `qavat3.mjs` | 3-qavat: geometriya, 5-xona partalari, hojatxona jihozlari, A3 varaq |
-| `blender3-malumot.mjs`, `blender3.py`, `qavat3-3d.mjs` | 3-qavat 3D: geometriya JSON'i, Blender sahnasi (materiallar, jihozlar, kameralar, Cycles render) va A3 varaq |
-| `xarajat-malumot.mjs`, `xarajatlar.py` | xarajatlar jadvali: devor yuzlari xonalar bo'yicha, Excel (formulalar bilan) |
+| `blender_umumiy.py` | Blender kutubxonasi: materiallar, devor/deraza/eshik, mebel, logotip va doskalar, chiroqlar, kamera, render |
+| `blender1*.`, `blender2*.`, `blender3*.` | har bir qavatning geometriya JSON'i va Blender sahnasi |
+| `logo/`, `logo-png.mjs` | PDP Academy logotiplari (design.pdp.uz) va Blender teksturalari |
+| `qavat3-3d.mjs`, `albom.mjs` | 3D varaqlar (A3), xarajatlar xulosasi va loyiha albomi |
+| `xarajat-malumot.mjs`, `xarajatlar.py`, `xarajat-xulosa.py` | xarajatlar jadvali (Excel, formulalar bilan) va albom uchun xulosa |

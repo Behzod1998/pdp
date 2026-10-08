@@ -99,12 +99,13 @@ await q3.pdf({ path: join(CHIQISH, `${q3Nom}.pdf`), width: '420mm', height: '297
 await (await q3.$('section.varaq')).screenshot({ path: join(CHIQISH, `${q3Nom}.png`) });
 await q3.close();
 
-// 6. 1-qavat rejasi (A3 landshaft) — PDF va PNG; Blender rasmi bo'lsa, varaqqa qo'shiladi
-const q1Rasm = join(CHIQISH, '3d', 'Xadra_1-qavat_3D_2-resepshn.jpg');
+// 6. 1-qavat rejasi (A3 landshaft) — PDF va PNG; Blender rasmlari bo'lsa, varaqqa qo'shiladi
 const q1 = await brauzer.newPage({ viewport: { width: 1587, height: 1123 }, deviceScaleFactor: 2.5 });
-let rasm1;
-try { rasm1 = `data:image/jpeg;base64,${(await readFile(q1Rasm)).toString('base64')}`; } catch { rasm1 = null; }
-await q1.setContent(qavat1Html({ rasm: rasm1 }), { waitUntil: 'load' });
+const q1Rasm = async f => { try { return `data:image/jpeg;base64,${(await readFile(join(CHIQISH, '3d', f))).toString('base64')}`; } catch { return null; } };
+await q1.setContent(qavat1Html({ rasmlar: [
+  { src: await q1Rasm('Xadra_1-qavat_3D_2-kirish.jpg'), nom: '3D: eshikdan kirganda' },
+  { src: await q1Rasm('Xadra_1-qavat_3D_3-resepshn.jpg'), nom: '3D: resepshn va logotip' },
+] }), { waitUntil: 'load' });
 const q1Nom = `Xadra_1-qavat_reja_${LOYIHA.versiya}`;
 await q1.pdf({ path: join(CHIQISH, `${q1Nom}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
 await (await q1.$('section.varaq')).screenshot({ path: join(CHIQISH, `${q1Nom}.png`) });
