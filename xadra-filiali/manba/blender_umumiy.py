@@ -744,7 +744,8 @@ def logo_panel(x, y, rot, en, zc, versiya='primary-on-dark', kuch=3.0, halqa=1.2
     if halqa:
         kalit2 = f'halqa_{versiya}_{halqa}'
         if kalit2 not in M: M[kalit2] = rasm_mat(kalit2, f'pdp-academy-{versiya}-halqa.png', halqa)
-        q = Q(); q.tekis(-W * 0.55, W * 0.55, zc - Hh * 0.55, zc + Hh * 0.55, 3, M[kalit2]); q.obj(nom + '_halqa', k, (x, y, 0), rot)
+        # halqa PNG logotip PNG bilan bir xil o'lchamda (logo-png.mjs) — plastinka ham bir xil, aks holda harflar ikkilanadi
+        q = Q(); q.tekis(-W / 2, W / 2, zc - Hh / 2, zc + Hh / 2, 3, M[kalit2]); q.obj(nom + '_halqa', k, (x, y, 0), rot)
         # harflarni devordan ushlab turadigan akril qatlam (yon tomondan ko'rinadi)
     return W, Hh
 

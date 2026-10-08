@@ -44,6 +44,7 @@ figcaption b { color: #1f1f1f; }
   padding: .6mm 1.6mm; font-size: 7.4pt; font-weight: 700; color: #1f1f1f; white-space: nowrap; box-shadow: 0 .3mm 1mm rgba(0,0,0,.25); }
 .ikki { display: grid; grid-template-columns: 1fr 146mm; gap: 4mm; margin-top: 2mm; }
 .tor { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3mm 4mm; margin-top: 2mm; }
+.tor figure img { height: 108mm; object-fit: cover; }
 .matn { font-size: 7.6pt; line-height: 1.45; color: #333; }
 .matn p { margin-bottom: 1.4mm; } .matn b { color: #1f1f1f; }
 .matn h3 { font-size: 9.5pt; margin: 0 0 1.5mm; color: #1f1f1f; }
