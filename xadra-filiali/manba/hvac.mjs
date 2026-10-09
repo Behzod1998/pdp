@@ -1,5 +1,5 @@
 // 2-qavat: 11 xona (SR1–SR7, XZ1–XZ4) bo'yicha HVAC tahlili — tashqi havo sarfi, sovutish yuklamasi,
-// «2 ta 100-lik konditsioner + 30% toza havo» sxemasining yetarliligi. Hisobot: A4 (build.mjs → PDF).
+// «2 ta 96-ka (96 000 BTU/soat) konditsioner + 30% toza havo» sxemasining yetarliligi. Hisobot: A4 (build.mjs → PDF).
 //
 // Ma'lumot manbalari: maydon va o'rinlar — loyiha modeli (model.mjs, jihozlash rejasi); balandlik — buyurtmachi;
 // qolgan ko'rsatkichlar — hisob farazlari (F), har biri jadvalda belgilangan va obyektda tasdiqlanadi.
@@ -100,19 +100,28 @@ export function hvacHisob() {
   jam.suv30 = jam.oaMin / F.ulush;                   // 30% ulush bilan me'yoriy tashqi havo uchun umumiy havo sarfi
   jam.qishOA = jam.oaMin * F.rho * F.c * (F.tIchkiQish - F.tQish) / 3600;
 
-  // «100-lik»ning mumkin bo'lgan talqinlari — qaysi biri ekanini pasport (model kodi) aniqlaydi
-  const talqin = [
-    { nom: '100 000 BTU/soat (mahalliy «9-ka, 12-ka, 24-ka» kabi, ming BTU/soat)', kw: 29.3 },
-    { nom: "Model kodidagi 100 = 10.0 kW (ba'zi tijorat va VRF bloklarida) yoki «100 m² lik» savdo atamasi", kw: 10.0 },
+  // Buyurtmachi (09.10): «2 ta 100-lik» — 2 ta «96-ka», ya'ni 96 000 BTU/soat (1 BTU/soat = 0.29307 W). Aniq quvvat — shildikdan.
+  const kond = { nom: '96 000 BTU/soat («96-ka»)', btu: 96000, soni: 2 };
+  kond.kw = kond.btu * 0.29307 / 1000;
+  kond.jami = kond.soni * kond.kw;
+  kond.issiq = kond.jami * 0.87;                     // 42–43 °C da ~13% kamayish (umumiy holat; aniq qiymat — model jadvalidan)
+  // umumiy havo sarfi uchun mo'ljal: kanalli bloklarda odatda ~150–200 m³/soat har 1 kW (aniq — pasportdan)
+  kond.havo = [kond.jami * 150, kond.jami * 200];
+  kond.oa30 = kond.havo.map(v => v * F.ulush);
+  // tashqi havo qanday berilishiga qarab konditsionerlarga tushadigan yuklama, kW
+  const xona = [jam.ichki + jam.env[0], jam.ichki + jam.env[1]];       // xonalarning o'z issiqligi (tashqi havosiz)
+  const ss = [
+    { kod: 'A', nom: "Me'yoriy tashqi havo (" + Math.round(jam.oaMin) + " m³/soat) shu konditsionerlar orqali", yuk: jam.jami },
+    { kod: 'B', nom: "Buyurtmachi sxemasi: 30% tashqi havo (odatiy havo sarfida " + kond.oa30.map(v => Math.round(v / 10) * 10).join('–') + " m³/soat — me'yordan kam)",
+      yuk: [xona[0] + kond.oa30[0] * F.kwPerKm3, xona[1] + kond.oa30[1] * F.kwPerKm3] },
+    { kod: 'C', nom: "Tashqi havo alohida rekuperatorli tizim bilan (issiqlik 55% qaytariladi), qolgani konditsionerlarda", yuk: [xona[0] + jam.oaYuk * 0.45, xona[1] + jam.oaYuk * 0.45] },
+    { kod: 'D', nom: "Tashqi havo alohida tizim o'z sovutgichi bilan; konditsionerlar faqat xonalar issiqligini oladi", yuk: xona },
   ];
-  talqin.forEach(t => {
-    t.jami = 2 * t.kw;
-    t.issiq = 2 * t.kw * 0.87;                       // 42–43 °C da ~13% kamayish (umumiy holat; aniq qiymat — model jadvalidan)
-    // umumiy havo sarfi uchun mo'ljal: kanalli bloklarda odatda ~150–200 m³/soat har 1 kW (aniq — pasportdan)
-    t.havo = [t.jami * 150, t.jami * 200];
-    t.oa30 = t.havo.map(v => v * F.ulush);
+  ss.forEach(x => {
+    x.noutbuk = [x.yuk[0] + jam.noutbuk, x.yuk[1] + jam.noutbuk];
+    x.baho = kond.issiq >= x.noutbuk[1] ? 'yetarli' : kond.jami >= x.yuk[1] ? 'yetarli' : kond.jami < x.yuk[0] || kond.issiq < x.yuk[0] ? 'emas' : 'chegara';
   });
-  return { F, MEYOR, xonalar, jam, talqin };
+  return { F, MEYOR, xonalar, jam, kond, ss, xona };
 }
 
 // ---------- hisobot (A4) ----------
@@ -151,7 +160,8 @@ const xulosa = (tur, matn) => {
 };
 
 export function hvacHtml() {
-  const { xonalar: X, jam: J, talqin: T } = hvacHisob();
+  const { xonalar: X, jam: J, kond: K, ss: SS, xona: XO } = hvacHisob();
+  const ssBaho = { yetarli: '<span class="ok">yetarli</span>', emas: '<span class="og">yetarli emas</span>', chegara: '<span class="f">chegarada</span>' };
   let bet = 0;
   const sahifa = ichki => `<section class="bet"><div class="bar"></div>${ichki}<footer><span>${LOYIHA.brend} · ${LOYIHA.filial} · 2-qavat · HVAC tahlili · ${LOYIHA.versiya} · ${LOYIHA.sanaISO}</span><span>${++bet}</span></footer></section>`;
   const sinflar = X.filter(r => r.tur === 'sinf'), ofislar = X.filter(r => r.tur === 'ofis');
@@ -161,15 +171,17 @@ export function hvacHtml() {
   const b1 = sahifa(`
     <div class="sub">${LOYIHA.brend} · ${LOYIHA.filial} · ${LOYIHA.manzil}</div>
     <h1>2-qavat: konditsionerlash va ventilyatsiya — texnik tahlil</h1>
-    <div class="sub">11 xona: o'quv xonalari SR1–SR7 va xizmat xonalari XZ1–XZ4. Sxema: 2 ta «100-lik» «media» (ehtimol Midea brendi) konditsioneri, umumiy havo sarfining 30% i — tashqi (toza) havo. Dastlabki hisob: uskuna tanlash yoki xarid uchun asos emas.</div>
+    <div class="sub">11 xona: o'quv xonalari SR1–SR7 va xizmat xonalari XZ1–XZ4. Sxema: 2 ta «96-ka» (96 000 BTU/soat) «media» (ehtimol Midea brendi) konditsioneri, umumiy havo sarfining 30% i — tashqi (toza) havo. Dastlabki hisob: uskuna tanlash yoki xarid uchun asos emas.</div>
 
     <h2>1. Mavjud ma'lumotlar va aniqlashtirilishi kerak bo'lgan savollar</h2>
     <h3>1.1. «100-lik» atamasi</h3>
-    <p>Buyurtmachi ma'lumoti: <i>«konditsioner 2 ta 100 talik 7000 $ ustanovka birga; vozduxovod 200 kv metr 7000 $»</i>. Model kodi va quvvati ko'rsatilmagan. «100» bir nechta ma'noda ishlatiladi:</p>
-    <table><tr><th>Talqin</th><th class="r">1 ta, kW</th><th class="r">2 ta, kW</th></tr>
-      ${T.map(t => `<tr><td>${t.nom}</td><td class="r">${n1(t.kw)}</td><td class="r">${n1(t.jami)}</td></tr>`).join('')}
+    <p>Buyurtmachi ma'lumoti: <i>«konditsioner 2 ta 100 talik 7000 $ ustanovka birga; vozduxovod 200 kv metr 7000 $»</i>. Buyurtmachi aniqlashtirdi (09.10): <b>«2 ta 100-lik» — 2 ta «96-ka»</b>, ya'ni 96 000 BTU/soat.</p>
+    <table><tr><th>Ko'rsatkich</th><th class="r">1 ta</th><th class="r">2 ta</th></tr>
+      <tr><td>Nominal sovutish quvvati, 96 000 BTU/soat × 0.293 W (tashqi 35 °C da)</td><td class="r">${n1(K.kw)} kW</td><td class="r">${n1(K.jami)} kW</td></tr>
+      <tr><td>42–43 °C li kunlarda (~13% kam; aniq qiymat — model jadvalidan)</td><td class="r">~${n1(K.kw * 0.87)} kW</td><td class="r">~${n1(K.issiq)} kW</td></tr>
+      <tr><td>Havo sarfi — mo'ljal (kanalli bloklarda 1 kW ga ~150–200 m³/soat; aniq — pasportdan)</td><td class="r">${or(K.havo.map(v => v / 2), n0)} m³/soat</td><td class="r">${or(K.havo, n0)} m³/soat</td></tr>
     </table>
-    <p>Farqi ~3 baravar, shuning uchun quvvat <b>qabul qilinmadi</b> — tahlil ikkala talqin bo'yicha ham, kerakli quvvat bo'yicha ham berildi. Yakuniy javob uchun ichki va tashqi blok pasporti (shildik) kerak: model kodi, sovutish quvvati (kW, tashqi 35 °C da), havo sarfi (m³/soat), tashqi statik bosim (Pa), tashqi havo qabul qilish imkoniyati.</p>
+    <p>Model kodi, aniq quvvat, havo sarfi, tashqi statik bosim va tashqi havo qabul qilish imkoniyati — ichki va tashqi blok shildigidan olinadi.</p>
 
     <h3>1.2. Loyihadan olingan ma'lumotlar</h3>
     <ul>
@@ -243,11 +255,12 @@ export function hvacHtml() {
   const sinfOA = sinflar.reduce((t, r) => t + r.oaMin, 0);
   const b4 = sahifa(`
     <h2>3. Ikki konditsionerning umumiy quvvati va havo sarfi</h2>
-    <table><tr><th>Talqin</th><th class="r">Nominal, kW</th><th class="r">42–43 °C da, kW</th><th class="r">Kerakli, kW</th><th class="r">Havo sarfi (mo'ljal), m³/soat</th><th class="r">Shundan 30%, m³/soat</th><th>Sovutish bo'yicha</th></tr>
-      ${T.map(t => `<tr><td>${t.nom.split(' (')[0]}</td><td class="r">${n1(t.jami)}</td><td class="r">~${n0(t.issiq)}</td><td class="r">${or(J.jami, n0)}<br><span class="kichik">noutbuk bilan +${n0(J.noutbuk)}</span></td><td class="r">${or(t.havo, n0)}</td><td class="r">${or(t.oa30, n0)}</td><td>${t.jami < J.jami[0] ? `<span class="og">yetarli emas</span> — kamida ${n0(J.jami[0] - t.jami)} kW kam` : t.issiq < J.jami[1] ? `<span class="f">chegarada</span> — eng og'ir holatda ${n0(J.jami[1] + J.noutbuk - t.issiq)} kW gacha kam` : '<span class="ok">yetarli</span>'}</td></tr>`).join('')}
+    <p>2 × 96 000 BTU/soat = <b>${n1(K.jami)} kW</b> nominal (42–43 °C da ~${n0(K.issiq)} kW). Konditsionerlarga tushadigan yuklama tashqi havo qanday berilishiga bog'liq — 4 ssenariy, 11 xona bir vaqtda band:</p>
+    <table><tr><th>Ssenariy</th><th class="r">Yuklama, kW</th><th class="r">Noutbuk bilan, kW</th><th>${n1(K.jami)} kW bilan</th></tr>
+      ${SS.map(x => `<tr><td><b>${x.kod}.</b> ${x.nom}</td><td class="r">${or(x.yuk, n0)}</td><td class="r">${or(x.noutbuk, n0)}</td><td>${ssBaho[x.baho]}</td></tr>`).join('')}
     </table>
-    <p class="kichik">Kerakli quvvat — 11 xona yig'indisi, hamma xonalar bir vaqtda band, me'yoriy minimal tashqi havo bilan (Jadval 3). Havo sarfi — kanalli bloklar uchun odatiy nisbat (1 kW ga ~150–200 m³/soat), pasport qiymati emas: aniq havo sarfi pasportdan olinadi.</p>
-    ${xulosa('malumot', `<b>1-savol.</b> 11 xonaning sovutish yuklamasi <b>${or(J.jami, n0)} kW</b> (noutbuklar bilan ${n0(J.jami[0] + J.noutbuk)}–${n0(J.jami[1] + J.noutbuk)} kW). Agar «100-lik» — 10 kW bo'lsa (jami 20 kW), quvvat <b>yetarli emas</b> — kerakligining uchdan biricha. Agar 100 000 BTU/soat bo'lsa (jami 58.6 kW), yuklama oralig'ining past qismida yetadi, yuqori qismida va 42–43 °C li kunlarda <b>chegarada yoki kam</b>. Quvvat pasporti, derazalar va tom haqidagi ma'lumotsiz aniq xulosa berib bo'lmaydi.`)}
+    <p class="kichik">Xonalarning o'z issiqligi (odamlar, yoritish, uskuna, devor, oyna, tom) — ${or(XO, n0)} kW; oraliq derazalar va tom noma'lumligidan (Jadval 3). «Yetarli» — nominal quvvat yuklamaning yuqori chegarasidan ham katta (noutbuklar bilan va 42–43 °C li kunlarda tekshiriladi); «yetarli emas» — 42–43 °C da yuklamaning pastki chegarasiga ham yetmaydi; «chegarada» — nominal quvvat oraliq ichida: derazalar shimolda yoki soyada va xonalar ustida 3-qavat bo'lsa yetadi, aks holda issiq kunlarda kam. Havo sarfi — kanalli bloklar uchun odatiy nisbat, pasport qiymati emas.</p>
+    ${xulosa(SS[1].baho === 'emas' ? 'emas' : 'malumot', `<b>1-savol — 2 ta 96-ka (${n1(K.jami)} kW) 11 xonani sovutadimi.</b> Xonalarning o'z issiqligi uchun <b>yetarli</b> (${or(XO, n0)} kW, D ssenariy; o'quvchilar noutbuk bilan ishlasa ${or(SS[3].noutbuk, n0)} kW — 42–43 °C li kunlarda chegarada). Me'yoriy tashqi havoni ham shu ikkala blok sovutsa — <b>yetarli emas</b> (${or(J.jami, n0)} kW kerak, A ssenariy). Buyurtmachi sxemasida (30%, B) yuklama ${or(SS[1].yuk, n0)} kW — <b>chegarada</b>: aniq javob uchun derazalar (o'lcham, yo'nalish) va tom ma'lumoti kerak; bu sxemada tashqi havo me'yordan kam (4-bo'lim). Bundan tashqari, 2 blokning havosi 11 xonaga yuklamasiga qarab taqsimlanishi kerak (klapanlar, termostatlar) — aks holda ba'zi xonalar sovuq, ba'zilari issiq bo'ladi.`)}
 
     <h2>4. 30% tashqi havo ulushining yetarliligi</h2>
     <p>Har xonaga beriladigan havo uning <b>sezilarli issiqlik yuklamasi</b> bo'yicha taqsimlanadi (havo ${F.dT} K sovuqroq beriladi). 30% sxemada har xonaga tushadigan tashqi havo = shu havoning 30% i. Odam ko'p, issiqlik nisbatan kam bo'lgan xonalarda bu me'yordan kam bo'ladi.</p>
@@ -262,14 +275,14 @@ export function hvacHtml() {
 
   // ---- 5-bet: birgalikda, yechimlar, o'lchovlar ----
   const b5 = sahifa(`
-    ${xulosa('emas', `<b>4-savol — ventilyatsiya va sovutish birgalikda.</b> Ventilyatsiya qismi ikkala talqinda ham <b>yetarli emas</b>: odatiy havo sarfida 2 ta blokning 30% i ${or(T[1].oa30, n0)} (10 kW) yoki ${or(T[0].oa30, n0)} m³/soat (29.3 kW), kerak — ${n0(J.oaMin)} m³/soat. Tashqi havoni me'yorgacha oshirsa, uning yozgi yuklamasi ${n1(J.oaYuk)} kW bo'ladi va umumiy talab ${or(J.jami, n0)} kW ga yetadi. Bu 20 kW dan ancha ko'p, 58.6 kW ga esa chegarada. Sovutish qismining yakuniy bahosi — <b>ma'lumot yetarli emas</b> (1-savol).`)}
+    ${xulosa('emas', `<b>4-savol — ventilyatsiya va sovutish birgalikda.</b> Ventilyatsiya qismi <b>yetarli emas</b>: odatiy havo sarfida 2 ta 96-kaning 30% i ${or(K.oa30, n0)} m³/soat, kerak — ${n0(J.oaMin)} m³/soat. Tashqi havoni shu bloklar orqali me'yorgacha oshirsa, uning yozgi yuklamasi ${n1(J.oaYuk)} kW bo'ladi va umumiy talab ${or(J.jami, n0)} kW ga yetadi — ${n1(K.jami)} kW dan ko'p (A ssenariy). Ya'ni me'yoriy tashqi havo va sovutishni faqat shu ikki blok bilan birga ta'minlab bo'lmaydi; tashqi havo alohida berilsa, sovutish yetadi yoki chegarada (C, D ssenariylar).`)}
 
     <h2>5. Zarur qo'shimcha uskunalar va muhandislik yechimlari (ko'rib chiqish uchun)</h2>
     <p class="kichik">Bu yerda xarid yoki montaj bo'yicha qat'iy tavsiya berilmaydi — quyidagilar loyihachi bilan ko'rib chiqiladigan variantlar.</p>
     <ol>
       <li><b>Alohida tashqi havo tizimi (6-savol).</b> 30% sxema me'yorni bajarmagani uchun tashqi havo alohida berilishi kerak bo'ladi: kiritish-chiqarish qurilmasi (rekuperatorli), sarfi ~${n0(J.oaMin)} m³/soat (me'yoriy) — ${n0(J.co2)} m³/soat (CO₂ ≈ 1000 ppm). Variantlar: bitta markaziy qurilma, sinflar va xizmat xonalari uchun 2 ta, yoki xona bo'yicha. Rekuperator (samaradorligi 50–70%) yozgi tashqi havo yuklamasini ~${n1(J.oaYuk)} kW dan ~${n1(J.oaYuk * 0.4)}–${n1(J.oaYuk * 0.5)} kW gacha, qishki isitishni ~${n0(J.qishOA)} kW dan ~${n0(J.qishOA * 0.3)}–${n0(J.qishOA * 0.5)} kW gacha kamaytiradi.</li>
       <li><b>Chiqarish (so'rish).</b> Berilgan tashqi havo hajmida ifloslangan havo chiqarilishi kerak — aks holda xonalarda ortiqcha bosim bo'ladi, eshiklar qiyin yopiladi, havo koridorlarga siqiladi. Har xonada so'rish panjarasi va chiqarish kanali; sanuzel chiqarishi alohida.</li>
-      <li><b>Sovutish quvvati.</b> Kerakli quvvat ${or(J.jami, n0)} kW (tashqi havo rekuperator orqali berilsa ~${n0(J.jami[0] - J.oaYuk * 0.55)}–${n0(J.jami[1] - J.oaYuk * 0.55)} kW). 10 kW talqinida qo'shimcha quvvat kerak bo'ladi; 29.3 kW talqinida quvvat issiq kunlar uchun tekshiriladi.</li>
+      <li><b>Sovutish quvvati.</b> 2 ta 96-ka (${n1(K.jami)} kW) xonalarning o'z issiqligiga (${or(XO, n0)} kW) yetadi. Tashqi havo rekuperator orqali berilsa, yuklama ${or(SS[2].yuk, n0)} kW — issiq kunlar uchun tekshiriladi; tashqi havo shu bloklar orqali me'yorda berilsa — ${or(J.jami, n0)} kW, quvvat kam.</li>
       <li><b>Zonalash va boshqarish.</b> 11 xonaning yuklamasi turlicha va o'zgaruvchan (dars bor-yo'qligi). 2 ta blok bilan har xonani alohida boshqarish uchun havo klapanlari (VAV) yoki xona bo'yicha bloklar kerak bo'ladi. Har sinfda CO₂ va harorat datchigi.</li>
       <li><b>Havo taqsimlash.</b> Kanallarning yo'nalishi va sxemasini buyurtmachi hal qiladi; tahlil faqat har xonaga kerakli havo sarfini beradi (Jadval 2 va 4). Har xonaga diffuzor va so'rish panjarasi kerak bo'ladi. Kanal kesimi shovqin bo'yicha tanlanadi: magistralda ≤ 4–5 m/s, xonaga yaqinda ≤ 2.5–3 m/s, sinfda shovqin ≤ 35 dBA. Devor va koridordan o'tishda yong'inga qarshi klapanlar. «200 m² vozduxovod» kanal sxemasi bilan tekshiriladi.</li>
       <li><b>Filtr va qishki rejim.</b> Toshkent havosi changli — tashqi havoga kamida G4 + F7 filtrlar. Qishda (hisobiy ~${F.tQish} °C) tashqi havoni isitish va muzlashdan himoya kerak; konditsionerning isitish quvvati sovuqda kamayadi.</li>
@@ -291,10 +304,10 @@ export function hvacHtml() {
 
     <h2>Yakuniy xulosalar</h2>
     <table><tr><th>Savol</th><th>Xulosa</th><th>Asos</th></tr>
-      <tr><td>1. Sovutish quvvati 11 xonaga</td><td class="f"><b>ma'lumot yetarli emas</b></td><td>Talab ${or(J.jami, n0)} kW. 10 kW talqinida (20 kW) — yetarli emas; 29.3 kW talqinida (58.6 kW) — chegarada.</td></tr>
+      <tr><td>1. Sovutish: 2 ta 96-ka (${n1(K.jami)} kW)</td><td><span class="ok">yetarli</span> / <span class="og">yetarli emas</span> / <span class="f">ma'lumot yetarli emas</span></td><td>Xonalarning o'z issiqligi (${or(XO, n0)} kW) — yetarli. Me'yoriy tashqi havo ham shu bloklardan (${or(J.jami, n0)} kW) — yetarli emas. 30% sxema (${or(SS[1].yuk, n0)} kW) — chegarada: derazalar va tom ma'lumoti kerak.</td></tr>
       <tr><td>2. Zarur tashqi havo</td><td><b>hisoblandi</b></td><td>Me'yoriy minimal ${n0(J.oaMin)} m³/soat, tavsiya ${n0(J.co2)} m³/soat (Jadval 2).</td></tr>
       <tr><td>3. 30% ulush har xonaga</td><td class="og">yetarli emas</td><td>Buning uchun umumiy havo ≥ ${n0(J.suv30)} m³/soat kerak, sovutish havosi ${or(J.suv, n0)} m³/soat. Xizmat xonalarida kerakli ulush ${n0(Math.min(...ofislar.map(r => r.zd[1])) * 100)}–${n0(Math.max(...ofislar.map(r => r.zd[0])) * 100)}%.</td></tr>
-      <tr><td>4. Ventilyatsiya va sovutish birgalikda</td><td class="og">yetarli emas</td><td>Ventilyatsiya ikkala talqinda ham kam; sovutish — 1-savolga qarang.</td></tr>
+      <tr><td>4. Ventilyatsiya va sovutish birgalikda</td><td class="og">yetarli emas</td><td>30% bilan tashqi havo ${or(K.oa30, n0)} m³/soat, kerak ${n0(J.oaMin)}; me'yorgacha oshirilsa sovutish quvvati kam.</td></tr>
       <tr><td>6. Qo'shimcha yechim kerakmi</td><td><b>ha</b> (ventilyatsiya), sovutish — pasportdan keyin</td><td>Alohida tashqi havo va chiqarish tizimi, xona bo'yicha boshqarish, havo taqsimlash kanallari.</td></tr>
     </table>
   `);
@@ -303,10 +316,11 @@ export function hvacHtml() {
 
 // node hvac.mjs — natijalarni konsolga chiqaradi
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const { xonalar, jam, talqin } = hvacHisob();
+  const { xonalar, jam, kond, ss } = hvacHisob();
   xonalar.forEach(r => console.log(r.kod, r.odam, r.A.toFixed(1), 'OA', Math.round(r.kmk), Math.round(r.ashrae), Math.round(r.oaMin),
     'yuk', r.jami.map(v => v.toFixed(1)).join('–'), 'suv', r.suv.map(Math.round).join('–'), 'zd', r.zd.map(z => (z * 100).toFixed(0)).join('–'),
     'co2', r.co2_30.map(Math.round).join('–')));
   console.log('JAMI', JSON.stringify(jam, (k, v) => typeof v === 'number' ? Math.round(v * 10) / 10 : v));
-  talqin.forEach(t => console.log(t.nom, t.jami, Math.round(t.issiq), t.havo, t.oa30));
+  console.log(kond.nom, kond.kw.toFixed(2), kond.jami.toFixed(1), kond.issiq.toFixed(1), kond.havo.map(Math.round), kond.oa30.map(Math.round));
+  ss.forEach(x => console.log(x.kod, x.yuk.map(v => v.toFixed(1)).join('–'), x.noutbuk.map(v => v.toFixed(1)).join('–'), x.baho));
 }

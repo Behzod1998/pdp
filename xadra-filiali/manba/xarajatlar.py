@@ -87,7 +87,7 @@ NARX_QATORLAR = [
     ('aksessuar', "Quvur aksessuarlari (fitinglar)", 5000, "so'm/dona", "Buyurtmachi"),
     ('aksessuarSoni', "Quvur aksessuarlari soni", 100, "dona", "Buyurtmachi: jami 500 000 so'm"),
     ('kanal', "Kanalizatsiya quvuri (40 m) va otvodlar", 4000000, "so'm/komplekt", "Buyurtmachi: jami summa"),
-    ('kond2', "Konditsioner — 2-qavat (2 ta, 100 mingtalik, o'rnatish bilan)", 7000, "$/komplekt", "Buyurtmachi: 2 ta uchun jami, o'rnatish bilan"),
+    ('kond2', "Konditsioner — 2-qavat (2 ta «96-ka», 96 000 BTU/soat ≈ 28 kW, o'rnatish bilan)", 7000, "$/komplekt", "Buyurtmachi: 2 ta uchun jami, o'rnatish bilan; «100-lik» = 96-ka (09.10)"),
     ('vozdux', "Havo kanallari (vozduxovod), 200 m²", 7000, "$/komplekt", "Buyurtmachi: jami summa"),
     ('kond3', "Konditsioner — 3-qavat o'quv xonasi", 1000, "$/dona", "Buyurtmachi"),
     # Taxminiy narxlar (buyurtmachi: «narxi va qanday mebel bo'lishi noma'lum — taxminan narx qo'yib berasan»)
@@ -233,7 +233,7 @@ for w in d['buziladi']:
     qosh('BQ', 'Buzish ishlari', f"Devorni buzish — {joy}", w['uz'] / 1000, 'H', narx=('som', 'buzish'))
 qosh('BQ', 'Buzish ishlari', "Qurilish chiqindisini olib chiqish (jami)", miqdor=1, birlik='komplekt', narx=('som', 'chiqindi'))
 # Konditsioner va ventilyatsiya (buyurtmachi summalari, o'rnatish bilan)
-qosh('BQ', 'Konditsioner va ventilyatsiya', "Konditsioner — 2 ta, 100 mingtalik, o'rnatish bilan (jami)", miqdor=1, birlik='komplekt', narx='kond2')
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Konditsioner — 2 ta «96-ka» (96 000 BTU/soat), o'rnatish bilan (jami)", miqdor=1, birlik='komplekt', narx='kond2')
 qosh('BQ', 'Konditsioner va ventilyatsiya', "Havo kanallari (vozduxovod), 200 m² (jami)", miqdor=1, birlik='komplekt', narx='vozdux')
 qosh('YQ', 'Konditsioner va ventilyatsiya', "Konditsioner (o'quv xonasi)", miqdor=1, birlik='dona', narx='kond3')
 
@@ -353,7 +353,7 @@ izohlar = [
     "• Devor buzish: chizmadagi buziladigan devorlar uzunligi × devor balandligi (3.5 m) × 50 000 so'm/m².",
     "• Kutilmagan xarajatlar: umumiy summadan 10% — «Xonalar bo'yicha» varag'ining oxirida.",
     "• 3-qavat: 5-xona — o'quv xonasi (24 o'rin, bambuk panel va interaktiv doska); 2-xona — erkaklar hojatxonasi. Santexnika soni ikkala hojatxona uchun jami (2-qavatdagisi — ayollar: 2 kabina, unitazli, eng ichkarida; oldida rakovinali tambur — 6-xona 3-qavatga o'tish yo'lagi bo'lgani uchun ikki eshik orqali kiriladi); kafel faqat erkaklar hojatxonasi uchun (devor 58 m², pol 16 m²).",
-    "• Konditsioner va ventilyatsiya (buyurtmachi summalari, o'rnatish bilan): 2-qavatga 2 ta 100 mingtalik konditsioner va 200 m² havo kanali — «Butun qavat» qatorida; 3-qavat o'quv xonasiga 1 ta konditsioner.",
+    "• Konditsioner va ventilyatsiya (buyurtmachi summalari, o'rnatish bilan): 2-qavatga 2 ta «96-ka» (96 000 BTU/soat) konditsioner va 200 m² havo kanali — «Butun qavat» qatorida; 3-qavat o'quv xonasiga 1 ta konditsioner.",
     "• Santexnika: 4 ta kabina, issiq va sovuq suv quvurlari (40 m dan), 100 ta aksessuar, kanalizatsiya quvuri va otvodlar — «Hojatxonalar» qatorida.",
     "• 2-qavat koridorlari: 4-xonaning koridor oxiridagi devorlari GKL (avval shisha edi), markazida yorituvchi logotip; e'lonlar va e'tirof doskalari — K1 va K2 qatorlarida.",
     "• TAXMINIY narxlar (to'q sariq fon): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, koworking sahnasi (karkas devor, reyka, logotip, trek yoritish, ovoz, pol, minbar), 1-qavat resepshn stoykasi, mehmonlar mebeli va logotiplari — Toshkent bozori bo'yicha dastlabki baho; mebelchi va reklama ustasi narxi bilan almashtiring. «Yakuniy» varag'ida taxminiy qism alohida ko'rsatilgan.",
