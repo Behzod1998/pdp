@@ -117,7 +117,7 @@ async function q2Varaqlar(x) {
       <p><b>Yonlar:</b> ${m(S.reyka[0].y2 - S.reyka[0].y1)} m dan yog'och reykali panellar (qora asos ustida), chetlarida tik yashil LED chiziqlar; devor tepasida yashil chiziq. Kolonkalar reyka panellariga osiladi (2.05–2.5 m).</p>
       <p><b>Yoritish:</b> shiftdan ${m(S.devor.x1 - S.trek.x)} m narida qora trek shina (${m(S.trek.y2 - S.trek.y1)} m), ${S.trek.spot} ta spot — navbat bilan logotip va ekranga.</p>
       <p><b>Pol va xavfsizlik:</b> sahna maydoni (${m(S.pol.x2 - S.pol.x1)} × ${m(S.pol.y2 - S.pol.y1)} m) — pol bilan bir sathda yog'och ko'rinishli vinil, podiumsiz: koworkingning o'ng tomonidagi o'tish yo'lagi (K1, K2, kirish zali, 3-qavat zinasi) bo'sh qoladi. Namunadagi shtativli kolonkalar shu sababli devorga osildi.</p>
-      <p><b>Narxi (taxminiy):</b> ~${usd(xs.jami)} — ${xs.qatorlar.map(q => `${q.nom} ${usd(q.usd)}`).join(', ')}. Ekran mavjud deb olingan (yangi 86" — ~$1,300).</p></div>
+      <p><b>Narxi (taxminiy):</b> ~${usd(xs.jami)} — ${xs.qatorlar.map(q => `${q.nom} ${usd(q.usd)}`).join(', ')}. Ekran buyurtmachida mavjud — faqat ko'chiriladi (3D da 86" ko'rsatilgan).</p></div>
   </div><div>
     ${fig(await rasm('Xadra_2-qavat_3D_10-koworking-sahna.jpg'), "<b>Kundalik rejim</b> — dam olish burchagidan sahnaga.")}
     <figure style="border:.3mm solid #ddd;border-radius:1.2mm;overflow:hidden">${kwKorinish('tadbir')}</figure>

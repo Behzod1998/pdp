@@ -109,7 +109,7 @@ NARX_QATORLAR = [
     ('sahnaReyka', "Sahna: yog'och reykali panellar (2 × 0.95 × 3.5 m, qora asos ustida)", 450, "$/komplekt", "TAXMIN"),
     ('sahnaLogo', "Sahna logotipi ~1.7 m, ichidan yoritilgan (akril harflar, LED)", 600, "$/dona", "TAXMIN — reklama ustasi narxi bilan almashtiring"),
     ('sahnaYor', "Sahna yoritishi: trek shina 5.2 m va 7 ta spot, tik va yuqori yashil LED chiziqlar", 450, "$/komplekt", "TAXMIN"),
-    ('sahnaEkran', "Sahna ekrani 86\": koworkingdagi mavjud ekranni ko'chirish, kronshteyn va kabel", 60, "$/komplekt", "TAXMIN — ekran mavjud deb olingan; yangi 86\" ekran ~$1 300"),
+    ('sahnaEkran', "Sahna ekrani 86\": koworkingdagi mavjud ekranni ko'chirish, kronshteyn va kabel", 60, "$/komplekt", "TAXMIN — ekran buyurtmachida mavjud (09.10); faqat kronshteyn va kabel"),
     ('sahnaAudio', "Ovoz: 2 ta faol kolonka (devorga osiladi), simsiz mikrofon", 500, "$/komplekt", "TAXMIN"),
     ('sahnaPol', "Sahna maydoni poli: yog'och ko'rinishli vinil ~9 m², pol bilan bir sathda (o'tish profili bilan)", 250, "$/komplekt", "TAXMIN"),
     ('minbar', "Minbar (tribuna), ko'chma, logotip bilan", 300, "$/dona", "TAXMIN"),
