@@ -2,7 +2,7 @@
 // Geometriya model.mjs dan olinadi — o'lchamlar chizma bilan bir xil.
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ,
-  KW_KUNDALIK, KW_TADBIR, sinflar, bolaklar, lokal, PARTA,
+  KW_KUNDALIK, KW_TADBIR, AYOLLAR_WC, sinflar, bolaklar, lokal, PARTA,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 import { koridorElementlar } from './reja-svg.mjs';
@@ -144,9 +144,9 @@ export function renderSvg(o = {}) {
     KW_TADBIR.stullar.forEach(s => j.push(use('stul', ...markaz(s), 0)));
     j.push(rect(KW_TADBIR.minbar, `fill="url(#${id}yogT)" stroke="#5f4630" stroke-width="8"`));
   }
-  // sanuzel
-  [[3725, 290], [5175, 290], [3725, 1990], [5175, 1990]].forEach(([x, y]) => j.push(use('unitaz', x, y)));
-  [[5690, 4700], [5690, 5550]].forEach(([x, y]) => j.push(use('rakovina', x, y, 90)));
+  // ayollar hojatxonasi: kabinalarda unitaz, tamburlarda rakovina
+  AYOLLAR_WC.unitaz.forEach(([x, y]) => j.push(use('unitaz', x, y)));
+  AYOLLAR_WC.rakovina.forEach(([x, y, b]) => j.push(use('rakovina', x, y, b)));
   q.push(`<g filter="url(#${id}soya)">${j.join('')}</g>`);
   // doskalar va ekran
   sinf.forEach(x => {
@@ -218,9 +218,8 @@ export function renderSvg(o = {}) {
     const x12 = XONALAR.find(x => x.kod === 'X12');
     L.push(t(2700, 21800, 'CEO xonasi', 360, B), t(2700, 22120, `${xonaMaydoni(x12).toFixed(1)} m²`, 250, G));
     L.push(t(1500, 5150, 'Zinapoya', 380, B), t(1500, 5650, '18.79 m²', 330, R));
-    L.push(t(3725, 3200, 'WC (A)', 250, B), t(3725, 3520, '4.68 m²', 220, R));
-    L.push(t(5175, 3200, 'WC (B)', 250, B), t(5175, 3520, '5.25 m²', 220, R));
-    L.push(t(4300, 5000, "Xo'jalik", 270, B), t(4300, 5320, '6.54 m²', 230, R));
+    L.push(t(4500, 2560, 'Ayollar WC', 250, B), t(4500, 2860, '2 kabina · tambur', 200, R));
+    L.push(t(4500, 4900, "O'tish yo'lagi", 250, B), t(4500, 5200, '3-qavatga (ZN1)', 210, R));
     L.push(t(12600, 8680, 'Koridor · 1.50 m', 320, 'font-weight="700" fill="#3a3a3a"'));
     L.push(t(12600, 15980, 'Koridor · 1.50 m', 320, 'font-weight="700" fill="#3a3a3a"'));
     L.push(t(4800, 20050, 'Kirish zali', 300, 'font-weight="700" fill="#3a3a3a"'));

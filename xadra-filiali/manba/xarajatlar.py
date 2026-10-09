@@ -4,7 +4,7 @@
 # So'mdagi narxlar «Narxlar» varag'idagi kurs bo'yicha dollarga o'tkaziladi.
 # Uzunliklar model.mjs dan (xarajat-malumot.mjs orqali), narx va balandliklar «Narxlar» varag'ida —
 # ularni Excelda o'zgartirsa, butun hisob formulalar bilan qayta hisoblanadi.
-#   python3 xarajatlar.py            → ../hisob/Xadra_xarajatlar_v1.1.xlsx (1, 2 va 3-qavat)
+#   python3 xarajatlar.py            → ../hisob/Xadra_xarajatlar_v1.2.xlsx (1, 2 va 3-qavat)
 import json
 import subprocess
 from pathlib import Path
@@ -14,7 +14,7 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 
 BU = Path(__file__).resolve().parent
-CHIQISH = BU.parent / 'hisob' / 'Xadra_xarajatlar_v1.1.xlsx'
+CHIQISH = BU.parent / 'hisob' / 'Xadra_xarajatlar_v1.2.xlsx'
 
 d = json.loads(subprocess.check_output(['node', str(BU / 'xarajat-malumot.mjs')], text=True))
 
@@ -61,13 +61,13 @@ NARX_QATORLAR = [
     ('buzish', "Devor buzish", 50000, "so'm/m²", "Buyurtmachi"),
     ('chiqindi', "Qurilish chiqindisini olib chiqish", 1200000, "so'm/komplekt", "Buyurtmachi: jami summa"),
     ('chashagen', "Chashagen", 700000, "so'm/dona", "Buyurtmachi"),
-    ('chashagenSoni', "Chashagen soni", 4, "dona", "Buyurtmachi: 3 ta erkaklar (3-qavat), 1 ta ayollar (2-qavat)"),
+    ('chashagenSoni', "Chashagen soni", 3, "dona", "Buyurtmachi: 3 ta erkaklar (3-qavat); ayollar hojatxonasi 2 kabinali, unitazli (09.10)"),
     ('unitaz', "Unitaz", 1200000, "so'm/dona", "Buyurtmachi"),
     ('unitazSoni', "Unitaz soni", 3, "dona", "Buyurtmachi: 1 ta erkaklar, 2 ta ayollar"),
     ('rakovina', "Rakovina", 650000, "so'm/dona", "Buyurtmachi"),
-    ('rakovinaSoni', "Rakovina soni", 4, "dona", "Buyurtmachi: 2 ta erkaklar hojatxonasida, qolgan 2 tasi ayollarnikida"),
+    ('rakovinaSoni', "Rakovina soni", 4, "dona", "Buyurtmachi: 2 ta erkaklar hojatxonasida, 2 tasi ayollarnikida (har bir tamburda)"),
     ('mustahab', "Mustahab", 200000, "so'm/dona", "Buyurtmachi"),
-    ('mustahabSoni', "Mustahab soni", 7, "dona", "Buyurtmachi: har bir unitaz va chashagenga (4 + 3)"),
+    ('mustahabSoni', "Mustahab soni", 6, "dona", "Har bir kabinaga: erkaklar 4 ta, ayollar 2 ta (09.10)"),
     ('taxoratSm', "Taxorat smesiteli", 400000, "so'm/dona", "Buyurtmachi"),
     ('taxoratSmSoni', "Taxorat smesiteli soni", 4, "dona", "Buyurtmachi: 3 tasi erkaklar taxorat joyida, 1 tasi ayollarnikida"),
     ('rakovinaSm', "Rakovina smesiteli", 400000, "so'm/dona", "Buyurtmachi"),
@@ -186,10 +186,10 @@ qosh('YQ', 'Bambuk panel', "Uzun devor (eshikli)", 8.60, 'HbYQ', narx='bambuk')
 qosh('YQ', 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEn', 'Hesh', narx='bambuk', manfiy=True)
 qosh('YQ', 'Interaktiv doska', "Shimoliy devorga (eshikdan kirganda chapda)", miqdor=1, birlik='dona', narx='doska')
 # Hojatxonalar: santexnika ikkala qavat uchun jami (buyurtmachi bergan sonlar), kafel — faqat erkaklar hojatxonasi
-for kalit, nom in [('chashagen', "Chashagen — 3 ta erkaklar (3-qavat), 1 ta ayollar (2-qavat)"),
+for kalit, nom in [('chashagen', "Chashagen — 3 ta erkaklar (3-qavat)"),
                    ('unitaz', "Unitaz — 1 ta erkaklar, 2 ta ayollar"),
-                   ('rakovina', "Rakovina — 2 ta erkaklar, 2 ta ayollar"),
-                   ('mustahab', "Mustahab — har bir unitaz va chashagenga"),
+                   ('rakovina', "Rakovina — 2 ta erkaklar, 2 ta ayollar (tamburlarda)"),
+                   ('mustahab', "Mustahab — har bir kabinaga (erkaklar 4, ayollar 2)"),
                    ('taxoratSm', "Taxorat smesiteli — 3 ta erkaklar taxorat joyida, 1 ta ayollar"),
                    ('rakovinaSm', "Rakovina smesiteli — har bir rakovinaga")]:
     qosh('HJ', 'Santexnika', nom, miqdor=f'{kalit}Soni', birlik='dona', narx=('som', kalit))
@@ -326,13 +326,13 @@ izohlar = [
     "• Yuqori qavat o'quv xonasi (5.45 × 8.60 m, buyurtmachi chizmasi): bambuk panel 3 devorga, 2.5 m balandlikda — doska devori, orqa devor va eshikli uzun devor (eshik o'rni ayiriladi); derazali uzun devorga qilinmaydi.",
     "• Interaktiv doska: 7 ta shu qavat sinflariga va 1 ta yuqori qavatdagi o'quv xonasiga — jami 8 ta.",
     "• Perila: buyurtmachi bergan uzunlik (24 m), «Zinapoya» qatorida.",
-    "• Uzunliklar chizma v1.1 dan (mavjud holat chizmasining fotosi asosida) — ish boshlanishidan oldin joyida o'lchanadi.",
+    "• Uzunliklar chizma v1.2 dan (mavjud holat chizmasining fotosi asosida) — ish boshlanishidan oldin joyida o'lchanadi.",
     "• Yoritish: koridorlar (K1, K2) va koworking zaliga 336 $ dan, o'quv xonalari (7), ofis xonalari (4) va CEO xonasiga 168 $ dan. Kirish zali, WC va yuqori qavat xonasi kiritilmagan.",
     "• Videokuzatuv: 16 ta kamera (40 $) va o'rnatish (21 $ dan), NVR, kabellar jami; logotiplar jami — «Butun qavat» qatorida.",
     "• So'mdagi narxlar (matli plyonka, yong'in xavfsizligi, devor buzish va chiqindi) «Dollar kursi» katagi bo'yicha (11 900 so'm/$) $ ga o'tkaziladi.",
     "• Devor buzish: chizmadagi buziladigan devorlar uzunligi × devor balandligi (3.5 m) × 50 000 so'm/m².",
     "• Kutilmagan xarajatlar: umumiy summadan 10% — «Xonalar bo'yicha» varag'ining oxirida.",
-    "• 3-qavat: 5-xona — o'quv xonasi (24 o'rin, bambuk panel va interaktiv doska); 2-xona — erkaklar hojatxonasi. Santexnika soni ikkala hojatxona uchun jami (2-qavatdagisi — ayollar: 2 unitaz, 1 chashagen); kafel faqat erkaklar hojatxonasi uchun (devor 58 m², pol 16 m²).",
+    "• 3-qavat: 5-xona — o'quv xonasi (24 o'rin, bambuk panel va interaktiv doska); 2-xona — erkaklar hojatxonasi. Santexnika soni ikkala hojatxona uchun jami (2-qavatdagisi — ayollar: 2 kabina, unitazli, eng ichkarida; oldida rakovinali tambur — 6-xona 3-qavatga o'tish yo'lagi bo'lgani uchun ikki eshik orqali kiriladi); kafel faqat erkaklar hojatxonasi uchun (devor 58 m², pol 16 m²).",
     "• Konditsioner va ventilyatsiya (buyurtmachi summalari, o'rnatish bilan): 2-qavatga 2 ta 100 mingtalik konditsioner va 200 m² havo kanali — «Butun qavat» qatorida; 3-qavat o'quv xonasiga 1 ta konditsioner.",
     "• Santexnika: 4 ta kabina, issiq va sovuq suv quvurlari (40 m dan), 100 ta aksessuar, kanalizatsiya quvuri va otvodlar — «Hojatxonalar» qatorida.",
     "• 2-qavat koridorlari: 4-xonaning koridor oxiridagi devorlari GKL (avval shisha edi), markazida yorituvchi logotip; e'lonlar va e'tirof doskalari — K1 va K2 qatorlarida.",

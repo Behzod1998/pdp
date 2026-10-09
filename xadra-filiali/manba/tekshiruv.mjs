@@ -1,7 +1,7 @@
 // Xonalar ko'rsatkichlari, havo almashinuvi hisobi va chizmaning avtomatik tekshiruvi.
 import {
   H, ICHKI, PARTA, STUL, STANDART, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR,
-  XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, sinflar, maydon, bolaklar, xizmatJihozlari, lokal,
+  XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, sinflar, maydon, bolaklar, xizmatJihozlari, lokal, wcJihozlari,
 } from './model.mjs';
 
 // ---------- geometriya ----------
@@ -165,6 +165,7 @@ export function tekshiruv() {
   const kw = KW_KUNDALIK;
   [...kw.stollar, ...kw.dumaloq, ...kw.stullar, ...kw.divan, ...kw.kreslo, ...kw.jurnal, ...kw.shkaf]
     .forEach((p, i) => hammaJihoz.push({ r: p, nom: `KW jihoz ${i + 1}`, xona: 'KW' }));
+  wcJihozlari().forEach((p, i) => hammaJihoz.push({ r: p, nom: `ayollar WC ${p.tur} ${i + 1}`, xona: 'WC' }));
   natija.jihozlar = hammaJihoz.length;
   // tadbirlar rejimi alohida tekshiriladi (kundalik jihozlar bilan emas)
   const tadbir = [...KW_TADBIR.stullar, KW_TADBIR.minbar].map((p, i) => ({ r: p, nom: `KW tadbir ${i + 1}`, xona: 'KWt' }));

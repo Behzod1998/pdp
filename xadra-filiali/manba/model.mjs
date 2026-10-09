@@ -9,9 +9,9 @@ export const LOYIHA = {
   filial: 'Xadra filiali',
   qavat: '2-qavat',
   manzil: 'Toshkent sh., Xadra',
-  versiya: 'v1.1',
-  sana: '08.10.2026',
-  sanaISO: '2026-10-08',
+  versiya: 'v1.2',
+  sana: '09.10.2026',
+  sanaISO: '2026-10-09',
   umumiy: 617,       // chizmadagi "Umumiy maydoni"
   foydali: 557.74,   // chizmadagi "Foydali maydoni"
 };
@@ -220,9 +220,10 @@ const YON_TOR = { bloklar: [1, 1, 1, 1], yolak: 600, doska: 1850, qadam: 1300, q
 export const XONALAR = [
   { kod: 'SR1', nomi: 'Study Room 1', tur: 'sinf', x1: 6250, y1: 0, x2: 11950, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR1', eskiRaqam: '8', koridor: 'K1', sinf: YON_TOR },
   { kod: 'SR2', nomi: 'Study Room 2', tur: 'sinf', x1: 12150, y1: 0, x2: 17950, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR2', eskiRaqam: '9', koridor: 'K1', sinf: YON_TOR },
-  // 3-xona eshigi faqat K1 uchida (x < 19300) bo'lishi mumkin — orqa tomonda; eshik oldidagi parta (2 o'rin) olinadi
-  { kod: 'SR3', nomi: 'Study Room 3', tur: 'sinf', x1: 18150, y1: 0, x2: ICHKI.x, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR3', eskiRaqam: '10', koridor: 'K1',
-    sinf: { ...YON_TOR, sxema: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 0]] } },
+  // 3-xona eshigi faqat K1 uchida (x < 19300) bo'lishi mumkin. Buyurtmachi (09.10): doska va ustoz joyi kirish tomonida —
+  // chap (2-xona bilan umumiy) devorda; eshik doska oldidagi bo'sh zonaga ochiladi, 4 + 4 + 4 parta sig'adi.
+  // Deraza bu xonada o'quvchilarning o'ng tomonida qoladi.
+  { kod: 'SR3', nomi: 'Study Room 3', tur: 'sinf', x1: 18150, y1: 0, x2: ICHKI.x, y2: 7700, doska: 'chap', deraza: 'yuqori', eshik: 'SR3', eskiRaqam: '10', koridor: 'K1', sinf: YON_TOR },
   // 4-xona: doska o'ng asosiy (tashqi) devorda. 1–2-qatorlar butun uzunlik bo'ylab (4 parta),
   // 3-qator faqat keng qismda (2 parta) — L shaklining tor uchlari 4.5 m chuqur.
   { kod: 'SR4', nomi: 'Study Room 4', tur: 'sinf', x1: 18150, y1: 7800, x2: ICHKI.x, y2: 16600, doska: 'ong', eshik: 'SR4', eskiRaqam: '10 va 15 (o\'rta qism)', koridor: 'K2',
@@ -243,11 +244,26 @@ export const XONALAR = [
   { kod: 'ZL', nomi: 'Kirish zali', tur: 'koridor', x1: 3650, y1: 18350, x2: 5950, y2: 21250 },
   { kod: 'ZN1', nomi: 'Zina 1 (zaxira)', tur: 'zina', x1: 0, y1: 0, x2: 3000, y2: 6300, qotgan: true, chizmaMaydon: 18.79 },
   { kod: 'ZN2', nomi: 'Zina 2 (asosiy)', tur: 'zina', x1: 0, y1: 18450, x2: 3650, y2: 21250, qotgan: true },
-  { kod: '2', nomi: '', tur: 'sanuzel', x1: 3100, y1: 0, x2: 4350, y2: 1600, qotgan: true, chizmaMaydon: 2.00 },
-  { kod: '3', nomi: '', tur: 'sanuzel', x1: 4450, y1: 0, x2: 5900, y2: 1600, qotgan: true, chizmaMaydon: 2.24 },
-  { kod: '4', nomi: '', tur: 'sanuzel', x1: 3100, y1: 1700, x2: 4350, y2: 3850, qotgan: true, chizmaMaydon: 2.68 },
-  { kod: '5', nomi: '', tur: 'sanuzel', x1: 4450, y1: 1700, x2: 5900, y2: 3850, qotgan: true, chizmaMaydon: 3.01 },
-  { kod: '6', nomi: '', tur: 'sanuzel', x1: 3100, y1: 3950, x2: 5900, y2: 6300, qotgan: true, chizmaMaydon: 6.54 },
+  { kod: '2', nomi: 'Ayollar WC — 1-kabina', tur: 'sanuzel', x1: 3100, y1: 0, x2: 4350, y2: 1600, qotgan: true, chizmaMaydon: 2.00 },
+  { kod: '3', nomi: 'Ayollar WC — 2-kabina', tur: 'sanuzel', x1: 4450, y1: 0, x2: 5900, y2: 1600, qotgan: true, chizmaMaydon: 2.24 },
+  { kod: '4', nomi: 'Ayollar WC — 1-tambur', tur: 'sanuzel', x1: 3100, y1: 1700, x2: 4350, y2: 3850, qotgan: true, chizmaMaydon: 2.68 },
+  { kod: '5', nomi: 'Ayollar WC — 2-tambur', tur: 'sanuzel', x1: 4450, y1: 1700, x2: 5900, y2: 3850, qotgan: true, chizmaMaydon: 3.01 },
+  { kod: '6', nomi: "O'tish yo'lagi (ZN1 — 3-qavatga)", tur: 'sanuzel', x1: 3100, y1: 3950, x2: 5900, y2: 6300, qotgan: true, chizmaMaydon: 6.54 },
+];
+
+// ---------- Ayollar hojatxonasi (2–5-xonalar, devorlari o'zgarmaydi) ----------
+// Buyurtmachi (09.10): 6-xona xo'jalik emas — koworkingdan ZN1 zinasiga (3-qavatga) o'tish yo'lagi, odamlar o'tib-qaytadi.
+// Shuning uchun hojatxona 2 ta kabina, eng ichkarida (2 va 3-xona, unitaz); oldida tambur (4 va 5-xona, rakovina).
+// Har biriga ikki eshik orqali kiriladi: yo'lakdan eshik ochilganda faqat tambur ko'rinadi, kabina eshigi yopiq turadi.
+// unitaz: [x, y] — orqasi shimoliy devorda; rakovina: [x, y, burilish] — jo'mrak tomoni devorda.
+export const AYOLLAR_WC = {
+  kabinalar: ['2', '3'], tamburlar: ['4', '5'], yolak: '6',
+  unitaz: [[3725, 290], [5175, 290]],
+  rakovina: [[3310, 3260, -90], [5690, 3260, 90]],
+};
+export const wcJihozlari = () => [
+  ...AYOLLAR_WC.unitaz.map(([x, y]) => ({ x1: x - 190, x2: x + 190, y1: y - 270, y2: y + 270, tur: 'unitaz' })),
+  ...AYOLLAR_WC.rakovina.map(([x, y]) => ({ x1: x - 200, x2: x + 200, y1: y - 260, y2: y + 260, tur: 'rakovina' })),
 ];
 
 // Xonaning to'rtburchak bo'laklari (4-xona L-shaklida)

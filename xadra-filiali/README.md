@@ -6,18 +6,18 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 
 | Fayl | Mazmuni |
 |---|---|
-| **`Xadra_filiali_loyiha_albomi_v1.1.pdf`** | **Hammasi bitta PDF'da:** muqova va mundarija, 1-qavat (reja va 3D), 2-qavat (taqdimot rejasi, 3 ta chizma varag'i, 3D, xonalar izohi), 3-qavat (reja va 3D), xarajatlar xulosasi |
-| `Xadra_1-qavat_reja_v1.1.pdf` / `.png` | A3, 1:50: kirish zali — mavjud zina, turniketlar (kirish va chiqish), evakuatsiya darvozasi, o'ng devor bo'ylab L shaklidagi resepshn, logotiplar, mehmonlar joyi |
-| `Xadra_1-qavat_3D_v1.1.pdf` | A3: 1-qavatning Blender 3D ko'rinishlari — umumiy, eshikdan kirganda, resepshn |
-| `Xadra_2-qavat_taqdimot_reja_v1.1.pdf` / `.png` | A3 portret, namuna formatida (`manba/namuna-format.webp`): rangli reja, koworking zalining ikki rejimi, havo aylanishi, xonalar maydonlari |
-| `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.1.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
-| `Xadra_2-qavat_3D_v1.1.pdf` | A3, 2 varaq: 2-qavatning Blender 3D ko'rinishlari — umumiy, K1 va K2 koridorlari, yorituvchi logotip devori, e'lon va e'tirof doskalari, sotuv va admin xonalari, sinf, koworking |
-| `Xadra_2-qavat_xonalar_izoh_v1.1.pdf` | A4, 11 bet: umumiy ko'rsatkichlar, 3D (sxematik), har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
-| `Xadra_3-qavat_reja_v1.1.pdf` / `.png` | A3, 1:50: 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi); 1, 3, 4-xonalar o'zgarmaydi |
-| `Xadra_3-qavat_3D_v1.1.pdf` / `.png` | A3: 3-qavatning Blender 3D ko'rinishlari — umumiy, 5-xona doska tomonga, hojatxona ichidan |
-| `Xadra_xarajatlar_xulosa_v1.1.pdf` | A3: xarajatlar — turlar, qavatlar va xonalar bo'yicha jami |
+| **`Xadra_filiali_loyiha_albomi_v1.2.pdf`** | **Hammasi bitta PDF'da:** muqova va mundarija, 1-qavat (reja va 3D), 2-qavat (taqdimot rejasi, 3 ta chizma varag'i, 3D, xonalar izohi), 3-qavat (reja va 3D), xarajatlar xulosasi |
+| `Xadra_1-qavat_reja_v1.2.pdf` / `.png` | A3, 1:50: kirish zali — mavjud zina, turniketlar (kirish va chiqish), evakuatsiya darvozasi, o'ng devor bo'ylab L shaklidagi resepshn, logotiplar, mehmonlar joyi |
+| `Xadra_1-qavat_3D_v1.2.pdf` | A3: 1-qavatning Blender 3D ko'rinishlari — umumiy, eshikdan kirganda, resepshn |
+| `Xadra_2-qavat_taqdimot_reja_v1.2.pdf` / `.png` | A3 portret, namuna formatida (`manba/namuna-format.webp`): rangli reja, koworking zalining ikki rejimi, havo aylanishi, xonalar maydonlari |
+| `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.2.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
+| `Xadra_2-qavat_3D_v1.2.pdf` | A3, 2 varaq: 2-qavatning Blender 3D ko'rinishlari — umumiy, K1 va K2 koridorlari, yorituvchi logotip devori, e'lon va e'tirof doskalari, sotuv va admin xonalari, sinf, koworking |
+| `Xadra_2-qavat_xonalar_izoh_v1.2.pdf` | A4, 12 bet: umumiy ko'rsatkichlar, 3D (sxematik), har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
+| `Xadra_3-qavat_reja_v1.2.pdf` / `.png` | A3, 1:50: 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi); 1, 3, 4-xonalar o'zgarmaydi |
+| `Xadra_3-qavat_3D_v1.2.pdf` / `.png` | A3: 3-qavatning Blender 3D ko'rinishlari — umumiy, 5-xona doska tomonga, hojatxona ichidan |
+| `Xadra_xarajatlar_xulosa_v1.2.pdf` | A3: xarajatlar — turlar, qavatlar va xonalar bo'yicha jami |
 | `3d/` | Alohida 3D rasmlar (JPG) va Blender fayllari: `Xadra_1-qavat.blend`, `Xadra_2-qavat.blend`, `Xadra_3-qavat.blend` (Blender 4.2, kameralar bilan, logotip rasmlari faylga qadalgan) |
-| `../hisob/Xadra_xarajatlar_v1.1.xlsx` | Xarajatlar (Excel), 1, 2 va 3-qavat: yakuniy, xonalar bo'yicha, batafsil hisob, narxlar varag'i (so'mdagi narxlar kurs bo'yicha). Narxi noma'lum qismlar (sotuv va admin mebeli, doskalar, resepshn, 1-qavat logotiplari) — to'q sariq fonda, taxminiy. Narx yoki balandlik o'zgarsa, formulalar qayta hisoblaydi |
+| `../hisob/Xadra_xarajatlar_v1.2.xlsx` | Xarajatlar (Excel), 1, 2 va 3-qavat: yakuniy, xonalar bo'yicha, batafsil hisob, narxlar varag'i (so'mdagi narxlar kurs bo'yicha). Narxi noma'lum qismlar (sotuv va admin mebeli, doskalar, resepshn, 1-qavat logotiplari) — to'q sariq fonda, taxminiy. Narx yoki balandlik o'zgarsa, formulalar qayta hisoblaydi |
 
 ## Asosiy yechim
 
@@ -31,7 +31,7 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 Xonalarga bo'linish buyurtmachi yuborgan namuna (`manba/namuna-format.webp`) bo'yicha qilingan. O'lchamlar real chizmadan olingan.
 
 - **Talab:** 22–24 o'rinli 6 ta xona, 18–20 o'rinli 1 ta xona, 4 kishilik admin/sotuv xonasi (15–20 m²). Ikkala zina va ular yonidagi kichik xonalar o'zgarmaydi.
-- **Yuqori qator:** 1, 2, 3-xona (SR1–SR3), 5.70–5.80 × 7.70 m; 1 va 2-xona 24 o'rin, 3-xona 22 o'rin.
+- **Yuqori qator:** 1, 2, 3-xona (SR1–SR3), 5.70–5.80 × 7.70 m, har biri 24 o'rin. 3-xonada doska va ustoz joyi kirish tomonida — 2-xona bilan umumiy devorda (buyurtmachi, 09.10); deraza bu xonada o'quvchilarning o'ng tomonida.
 - **Pastki qator:** 7, 6, 5-xona (SR7–SR5), har biri 24 o'rin.
 - **Doska yon devorda:** deraza o'quvchilarning chap tomonida, yorug'lik doskaga tushmaydi. Partalar ikki kishilik, 140 × 60 sm; qatorda 4 parta, 3 qator.
 - **O'rta qator:** XZ1 — offline sotuv, XZ2 — admin (K2 tomoni shisha), XZ3 — ustozlar xonasi, XZ4 — call-markaz (K1 tomoni shisha). O'ngda 4-xona (SR4) — sinf, 20 o'rin, L shaklida, derazasiz, doskasi o'ng tashqi devorda.
@@ -40,7 +40,8 @@ Xonalarga bo'linish buyurtmachi yuborgan namuna (`manba/namuna-format.webp`) bo'
 - **Shisha devorlar:** sinflarning koridor tomonidagi devorlari shisha (2.5 m, ustida 1 m GKL), 1.0–1.6 m da matli polosa. Eshiklar shisha.
 - **Sotuv va admin xonalari:** mebel va interyer (brend devor, bambuk panel) — narxi taxminiy.
 - **Koworking / tadbirlar zali:** 70.5 m², kundalik ~35, tadbirda 66 o'rin. CEO xonasi — 12-xona.
-- **Jami:** 7 xona, 162 o'rin. Avtomatik tekshiruv: to'qnashuv 0.
+- **Ayollar hojatxonasi** (2–5-xonalar, devorlari o'zgarmaydi): 6-xona xo'jalik emas — koworkingdan ZN1 zinasiga (3-qavatga) o'tish yo'lagi. Shuning uchun 2 ta kabina eng ichkarida (2 va 3-xona, unitaz), oldida tambur (4 va 5-xona, rakovina): har biriga ikki eshik orqali kiriladi, yo'lakdan eshik ochilganda faqat tambur ko'rinadi.
+- **Jami:** 7 xona, 164 o'rin. Avtomatik tekshiruv: to'qnashuv 0.
 
 ### 3-qavat
 - 5-xona — o'quv xonasi, 24 o'rin, bambuk panel 3 devorda (2.5 m), interaktiv doska.

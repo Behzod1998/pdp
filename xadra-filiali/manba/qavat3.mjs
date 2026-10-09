@@ -360,7 +360,7 @@ export function qavat3Html() {
           <tr><td>Oxirgi parta (doskadan) / orqa devorgacha</td><td class="r">${m(k.oxirgi)} m / ${m(k.orqaDevorgacha)} m</td></tr>
           <tr><td>Chetki o'rindan qarash burchagi</td><td class="r">${k.burchak.toFixed(1)}° (Beruniy — 39.8°)</td></tr>
           <tr><td>Bambuk panel</td><td class="r">3 devor, 2.5 m balandlikda</td></tr></table>
-        <p class="izoh">O'lchamlar 3-qavat chizmasi fotosidan olingan (11.85 × 12.30 m); derazalar joyi taxminiy — joyida o'lchanadi. 2-qavatdagi WC — ayollar hojatxonasi (2 unitaz, 1 chashagen). Hojatxona ventilyatsiyasi (chiqarish) va suv/kanalizatsiya yo'li santexnik bilan aniqlanadi.</p>
+        <p class="izoh">O'lchamlar 3-qavat chizmasi fotosidan olingan (11.85 × 12.30 m); derazalar joyi taxminiy — joyida o'lchanadi. 2-qavatdagi WC — ayollar hojatxonasi (2 kabina, unitazli, tambur orqali). Hojatxona ventilyatsiyasi (chiqarish) va suv/kanalizatsiya yo'li santexnik bilan aniqlanadi.</p>
       </div>
     </div>
   </section></body></html>`;

@@ -86,7 +86,7 @@ async function q2Varaqlar() {
     XZ3: 'Ustozlar', XZ4: 'Call-markaz', KW: 'Koworking', X12: 'CEO', K1: 'K1', K2: 'K2', ZL: 'Kirish zali' };
   const a = `<section class="varaq">${bosh("2-qavat — 3D ko'rinishlar (Blender): umumiy va koridorlar", `Rejalar: Xadra_2-qavat_taqdimot_reja_${V}.pdf`)}
   <div class="ikki"><div>
-    ${fig(await rasm('Xadra_2-qavat_3D_1-umumiy.jpg'), "<b>Umumiy ko'rinish</b> — shiftsiz, devorlar 2.7 m da kesilgan. 7 sinf (162 o'rin), sotuv, admin, ustozlar, call-markaz, koworking va CEO xonasi.", yorliqlar(b, nom))}
+    ${fig(await rasm('Xadra_2-qavat_3D_1-umumiy.jpg'), `<b>Umumiy ko'rinish</b> — shiftsiz, devorlar 2.7 m da kesilgan. 7 sinf (${tekshiruv().orinlar} o'rin), sotuv, admin, ustozlar, call-markaz, koworking va CEO xonasi; ayollar WC — 2 kabina tambur ortida.`, yorliqlar(b, nom))}
     <div class="matn"><p><b>Koridorlar yorug' va zamonaviy:</b> shiftda uzluksiz chiziqli LED, och pol va devorlar, sinflarning shisha devorlari (1.0–1.6 m da matli polosa). Ikkala koridor oxirida 4-xonaning devori GKL, markazida ichidan yoritilgan PDP Academy logotipi — koridor boshidan to'g'ri ko'rinadi. 4-xonaning barcha devorlari GKL, faqat eshigi shisha. Kar devorlarda e'lonlar va e'tirof doskalari.</p></div>
   </div><div>
     ${fig(await rasm('Xadra_2-qavat_3D_2-koridor-K1.jpg'), "<b>K1 koridori</b> — koworkingdan: chapda 1–3-xona, o'ngda sotuv va admin orqa devorida doskalar, oxirida logotip.")}
@@ -152,7 +152,7 @@ function muqova(x, mundarija, rasmSrc) {
       <div style="font-size:13pt;color:#333;margin-top:2mm">Loyiha albomi: 1, 2 va 3-qavat</div>
       <div style="height:1.2mm;width:40mm;background:#00B533;margin:6mm 0"></div>
       <table style="font-size:8.6pt"><tr><td>1-qavat</td><td>kirish zali: resepshn, 2 turniket, logotiplar</td></tr>
-        <tr><td>2-qavat</td><td>7 sinf (162 o'rin), sotuv, admin, ustozlar, call-markaz, koworking, CEO</td></tr>
+        <tr><td>2-qavat</td><td>7 sinf (${tekshiruv().orinlar} o'rin), sotuv, admin, ustozlar, call-markaz, koworking, CEO</td></tr>
         <tr><td>3-qavat</td><td>o'quv xonasi (24 o'rin), erkaklar hojatxonasi</td></tr>
         <tr><td><b>Jami o'rin</b></td><td><b>${orin}</b></td></tr>
         <tr><td><b>Xarajat</b></td><td><b>${usd(x['UMUMIY JAMI'].usd)}</b> (10% kutilmagan bilan) · ${som(x['UMUMIY JAMI'].som)}</td></tr></table>

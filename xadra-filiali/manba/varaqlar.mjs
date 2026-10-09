@@ -77,7 +77,7 @@ function maydonJadvali() {
     <tr><td>Koworking / tadbirlar zali (KW)</td><td class="r">${m2(x('KW'))}</td></tr>
     <tr><td>CEO xonasi (12-xona, o'zgarmaydi)</td><td class="r">${m2(x('X12'))}</td></tr>
     <tr><td>Koridorlar K1, K2 va kirish zali ZL</td><td class="r">${m2(kor2)}</td></tr>
-    <tr><td>Zinalar va sanuzel bloki (o'zgarmaydi)</td><td class="r">${m2(x('ZN1') + x('ZN2') + ['2', '3', '4', '5', '6'].reduce((t, k2) => t + x(k2), 0))}</td></tr>
+    <tr><td>Zinalar, ayollar WC va o'tish yo'lagi (devorlari o'zgarmaydi)</td><td class="r">${m2(x('ZN1') + x('ZN2') + ['2', '3', '4', '5', '6'].reduce((t, k2) => t + x(k2), 0))}</td></tr>
     <tr><td>Balandlik (poldan shiftgacha)</td><td class="r">${H} mm (buyurtmachi)</td></tr>
   </table>`;
 }
@@ -111,11 +111,12 @@ function partaQoidasi() {
     qatorda ${n} parta (${n * PARTA.kishi} o'rin) · yo'lak ${t.yolak} · deraza tomonda devorgacha ${t.oynaChekka}<br>
     ${t.qatorlar} qator · qadam ${son(t.qadam)} (parta ${PARTA.chuq} + stul va o'tish ${t.qadam - PARTA.chuq})<br>
     doskadan 1-partagacha ${son(t.doska)} · oxirgi parta ${son(t.doska + (t.qatorlar - 1) * t.qadam + PARTA.chuq)} · sig'im ${n * PARTA.kishi * t.qatorlar}<br>
-    <span class="qizil">ISTISNO: SR3 — 4 + 4 + 3 parta, 22 o'rin (eshik orqada); SR4 — 4 + 4 + 2 parta, 20 o'rin (doska o'ng tashqi devorda)</span><br>
+    <span class="qizil">ISTISNO: SR3 — doska va ustoz joyi kirish tomonida (buyurtmachi), deraza o'quvchilarning o'ng tomonida; SR4 — 4 + 4 + 2 parta, 20 o'rin (doska o'ng tashqi devorda)</span><br>
     <span style="color:#777">Beruniy standarti: parta ${STANDART.parta.eni} × ${STANDART.parta.chuq} (1 kishilik), 2 + 2 + 2 × ${STANDART.qatorlar} qator, qadam ${son(STANDART.qadam)}, doskadan ${son(STANDART.doska)}, oxirgi ${son(STANDART.oxirgi)}</span><br>
-    ustundan: oldi/orqa 500 · yon 0. Doska 3000 yon (kar) devorda, deraza o'quvchilarning chap tomonida; eshiklar 900.<br>
+    ustundan: oldi/orqa 500 · yon 0. Doska 3000 yon (kar) devorda, deraza o'quvchilarning chap tomonida (SR3 dan tashqari); eshiklar 900.<br>
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100; sinflarning koridor tomoni — akustik shisha.<br>
-    KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (sanuzel, K1, K2, kirish zali).<br>
+    KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (6-xona — ZN1 ga o'tish, K1, K2, kirish zali).<br>
+    Ayollar WC: 2 kabina eng ichkarida (2, 3 — unitaz), oldida tambur (4, 5 — rakovina); ikki eshik orqali kiriladi.<br>
     Ofis xonalari (XZ1–XZ4): eshik tomoni shisha devor; barcha yangi eshiklar shisha.<br>
     XZ3 — ustozlar xonasi, XZ4 — call-markaz va online sotuv; 12-xona — CEO (mavjud holicha).<br>
     Zinalar mavjud holicha; 1-qavatda zina oldida resepshn va turniket.
@@ -174,7 +175,7 @@ function mavjudPanel() {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm">${ustun(rows.slice(0, yarmi))}${ustun(rows.slice(yarmi))}</div>
     <p class="izoh" style="margin-top:1mm">Umumiy maydon ${LOYIHA.umumiy} m², foydali ${String(LOYIHA.foydali).replace('.', ',')} m². 8-xonaning raqami va maydoni fotoda ko'rinmaydi (hisob bo'yicha ≈ 70 m²).</p></div>
   <div><h3>O'ZGARISHLAR</h3><p class="izoh">
-    <b>O'zgarmaydi</b> (buyurtmachi talabi): ZN1 va ZN2 zinalari, sanuzel bloki (2–6), 12-xona.<br>
+    <b>O'zgarmaydi</b> (buyurtmachi talabi): ZN1 va ZN2 zinalari, sanuzel bloki devorlari (2–6; ichi — ayollar WC, 6 — ZN1 ga o'tish yo'lagi), 12-xona.<br>
     <b>Buziladi:</b> eski o'rta devor (8–10 va 13–15-xonalar orasida); 7 va 11-xonalar orasidagi devor; K1, K2 koridorlariga tushgan devor bo'laklari.<br>
     <b>Quriladi:</b> K1 va K2 koridorlarining devorlari (sinflar tomoni — shisha; doskalar yon va tashqi devorlarda), o'rta qatordagi 4 ta ofis xonasi (sotuv, admin, ustozlar, call-markaz) va 4-xona devorlari; xonalar orasidagi bo'shliqlar yopiladi.
   </p></div>

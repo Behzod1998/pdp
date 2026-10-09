@@ -3,7 +3,7 @@
 // Ishlatish: node blender2-malumot.mjs > 2qavat.json  (blender2.py shu faylni o'qiydi)
 import {
   ICHKI, DEVOR, H, DEVORLAR, DERAZALAR, USTUNLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ, KW_KUNDALIK,
-  KORIDOR_LOGO, DOSKALAR, sinflar, bolaklar,
+  KORIDOR_LOGO, DOSKALAR, AYOLLAR_WC, sinflar, bolaklar,
 } from './model.mjs';
 
 // eshik o'rnidagi devor qalinligi: eshik chetiga tutashgan devor bo'lagidan
@@ -24,5 +24,5 @@ console.log(JSON.stringify({
     partalar: x.j.partalar, stullar: x.j.stullar, doskaR: x.j.doska, ustozStoli: x.j.ustozStoli, ustozStuli: x.j.ustozStuli })),
   xizmat: XIZMAT_JIHOZ, kw: KW_KUNDALIK, logo: KORIDOR_LOGO, doskalar: DOSKALAR,
   osimlik: [[23550, 9750], [23500, 16200], [8750, 10600], [11550, 11700], [14700, 9800], [17550, 11900], [3900, 13950], [3700, 17650], [5650, 24050]],
-  sanuzel: { unitaz: [[3725, 290], [5175, 290], [3725, 1990], [5175, 1990]], rakovina: [[5690, 4700], [5690, 5550]] },
+  sanuzel: { unitaz: AYOLLAR_WC.unitaz, rakovina: AYOLLAR_WC.rakovina },
 }));

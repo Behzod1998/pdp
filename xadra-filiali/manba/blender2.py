@@ -211,15 +211,16 @@ q = Q()
 for x, y in D['osimlik']: bu.osimlik(q, x, y)
 q.obj('osimliklar', 'asos')
 
-# ---------------- sanuzel (mavjud) ----------------
+# ---------------- ayollar hojatxonasi: kabinalarda unitaz, tamburlarda rakovina ----------------
 q = Q()
 for x, y in D['sanuzel']['unitaz']:
     q.box(x - 190, x + 190, y - 270, y - 100, 420, 780, M['keramika'], bevel=25, seg=3)
     q.cyl((x, y + 20, 0), (x, y + 20, 300), 130, M['keramika'], 32)
     q.shar(x, y + 60, 330, 180, 240, 110, M['keramika'])
     q.shar(x, y + 70, 425, 175, 230, 22, M['keramika'])
-for x, y in D['sanuzel']['rakovina']:
-    q.box(5900 - 440, 5900, y - 260, y + 260, 700, 850, M['keramika'], bevel=45, seg=4)
+for x, y, b in D['sanuzel']['rakovina']:     # b: 90 — devor sharqda, −90 — g'arbda
+    w = x + (210 if b > 0 else -210)
+    q.box(*((w - 440, w) if b > 0 else (w, w + 440)), y - 260, y + 260, 700, 850, M['keramika'], bevel=45, seg=4)
 q.obj('sanuzel_jihoz', 'asos')
 
 # ---------------- zinalar ----------------

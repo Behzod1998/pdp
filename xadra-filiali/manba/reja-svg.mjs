@@ -1,7 +1,7 @@
 // Reja chizmasi (SVG). Rejimlar: 'mavjud' (1-varaq), 'jihoz' (2-varaq), 'havo' (3-varaq), 'izoh' (A4 hujjat).
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, ESKI_XONALAR, ADM_JIHOZ,
-  XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI,
+  XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI, wcJihozlari,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 
@@ -157,6 +157,8 @@ export function rejaSvg(o = {}) {
     kw.dumaloq.forEach(d => q.push(`<circle cx="${d.cx}" cy="${d.cy}" r="${d.r}" fill="${RANG.parta}" stroke="${RANG.partaCh}" stroke-width="${8 * k}"/>`));
     [...kw.divan, ...kw.kreslo].forEach(p => q.push(rect(p, `rx="120" fill="#c9ccd2" stroke="#8a8f99" stroke-width="${8 * k}"`)));
     kw.stullar.forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));
+    // ayollar hojatxonasi: unitaz (kabinalarda), rakovina (tamburlarda)
+    wcJihozlari().forEach(p => q.push(rect(p, `rx="${p.tur === 'unitaz' ? 150 : 80}" fill="#fff" stroke="#6f7a85" stroke-width="${8 * k}"`)));
     q.push('</g>');
     if (rejim !== 'havo') q.push(koridorElementlar(k));
   }
@@ -213,7 +215,10 @@ export function rejaSvg(o = {}) {
         const zy = x.kod === 'ZN1' ? 5200 : 19350;
         q.push(matn(x.kod === 'ZN1' ? 1500 : 800, zy, x.kod, 300, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
       } else if (x.tur === 'sanuzel') {
-        q.push(matn(cx, cy + 90, x.kod, 240, `text-anchor="middle" fill="#666"`));
+        // 2–5 — ayollar hojatxonasi (kabina va tambur), 6 — ZN1 ga o'tish yo'lagi
+        const sy = { 2: 1050, 3: 1050, 4: 2450, 5: 2450, 6: 4950 }[x.kod];
+        q.push(matn(cx, sy, x.kod, 240, `text-anchor="middle" fill="#666"`));
+        if (rejim !== 'havo') q.push(matn(cx, sy + 260 * k, { 2: 'kabina', 3: 'kabina', 4: 'tambur', 5: 'tambur', 6: "o'tish yo'lagi" }[x.kod], 160, `text-anchor="middle" fill="#666"`));
       }
     });
     // kirish strelkasi
