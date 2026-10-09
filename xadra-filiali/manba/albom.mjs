@@ -9,7 +9,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { PDFDocument } from 'pdf-lib';
-import { LOYIHA } from './model.mjs';
+import { LOYIHA, H, KW_SAHNA, KW_TADBIR } from './model.mjs';
+import { kwKorinish } from './render-svg.mjs';
 import { tekshiruv } from './tekshiruv.mjs';
 import { sinf3Korsatkich } from './qavat3.mjs';
 
@@ -80,7 +81,7 @@ async function q1Varaq() {
 }
 
 // ---------- 2-qavat 3D (2 varaq) ----------
-async function q2Varaqlar() {
+async function q2Varaqlar(x) {
   const b = (await json('umumiy-belgilar-2.json')).belgi;
   const nom = { SR1: '1-xona', SR2: '2-xona', SR3: '3-xona', SR4: '4-xona', SR5: '5-xona', SR6: '6-xona', SR7: '7-xona', XZ1: 'Sotuv', XZ2: 'Admin',
     XZ3: 'Ustozlar', XZ4: 'Call-markaz', KW: 'Koworking', X12: 'CEO', K1: 'K1', K2: 'K2', ZL: 'Kirish zali' };
@@ -98,15 +99,30 @@ async function q2Varaqlar() {
     ['Xadra_2-qavat_3D_6-sotuv-xonasi.jpg', "<b>Offline sotuv (XZ1):</b> 2 konsultant, mijoz stullari, shkaf; orqa devorda brend devor (logotip), yon devorlarda bambuk panel."],
     ['Xadra_2-qavat_3D_7-admin-xonasi.jpg', "<b>Admin (XZ2):</b> 2 ish o'rni, shkaf, logotip, bambuk panel."],
     ['Xadra_2-qavat_3D_8-sinf-doska.jpg', "<b>2-xona → doska:</b> interaktiv doska yon devorda, bambuk panel; chapda derazalar, o'ngda koridor tomondagi shisha devor."],
-    ['Xadra_2-qavat_3D_9-koworking.jpg', "<b>Koworking / tadbirlar zali</b> — kundalik rejim."],
   ];
   const kat = (await Promise.all(r.map(async ([f, iz]) => `<div>${fig(await rasm(f), iz)}</div>`))).join('');
-  const b2 = `<section class="varaq">${bosh("2-qavat — 3D ko'rinishlar (Blender): doskalar, sotuv va admin, sinf, koworking")}
+  const b2 = `<section class="varaq">${bosh("2-qavat — 3D ko'rinishlar (Blender): doskalar, sotuv va admin, sinf")}
   <div class="tor">${kat}<div class="matn"><h3>Sotuv va admin xonalari — mebel va interyer</h3>
     <p>Mebel: konsultant / ish stollari (140 × 70, tumbali), ofis kreslolari, mijoz stullari, kutish divani (sotuvda), hujjat shkaflari. Interyer: orqa devorda brend devor (logotip, yashil chiziq), yon devorlarda bambuk panel, o'simliklar.</p>
     <p>Narxi noma'lum bo'lgani uchun xarajatlar jadvalida <b>taxminiy</b> (Toshkent bozori): sotuv ~$2,340, admin ~$1,470 — mebelchi narxi bilan almashtiriladi.</p>
     <p>Ranglar va materiallar — namuna; logotip design.pdp.uz dan.</p></div></div></section>`;
-  return a + b2;
+  const S = KW_SAHNA, xs = x.sahna;
+  const b3 = `<section class="varaq">${bosh("2-qavat — koworking sahnasi (XZ1 devori): logotip va interyer", `Reja: Xadra_2-qavat_taqdimot_reja_${V}.pdf`)}
+  <div class="ikki"><div>
+    ${fig(await rasm('Xadra_2-qavat_3D_10-koworking-sahna.jpg'), "<b>Koworking sahnasi</b> — XZ1 (offline sotuv) xonasining koworkingga qaragan devori: grafit panel, ichidan yoritilgan PDP Academy logotipi, ostida ekran, yonlarida yog'och reykalar, shiftda yo'naltirilgan chiroqlar (kundalik rejim).")}
+    <div class="matn"><h3>Sahna devori (buyurtmachi: XZ1 devori — koworking sahnasi)</h3>
+      <p><b>Joyi:</b> XZ1 xonasining koworkingga qaragan devori — ${((S.devor.y2 - S.devor.y1) / 1000).toFixed(1)} m (K1 va K2 koridorlari orasida), balandligi ${H / 1000} m.</p>
+      <p><b>Tuzilishi:</b> devor oldida GKL karkas (100 mm) — U4 ustuni bilan tekislanadi; markazda ${((S.panel.y2 - S.panel.y1) / 1000).toFixed(1)} m to'q grafit panel, ikki yonida ${((S.reyka[0].y2 - S.reyka[0].y1) / 1000).toFixed(2)} m dan yog'och reykali panellar (qora asos ustida, sinflardagi bambuk bilan bir uslubda).</p>
+      <p><b>Logotip:</b> design.pdp.uz dagi asosiy logotip (to'q fon uchun), ~${S.logo.en / 1000} m, ichidan yoritilgan; ma'ruzachi boshidan yuqorida — zalning hamma joyidan ko'rinadi, tadbir suratlarida doim kadrda.</p>
+      <p><b>Ekran:</b> koworkingdagi ekran shu yerga ko'chiriladi (poldan ${(S.ekran.z1 / 1000).toFixed(2)}–${(S.ekran.z2 / 1000).toFixed(2)} m). Pastda yashil brend chizig'i, shift ostida chiziqli LED, 3 ta yo'naltirilgan spot; ko'chma minbar (logotip bilan).</p>
+      <p><b>Xavfsizlik:</b> sahna oldi podiumsiz, pol bilan bir sathda — koworkingning o'ng tomonidagi o'tish yo'lagi (K1, K2, kirish zali, 3-qavat zinasi) bo'sh qoladi.</p>
+      <p><b>Narxi (taxminiy):</b> ~${usd(xs.jami)} — ${xs.qatorlar.map(q => `${q.nom} ${usd(q.usd)}`).join(', ')}. Reklama ustasi va mebelchi narxi bilan almashtiriladi.</p></div>
+  </div><div>
+    ${fig(await rasm('Xadra_2-qavat_3D_9-koworking.jpg'), "<b>Koworking</b> — kundalik rejim, kirish zalidan; o'ngda sahna devori.")}
+    <figure style="border:.3mm solid #ddd;border-radius:1.2mm;overflow:hidden">${kwKorinish('tadbir')}</figure>
+    <figcaption><b>Tadbirlar rejimi:</b> ${KW_TADBIR.stullar.length} o'rin, stullar sahnaga qaragan (rejada sahna yuqorida); sahna oldi va o'tish yo'lagi bo'sh.</figcaption>
+  </div></div></section>`;
+  return a + b2 + b3;
 }
 
 // ---------- xarajatlar xulosasi ----------
@@ -152,7 +168,7 @@ function muqova(x, mundarija, rasmSrc) {
       <div style="font-size:13pt;color:#333;margin-top:2mm">Loyiha albomi: 1, 2 va 3-qavat</div>
       <div style="height:1.2mm;width:40mm;background:#00B533;margin:6mm 0"></div>
       <table style="font-size:8.6pt"><tr><td>1-qavat</td><td>kirish zali: resepshn, 2 turniket, logotiplar</td></tr>
-        <tr><td>2-qavat</td><td>7 sinf (${tekshiruv().orinlar} o'rin), sotuv, admin, ustozlar, call-markaz, koworking, CEO</td></tr>
+        <tr><td>2-qavat</td><td>7 sinf (${tekshiruv().orinlar} o'rin), sotuv, admin, ustozlar, call-markaz, koworking va sahna, CEO</td></tr>
         <tr><td>3-qavat</td><td>o'quv xonasi (24 o'rin), erkaklar hojatxonasi</td></tr>
         <tr><td><b>Jami o'rin</b></td><td><b>${orin}</b></td></tr>
         <tr><td><b>Xarajat</b></td><td><b>${usd(x['UMUMIY JAMI'].usd)}</b> (10% kutilmagan bilan) · ${som(x['UMUMIY JAMI'].som)}</td></tr></table>
@@ -175,7 +191,7 @@ execFileSync(process.execPath, [join(BU, 'qavat3-3d.mjs')], { stdio: 'inherit' }
 const x = JSON.parse(execFileSync('python3', [join(BU, 'xarajat-xulosa.py')], { encoding: 'utf8' }));
 const brauzer = await chromium.launch();
 const f1 = await pdfQil(brauzer, await q1Varaq(), join(CH, `Xadra_1-qavat_3D_${V}.pdf`));
-const f2 = await pdfQil(brauzer, await q2Varaqlar(), join(CH, `Xadra_2-qavat_3D_${V}.pdf`));
+const f2 = await pdfQil(brauzer, await q2Varaqlar(x), join(CH, `Xadra_2-qavat_3D_${V}.pdf`));
 const fx = await pdfQil(brauzer, xulosaVaraq(x), join(CH, `Xadra_xarajatlar_xulosa_${V}.pdf`));
 
 const BOLIMLAR = [

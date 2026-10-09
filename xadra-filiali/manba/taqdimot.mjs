@@ -1,6 +1,6 @@
 // Taqdimot varag'i (A3 portret) — buyurtmachi namunasidagi tartibda:
 // rangli reja + koworking zalining ikki rejimi + havo aylanishi + xonalar maydonlari.
-import { LOYIHA, XONALAR, H } from './model.mjs';
+import { LOYIHA, XONALAR, H, KW_TADBIR } from './model.mjs';
 import { renderSvg, kwKorinish, XONA_NOMI } from './render-svg.mjs';
 import { korsatkichlar, xonaMaydoni, xizmatHavo, kwHavo, HAVO } from './tekshiruv.mjs';
 import { kesimSvg } from './izoh.mjs';
@@ -62,7 +62,7 @@ export function taqdimotHtml() {
         <div class="rejimlar">
           <div><h2>Koworking rejimi (kundalik)</h2><div class="rasm">${kwKorinish('kundalik')}</div><p>~35 o'rin: stollar, dumaloq stollar, dam olish burchagi</p></div>
           <div class="strelka">⇄</div>
-          <div><h2>Tadbirlar rejimi (zarur paytda)</h2><div class="rasm">${kwKorinish('tadbir')}</div><p>${11 * 6} o'rin, ekran chap devorda (zinapoya tomoni)</p></div>
+          <div><h2>Tadbirlar rejimi (zarur paytda)</h2><div class="rasm">${kwKorinish('tadbir')}</div><p>${KW_TADBIR.stullar.length} o'rin, stullar sahnaga qaragan (XZ1 devori: logotip, ekran)</p></div>
         </div>
         <div class="havo"><h2>Havo aylanishi</h2>
           <div>${kesimSvg(1.75)}</div>

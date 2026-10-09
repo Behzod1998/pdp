@@ -1,5 +1,5 @@
 // A3 chizma varaqlari (HTML → PDF): 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi.
-import { LOYIHA, ICHKI, USTUNLAR, OQLAR, STANDART, PARTA, STUL, H, ESKI_XONALAR, XONALAR } from './model.mjs';
+import { LOYIHA, ICHKI, USTUNLAR, OQLAR, STANDART, PARTA, STUL, H, ESKI_XONALAR, XONALAR, KW_TADBIR } from './model.mjs';
 import { rejaSvg, RANG, QURILMALAR, son, KOR_RANG } from './reja-svg.mjs';
 import { korsatkichlar, ishlar, xizmatHavo, kwHavo, ceoHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
 
@@ -93,7 +93,7 @@ function xonalarJadvali() {
     <tr><td>XZ3 · ustozlar</td><td>2.85 × 5.60</td><td class="r">${v(xonaMaydoni(xz[2]))}</td><td class="r">9</td><td class="r">—</td><td>umumiy stol, lokerlar</td></tr>
     <tr><td>XZ4 · call-markaz</td><td>2.85 × 5.60</td><td class="r">${v(xonaMaydoni(xz[3]))}</td><td class="r">6</td><td class="r">—</td><td>devor bo'ylab 6 ish o'rni</td></tr>
     <tr><td>CEO (12-xona)</td><td>5.95 × 2.95</td><td class="r">${v(xonaMaydoni(x12))}</td><td class="r">1</td><td class="r">—</td><td>ish stoli + 4 kishilik stol, derazali</td></tr>
-    <tr><td>KW</td><td>5.95 × 11.85</td><td class="r">${v(xonaMaydoni(XONALAR.find(r => r.kod === 'KW')))}</td><td class="r">~35</td><td class="r">—</td><td>koworking; tadbirda 66 o'rin</td></tr>
+    <tr><td>KW</td><td>5.95 × 11.85</td><td class="r">${v(xonaMaydoni(XONALAR.find(r => r.kod === 'KW')))}</td><td class="r">~35</td><td class="r">—</td><td>koworking; sahna — XZ1 devori, tadbirda ${KW_TADBIR.stullar.length} o'rin</td></tr>
     <tr class="jami"><td>Jami</td><td></td><td class="r">${v(kor.reduce((t, k) => t + k.A, 0))}</td><td class="r">${kor.reduce((t, k) => t + k.orin, 0)}</td><td></td><td>${[...new Set(kor.map(k => k.orin))].sort((a, b) => b - a).map(o => `${kor.filter(k => k.orin === o).length} × ${o}`).join(' + ')}</td></tr></table>`;
 }
 
@@ -115,7 +115,7 @@ function partaQoidasi() {
     <span style="color:#777">Beruniy standarti: parta ${STANDART.parta.eni} × ${STANDART.parta.chuq} (1 kishilik), 2 + 2 + 2 × ${STANDART.qatorlar} qator, qadam ${son(STANDART.qadam)}, doskadan ${son(STANDART.doska)}, oxirgi ${son(STANDART.oxirgi)}</span><br>
     ustundan: oldi/orqa 500 · yon 0. Doska 3000 yon (kar) devorda, deraza o'quvchilarning chap tomonida (SR3 dan tashqari); eshiklar 900.<br>
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100; sinflarning koridor tomoni — akustik shisha.<br>
-    KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (6-xona — ZN1 ga o'tish, K1, K2, kirish zali).<br>
+    KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (6-xona — ZN1 ga o'tish, K1, K2, kirish zali); sahna — XZ1 devorida, podiumsiz.<br>
     Ayollar WC: 2 kabina eng ichkarida (2, 3 — unitaz), oldida tambur (4, 5 — rakovina); ikki eshik orqali kiriladi.<br>
     Ofis xonalari (XZ1–XZ4): eshik tomoni shisha devor; barcha yangi eshiklar shisha.<br>
     XZ3 — ustozlar xonasi, XZ4 — call-markaz va online sotuv; 12-xona — CEO (mavjud holicha).<br>
@@ -151,6 +151,7 @@ function belgilar(rejim) {
     sw(`background:${KOR_RANG.logo};height:1.2mm;border:0`, 'yorituvchi logotip (koridor oxiri, GKL devor)'),
     sw(`background:${KOR_RANG.elon};height:1.2mm;border:0`, "e'lonlar doskasi"),
     sw(`background:${KOR_RANG.etirof};height:1.2mm;border:0`, "e'tirof doskasi (faxriylar, oy o'quvchisi)"),
+    sw(`background:#2a2e33;height:1.4mm;border:0;box-shadow:inset -1mm 0 0 ${KOR_RANG.logo}`, 'koworking sahnasi (XZ1 devori): logotip, ekran, reyka'),
   ];
   else q = [
     sw(`background:#fff;border:.35mm dashed #222`, 'PV — rekuperatorli kiritish-chiqarish qurilmasi (shift ichida)'),

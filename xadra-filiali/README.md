@@ -11,13 +11,13 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 | `Xadra_1-qavat_3D_v1.2.pdf` | A3: 1-qavatning Blender 3D ko'rinishlari — umumiy, eshikdan kirganda, resepshn |
 | `Xadra_2-qavat_taqdimot_reja_v1.2.pdf` / `.png` | A3 portret, namuna formatida (`manba/namuna-format.webp`): rangli reja, koworking zalining ikki rejimi, havo aylanishi, xonalar maydonlari |
 | `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.2.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
-| `Xadra_2-qavat_3D_v1.2.pdf` | A3, 2 varaq: 2-qavatning Blender 3D ko'rinishlari — umumiy, K1 va K2 koridorlari, yorituvchi logotip devori, e'lon va e'tirof doskalari, sotuv va admin xonalari, sinf, koworking |
+| `Xadra_2-qavat_3D_v1.2.pdf` | A3, 3 varaq: 2-qavatning Blender 3D ko'rinishlari — umumiy, K1 va K2 koridorlari, yorituvchi logotip devori, e'lon va e'tirof doskalari, sotuv va admin xonalari, sinf; koworking sahnasi (XZ1 devori) va koworking |
 | `Xadra_2-qavat_xonalar_izoh_v1.2.pdf` | A4, 12 bet: umumiy ko'rsatkichlar, 3D (sxematik), har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
 | `Xadra_3-qavat_reja_v1.2.pdf` / `.png` | A3, 1:50: 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi); 1, 3, 4-xonalar o'zgarmaydi |
 | `Xadra_3-qavat_3D_v1.2.pdf` / `.png` | A3: 3-qavatning Blender 3D ko'rinishlari — umumiy, 5-xona doska tomonga, hojatxona ichidan |
 | `Xadra_xarajatlar_xulosa_v1.2.pdf` | A3: xarajatlar — turlar, qavatlar va xonalar bo'yicha jami |
 | `3d/` | Alohida 3D rasmlar (JPG) va Blender fayllari: `Xadra_1-qavat.blend`, `Xadra_2-qavat.blend`, `Xadra_3-qavat.blend` (Blender 4.2, kameralar bilan, logotip rasmlari faylga qadalgan) |
-| `../hisob/Xadra_xarajatlar_v1.2.xlsx` | Xarajatlar (Excel), 1, 2 va 3-qavat: yakuniy, xonalar bo'yicha, batafsil hisob, narxlar varag'i (so'mdagi narxlar kurs bo'yicha). Narxi noma'lum qismlar (sotuv va admin mebeli, doskalar, resepshn, 1-qavat logotiplari) — to'q sariq fonda, taxminiy. Narx yoki balandlik o'zgarsa, formulalar qayta hisoblaydi |
+| `../hisob/Xadra_xarajatlar_v1.2.xlsx` | Xarajatlar (Excel), 1, 2 va 3-qavat: yakuniy, xonalar bo'yicha, batafsil hisob, narxlar varag'i (so'mdagi narxlar kurs bo'yicha). Narxi noma'lum qismlar (sotuv va admin mebeli, doskalar, koworking sahnasi, resepshn, 1-qavat logotiplari) — to'q sariq fonda, taxminiy. Narx yoki balandlik o'zgarsa, formulalar qayta hisoblaydi |
 
 ## Asosiy yechim
 
@@ -39,7 +39,8 @@ Xonalarga bo'linish buyurtmachi yuborgan namuna (`manba/namuna-format.webp`) bo'
 - **Koridorlar (K1, K2, 1.5 m):** yorug' va zamonaviy — chiziqli LED, och devor va pol. Ikkala koridor oxirida 4-xonaning GKL devorida ichidan yoritilgan PDP Academy logotipi (koridor boshidan ko'rinadi). Kar devorlarda e'lonlar va e'tirof doskalari (faxriylar, oy o'quvchisi nomzodlari): K1 da sotuv va admin orqa devorida, K2 da ustozlar va call-markaz orqa devorida.
 - **Shisha devorlar:** sinflarning koridor tomonidagi devorlari shisha (2.5 m, ustida 1 m GKL), 1.0–1.6 m da matli polosa. Eshiklar shisha.
 - **Sotuv va admin xonalari:** mebel va interyer (brend devor, bambuk panel) — narxi taxminiy.
-- **Koworking / tadbirlar zali:** 70.5 m², kundalik ~35, tadbirda 66 o'rin. CEO xonasi — 12-xona.
+- **Koworking / tadbirlar zali:** 70.5 m², kundalik ~35, tadbirda 68 o'rin (stullar sahnaga qaragan). CEO xonasi — 12-xona.
+- **Koworking sahnasi** (buyurtmachi, 09.10): XZ1 xonasining koworkingga qaragan devori (5.8 m) — GKL karkas, markazda grafit panel, ichidan yoritilgan PDP Academy logotipi (~2 m) va ostida ekran (koworkingdagi ekran ko'chiriladi), yonlarida yog'och reykalar, yo'naltirilgan chiroqlar, ko'chma minbar. Podiumsiz — o'tish yo'lagi bo'sh qoladi. Narxi taxminiy (~$2,360).
 - **Ayollar hojatxonasi** (2–5-xonalar, devorlari o'zgarmaydi): 6-xona xo'jalik emas — koworkingdan ZN1 zinasiga (3-qavatga) o'tish yo'lagi. Shuning uchun 2 ta kabina eng ichkarida (2 va 3-xona, unitaz), oldida tambur (4 va 5-xona, rakovina): har biriga ikki eshik orqali kiriladi, yo'lakdan eshik ochilganda faqat tambur ko'rinadi.
 - **Jami:** 7 xona, 164 o'rin. Avtomatik tekshiruv: to'qnashuv 0.
 

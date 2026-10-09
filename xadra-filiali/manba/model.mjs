@@ -410,11 +410,28 @@ export const KW_KUNDALIK = {
   jurnal: [{ x1: 2750, x2: 3250, y1: 11300, y2: 12300 }],
   shkaf: [{ x1: 300, x2: 3300, y1: 17950, y2: 18350 }],
 };
-// Tadbirlar rejimi: 11 qator × 6 stul, ekran yuqori devorda
+// ---------- Koworking sahnasi ----------
+// Buyurtmachi (09.10): XZ1 (offline sotuv) xonasining koworkingga qaragan devori — koworking sahnasi.
+// Devor oldida GKL karkas (100 mm, U4 ustuni bilan tekislanadi). Markazda to'q grafit panel: ichidan yoritilgan
+// PDP Academy logotipi va ostida ekran (koworkingdagi ekran shu yerga ko'chiriladi); yonlarida yog'och reykali panellar,
+// shiftda yo'naltirilgan chiroqlar, ko'chma minbar. Sahna oldi pol bilan bir sathda (podiumsiz) — koworkingning
+// o'ng tomonidagi o'tish yo'lagi (K1, K2, kirish zali) bo'sh qoladi.
+// logo/ekran: y — markaz, en — eni, z — balandlik (mm); ekranR — rejadagi to'rtburchagi.
+export const KW_SAHNA = {
+  devor: { x1: 5850, x2: 5950, y1: 9300, y2: 15100 },
+  panel: { y1: 10250, y2: 14150 },
+  reyka: [{ y1: 9300, y2: 10250 }, { y1: 14150, y2: 15100 }],
+  logo: { y: 12200, en: 2000, z: 2380 },
+  ekran: { y: 12200, en: 1660, z1: 950, z2: 1885 },
+  ekranR: { x1: 5790, x2: 5850, y1: 11370, y2: 13030 },
+  minbar: { x1: 5350, x2: 5750, y1: 9500, y2: 9900 },
+};
+// Tadbirlar rejimi: stullar sahnaga qaragan — 4 qator × 17 stul (5 + 7 + 5, oralarida ikki yo'lak).
+const TADBIR_Y = [7400, 10475, 14550].flatMap((y0, b) => Array.from({ length: b === 1 ? 7 : 5 }, (_, i) => y0 + i * 500));
 export const KW_TADBIR = {
-  stullar: Array.from({ length: 11 }, (_, r) => [400, 900, 1400, 2600, 3100, 3600].map(x => ({ x1: x, x2: x + 450, y1: 8300 + r * 900, y2: 8750 + r * 900, yon: 'n' }))).flat(),
-  ekran: { x1: 650, x2: 3800, y1: 6500, y2: 6580 },
-  minbar: { x1: 3950, x2: 4300, y1: 7000, y2: 7500 },
+  stullar: [3550, 2650, 1750, 850].flatMap(x => TADBIR_Y.map(y => ({ x1: x, x2: x + 450, y1: y, y2: y + 450, yon: 'w' }))),
+  ekran: KW_SAHNA.ekranR,
+  minbar: KW_SAHNA.minbar,
 };
 
 export const maydon = r => (r.x2 - r.x1) * (r.y2 - r.y1) / 1e6;

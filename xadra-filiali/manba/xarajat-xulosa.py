@@ -32,4 +32,10 @@ for row in ws.iter_rows(min_row=5, values_only=True):
     xonalar.append({'bolim': joriy, 'nom': a, 'usd': jami})
 kurs = wb['Narxlar']
 kurs_q = next(r[2] for r in kurs.iter_rows(min_row=5, values_only=True) if r[1] == 'Dollar kursi')
-print(json.dumps({'fayl': fayl.name, 'turlar': turlar, 'bolimlar': bolimlar, 'xonalar': xonalar, 'kurs': kurs_q, **qoshimcha}, ensure_ascii=False))
+# koworking sahnasi (taxminiy narxlar, 1 tadan)
+QISQA = [('Koworking sahnasi', 'karkas va grafit panel'), ('Sahna: ', 'reykalar'), ('Sahna logotipi', 'logotip'),
+         ('Sahna yoritishi', 'yoritish'), ('Sahna ekrani', "ekranni ko'chirish"), ('Minbar', 'minbar')]
+sahna = [{'nom': q, 'usd': r[2]} for r in kurs.iter_rows(min_row=5, values_only=True) for p, q in QISQA
+         if isinstance(r[1], str) and r[1].startswith(p) and isinstance(r[2], (int, float))]
+print(json.dumps({'fayl': fayl.name, 'turlar': turlar, 'bolimlar': bolimlar, 'xonalar': xonalar, 'kurs': kurs_q, **qoshimcha,
+                  'sahna': {'jami': sum(q['usd'] for q in sahna), 'qatorlar': sahna}}, ensure_ascii=False))

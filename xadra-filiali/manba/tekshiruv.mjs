@@ -1,7 +1,7 @@
 // Xonalar ko'rsatkichlari, havo almashinuvi hisobi va chizmaning avtomatik tekshiruvi.
 import {
   H, ICHKI, PARTA, STUL, STANDART, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR,
-  XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, sinflar, maydon, bolaklar, xizmatJihozlari, lokal, wcJihozlari,
+  XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, KW_SAHNA, sinflar, maydon, bolaklar, xizmatJihozlari, lokal, wcJihozlari,
 } from './model.mjs';
 
 // ---------- geometriya ----------
@@ -147,7 +147,7 @@ export function baho(k) {
 // ---------- avtomatik tekshiruv ----------
 export function tekshiruv() {
   const sinf = sinflar();
-  const devorlar = DEVORLAR.filter(d => d.holat !== 'buziladi');
+  const devorlar = [...DEVORLAR.filter(d => d.holat !== 'buziladi'), KW_SAHNA.devor];   // sahna karkasi ham to'siq
   const ustunlar = USTUNLAR;
   const sektorlar = ESHIKLAR.map(e => ({ e, s: eshikSektori(e) }));
   const natija = { toqnashuv: [], toSilgan: [], ustunQoidasi: [], eshik: [], doskaDevor: [], orinlar: 0, jihozlar: 0 };

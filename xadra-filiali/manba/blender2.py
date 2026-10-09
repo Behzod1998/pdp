@@ -96,6 +96,7 @@ def qoplama_xona(q, x, tomon, m_x, m_y, h, teshik=()):
         bu.qoplama(q, 'h', x[tomon], +1 if tomon == 'y1' else -1, x['x1'], x['x2'], 0, h, list(teshik), m_x, 12)
 
 QARSHI = {'x1': 'x2', 'x2': 'x1', 'y1': 'y2', 'y2': 'y1'}
+SAHNA = D['sahna']
 DOSKA_TOMON = {'ong': 'x2', 'chap': 'x1', 'yuqori': 'y1', 'past': 'y2'}
 for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
     q = Q()
@@ -116,6 +117,15 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
     # koridor oxiridagi logotip devori — to'q grafit panel
     for l in D['logo']:
         bu.qoplama(q, 'v', l['x'], -1, l['y1'], l['y2'], 0, h, [], M['grafit'], 15)
+    # koworking sahnasi (XZ1 devori): GKL karkas, markazda grafit panel, yonlarida qora asos ustida yog'och reykalar
+    sd = SAHNA['devor']; fx = sd['x1']
+    q.box(fx, sd['x2'], sd['y1'], sd['y2'], 0, h, M['devor'], top=M['qopqoq'] if k == 'kesim' else None)
+    q.box(fx - 15, fx, SAHNA['panel']['y1'], SAHNA['panel']['y2'], 0, h, M['grafit'], top=M['qopqoq'] if k == 'kesim' else None)
+    for r in SAHNA['reyka']:
+        q.box(fx - 12, fx, r['y1'], r['y2'], 0, h, M['korpus'])
+        n = int((r['y2'] - r['y1'] - 40) // 85)
+        y0 = r['y1'] + (r['y2'] - r['y1'] - (n * 85 - 45)) / 2
+        for i in range(n): q.box(fx - 50, fx - 12, y0 + i * 85, y0 + i * 85 + 40, 0, h, M['bambuk_y'])
     q.obj(f'qoplama_{k}', k)
 
 # ---------------- koridor: logotip, doskalar ----------------
@@ -202,9 +212,29 @@ for r in kw['shkaf']: bu.shkaf(q, r, M['parta'], 1100)
 q.obj('koworking_mebel', 'asos')
 for i, s in enumerate(kw['stullar']):
     bu.joyla(sm, f'kw_stul_{i}', 'asos', mk(s), {'n': 180, 's': 0, 'w': 90, 'e': -90}[s['yon']])
-# koworking ekrani (shimoliy devorda)
-q = Q(); q.box(-900, 900, 0, 60, 1250, 2280, M['korpus'], bevel=8); q.box(-880, 880, 60, 62, 1270, 2260, M['ekran']); q.obj('kw_ekran', 'asos', (2100, 6500), 0)
-bu.matn('PDP Academy', 2100, 6564, 1830, 170, M['ekran_matn'], 'kw_ekran_matn', 0, shrift=bu.shrift(True))
+# ---------------- koworking sahnasi (XZ1 devori) ----------------
+# grafit panelda: yuqorida ichidan yoritilgan logotip, ostida ekran (koworking ekrani shu yerga ko'chirilgan), pastda yashil chiziq
+fx = SAHNA['devor']['x1'] - 15
+lg, ek = SAHNA['logo'], SAHNA['ekran']
+bu.logo_panel(fx, lg['y'], 90, lg['en'], lg['z'], 'primary-on-dark', kuch=2.2, halqa=0.5, nom='logo_sahna')
+w2 = ek['en'] / 2
+q = Q(); q.box(-w2, w2, 0, 55, ek['z1'], ek['z2'], M['korpus'], bevel=8); q.box(-w2 + 18, w2 - 18, 55, 57, ek['z1'] + 18, ek['z2'] - 18, M['ekran'])
+q.box(-260, 260, 57, 59, ek['z1'] + 300, ek['z1'] + 312, M['ekran_aksent']); q.obj('sahna_ekran', 'asos', (fx, ek['y']), 90)
+bu.matn('PDP Academy', fx - 60, ek['y'], ek['z1'] + 560, 150, M['ekran_matn'], 'sahna_ekran_matn', 90, shrift=bu.shrift(True))
+bu.matn("Xadra filiali  ·  tadbirlar", fx - 60, ek['y'], ek['z1'] + 400, 60, M['ekran_matn'], 'sahna_ekran_izoh', 90, shrift=bu.shrift())
+q = Q(); q.box(fx - 3, fx, SAHNA['panel']['y1'] + 120, SAHNA['panel']['y2'] - 120, 300, 316, M['brend_yashil_nur']); q.obj('sahna_chiziq', 'asos')
+# shift ostidagi chiziqli yoritgich (devorni yuvadi) va yo'naltirilgan chiroqlar
+q = Q(); q.box(fx - 45, fx, SAHNA['panel']['y1'], SAHNA['panel']['y2'], H - 50, H - 30, M['led_chiziq']); q.obj('sahna_led', 'toliq')
+for i, yy in enumerate((10700, 12200, 13700)):
+    bu.spot(4500, yy, H - 40, 55, (fx, yy, 1500), 60, f'sahna_spot_{i}')
+# ko'chma minbar: grafit korpus, yog'och qopqoq, oldida kichik logotip (zalga qaragan)
+mb = SAHNA['minbar']; mcx, mcy = mk(mb)
+q = Q()
+q.box(mb['x1'] + 40, mb['x2'] - 40, mb['y1'] + 40, mb['y2'] - 40, 0, 1060, M['grafit'], bevel=10)
+q.box(mb['x1'] + 10, mb['x2'] - 10, mb['y1'] + 10, mb['y2'] - 10, 1060, 1110, M['yogoch_toq'], bevel=6)
+q.box(mb['x1'] + 36, mb['x1'] + 40, mb['y1'] + 70, mb['y2'] - 70, 120, 135, M['brend_yashil_nur'])
+q.obj('sahna_minbar', 'asos')
+bu.logo_panel(mb['x1'] + 40, mcy, 90, 280, 820, 'inline-on-dark', kuch=1.2, halqa=0, nom='logo_minbar', ofset=3)
 
 # ---------------- o'simliklar ----------------
 q = Q()
@@ -297,9 +327,10 @@ KOR = {
     'admin': dict(cam=kam('kamera_admin', (10950, 14700, 1650), (9800, 9800, 1100), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'sinf': dict(cam=kam('kamera_sinf', (12450, 5600, 1650), (17950, 3700, 1300), 19), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'kw': dict(cam=kam('kamera_koworking', (5350, 17500, 1700), (1300, 8800, 1000), 18), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
+    'sahna': dict(cam=kam('kamera_sahna', (300, 14300, 1650), (5850, 12100, 1550), 19), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
 }
 FAYL = {'umumiy': '1-umumiy', 'k1': '2-koridor-K1', 'k2': '3-koridor-K2', 'logo': '4-koridor-logotip', 'doskalar': '5-koridor-doskalar',
-        'sotuv': '6-sotuv-xonasi', 'admin': '7-admin-xonasi', 'sinf': '8-sinf-doska', 'kw': '9-koworking'}
+        'sotuv': '6-sotuv-xonasi', 'admin': '7-admin-xonasi', 'sinf': '8-sinf-doska', 'kw': '9-koworking', 'sahna': '10-koworking-sahna'}
 bu.render_sozla(A['tez'])
 os.makedirs(A['chiq'], exist_ok=True)
 BELGI = {k: (*mk(X[k]), 0) for k in ('SR1', 'SR2', 'SR3', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2', 'XZ3', 'XZ4', 'KW', 'X12')}

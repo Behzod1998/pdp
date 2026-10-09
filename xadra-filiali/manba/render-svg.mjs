@@ -5,7 +5,7 @@ import {
   KW_KUNDALIK, KW_TADBIR, AYOLLAR_WC, sinflar, bolaklar, lokal, PARTA,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
-import { koridorElementlar } from './reja-svg.mjs';
+import { koridorElementlar, sahnaElementlar } from './reja-svg.mjs';
 
 let N = 0;
 const f = v => Math.round(v * 10) / 10;
@@ -141,7 +141,7 @@ export function renderSvg(o = {}) {
     kw.jurnal.forEach(r => j.push(rect(r, `rx="50" fill="url(#${id}yog)" stroke="#a88155" stroke-width="8"`)));
     kw.shkaf.forEach(shkaf);
   } else {
-    KW_TADBIR.stullar.forEach(s => j.push(use('stul', ...markaz(s), 0)));
+    KW_TADBIR.stullar.forEach(s => j.push(use('stul', ...markaz(s), BURISH[s.yon])));   // sahnaga qaragan
     j.push(rect(KW_TADBIR.minbar, `fill="url(#${id}yogT)" stroke="#5f4630" stroke-width="8"`));
   }
   // ayollar hojatxonasi: kabinalarda unitaz, tamburlarda rakovina
@@ -153,9 +153,11 @@ export function renderSvg(o = {}) {
     const L = lokal(x), dl = L.T(x.j.doska);
     q.push(rect(L.R(dl.u1, dl.u2, 0, 90), `fill="#fdfdfd" stroke="#8d949c" stroke-width="12"`));
   });
-  if (kwRejim === 'tadbir') q.push(rect({ ...KW_TADBIR.ekran, y2: KW_TADBIR.ekran.y1 + 110 }, `fill="#fdfdfd" stroke="#555" stroke-width="16"`));
-  else q.push(rect({ x1: 1200, x2: 3000, y1: 6500, y2: 6590 }, `fill="#1f2329"`));   // koworkingdagi ekran
-  q.push(`<g filter="url(#${id}soya)">${osimliklar().map(([a, b]) => use('osimlik', a, b)).join('')}</g>`);
+  // koworking sahnasi (XZ1 devori): ekran va logotip shu yerda (ikkala rejimda)
+  q.push(sahnaElementlar(k, '', { yozuv: false }));
+  // tadbir rejimida koworkingdagi o'rtadagi o'simlik olinadi (stullar orasidagi yo'lakda qoladi)
+  const osim = osimliklar().filter(([a, b]) => !(kwRejim === 'tadbir' && a === 3900 && b === 13950));
+  q.push(`<g filter="url(#${id}soya)">${osim.map(([a, b]) => use('osimlik', a, b)).join('')}</g>`);
 
   // ---- eshiklar ----
   ESHIKLAR.forEach(e => {
@@ -260,7 +262,10 @@ export function renderSvg(o = {}) {
     zY(Rx + 450, [0, 7700, 7800, 9300, 9400, 15000, 15100, 16600, 16700, ICHKI.y]);
     q.push(d.join(''));
   }
-  if (o.yozuv !== false) q.push(koridorElementlar(k, 'paint-order="stroke" stroke="#fbf6ee" stroke-opacity=".85" stroke-linejoin="round"'));
+  if (o.yozuv !== false) {
+    const halo = 'paint-order="stroke" stroke="#fbf6ee" stroke-opacity=".85" stroke-linejoin="round"';
+    q.push(koridorElementlar(k, halo), sahnaElementlar(k, halo, { geo: false }));
+  }
   if (o.qoshimcha) q.push(o.qoshimcha);
 
   // burish (koworking kichik ko'rinishlari uchun): -90° — yuqori devor chapga o'tadi

@@ -1,7 +1,7 @@
 // Reja chizmasi (SVG). Rejimlar: 'mavjud' (1-varaq), 'jihoz' (2-varaq), 'havo' (3-varaq), 'izoh' (A4 hujjat).
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, ESKI_XONALAR, ADM_JIHOZ,
-  XIZMAT_JIHOZ, KW_KUNDALIK, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI, wcJihozlari,
+  XIZMAT_JIHOZ, KW_KUNDALIK, KW_SAHNA, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI, wcJihozlari,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 
@@ -31,6 +31,22 @@ export function koridorElementlar(k = 1, qoshimcha = '') {
     const ty = b.yon < 0 ? b.y - 140 : b.y + 290;
     q.push(`<text x="${(b.x1 + b.x2) / 2}" y="${ty}" font-size="${170 * k}" stroke-width="${170 * k * 0.28}" text-anchor="middle" fill="${b.tur === 'etirof' ? '#8a6a00' : '#5e5444'}" ${fam}>${DOSKA_NOMI[b.tur]}</text>`);
   });
+  return q.join('');
+}
+// Koworking sahnasi (XZ1 devori): GKL karkas, yog'och reykalar, grafit panel, ekran va logotip (ekran ustida)
+export function sahnaElementlar(k = 1, qoshimcha = '', { geo = true, yozuv = true } = {}) {
+  const s = KW_SAHNA, d = s.devor, e = s.ekranR, q = [];
+  const fam = `font-family="Liberation Sans, Arial, sans-serif" ${qoshimcha}`;
+  if (geo) q.push(`<rect x="${d.x1}" y="${d.y1}" width="${d.x2 - d.x1}" height="${d.y2 - d.y1}" fill="#2a2e33"/>`);
+  if (geo) s.reyka.forEach(r => { for (let y = r.y1 + 60; y + 45 < r.y2 - 30; y += 110) q.push(`<rect x="${d.x1 - 40}" y="${y}" width="40" height="45" fill="#b88a4b"/>`); });
+  if (geo) q.push(`<rect x="${e.x1}" y="${e.y1}" width="${e.x2 - e.x1}" height="${e.y2 - e.y1}" fill="#1f2329"/>`);
+  if (geo) q.push(`<rect x="${e.x1 - 30}" y="${s.logo.y - s.logo.en / 2}" width="30" height="${s.logo.en}" fill="${KOR_RANG.logo}"/>`);
+  if (yozuv) {
+    const cx = 5050, r = 130;
+    q.push(`<circle cx="${cx - 520}" cy="${s.logo.y - 90}" r="${r}" fill="none" stroke="${KOR_RANG.logo}" stroke-width="${r * 0.42}"/><circle cx="${cx - 520 + r * 0.3}" cy="${s.logo.y - 90 - r * 0.3}" r="${r * 0.33}" fill="${KOR_RANG.nuqta}"/>`);
+    q.push(`<text x="${cx - 330}" y="${s.logo.y}" font-size="${260 * k}" stroke-width="${260 * k * 0.28}" font-weight="700" fill="#1d7a35" ${fam}>SAHNA</text>`);
+    q.push(`<text x="${cx}" y="${s.logo.y + 300 * k}" font-size="${160 * k}" stroke-width="${160 * k * 0.28}" text-anchor="middle" fill="#3a3a3a" ${fam}>logotip · ekran</text>`);
+  }
   return q.join('');
 }
 const f = n => Math.round(n * 10) / 10;
@@ -160,7 +176,7 @@ export function rejaSvg(o = {}) {
     // ayollar hojatxonasi: unitaz (kabinalarda), rakovina (tamburlarda)
     wcJihozlari().forEach(p => q.push(rect(p, `rx="${p.tur === 'unitaz' ? 150 : 80}" fill="#fff" stroke="#6f7a85" stroke-width="${8 * k}"`)));
     q.push('</g>');
-    if (rejim !== 'havo') q.push(koridorElementlar(k));
+    if (rejim !== 'havo') q.push(koridorElementlar(k), sahnaElementlar(k));
   }
 
   // ---- havo almashinuvi ----
