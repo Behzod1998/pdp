@@ -99,28 +99,29 @@ async function q2Varaqlar(x) {
     ['Xadra_2-qavat_3D_6-sotuv-xonasi.jpg', "<b>Offline sotuv (XZ1):</b> 2 konsultant, mijoz stullari, shkaf; orqa devorda brend devor (logotip), yon devorlarda bambuk panel."],
     ['Xadra_2-qavat_3D_7-admin-xonasi.jpg', "<b>Admin (XZ2):</b> 2 ish o'rni, shkaf, logotip, bambuk panel."],
     ['Xadra_2-qavat_3D_8-sinf-doska.jpg', "<b>2-xona → doska:</b> interaktiv doska yon devorda, bambuk panel; chapda derazalar, o'ngda koridor tomondagi shisha devor."],
+    ['Xadra_2-qavat_3D_9-koworking.jpg', "<b>Koworking</b> — kundalik rejim, kirish zalidan; o'ngda sahna devori."],
   ];
   const kat = (await Promise.all(r.map(async ([f, iz]) => `<div>${fig(await rasm(f), iz)}</div>`))).join('');
-  const b2 = `<section class="varaq">${bosh("2-qavat — 3D ko'rinishlar (Blender): doskalar, sotuv va admin, sinf")}
+  const b2 = `<section class="varaq">${bosh("2-qavat — 3D ko'rinishlar (Blender): doskalar, sotuv va admin, sinf, koworking")}
   <div class="tor">${kat}<div class="matn"><h3>Sotuv va admin xonalari — mebel va interyer</h3>
     <p>Mebel: konsultant / ish stollari (140 × 70, tumbali), ofis kreslolari, mijoz stullari, kutish divani (sotuvda), hujjat shkaflari. Interyer: orqa devorda brend devor (logotip, yashil chiziq), yon devorlarda bambuk panel, o'simliklar.</p>
     <p>Narxi noma'lum bo'lgani uchun xarajatlar jadvalida <b>taxminiy</b> (Toshkent bozori): sotuv ~$2,340, admin ~$1,470 — mebelchi narxi bilan almashtiriladi.</p>
     <p>Ranglar va materiallar — namuna; logotip design.pdp.uz dan.</p></div></div></section>`;
-  const S = KW_SAHNA, xs = x.sahna;
+  const S = KW_SAHNA, xs = x.sahna, m = v => (v / 1000).toFixed(2).replace(/0$/, '');
   const b3 = `<section class="varaq">${bosh("2-qavat — koworking sahnasi (XZ1 devori): logotip va interyer", `Reja: Xadra_2-qavat_taqdimot_reja_${V}.pdf`)}
   <div class="ikki"><div>
-    ${fig(await rasm('Xadra_2-qavat_3D_10-koworking-sahna.jpg'), "<b>Koworking sahnasi</b> — XZ1 (offline sotuv) xonasining koworkingga qaragan devori: grafit panel, ichidan yoritilgan PDP Academy logotipi, ostida ekran, yonlarida yog'och reykalar, shiftda yo'naltirilgan chiroqlar (kundalik rejim).")}
-    <div class="matn"><h3>Sahna devori (buyurtmachi: XZ1 devori — koworking sahnasi)</h3>
-      <p><b>Joyi:</b> XZ1 xonasining koworkingga qaragan devori — ${((S.devor.y2 - S.devor.y1) / 1000).toFixed(1)} m (K1 va K2 koridorlari orasida), balandligi ${H / 1000} m.</p>
-      <p><b>Tuzilishi:</b> devor oldida GKL karkas (100 mm) — U4 ustuni bilan tekislanadi; markazda ${((S.panel.y2 - S.panel.y1) / 1000).toFixed(1)} m to'q grafit panel, ikki yonida ${((S.reyka[0].y2 - S.reyka[0].y1) / 1000).toFixed(2)} m dan yog'och reykali panellar (qora asos ustida, sinflardagi bambuk bilan bir uslubda).</p>
-      <p><b>Logotip:</b> design.pdp.uz dagi asosiy logotip (to'q fon uchun), ~${S.logo.en / 1000} m, ichidan yoritilgan; ma'ruzachi boshidan yuqorida — zalning hamma joyidan ko'rinadi, tadbir suratlarida doim kadrda.</p>
-      <p><b>Ekran:</b> koworkingdagi ekran shu yerga ko'chiriladi (poldan ${(S.ekran.z1 / 1000).toFixed(2)}–${(S.ekran.z2 / 1000).toFixed(2)} m). Pastda yashil brend chizig'i, shift ostida chiziqli LED, 3 ta yo'naltirilgan spot; ko'chma minbar (logotip bilan).</p>
-      <p><b>Xavfsizlik:</b> sahna oldi podiumsiz, pol bilan bir sathda — koworkingning o'ng tomonidagi o'tish yo'lagi (K1, K2, kirish zali, 3-qavat zinasi) bo'sh qoladi.</p>
-      <p><b>Narxi (taxminiy):</b> ~${usd(xs.jami)} — ${xs.qatorlar.map(q => `${q.nom} ${usd(q.usd)}`).join(', ')}. Reklama ustasi va mebelchi narxi bilan almashtiriladi.</p></div>
+    ${fig(await rasm('Xadra_2-qavat_3D_11-sahna-tomoshabin.jpg'), `<b>Tomoshabin tomonidan</b> — tadbir rejimi (${KW_TADBIR.stullar.length} o'rin), oxirgi qator ortidan, ko'z balandligi 1.65 m. Uslub — buyurtmachi yuborgan namunalar (Najot Ta'lim sahnasi va AI varianti), real o'lchamlarda.`)}
+    <div class="matn"><h3>Sahna devori — o'lchamlar</h3>
+      <p><b>Devor:</b> XZ1 xonasining koworkingga qaragan devori, ${m(S.devor.y2 - S.devor.y1)} × ${m(H)} m (K1 va K2 koridorlari orasida). Oldida GKL karkas 100 mm — U4 ustuni bilan tekislanadi.</p>
+      <p><b>Markaz:</b> to'q grafit panel ${m(S.panel.y2 - S.panel.y1)} m. <b>Logotip</b> (design.pdp.uz, to'q fon uchun) ~${m(S.logo.en)} m, ichidan yoritilgan, poldan ~${m(S.logo.z - 250)}–${m(S.logo.z + 250)} m — ma'ruzachi boshidan yuqorida. <b>Ekran</b> 86" (${m(S.ekran.en)} × ${m(S.ekran.z2 - S.ekran.z1)} m), poldan ${m(S.ekran.z1)}–${m(S.ekran.z2)} m.</p>
+      <p><b>Yonlar:</b> ${m(S.reyka[0].y2 - S.reyka[0].y1)} m dan yog'och reykali panellar (qora asos ustida), chetlarida tik yashil LED chiziqlar; devor tepasida yashil chiziq. Kolonkalar reyka panellariga osiladi (2.05–2.5 m).</p>
+      <p><b>Yoritish:</b> shiftdan ${m(S.devor.x1 - S.trek.x)} m narida qora trek shina (${m(S.trek.y2 - S.trek.y1)} m), ${S.trek.spot} ta spot — navbat bilan logotip va ekranga.</p>
+      <p><b>Pol va xavfsizlik:</b> sahna maydoni (${m(S.pol.x2 - S.pol.x1)} × ${m(S.pol.y2 - S.pol.y1)} m) — pol bilan bir sathda yog'och ko'rinishli vinil, podiumsiz: koworkingning o'ng tomonidagi o'tish yo'lagi (K1, K2, kirish zali, 3-qavat zinasi) bo'sh qoladi. Namunadagi shtativli kolonkalar shu sababli devorga osildi.</p>
+      <p><b>Narxi (taxminiy):</b> ~${usd(xs.jami)} — ${xs.qatorlar.map(q => `${q.nom} ${usd(q.usd)}`).join(', ')}. Ekran mavjud deb olingan (yangi 86" — ~$1,300).</p></div>
   </div><div>
-    ${fig(await rasm('Xadra_2-qavat_3D_9-koworking.jpg'), "<b>Koworking</b> — kundalik rejim, kirish zalidan; o'ngda sahna devori.")}
+    ${fig(await rasm('Xadra_2-qavat_3D_10-koworking-sahna.jpg'), "<b>Kundalik rejim</b> — dam olish burchagidan sahnaga.")}
     <figure style="border:.3mm solid #ddd;border-radius:1.2mm;overflow:hidden">${kwKorinish('tadbir')}</figure>
-    <figcaption><b>Tadbirlar rejimi:</b> ${KW_TADBIR.stullar.length} o'rin, stullar sahnaga qaragan (rejada sahna yuqorida); sahna oldi va o'tish yo'lagi bo'sh.</figcaption>
+    <figcaption><b>Tadbirlar rejimi:</b> ${KW_TADBIR.stullar.length} o'rin (4 qator × 17, ikki yo'lak), stullar sahnaga qaragan (rejada sahna yuqorida); sahna oldi va o'tish yo'lagi bo'sh.</figcaption>
   </div></div></section>`;
   return a + b2 + b3;
 }

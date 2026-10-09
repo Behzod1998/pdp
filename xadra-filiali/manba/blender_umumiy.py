@@ -892,7 +892,12 @@ def renderla(KOR, chiq, prefiks, FAYL, tez=False, faqat=None, namuna=(72, 48)):
         sc.render.resolution_x, sc.render.resolution_y = (rx // 3, ry // 3) if tez else (rx, ry)
         sc.cycles.samples = 24 if tez else (namuna[0] if ichki else namuna[1])
         sc.render.filepath = os.path.join(chiq, f'{prefiks}_{FAYL[nom]}.jpg')
+        # ko'rinishga xos to'plamlar (masalan, koworkingning tadbir rejimi): render paytida almashtiriladi
+        for kk in k.get('yashir', ()): kor_yashir(kk, True)
+        for kk in k.get('korsat', ()): kor_yashir(kk, False)
         bpy.ops.render.render(write_still=True)
+        for kk in k.get('yashir', ()): kor_yashir(kk, False)
+        for kk in k.get('korsat', ()): kor_yashir(kk, True)
         print('render:', nom, flush=True)
 
 

@@ -411,19 +411,24 @@ export const KW_KUNDALIK = {
   shkaf: [{ x1: 300, x2: 3300, y1: 17950, y2: 18350 }],
 };
 // ---------- Koworking sahnasi ----------
-// Buyurtmachi (09.10): XZ1 (offline sotuv) xonasining koworkingga qaragan devori — koworking sahnasi.
-// Devor oldida GKL karkas (100 mm, U4 ustuni bilan tekislanadi). Markazda to'q grafit panel: ichidan yoritilgan
-// PDP Academy logotipi va ostida ekran (koworkingdagi ekran shu yerga ko'chiriladi); yonlarida yog'och reykali panellar,
-// shiftda yo'naltirilgan chiroqlar, ko'chma minbar. Sahna oldi pol bilan bir sathda (podiumsiz) — koworkingning
-// o'ng tomonidagi o'tish yo'lagi (K1, K2, kirish zali) bo'sh qoladi.
-// logo/ekran: y — markaz, en — eni, z — balandlik (mm); ekranR — rejadagi to'rtburchagi.
+// Buyurtmachi (09.10): XZ1 (offline sotuv) xonasining koworkingga qaragan devori — koworking sahnasi. Uslub — buyurtmachi
+// yuborgan namunalar (Najot Ta'lim sahnasi va AI varianti): devor oldida GKL karkas (100 mm, U4 ustuni bilan tekislanadi);
+// markazda to'q grafit panel — tepasida ichidan yoritilgan PDP Academy logotipi, ostida 86" ekran (koworkingdagi ekran
+// o'rniga); ikki yonida yog'och reykalar, chetlarida tik yashil LED chiziqlar; shiftda qora trek shina va spotlar;
+// kolonkalar devorga osiladi (shtativ o'tish yo'lagini to'sadi), ko'chma minbar va o'simlik. Sahna maydoni podiumsiz —
+// pol bilan bir sathda yog'och ko'rinishli vinil: koworkingning o'ng tomonidagi o'tish yo'lagi (K1, K2, kirish zali) bo'sh qoladi.
+// logo/ekran: y — markaz, en — eni, z — balandlik (mm); ekranR — rejadagi to'rtburchagi; trek — shina (x, y1..y2, spotlar soni).
 export const KW_SAHNA = {
   devor: { x1: 5850, x2: 5950, y1: 9300, y2: 15100 },
   panel: { y1: 10250, y2: 14150 },
   reyka: [{ y1: 9300, y2: 10250 }, { y1: 14150, y2: 15100 }],
-  logo: { y: 12200, en: 2000, z: 2380 },
-  ekran: { y: 12200, en: 1660, z1: 950, z2: 1885 },
-  ekranR: { x1: 5790, x2: 5850, y1: 11370, y2: 13030 },
+  logo: { y: 12200, en: 1700, z: 2450 },
+  ekran: { y: 12200, en: 1920, z1: 900, z2: 2000 },
+  ekranR: { x1: 5790, x2: 5850, y1: 11240, y2: 13160 },
+  pol: { x1: 4300, x2: 5850, y1: 9300, y2: 15100 },
+  trek: { x: 4650, y1: 9600, y2: 14800, z: 3350, spot: 7 },
+  kolonka: [9775, 14625],
+  osimlik: [5600, 14650],
   minbar: { x1: 5350, x2: 5750, y1: 9500, y2: 9900 },
 };
 // Tadbirlar rejimi: stullar sahnaga qaragan — 4 qator × 17 stul (5 + 7 + 5, oralarida ikki yo'lak).

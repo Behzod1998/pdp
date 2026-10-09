@@ -11,7 +11,7 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 | `Xadra_1-qavat_3D_v1.2.pdf` | A3: 1-qavatning Blender 3D ko'rinishlari — umumiy, eshikdan kirganda, resepshn |
 | `Xadra_2-qavat_taqdimot_reja_v1.2.pdf` / `.png` | A3 portret, namuna formatida (`manba/namuna-format.webp`): rangli reja, koworking zalining ikki rejimi, havo aylanishi, xonalar maydonlari |
 | `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.2.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
-| `Xadra_2-qavat_3D_v1.2.pdf` | A3, 3 varaq: 2-qavatning Blender 3D ko'rinishlari — umumiy, K1 va K2 koridorlari, yorituvchi logotip devori, e'lon va e'tirof doskalari, sotuv va admin xonalari, sinf; koworking sahnasi (XZ1 devori) va koworking |
+| `Xadra_2-qavat_3D_v1.2.pdf` | A3, 3 varaq: 2-qavatning Blender 3D ko'rinishlari — umumiy, K1 va K2 koridorlari, yorituvchi logotip devori, e'lon va e'tirof doskalari, sotuv va admin xonalari, sinf, koworking; koworking sahnasi (XZ1 devori) — tomoshabin tomonidan va kundalik rejimda |
 | `Xadra_2-qavat_xonalar_izoh_v1.2.pdf` | A4, 12 bet: umumiy ko'rsatkichlar, 3D (sxematik), har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
 | `Xadra_3-qavat_reja_v1.2.pdf` / `.png` | A3, 1:50: 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi); 1, 3, 4-xonalar o'zgarmaydi |
 | `Xadra_3-qavat_3D_v1.2.pdf` / `.png` | A3: 3-qavatning Blender 3D ko'rinishlari — umumiy, 5-xona doska tomonga, hojatxona ichidan |
@@ -40,7 +40,7 @@ Xonalarga bo'linish buyurtmachi yuborgan namuna (`manba/namuna-format.webp`) bo'
 - **Shisha devorlar:** sinflarning koridor tomonidagi devorlari shisha (2.5 m, ustida 1 m GKL), 1.0–1.6 m da matli polosa. Eshiklar shisha.
 - **Sotuv va admin xonalari:** mebel va interyer (brend devor, bambuk panel) — narxi taxminiy.
 - **Koworking / tadbirlar zali:** 70.5 m², kundalik ~35, tadbirda 68 o'rin (stullar sahnaga qaragan). CEO xonasi — 12-xona.
-- **Koworking sahnasi** (buyurtmachi, 09.10): XZ1 xonasining koworkingga qaragan devori (5.8 m) — GKL karkas, markazda grafit panel, ichidan yoritilgan PDP Academy logotipi (~2 m) va ostida ekran (koworkingdagi ekran ko'chiriladi), yonlarida yog'och reykalar, yo'naltirilgan chiroqlar, ko'chma minbar. Podiumsiz — o'tish yo'lagi bo'sh qoladi. Narxi taxminiy (~$2,360).
+- **Koworking sahnasi** (buyurtmachi, 09.10; uslub — Najot Ta'lim sahnasi va AI namunasi): XZ1 xonasining koworkingga qaragan devori, 5.8 × 3.5 m — GKL karkas, markazda grafit panel, ichidan yoritilgan PDP Academy logotipi (~1.7 m) va 86" ekran, yonlarida yog'och reykalar va tik yashil LED, shiftda trek shina va 7 ta spot, devorga osilgan kolonkalar, ko'chma minbar. Podiumsiz (vinil pol, bir sathda) — o'tish yo'lagi bo'sh qoladi. 3D: tomoshabin tomonidan (tadbir rejimi) va kundalik rejim. Narxi taxminiy (~$3,410).
 - **Ayollar hojatxonasi** (2–5-xonalar, devorlari o'zgarmaydi): 6-xona xo'jalik emas — koworkingdan ZN1 zinasiga (3-qavatga) o'tish yo'lagi. Shuning uchun 2 ta kabina eng ichkarida (2 va 3-xona, unitaz), oldida tambur (4 va 5-xona, rakovina): har biriga ikki eshik orqali kiriladi, yo'lakdan eshik ochilganda faqat tambur ko'rinadi.
 - **Jami:** 7 xona, 164 o'rin. Avtomatik tekshiruv: to'qnashuv 0.
 

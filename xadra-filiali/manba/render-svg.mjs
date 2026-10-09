@@ -2,7 +2,7 @@
 // Geometriya model.mjs dan olinadi — o'lchamlar chizma bilan bir xil.
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ,
-  KW_KUNDALIK, KW_TADBIR, AYOLLAR_WC, sinflar, bolaklar, lokal, PARTA,
+  KW_KUNDALIK, KW_TADBIR, KW_SAHNA, AYOLLAR_WC, sinflar, bolaklar, lokal, PARTA,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 import { koridorElementlar, sahnaElementlar } from './reja-svg.mjs';
@@ -60,7 +60,7 @@ function osimliklar() {
   const r = [];
   r.push([23550, 9750], [23500, 16200]);
   r.push([8750, 10600], [11550, 11700], [14700, 9800], [17550, 11900]);
-  r.push([3900, 13950], [3700, 17650], [5650, 24050]);
+  r.push([3900, 13950], [3700, 17650], [5650, 24050], KW_SAHNA.osimlik);
   return r;
 }
 

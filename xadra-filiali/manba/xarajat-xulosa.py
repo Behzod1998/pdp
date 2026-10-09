@@ -34,7 +34,8 @@ kurs = wb['Narxlar']
 kurs_q = next(r[2] for r in kurs.iter_rows(min_row=5, values_only=True) if r[1] == 'Dollar kursi')
 # koworking sahnasi (taxminiy narxlar, 1 tadan)
 QISQA = [('Koworking sahnasi', 'karkas va grafit panel'), ('Sahna: ', 'reykalar'), ('Sahna logotipi', 'logotip'),
-         ('Sahna yoritishi', 'yoritish'), ('Sahna ekrani', "ekranni ko'chirish"), ('Minbar', 'minbar')]
+         ('Sahna yoritishi', 'trek yoritish va LED'), ('Sahna ekrani', "ekranni ko'chirish"), ('Ovoz:', 'ovoz tizimi'),
+         ('Sahna maydoni poli', 'sahna poli'), ('Minbar', 'minbar'), ("Katta o'simlik", "o'simlik")]
 sahna = [{'nom': q, 'usd': r[2]} for r in kurs.iter_rows(min_row=5, values_only=True) for p, q in QISQA
          if isinstance(r[1], str) and r[1].startswith(p) and isinstance(r[2], (int, float))]
 print(json.dumps({'fayl': fayl.name, 'turlar': turlar, 'bolimlar': bolimlar, 'xonalar': xonalar, 'kurs': kurs_q, **qoshimcha,
