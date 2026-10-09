@@ -13,6 +13,7 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 | `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_v1.2.pdf` | A3, 1:100, 3 varaq: 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi sxemasi |
 | `Xadra_2-qavat_3D_v1.2.pdf` | A3, 3 varaq: 2-qavatning Blender 3D ko'rinishlari — umumiy, K1 va K2 koridorlari, yorituvchi logotip devori, e'lon va e'tirof doskalari, sotuv va admin xonalari, sinf, koworking; koworking sahnasi (XZ1 devori) — tomoshabin tomonidan va kundalik rejimda |
 | `Xadra_2-qavat_xonalar_izoh_v1.2.pdf` | A4, 12 bet: umumiy ko'rsatkichlar, 3D (sxematik), har bir xona, havo almashinuvi, butun qavat masalalari, tasdiqlash uchun savollar |
+| `Xadra_2-qavat_HVAC_tahlil_v1.2.pdf` | A4, 5 bet: 11 xona (SR1–SR7, XZ1–XZ4) bo'yicha HVAC tahlili — zarur tashqi havo (KMK, ASHRAE 62.1), sovutish yuklamasi, 2 ta «100-lik» konditsioner va 30% toza havo sxemasining yetarliligi, aniqlashtiriladigan savollar va obyektda o'lchanadigan parametrlar (`manba/hvac.mjs`) |
 | `Xadra_3-qavat_reja_v1.2.pdf` / `.png` | A3, 1:50: 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi); 1, 3, 4-xonalar o'zgarmaydi |
 | `Xadra_3-qavat_3D_v1.2.pdf` / `.png` | A3: 3-qavatning Blender 3D ko'rinishlari — umumiy, 5-xona doska tomonga, hojatxona ichidan |
 | `Xadra_xarajatlar_xulosa_v1.2.pdf` | A3: xarajatlar — turlar, qavatlar va xonalar bo'yicha jami |

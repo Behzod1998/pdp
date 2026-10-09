@@ -13,6 +13,7 @@ import { tekshiruv } from './tekshiruv.mjs';
 import { LOYIHA } from './model.mjs';
 import { qavat3Html, tekshiruv3 } from './qavat3.mjs';
 import { qavat1Html, tekshiruv1 } from './qavat1.mjs';
+import { hvacHtml } from './hvac.mjs';
 
 const require = createRequire(import.meta.url);
 let chromium;
@@ -82,6 +83,12 @@ if (PNG) {
   for (let i = 0; i < betlar.length; i++) await betlar[i].screenshot({ path: join(CHIQISH, `bet-${i + 1}.png`) });
 }
 await a4.close();
+
+// 3a. HVAC tahlili (A4): 11 xona — tashqi havo, sovutish yuklamasi, 2 ta konditsioner va 30% toza havo sxemasi
+const hv = await brauzer.newPage();
+await hv.setContent(hvacHtml(), { waitUntil: 'load' });
+await hv.pdf({ path: join(CHIQISH, `Xadra_2-qavat_HVAC_tahlil_${LOYIHA.versiya}.pdf`), format: 'A4', printBackground: true, preferCSSPageSize: true });
+await hv.close();
 
 // 4. Taqdimot varag'i (A3 portret) — PDF va katta PNG
 const tq = await brauzer.newPage({ viewport: { width: 1123, height: 1587 }, deviceScaleFactor: 2.5 });
