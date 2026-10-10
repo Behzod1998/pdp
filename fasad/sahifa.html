@@ -1,0 +1,183 @@
+<title>PDP Academy fasadi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: one reading column; each view is a full-width before/after photo, the spec sits beside it on wide screens */
+:root{
+  --bg:#FFFFFF; --surface:#F5F5F5; --fg:#141414; --muted:#141414b3; --line:#14141420;
+  --brand:#00B533; --brand-text:#00A603; --sun:#FFCC19; --on-brand:#FFFFFF;
+  --f-display:"Space Grotesk","Golos Text",system-ui,sans-serif;
+  --f-body:"Plus Jakarta Sans",Inter,system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141414; --surface:#1E1E1E; --fg:#FFFFFF; --muted:#ffffffb3; --line:#ffffff24; --brand-text:#00B533; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141414; --surface:#1E1E1E; --fg:#FFFFFF; --muted:#ffffffb3; --line:#ffffff24; --brand-text:#00B533; color-scheme:dark}
+
+body{background:var(--bg);color:var(--fg);font:400 16px/1.6 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:72px}
+h1,h2,h3{font-family:var(--f-display);font-weight:500;letter-spacing:-.04em;text-wrap:balance;margin:0}
+h1{font-size:clamp(36px,6vw,64px);line-height:1.05}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.15}
+h3{font-size:18px;font-weight:400;letter-spacing:-.02em}
+p{margin:0;max-width:65ch}
+.eyebrow{font:500 14px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--brand-text)}
+
+header{display:grid;gap:20px;padding-top:40px}
+.brandrow{display:flex;align-items:center;gap:10px;font:500 14px var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.brandrow svg{width:28px;height:28px}
+.lead{font-size:18px;color:var(--muted)}
+.facts{display:flex;flex-wrap:wrap;gap:8px 24px;font-size:14px;color:var(--muted)}
+.facts b{color:var(--fg);font-weight:600}
+
+section{display:grid;gap:24px}
+.view{display:grid;gap:28px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:980px){.view{grid-template-columns:minmax(0,1.75fr) minmax(0,1fr);align-items:start}}
+
+/* before / after */
+.ba{position:relative;border-radius:24px;overflow:hidden;background:var(--surface);user-select:none;touch-action:pan-y}
+.ba img{display:block;width:100%;height:auto}
+.ba .after{position:absolute;inset:0;clip-path:inset(0 0 0 var(--cut,50%))}
+.ba .after img{width:100%;height:100%;object-fit:cover}
+.ba .handle{position:absolute;top:0;bottom:0;left:var(--cut,50%);width:2px;background:#fff;transform:translateX(-1px);pointer-events:none;box-shadow:0 0 0 1px #0003}
+.ba .handle::after{content:"";position:absolute;top:50%;left:50%;width:40px;height:40px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 2px 8px #0004;
+  background-image:linear-gradient(90deg,transparent 13px,#141414 13px,#141414 15px,transparent 15px,transparent 25px,#141414 25px,#141414 27px,transparent 27px)}
+.ba input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.ba input:focus-visible + .handle::after{box-shadow:0 0 0 2px var(--bg),0 0 0 3.5px var(--brand)}
+.tag{position:absolute;top:14px;padding:4px 12px;border-radius:999px;font:500 12px/1.6 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
+.tag.l{left:14px;background:#141414cc;color:#fff}
+.tag.r{right:14px;background:var(--brand);color:var(--on-brand)}
+.hint{font-size:13px;color:var(--muted)}
+
+.spec{display:grid;gap:18px}
+dl{margin:0;display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:10px 20px;font-size:15px}
+dt{color:var(--muted)}
+dd{margin:0}
+.swatches{display:flex;gap:10px;flex-wrap:wrap}
+.sw{display:flex;align-items:center;gap:8px;font:500 13px var(--f-mono)}
+.sw i{width:18px;height:18px;border-radius:50%;border:1px solid var(--line)}
+
+.detail{border-radius:24px;overflow:hidden}
+.detail img{display:block;width:100%}
+
+.todo{display:grid;gap:0;border-top:1px solid var(--line)}
+.todo li{list-style:none;display:grid;grid-template-columns:28px minmax(0,1fr);gap:12px;padding:16px 0;border-bottom:1px solid var(--line)}
+.todo li::before{content:"";width:12px;height:12px;margin-top:7px;border-radius:50%;border:2px solid var(--brand)}
+.todo{padding:0;margin:0}
+.note{background:var(--surface);border-radius:24px;padding:24px;display:grid;gap:8px;font-size:15px}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:20px}
+@media (prefers-reduced-motion:no-preference){.ba .after,.ba .handle{transition:clip-path .05s linear,left .05s linear}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="brandrow">
+      <svg viewBox="0 0 50 50" aria-hidden="true"><path d="M25 0C38.807 0 50 11.193 50 25C50 38.807 38.807 50 25 50C11.193 50 0 38.807 0 25C0 11.193 11.193 0 25 0ZM25.002 11.111C17.331 11.111 11.112 17.329 11.112 25C11.112 32.671 17.331 38.889 25.002 38.889C32.672 38.889 38.891 32.67 38.891 25C38.891 17.329 32.672 11.111 25.002 11.111Z" fill="#00B533"/><path d="M40.281 18.871C40.281 23.54 36.496 27.325 31.827 27.325C27.158 27.325 23.373 23.54 23.373 18.871C23.373 14.202 27.158 10.417 31.827 10.417C36.496 10.417 40.281 14.202 40.281 18.871Z" fill="#FFCC19"/></svg>
+      PDP Academy · Yangi bino
+    </div>
+    <h1>Fasad dizayni: kirish va ikkinchi qavat</h1>
+    <p class="lead">Focus Mebel o‘rnida PDP Academy ochiladi. Kirish qismi va Galeria ustidagi ikkinchi qavat (Galeria vivyeskasi tugagan ustungacha) PDP Academy brendida bezatiladi.</p>
+    <div class="facts">
+      <span><b>3</b> ta element: kirish vivyeskasi, konsol belgi, ikkinchi qavat yozuvi</span>
+      <span>Logo va ranglar: <b>design.pdp.uz</b></span>
+      <span>Variant <b>1</b> · 10.10.2026</span>
+    </div>
+  </header>
+
+  <section>
+    <span class="eyebrow">Umumiy ko‘rinish</span>
+    <h2>Ko‘chadan qaraganda</h2>
+    <div class="ba" style="--cut:50%">
+      <img src="img/umumiy-oldin.jpg" alt="Hozirgi holat: Focus Mebel kirishi va Galeria binosi">
+      <div class="after"><img src="img/umumiy-keyin.jpg" alt="Taklif: PDP Academy kirish vivyeskasi va ikkinchi qavatdagi yozuv"></div>
+      <input id="ba-umumiy" type="range" min="0" max="100" value="50" aria-label="Oldin va keyin rasmini solishtirish">
+      <div class="handle"></div>
+      <span class="tag l">Hozir</span><span class="tag r">Taklif</span>
+    </div>
+    <p class="hint">Chiziqni chapga va o‘ngga suring.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">1 · Kirish</span>
+    <div class="view">
+      <div style="display:grid;gap:12px;min-width:0">
+        <div class="ba" style="--cut:50%">
+          <img src="img/kirish-oldin.jpg" alt="Hozirgi kirish: yashil Focus Mebel vivyeskasi">
+          <div class="after"><img src="img/kirish-keyin.jpg" alt="Taklif: qora vivyeska, PDP Academy logotipi va yashil chiziq"></div>
+          <input id="ba-kirish" type="range" min="0" max="100" value="50" aria-label="Kirish: oldin va keyin">
+          <div class="handle"></div>
+          <span class="tag l">Hozir</span><span class="tag r">Taklif</span>
+        </div>
+      </div>
+      <div class="spec">
+        <h2>Kirish vivyeskasi</h2>
+        <p>Mavjud qutini saqlab, yuzasi qora kompozit bilan qayta qoplanadi. Ustiga ichidan yoritiladigan hajmli harflar qo‘yiladi.</p>
+        <dl>
+          <dt>Logo</dt><dd>Bir qatorli, to‘q fon uchun (on-dark)</dd>
+          <dt>Fon</dt><dd>Qora kompozit, #141414</dd>
+          <dt>Harflar</dt><dd>Hajmli, ichidan yoritilgan: halqa yashil, quyosh sariq, «PDP Academy» oq</dd>
+          <dt>Pastki chiziq</dt><dd>Yashil LED chiziq, butun eni bo‘ylab</dd>
+          <dt>Logo balandligi</dt><dd>Vivyeska balandligining ~47 %, har tomonda kamida 1X bo‘sh joy</dd>
+          <dt>Konsol belgi</dt><dd>Dumaloq lightbox, oq yuz, faqat belgi (halqa + quyosh); eski Focus konsoli o‘rniga</dd>
+        </dl>
+        <div class="swatches">
+          <span class="sw"><i style="background:#141414"></i>#141414</span>
+          <span class="sw"><i style="background:#00B533"></i>#00B533</span>
+          <span class="sw"><i style="background:#FFCC19"></i>#FFCC19</span>
+          <span class="sw"><i style="background:#FFFFFF"></i>#FFFFFF</span>
+        </div>
+      </div>
+    </div>
+    <figure class="detail" style="margin:0"><img src="img/kirish-detal.jpg" alt="Kirish vivyeskasi yaqindan"></figure>
+  </section>
+
+  <section>
+    <span class="eyebrow">2 · Ikkinchi qavat</span>
+    <div class="view">
+      <div class="ba" style="--cut:50%">
+        <img src="img/qavat-oldin.jpg" alt="Hozirgi ikkinchi qavat: bo‘sh alyuminiy panel">
+        <div class="after"><img src="img/qavat-keyin.jpg" alt="Taklif: panel ustida PDP Academy hajmli harflari va yashil chiziq"></div>
+        <input id="ba-qavat" type="range" min="0" max="100" value="50" aria-label="Ikkinchi qavat: oldin va keyin">
+        <div class="handle"></div>
+        <span class="tag l">Hozir</span><span class="tag r">Taklif</span>
+      </div>
+      <div class="spec">
+        <h2>Galeria ustidagi panel</h2>
+        <p>Deraza ustidagi kumushrang panel PDP Academy hududini belgilaydi. Bu qism Focus kirishidan Galeria vivyeskasi tugagan ustungacha davom etadi.</p>
+        <dl>
+          <dt>Logo</dt><dd>Bir qatorli, och fon uchun (on-light)</dd>
+          <dt>Harflar</dt><dd>Hajmli, to‘g‘ridan-to‘g‘ri panelga: yozuv qora, halqa yashil, quyosh sariq. Kechasi kontur yoki ichki yoritish</dd>
+          <dt>Joylashuv</dt><dd>Zinapoya shaklidagi burchakdan keyin, derazalar boshlanadigan joy ustida</dd>
+          <dt>Yashil chiziq</dt><dd>Panelning pastki chetida, PDP Academy chegarasigacha (Galeria tugagan ustun)</dd>
+          <dt>Logo balandligi</dt><dd>Panel balandligining ~56 %</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Ishlab chiqarishdan oldin</span>
+    <h2>Tekshirish kerak</h2>
+    <ul class="todo">
+      <li><span>Joyida o‘lchash: kirish vivyeskasi eni va balandligi, ikkinchi qavat panelining uzunligi va Galeria bilan chegara ustuni.</span></li>
+      <li><span>Logo faqat design.pdp.uz/logos dagi SVG fayldan chiqariladi, qayta terilmaydi va cho‘zilmaydi.</span></li>
+      <li><span>Ko‘chadagi Focus Mebel bayroq-banneri, eshikdagi stikerlar va eski konsol olib tashlanadi.</span></li>
+      <li><span>Eshik ustidagi yuguruvchi LED tablo qoldiriladi yoki olib tashlanadi; qoldirilsa, matni PDP Academy uchun yangilanadi.</span></li>
+      <li><span>Fasaddagi reklama uchun hokimiyat ruxsatnomasi va bino egasining roziligi.</span></li>
+    </ul>
+    <div class="note">
+      <b>Bu vizualizatsiya</b>
+      <p>Rasmlar sizning fotosuratlaringiz ustiga perspektivada qo‘yilgan taklif. O‘lcham va materiallar taxminiy, aniq chizma o‘lchovdan keyin tayyorlanadi.</p>
+    </div>
+  </section>
+
+  <footer>PDP Academy · Fasad taklifi, 1-variant · Brend qoidalari: design.pdp.uz</footer>
+</div>
+
+<script>
+document.querySelectorAll('.ba').forEach(function(box){
+  var r=box.querySelector('input');
+  function set(){box.style.setProperty('--cut',r.value+'%')}
+  r.addEventListener('input',set); set();
+});
+</script>
