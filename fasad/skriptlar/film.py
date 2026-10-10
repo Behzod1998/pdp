@@ -6,7 +6,7 @@ PX=400; X0,X1,Y0,Y1=-2.2,15.2,-0.6,1.75
 def mono(size,w=500):
     f=ImageFont.truetype(S+'/fonts/gsc.woff2',size); f.set_variation_by_axes([w]); return f
 
-def film_design():
+def film_design_v1():
     """IT-themed one-way-vision film, drawn in window-grid units (1 bay wide, rows 0.5 tall)."""
     cw,ch=int((X1-X0)*PX),int((Y1-Y0)*PX)
     c=Image.new('RGBA',(cw,ch),(20,20,20,255)); d=ImageDraw.Draw(c)
@@ -38,6 +38,61 @@ def film_design():
     cx,cy=U(7.5,0.25); D=int(PX*0.44)
     mk=Image.open(S+'/r/mark.png').convert('RGBA').resize((D,D),Image.LANCZOS)
     c.alpha_composite(mk,(int(cx-D/2),int(cy-D/2)))
+    return c
+
+ROWS=[(-0.42,0.0,'code'),(0.0,0.5,'big'),(0.5,1.0,'big'),(1.0,1.64,'big')]
+WORDS={
+ (-0.42,'code'):['def kelajak():','#pdpacademy','git push','npm run dev','print("Salom!")','console.log()','SELECT * FROM orzu','import ai','<div>','{ }','</>','while(true)','return yutuq;','// TODO: o‘rgan','pip install bilim','x = x + 1'],
+ (0.0,'big'):['Never stop learning','Kod yoz','Xato qil','Qayta urin','Hello, World!','Python','JavaScript','Har kuni +1%','Sen uddalaysan','@mark','AI','Java','Go','Rust','C#','Swift','Kotlin'],
+ (0.5,'big'):['Bugun boshla','O‘rgan','Yarat','Kelajak kodda','Debug','Deploy','Java','Flutter','React','Data Science','UI/UX','Node.js','Figma','SQL','Docker','Linux','Git'],
+ (1.0,'big'):['Orzu. Reja. Kod.','Kursga yozilish','academy.pdp.uz','Think. Code. Create.','Algoritm','Backend','Frontend','Startap','Mentor bilan','Jamoa','Portfolio','Ish o‘rni','Kelajak','Bilim','Amaliyot','Loyiha','Natija'],
+}
+ACCENT={'Har kuni +1%','Kelajak kodda','Sen uddalaysan','Kursga yozilish','Never stop learning','Think. Code. Create.','Bugun boshla','Orzu. Reja. Kod.'}
+GREENW={'Python','JavaScript','Java','Flutter','React','Data Science','UI/UX','AI','Node.js','SQL','Docker','Go','Rust','C#','Swift','Kotlin','Figma','Linux','Git','academy.pdp.uz','Backend','Frontend'}
+
+def film_design():
+    """Per-pane film: every glass pane carries one word or phrase (motivation + programming)."""
+    cw,ch=int((X1-X0)*PX),int((Y1-Y0)*PX)
+    c=Image.new('RGBA',(cw,ch),(20,20,20,255)); d=ImageDraw.Draw(c)
+    U=lambda x,y:((x-X0)*PX,(y-Y0)*PX)
+    for gx in np.arange(X0,X1,0.1):
+        for gy in np.arange(-0.5,1.75,0.1):
+            px,py=U(gx,gy); d.ellipse([px-2,py-2,px+2,py+2],fill=(40,40,40,255))
+    G=(0,181,51,255); WH=(255,255,255,255); GD=(214,174,72,255)
+    bays=list(range(-2,15))
+    for (r0,r1,kind) in ROWS:
+        words=WORDS[(r0,kind)]
+        for i,k in enumerate(bays):
+            x0,x1=k,k+1
+            if 8<=k<9: x1=8.47
+            w=words[(i) % len(words)]
+            (ax,ay),(bx,by)=U(x0,r0),U(x1,r1)
+            pw,ph=bx-ax,by-ay
+            if w=='@mark':
+                D=int(min(pw,ph)*0.8)
+                mk=Image.open(S+'/r/mark.png').convert('RGBA').resize((D,D),Image.LANCZOS)
+                c.alpha_composite(mk,(int(ax+(pw-D)/2),int(ay+(ph-D)/2))); continue
+            col=GD if w in ACCENT else (G if (w in GREENW or kind=='code') else WH)
+            fn=(lambda s:mono(s,500)) if kind=='code' else (lambda s:font(s,500))
+            fs0=int(ph*(0.34 if kind=='code' else 0.42)); fs=fs0
+            while True:
+                f=fn(fs); bb=d.textbbox((0,0),w,font=f)
+                if bb[2]-bb[0]<=pw*0.84 or fs<14: break
+                fs-=2
+            parts=w.split(' ')
+            if kind!='code' and fs<fs0*0.72 and len(parts)>1:
+                h=(len(parts)+1)//2; lines=[' '.join(parts[:h]),' '.join(parts[h:])]
+                fs=int(ph*0.3)
+                while True:
+                    f=fn(fs); ws=[d.textbbox((0,0),l,font=f) for l in lines]
+                    if max(b[2]-b[0] for b in ws)<=pw*0.84 or fs<14: break
+                    fs-=2
+                lh=fs*1.12; y=ay+(ph-lh*2)/2
+                for l,b in zip(lines,ws):
+                    d.text((ax+(pw-(b[2]-b[0]))/2-b[0],y-b[1]+ (lh-(b[3]-b[1]))/2),l,font=f,fill=col); y+=lh
+                continue
+            tx=ax+(pw-(bb[2]-bb[0]))/2-bb[0]; ty=ay+(ph-(bb[3]-bb[1]))/2-bb[1]
+            d.text((tx,ty),w,font=f,fill=col)
     return c
 
 def film_alpha(cw,ch,xmax,frame_v=0.055,frame_h=0.04,rows=(-0.42,0,0.5,1.0,1.62)):

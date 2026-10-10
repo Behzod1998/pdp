@@ -105,12 +105,18 @@ def font(size, weight=500):
 
 def panel_img(style, pw=2000, ph=360, logo_h=0.47):
     grad=np.linspace(1.0,0.86,pw)[None,:]*np.linspace(1.05,0.95,ph)[:,None]
-    base={'black':(24,24,26),'white':(240,241,242),'green':(0,181,51)}[style]
+    base={'black':(24,24,26),'white':(240,241,242),'green':(0,181,51),'silver':(184,192,204)}[style]
     if style=='white': grad=np.linspace(1.0,0.94,pw)[None,:]*np.linspace(1.01,0.97,ph)[:,None]
+    if style=='silver':
+        rng=np.random.default_rng(3)
+        brush=1+rng.normal(0,0.012,(1,pw))          # brushed-aluminium streaks
+        grad=np.linspace(1.04,0.9,pw)[None,:]*np.linspace(1.03,0.95,ph)[:,None]*brush
     panel=Image.fromarray(np.clip(np.array(base)[None,None,:]*grad[...,None],0,255).astype(np.uint8)).convert('RGBA')
     d=ImageDraw.Draw(panel)
     if style in ('black','white'): d.rectangle([0,ph-14,pw,ph-4],fill=(0,181,51,255))
-    src={'black':'inline-on-dark','white':'inline-on-light','green':'inline-on-dark'}[style]
+    if style=='silver':
+        d.rectangle([0,ph-38,pw,ph-28],fill=(176,134,38,255)); d.rectangle([0,ph-27,pw,ph-12],fill=(0,181,51,255)); d.rectangle([0,ph-11,pw,ph-1],fill=(176,134,38,255))
+    src={'black':'inline-on-dark','white':'inline-on-light','green':'inline-on-dark','silver':'inline-on-light'}[style]
     logo=Image.open(S+f'/r/{src}.png').convert('RGBA')
     lh=int(ph*logo_h); lw=round(logo.width*lh/logo.height)
     logo=logo.resize((lw,lh),Image.LANCZOS)
@@ -124,7 +130,7 @@ def panel_img(style, pw=2000, ph=360, logo_h=0.47):
         lg.alpha_composite(mark,(pad_,pad_)); lg.alpha_composite(word,(disc_d+gap-int(lh*0.25),pad_))
         logo=lg; lw,lh=logo.size
     L3,pad=letters(logo,depth=5)
-    yo=(ph-(14 if style!='green' else 0)-lh)//2-pad-4
+    yo=(ph-{'green':0,'silver':38}.get(style,14)-lh)//2-pad-4
     panel.alpha_composite(L3,((pw-lw)//2-pad,yo))
     return panel
 
@@ -195,7 +201,7 @@ def paint_flag(im, poly, quad, design, protect=None, shade=0.5, blur=18, expo=1.
     return out
 
 
-SHELL={'black':((30,31,33),(22,22,24)),'white':((206,208,211),(188,190,193)),'green':((0,150,42),(0,118,33))}
+SHELL={'silver':((150,158,170),(128,136,148)),'black':((30,31,33),(22,22,24)),'white':((206,208,211),(188,190,193)),'green':((0,150,42),(0,118,33))}
 def fascia2(im, style, bbox, shell, lip, face, blade_box, blade_ell, led_quad, logo_h=0.47):
     W,H=im.size
     a=np.asarray(im,float)/255.
