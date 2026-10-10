@@ -5,6 +5,7 @@ Focus Mebel o'rnida PDP Academy ochiladi. Kirish qismi va Galeria ustidagi ikkin
 - `vizualizatsiya/kun/`, `vizualizatsiya/kech/`: tavsiya etilgan variant, kunduzi va kechqurun (LED yoritish bilan)
 - `vizualizatsiya/eski-variantlar/`: avvalgi variantlar (qora, oq, yashil fon; ramka ranglari)
 - `vizualizatsiya/plyonka_dizayni.png`: ikkinchi qavat oynalari uchun IT uslubidagi plyonka
+- `vizualizatsiya/zinapoya/`: ichki zinapoya, matlangan oyna panjara
 - `oldin/`: hozirgi holat fotosuratlari
 - `sahifa.html` + `img/`: taqqoslash sahifasi
 - `logolar/`: design.pdp.uz/logos dagi rasmiy SVG logolar
