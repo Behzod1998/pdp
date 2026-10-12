@@ -404,7 +404,7 @@ export function kdQatlam(id, k = 1) {
     // vertikal blokda — strelkaning ustida va ostida
     const tom = !u.tb, ich = gor && tom;
     let lx, ly, ly2, anc;
-    if (ich) [lx, anc, ly] = [b.x1, 'start', u.devor === 'past' ? b.y2 + 420 : b.y1 - 620], ly2 = ly + 260;
+    if (ich) [lx, anc, ly] = [b.x1 + 300, 'start', u.devor === 'past' ? b.y2 + 420 : b.y1 - 620], ly2 = ly + 260;
     else if (gor) [lx, anc, ly] = [b.x2 + 150, 'start', u.devor === 'yuqori' ? b.y1 + 330 : b.y2 - 420], ly2 = ly + 260;
     else [lx, anc, ly] = [u.devor === 'ong' ? b.x1 - 150 : b.x2 + 150, u.devor === 'ong' ? 'end' : 'start', cy - 200], ly2 = cy + 330;
     q.push(t(lx, ly, u.kod, 230, `text-anchor="${anc}" fill="#1d2733" font-weight="700"`),
