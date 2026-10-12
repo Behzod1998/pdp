@@ -14,6 +14,7 @@ import { LOYIHA } from './model.mjs';
 import { qavat3Html, tekshiruv3 } from './qavat3.mjs';
 import { qavat1Html, tekshiruv1 } from './qavat1.mjs';
 import { hvacHtml } from './hvac.mjs';
+import { tizimHtml } from './hvac-tizim.mjs';
 
 const require = createRequire(import.meta.url);
 let chromium;
@@ -83,6 +84,19 @@ if (PNG) {
   for (let i = 0; i < betlar.length; i++) await betlar[i].screenshot({ path: join(CHIQISH, `bet-${i + 1}.png`) });
 }
 await a4.close();
+
+// 2a. HVAC sxemasi alohida (A3 varaq 3: 2 ta rekuperator + split) — PDF va PNG
+const hs = await brauzer.newPage({ viewport: { width: 1588, height: 1123 }, deviceScaleFactor: 2 });
+await hs.setContent(varaqlarHtml([3]), { waitUntil: 'load' });
+await hs.pdf({ path: join(CHIQISH, `Xadra_2-qavat_HVAC_sxema_${LOYIHA.versiya}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
+await (await hs.$('section.varaq')).screenshot({ path: join(CHIQISH, `Xadra_2-qavat_HVAC_sxema_${LOYIHA.versiya}.png`) });
+await hs.close();
+
+// 3b. HVAC hisobi (A4): 2 ta rekuperator va xonalar bo'yicha split tanlovi
+const hh = await brauzer.newPage();
+await hh.setContent(tizimHtml(), { waitUntil: 'load' });
+await hh.pdf({ path: join(CHIQISH, `Xadra_2-qavat_HVAC_hisob_${LOYIHA.versiya}.pdf`), format: 'A4', printBackground: true, preferCSSPageSize: true });
+await hh.close();
 
 // 3a. HVAC tahlili (A4): 11 xona — tashqi havo, sovutish yuklamasi, 2 ta konditsioner va 30% toza havo sxemasi
 const hv = await brauzer.newPage();

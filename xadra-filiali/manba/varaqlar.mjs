@@ -1,6 +1,7 @@
 // A3 chizma varaqlari (HTML → PDF): 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi.
 import { LOYIHA, ICHKI, USTUNLAR, OQLAR, STANDART, PARTA, STUL, H, ESKI_XONALAR, XONALAR, KW_TADBIR } from './model.mjs';
-import { rejaSvg, RANG, QURILMALAR, son, KOR_RANG } from './reja-svg.mjs';
+import { rejaSvg, RANG, son, KOR_RANG } from './reja-svg.mjs';
+import { tizimPanel, TZ_RANG, REK } from './hvac-tizim.mjs';
 import { korsatkichlar, ishlar, xizmatHavo, kwHavo, ceoHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
 
 const VB = { x1: -2500, y1: -2300, x2: 25600, y2: 25700 };
@@ -154,15 +155,15 @@ function belgilar(rejim) {
     sw(`background:#2a2e33;height:1.4mm;border:0;box-shadow:inset -1mm 0 0 ${KOR_RANG.logo}`, 'koworking sahnasi (XZ1 devori): logotip, ekran, reyka'),
   ];
   else q = [
-    sw(`background:#fff;border:.35mm dashed #222`, 'PV — rekuperatorli kiritish-chiqarish qurilmasi (shift ichida)'),
-    sw(`background:${RANG.kok};height:1.2mm;border:0`, 'toza havo kanali'),
-    sw(`background:#dbe9fb;border:.3mm solid ${RANG.kok};width:3.2mm`, 'toza havo diffuzori'),
-    sw(`background:#fbe1dc;border:.3mm solid ${RANG.havoQ};width:3.2mm`, 'so\'rish panjarasi'),
-    sw(`background:${RANG.kok};height:2mm;border:0;width:2.4mm`, 'fasad panjarasi: toza havo kirishi'),
-    sw(`background:${RANG.havoQ};height:2mm;border:0;width:2.4mm`, 'fasad panjarasi: iflos havo chiqishi'),
-    sw(`background:#f1f2f4;border:.3mm solid #555;width:3.2mm`, 'KD — konditsioner ichki bloki'),
-    sw(`border:0;border-top:.5mm dashed #5b8fd6`, 'xonadagi havo oqimi'),
-    sw(`background:#fff;border:.3mm solid #2e7d32;border-radius:50%;width:3.2mm`, 'CO₂ datchigi'),
+    sw(`background:#fff;border:.35mm dashed #222`, `R1, R2 — ${REK.brend} rekuperatori (koridor shiftida)`),
+    sw(`background:${TZ_RANG.sa};height:1.2mm;border:0`, 'toza havo kanali (rekuperatordan xonalarga)'),
+    sw(`background:${TZ_RANG.ra};height:1.2mm;border:0`, "so'rish kanali (xonalardan rekuperatorga)"),
+    sw(`background:${TZ_RANG.oa};height:1.2mm;border:0`, 'tashqi havo kanali (fasaddan)'),
+    sw(`background:${TZ_RANG.ea};height:1.2mm;border:0`, 'chiqarish kanali (fasadga)'),
+    sw(`background:#dbe9fb;border:.3mm solid ${TZ_RANG.sa};width:3.2mm`, 'toza havo diffuzori'),
+    sw(`background:#fbe1dc;border:.3mm solid ${TZ_RANG.ra};width:3.2mm`, "so'rish panjarasi"),
+    sw(`background:#eef0f3;border:.3mm solid ${TZ_RANG.split};width:3.2mm`, 'split — ichki blok (devorda), yozuv: BTU/soat'),
+    sw(`background:#fff;border:.3mm solid ${TZ_RANG.split};width:3.2mm`, 'split — tashqi blok (fasadda; punktir — joyi aniqlanadi)'),
   ];
   return `<h3>SHARTLI BELGILAR</h3><div class="belgi">${q.join('')}</div>`;
 }
@@ -190,42 +191,18 @@ function mavjudPanel() {
 }
 
 function havoPanel() {
-  const kor = korsatkichlar();
-  const xz = xizmatHavo(), kw = kwHavo();
-  const q = (nom, odam, h, pv) => `<tr><td>${nom}</td><td class="r">${odam}</td><td class="r">${son(h.Q)}</td><td class="r">${Math.round(h.V)}</td><td class="r">${v(h.karra)}</td><td class="r">${v(h.sovutishYaxlit)}</td><td>${pv}</td></tr>`;
-  const qatorlar = kor.map((k, i) => q(k.kod, k.odam, k.havo, QURILMALAR[i].kod));
-  const xzJ = xz.reduce((t, z) => ({ Q: t.Q + z.Q, V: t.V + z.V, s: t.s + z.sovutishYaxlit }), { Q: 0, V: 0, s: 0 });
-  qatorlar.push(q('XZ1–XZ4', xz.reduce((t, z) => t + z.odam, 0), { Q: xzJ.Q, V: xzJ.V, karra: xzJ.Q / xzJ.V, sovutishYaxlit: xzJ.s }, 'PV-9'));
-  qatorlar.push(q('KW (tadbir)', 70, kw.tadbir, 'PV-8'));
-  const jamiQ = kor.reduce((t, k) => t + k.havo.Q, 0) + xzJ.Q + kw.tadbir.Q;
-  const jamiS = kor.reduce((t, k) => t + k.havo.sovutishYaxlit, 0) + xzJ.s + kw.tadbir.sovutishYaxlit;
-  return `<div><h3>HAVO ALMASHINUVI — XONALAR BO'YICHA</h3><table>
-    <tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo, m³/soat</th><th class="r">Hajm, m³</th><th class="r">Marta / soat</th><th class="r">Sovutish, kVt</th><th>Qurilma</th></tr>
-    ${qatorlar.join('')}
-    <tr class="jami"><td>Jami</td><td></td><td class="r">${son(jamiQ)}</td><td></td><td></td><td class="r">${v(jamiS)}</td><td></td></tr>
-  </table></div>
-  <div><h3>HISOB ASOSI</h3><p class="izoh">
-    <b>${HAVO.kishiga} m³/soat har bir kishiga</b> (o'quvchilar + o'qituvchi). Bir kishi soatiga ~18 l CO₂ chiqaradi: 18 l ÷ (1000 − 420) ppm ≈ 31 m³/soat — xonada CO₂ 1000 ppm dan oshmaydi.<br>
-    Hajm — balandlik ${H} mm (buyurtmachi) bo'yicha. Sovutish — odamlar, noutbuklar, proyektor, yoritish, derazadan quyosh va toza havo (rekuperator FIK ${HAVO.rekuperator * 100}%) yig'indisi, Toshkent yozi (+40 °C) uchun dastlabki baho.
-  </p></div>
-  <div><h3>YECHIM</h3><p class="izoh">
-    <b>1–3 va 5–7-xonalar:</b> deraza yon devorda, qarama-qarshi devorgacha 7,7 m: tabiiy shamollatish (~2,5 × H ≈ 7,5 m) deyarli butun xonaga yetadi, lekin qish va yozda derazalar yopiq — har sinfga alohida <b>PV qurilma</b> (rekuperatorli, ~750 m³/soat, shovqin ≤ 35 dB(A)), deraza devori yonida shift ichida.<br>
-    <b>4-xona va xizmat xonalarida deraza yo'q</b> — mexanik ventilyatsiya va konditsioner majburiy. O'ng devor qo'shni bino bilan umumiy, orqasida tor oraliq bor: PV-4 panjaralari shu oraliqqa chiqariladi — kirish va chiqish bir-biridan uzoq (7 m), oraliq eni joyida o'lchanadi; havo turg'un bo'lsa, kanal K2 shifti orqali fasadga. PV-9 koworking chap devoridan olib, K1 shifti orqali XZ1–XZ4 ga beradi.<br>
-    <b>KW:</b> derazalar chap devorda; tadbirda ~70 kishi — PV-8 ~2 100 m³/soat.<br>
-    Toza havo doska oldida beriladi, orqa devor yonida so'riladi. CO₂ datchigi bilan boshqariladi; bo'sh xona o'chadi. Har sinfga 2 ta KD (kasseta yoki kanalli).<br>
-    <b>V-1:</b> sanuzel chiqarish ventilyatsiyasi 4 × 50 = 200 m³/soat — mavjud shaxtani tekshirish. Tutun chiqarish talabini yong'in xavfsizligi mutaxassisi belgilaydi.
-  </p></div>`;
+  return tizimPanel();
 }
 
-export function varaqlarHtml() {
+export function varaqlarHtml(faqat = [1, 2, 3]) {
   const plan = rejim => rejaSvg({ rejim, vb: VB, olchamlar: true, olchamMm: true, annotatsiya: rejim === 'jihoz' });
   const varaq = (rejim, panel, nom, n) => `<section class="varaq"><div class="ramka">
       <div class="reja">${plan(rejim)}</div>
       <div class="panel">${panel}${masshtab}${belgilar(rejim)}${shtamp(nom, n)}</div>
     </div></section>`;
   return `<!doctype html><html lang="uz"><head><meta charset="utf-8"><title>${LOYIHA.brend} · ${LOYIHA.filial} — chizma</title><style>${CSS}</style></head><body>
-    ${varaq('mavjud', mavjudPanel(), 'Mavjud holat va o\'zgarishlar', 1)}
-    ${varaq('jihoz', maydonJadvali() + xonalarJadvali() + ustunJadvali() + partaQoidasi(), 'Jihozlash rejasi', 2)}
-    ${varaq('havo', havoPanel(), 'Havo almashinuvi sxemasi', 3)}
+    ${faqat.includes(1) ? varaq('mavjud', mavjudPanel(), 'Mavjud holat va o\'zgarishlar', 1) : ''}
+    ${faqat.includes(2) ? varaq('jihoz', maydonJadvali() + xonalarJadvali() + ustunJadvali() + partaQoidasi(), 'Jihozlash rejasi', 2) : ''}
+    ${faqat.includes(3) ? varaq('havo', havoPanel(), 'Ventilyatsiya va konditsionerlash', 3) : ''}
   </body></html>`;
 }

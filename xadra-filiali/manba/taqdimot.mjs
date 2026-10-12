@@ -1,6 +1,8 @@
 // Taqdimot varag'i (A3 portret) — buyurtmachi namunasidagi tartibda:
 // rangli reja + koworking zalining ikki rejimi + havo aylanishi + xonalar maydonlari.
 import { LOYIHA, XONALAR, H, KW_TADBIR } from './model.mjs';
+import { tizimHisob, REK } from './hvac-tizim.mjs';
+const TZ = tizimHisob();
 import { renderSvg, kwKorinish, XONA_NOMI } from './render-svg.mjs';
 import { korsatkichlar, xonaMaydoni, xizmatHavo, kwHavo, HAVO } from './tekshiruv.mjs';
 import { kesimSvg } from './izoh.mjs';
@@ -67,10 +69,10 @@ export function taqdimotHtml() {
         <div class="havo"><h2>Havo aylanishi</h2>
           <div>${kesimSvg(1.75)}</div>
           <ul>
-            <li>Har bir sinfga <b>rekuperatorli PV qurilma</b> (~750 m³/soat) — ${HAVO.kishiga} m³/soat har bir kishiga, CO₂ ≤ 1000 ppm.</li>
-            <li><b>4-xona, sotuv, admin, ustozlar va call-markazda deraza yo'q</b> — mexanik ventilyatsiya va konditsioner shart. 4-xona havosi o'ng devor ortidagi oraliqqa chiqariladi.</li>
-            <li>Koworking: kundalik ~${kw.kundalik.Q} m³/soat, tadbirda ~${kw.tadbir.Q} m³/soat.</li>
-            <li>Doska yon devorda, deraza o'quvchilarning chap tomonida (3-xonada — doska kirish tomonida, buyurtmachi qarori) — yorug'lik doska va proyektorga tushmaydi. Toza havo doska oldida beriladi, orqada so'riladi. Har sinfga 2 ta konditsioner, CO₂ datchigi.</li>
+            <li><b>2 ta ${REK.brend} rekuperatori</b> (${REK.nominal[1]} m³/soat) koridorlar shiftida: R1 — ${TZ.guruh[0].xonalar.join(', ')} (${TZ.guruh[0].Q} m³/soat), R2 — ${TZ.guruh[1].xonalar.join(', ')} (${TZ.guruh[1].Q} m³/soat). Sinfga ${TZ.xona[0].oa} m³/soat (CO₂ ~${Math.round(TZ.xona[0].co2 / 10) * 10} ppm).</li>
+            <li><b>Har xonaga split:</b> sinflarda 2 × ${TZ.xona[0].split.btu / 1000}k, 4-xonada 2 × ${TZ.xona.find(x => x.kod === 'SR4').split.btu / 1000}k, xizmat xonalarida ${[...new Set(TZ.xona.filter(x => x.tur === 'ofis').map(x => x.split.btu / 1000 + 'k'))].join(' / ')}. 4-xona va xizmat xonalarida deraza yo'q — ventilyatsiya majburiy.</li>
+            <li>Koworking: tadbirda ~${TZ.qoshimcha[0].oa} m³/soat tashqi havo — R1, R2 ga kirmaydi; split 2 × ${TZ.qoshimcha[0].split.btu / 1000}k (kasseta).</li>
+            <li>Doska yon devorda, deraza o'quvchilarning chap tomonida (3-xonada — doska kirish tomonida, buyurtmachi qarori) — yorug'lik doska va proyektorga tushmaydi. Toza havo doska oldida beriladi, orqada so'riladi; CO₂ datchigi.</li>
           </ul></div>
       </div>
       <div class="jadval"><h2>Xonalar maydonlari</h2>

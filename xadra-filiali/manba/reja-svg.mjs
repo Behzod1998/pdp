@@ -4,6 +4,7 @@ import {
   XIZMAT_JIHOZ, KW_KUNDALIK, KW_SAHNA, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI, wcJihozlari,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
+import { tizimQatlam } from './hvac-tizim.mjs';
 
 export const RANG = {
   devorT: '#4d5566', devorI: '#262b36', ustun: '#121418', pol: '#f5f3ee', koridor: '#eceae4', qotgan: '#e6e3dc',
@@ -180,7 +181,8 @@ export function rejaSvg(o = {}) {
   }
 
   // ---- havo almashinuvi ----
-  if (rejim === 'havo') q.push(havoQatlami(id, k, sinf));
+  // ventilyatsiya (2 ta rekuperator) va split konditsionerlar — hvac-tizim.mjs
+  if (rejim === 'havo') q.push(tizimQatlam(id, k));
 
   // ---- yozuvlar ----
   const fam = 'font-family="Liberation Sans, Arial, sans-serif"';
@@ -328,110 +330,6 @@ function annotatsiya(id, k, fam, x) {
   const ortaYolak = j.u0 + j.s.bloklar.slice(0, Math.floor(j.s.bloklar.length / 2)).reduce((t, n) => t + n * PARTA.eni + j.s.yolak, 0) - j.s.yolak / 2;
   zanjir(vs.map(v => [ortaYolak - 200, v]), 'qator qadami');
   q.push('</g>');
-  return q.join('');
-}
-
-// ---- havo almashinuvi qatlami ----
-export const QURILMALAR = (() => {
-  const r = [];
-  sinflar().forEach((x, i) => {
-    const cx = (x.x1 + x.x2) / 2;
-    const d = { kod: `PV-${i + 1}`, xona: x.kod };
-    if (x.kod === 'SR4') {
-      // derazasiz xona: havo o'ng devor ortidagi oraliq orqali. Doska ham o'ng devorda — qurilma
-      // doskadan chetda (yuqori burchakda), toza havo doska oldida beriladi, orqa devor yonida so'riladi;
-      // chiqarish kanali o'ng devor bo'ylab shift ichida pastki uchidagi panjaraga boradi.
-      const L = lokal(x), P = (u, v) => { const p = L.G(u, v); return [p.x, p.y]; };
-      const [d1, d2] = [P(L.W / 3, 1800), P(2 * L.W / 3, 1800)], [s1, s2] = [P(L.W / 3, L.D - 400), P(2 * L.W / 3, L.D - 400)];
-      Object.assign(d, { qurilma: { x1: 22700, x2: 23600, y1: 8800, y2: 10100 }, devor: 'ong', taxminiy: true,
-        kirish: { x1: ICHKI.x, x2: ICHKI.x + 400, y1: 8300, y2: 8900 }, chiqish: { x1: ICHKI.x, x2: ICHKI.x + 400, y1: 15700, y2: 16300 },
-        kanallar: [[[22700, 9500], [d1[0], 9500], d2], [s2, s1, [19900, s1[1]], [19900, 9000], [22700, 9000]], [[23300, 10100], [23300, 16000], [ICHKI.x, 16000]]],
-        diffuzor: [d1, d2], sorish: [s1, s2],
-        konditsioner: [P(L.W / 4, L.D * 0.55), P(3 * L.W / 4, L.D * 0.55)], co2: [23680, 14800] });
-    } else {
-      // qurilma deraza devori yonida shift ichida; toza havo doska tomonda beriladi, orqa devor yonida so'riladi
-      const L = lokal(x), D = L.D, W = L.W;
-      const der = DERAZALAR.find(dd => dd.devor === x.deraza && dd.x1 >= x.x1 && dd.x2 <= x.x2);
-      const devY = x.deraza === 'yuqori' ? { y1: -DEVOR.yuqori, y2: 0 } : { y1: ICHKI.y, y2: ICHKI.y + DEVOR.past };
-      const oyna = L.U(cx, x.deraza === 'yuqori' ? x.y1 : x.y2).u;   // deraza devorining u koordinatasi
-      const w = n => (oyna === 0 ? n : W - n);                        // deraza devoridan n mm
-      const P = (u, v) => { const p = L.G(u, v); return [p.x, p.y]; };
-      const [qx, qy] = P(w(575), D / 2);
-      Object.assign(d, { qurilma: { x1: cx - 650, x2: cx + 650, y1: qy - 325, y2: qy + 325 }, devor: x.deraza,
-        kirish: { x1: (x.x1 + der.x1) / 2 - 300, x2: (x.x1 + der.x1) / 2 + 300, ...devY },
-        chiqish: { x1: (der.x2 + x.x2) / 2 - 300, x2: (der.x2 + x.x2) / 2 + 300, ...devY },
-        kanallar: [[[qx, qy], P(w(575), 1800), P(w(W * 2 / 3), 1800)], [[qx, qy], P(w(575), D - 400), P(w(W * 2 / 3), D - 400)]],
-        diffuzor: [P(w(W / 3), 1800), P(w(W * 2 / 3), 1800)], sorish: [P(w(W / 3), D - 400), P(w(W * 2 / 3), D - 400)],
-        konditsioner: [P(w(W / 4), D * 0.55), P(w(W * 3 / 4), D * 0.55)],
-        co2: P(w(W - 350), D / 2) });
-    }
-    r.push(d);
-  });
-  r.push({ kod: 'PV-8', xona: 'KW', qurilma: { x1: 300, x2: 1300, y1: 11600, y2: 12600 }, devor: 'chap',
-    kirish: { x1: -400, x2: 0, y1: 10800, y2: 11400 }, chiqish: { x1: -400, x2: 0, y1: 13300, y2: 13900 },
-    kanallar: [[[1300, 12100], [3700, 12100]], [[1800, 7900], [3700, 7900], [3700, 16900], [1800, 16900]]],
-    diffuzor: [[1800, 7900], [3700, 10000], [3700, 14300], [1800, 16900]], sorish: [[900, 9400], [900, 15500]],
-    konditsioner: [[2600, 9200], [2600, 15600]], co2: [5700, 12900] });
-  const xz = XONALAR.filter(x => x.tur === 'xizmat');
-  r.push({ kod: 'PV-9', xona: 'XZ', qurilma: { x1: 6500, x2: 7500, y1: 8150, y2: 8950 }, devor: 'chap',
-    kirish: { x1: -400, x2: 0, y1: 6700, y2: 7100 }, chiqish: { x1: -400, x2: 0, y1: 7600, y2: 8000 },
-    kanallar: [[[0, 7300], [5600, 7300], [5600, 8550], [6500, 8550]], [[7500, 8550], [16600, 8550]], ...xz.map(x => [[(x.x1 + x.x2) / 2 - 300, 8550], [(x.x1 + x.x2) / 2 - 300, 10200]])],
-    diffuzor: xz.map(x => [(x.x1 + x.x2) / 2 - 300, 10300]), sorish: xz.map(x => [(x.x1 + x.x2) / 2 - 300, 14000]),
-    konditsioner: [], co2: null });
-  return r;
-})();
-
-function havoQatlami(id, k, sinf) {
-  const q = [];
-  const s = 300;
-  const kv = (x, y, r, attrs) => `<rect x="${x - r}" y="${y - r}" width="${2 * r}" height="${2 * r}" ${attrs}/>`;
-  QURILMALAR.forEach(d => {
-    // kanal
-    d.kanallar.forEach(kn => q.push(`<polyline points="${kn.map(p => p.join(',')).join(' ')}" fill="none" stroke="${RANG.kok}" stroke-width="${70 * k}" stroke-linejoin="round" opacity="0.8"/>`));
-    // qurilma (shift ortida — punktir)
-    q.push(`<rect x="${d.qurilma.x1}" y="${d.qurilma.y1}" width="${d.qurilma.x2 - d.qurilma.x1}" height="${d.qurilma.y2 - d.qurilma.y1}" fill="#fff" stroke="#222" stroke-width="${16 * k}" stroke-dasharray="${60 * k} ${30 * k}"/>`);
-    q.push(`<text x="${(d.qurilma.x1 + d.qurilma.x2) / 2}" y="${(d.qurilma.y1 + d.qurilma.y2) / 2 + 80 * k}" font-size="${230 * k}" text-anchor="middle" font-weight="700" fill="#222" font-family="Liberation Sans, Arial">${d.kod}</text>`);
-    // fasad panjaralari va strelkalar
-    const tash = (r, rang, ichkariga) => {
-      q.push(`<rect x="${r.x1}" y="${r.y1}" width="${r.x2 - r.x1}" height="${r.y2 - r.y1}" fill="${rang}"/>`);
-      const cx = (r.x1 + r.x2) / 2, cy = (r.y1 + r.y2) / 2;
-      let a, b;
-      if (d.devor === 'chap') { a = [cx - 1100, cy]; b = [cx + 700, cy]; }
-      else if (d.devor === 'ong') { a = [cx + 1100, cy]; b = [cx - 700, cy]; }
-      else if (d.devor === 'yuqori') { a = [cx, cy - 1100]; b = [cx, cy + 700]; }
-      else { a = [cx, cy + 1100]; b = [cx, cy - 700]; }
-      if (!ichkariga) [a, b] = [b, a];
-      q.push(`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${rang}" stroke-width="${40 * k}" marker-end="url(#${id}${rang === RANG.kok ? 'ak' : 'aq'})"/>`);
-    };
-    tash(d.kirish, RANG.kok, true);
-    tash(d.chiqish, RANG.havoQ, false);
-    // diffuzorlar va so'rish panjaralari
-    d.diffuzor.forEach(([x, y]) => q.push(kv(x, y, s, `fill="#dbe9fb" stroke="${RANG.kok}" stroke-width="${18 * k}"`),
-      `<path d="M${x - s},${y - s} L${x + s},${y + s} M${x + s},${y - s} L${x - s},${y + s}" stroke="${RANG.kok}" stroke-width="${12 * k}"/>`));
-    d.sorish.forEach(([x, y]) => q.push(kv(x, y, s, `fill="#fbe1dc" stroke="${RANG.havoQ}" stroke-width="${18 * k}"`),
-      `<path d="M${x - s},${y} L${x + s},${y} M${x},${y - s} L${x},${y + s}" stroke="${RANG.havoQ}" stroke-width="${12 * k}"/>`));
-    d.konditsioner.forEach(([x, y]) => q.push(kv(x, y, 420, `fill="#f1f2f4" stroke="#555" stroke-width="${14 * k}"`),
-      `<rect x="${x - 250}" y="${y - 250}" width="500" height="500" fill="none" stroke="#999" stroke-width="${10 * k}"/>`,
-      `<text x="${x}" y="${y + 70 * k}" font-size="${200 * k}" text-anchor="middle" fill="#444" font-family="Liberation Sans, Arial">KD</text>`));
-    if (!d.co2) return;
-    const [cx, cy] = d.co2;
-    q.push(`<circle cx="${cx}" cy="${cy}" r="${210 * k}" fill="#fff" stroke="#2e7d32" stroke-width="${14 * k}"/>`,
-      `<text x="${cx}" y="${cy + 55 * k}" font-size="${140 * k}" text-anchor="middle" fill="#2e7d32" font-family="Liberation Sans, Arial" font-weight="700">CO₂</text>`);
-  });
-  // xonadagi havo oqimi strelkalari (doskadan orqaga)
-  sinf.forEach(x => {
-    const L = lokal(x);
-    // 4-xonada strelkalar L shaklining keng qismida (tor uchlari 4.5 m chuqur)
-    const us = x.kod === 'SR4' ? [L.W * 0.3, L.W * 0.7] : [L.W * 0.12, L.W * 0.88];
-    us.forEach(u => {
-      const [v1, v2] = [2200, L.D - 700];
-      const a = L.G(u, v1), b = L.G(u, v2);
-      q.push(`<path d="M${f(a.x)},${f(a.y)} L${f(b.x)},${f(b.y)}" stroke="#5b8fd6" stroke-width="${30 * k}" stroke-dasharray="${160 * k} ${90 * k}" fill="none" marker-end="url(#${id}ah)"/>`);
-    });
-  });
-  // sanuzel chiqarish ventilyatsiyasi
-  q.push(`<circle cx="3725" cy="3350" r="${340 * k}" fill="#fff" stroke="${RANG.havoQ}" stroke-width="${18 * k}"/>`,
-    `<text x="3725" y="${3350 + 70 * k}" font-size="${190 * k}" text-anchor="middle" fill="${RANG.havoQ}" font-family="Liberation Sans, Arial" font-weight="700">V-1</text>`);
   return q.join('');
 }
 

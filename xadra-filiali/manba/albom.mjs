@@ -202,6 +202,7 @@ const BOLIMLAR = [
   ["2-qavat — chizmalar: mavjud holat, jihozlash, havo almashinuvi", `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_${V}.pdf`],
   ["2-qavat — 3D ko'rinishlar", f2],
   ['2-qavat — xonalar izohi (A4)', `Xadra_2-qavat_xonalar_izoh_${V}.pdf`],
+  ['2-qavat — HVAC hisobi: 2 ta rekuperator va split (A4)', `Xadra_2-qavat_HVAC_hisob_${V}.pdf`],
   ['3-qavat — reja', `Xadra_3-qavat_reja_${V}.pdf`],
   ["3-qavat — 3D ko'rinishlar", `Xadra_3-qavat_3D_${V}.pdf`],
   ['Xarajatlar — yakuniy', fx],
