@@ -1,10 +1,10 @@
-// Reja chizmasi (SVG). Rejimlar: 'mavjud' (1-varaq), 'jihoz' (2-varaq), 'havo' (3-varaq), 'izoh' (A4 hujjat).
+// Reja chizmasi (SVG). Rejimlar: 'mavjud' (1-varaq), 'jihoz' (2-varaq), 'havo' (3-varaq), 'kd' (4-varaq — konditsionerlar), 'izoh' (A4 hujjat).
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, ESKI_XONALAR, ADM_JIHOZ,
   XIZMAT_JIHOZ, KW_KUNDALIK, KW_SAHNA, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI, wcJihozlari,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
-import { tizimQatlam } from './hvac-tizim.mjs';
+import { tizimQatlam, kdQatlam } from './hvac-tizim.mjs';
 
 export const RANG = {
   devorT: '#4d5566', devorI: '#262b36', ustun: '#121418', pol: '#f5f3ee', koridor: '#eceae4', qotgan: '#e6e3dc',
@@ -56,6 +56,7 @@ const son = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 export function rejaSvg(o = {}) {
   const id = `r${++IDN}`;
   const rejim = o.rejim || 'jihoz';
+  const HAVOSIMON = rejim === 'havo' || rejim === 'kd';   // 3 va 4-varaq: jihozlar xira, devorlar to'q
   const k = o.k || 1;                 // chiziq va matn kattaligi koeffitsienti
   const vb = o.vb || { x1: -2500, y1: -2300, x2: 26100, y2: 25900 };
   const w = vb.x2 - vb.x1, h = vb.y2 - vb.y1;
@@ -110,7 +111,7 @@ export function rejaSvg(o = {}) {
       if (wl.x2 - wl.x1 > wl.y2 - wl.y1) q.push(chiziq(wl.x1, (wl.y1 + wl.y2) / 2, wl.x2, (wl.y1 + wl.y2) / 2, `stroke="#2f78b7" stroke-width="${7 * k}"`));
       else q.push(chiziq((wl.x1 + wl.x2) / 2, wl.y1, (wl.x1 + wl.x2) / 2, wl.y2, `stroke="#2f78b7" stroke-width="${7 * k}"`));
     } else if (wl.holat !== 'buziladi') {
-      q.push(rect(wl, `fill="${rejim === 'havo' ? '#5d6472' : RANG.devorI}"`));
+      q.push(rect(wl, `fill="${HAVOSIMON ? '#5d6472' : RANG.devorI}"`));
     }
   });
   // ---- derazalar ----
@@ -150,8 +151,8 @@ export function rejaSvg(o = {}) {
 
   // ---- jihozlar ----
   const sinf = sinflar();
-  if (rejim === 'jihoz' || rejim === 'izoh' || rejim === 'havo') {
-    const soya = rejim === 'havo' ? ' opacity="0.35"' : '';
+  if (rejim === 'jihoz' || rejim === 'izoh' || HAVOSIMON) {
+    const soya = HAVOSIMON ? ' opacity="0.35"' : '';
     q.push(`<g${soya}>`);
     sinf.forEach(x => {
       const j = x.j;
@@ -177,12 +178,13 @@ export function rejaSvg(o = {}) {
     // ayollar hojatxonasi: unitaz (kabinalarda), rakovina (tamburlarda)
     wcJihozlari().forEach(p => q.push(rect(p, `rx="${p.tur === 'unitaz' ? 150 : 80}" fill="#fff" stroke="#6f7a85" stroke-width="${8 * k}"`)));
     q.push('</g>');
-    if (rejim !== 'havo') q.push(koridorElementlar(k), sahnaElementlar(k));
+    if (!HAVOSIMON) q.push(koridorElementlar(k), sahnaElementlar(k));
   }
 
   // ---- havo almashinuvi ----
   // ventilyatsiya (2 ta rekuperator) va split konditsionerlar — hvac-tizim.mjs
   if (rejim === 'havo') q.push(tizimQatlam(id, k));
+  if (rejim === 'kd') q.push(kdQatlam(id, k));
 
   // ---- yozuvlar ----
   const fam = 'font-family="Liberation Sans, Arial, sans-serif"';
@@ -200,7 +202,7 @@ export function rejaSvg(o = {}) {
       let cy = (x.y1 + x.y2) / 2;
       if (x.tur === 'sinf') {
         const K = kor[x.kod], L = lokal(x);
-        if (rejim === 'havo') {
+        if (HAVOSIMON) {
           const p = L.G(L.W / 2, L.D * 0.55);
           q.push(matn(p.x, p.y + 170, x.kod, 480, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
           return;
@@ -217,13 +219,13 @@ export function rejaSvg(o = {}) {
         const ly = { XZ1: 9950, XZ2: 12200, XZ3: 14400, XZ4: 14350 }[x.kod];
         const lx = { XZ1: 7650, XZ2: 10400, XZ3: 13300, XZ4: 15950 }[x.kod];
         q.push(matn(lx, ly, x.kod, 380, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
-        if (rejim !== 'havo') q.push(matn(lx, ly + 360 * k, `${x.qisqa} · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
+        if (!HAVOSIMON) q.push(matn(lx, ly + 360 * k, `${x.qisqa} · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'koworking') {
-        q.push(matn(rejim === 'havo' ? 2200 : 2975, rejim === 'havo' ? 13800 : 9380, 'KW', 420, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
-        if (rejim !== 'havo') q.push(matn(2975, 9380 + 360 * k, `koworking / tadbirlar · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
+        q.push(matn(HAVOSIMON ? 2200 : 2975, HAVOSIMON ? 13800 : 9380, 'KW', 420, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
+        if (!HAVOSIMON) q.push(matn(2975, 9380 + 360 * k, `koworking / tadbirlar · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
       } else if (x.kod === 'X12') {
         q.push(matn(2700, 21850, 'CEO', 380, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
-        if (rejim !== 'havo') q.push(matn(2700, 22150, `12-xona · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#555"`));
+        if (!HAVOSIMON) q.push(matn(2700, 22150, `12-xona · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#555"`));
       } else if (x.kod === 'K1' || x.kod === 'K2') {
         q.push(matn(10600, cy + 120, x.kod, 360, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         q.push(matn(11100, cy + 90, `Koridor 1500 · ${xonaMaydoni(x).toFixed(1)} m²`, 210, `text-anchor="start" fill="#555"`));
@@ -236,7 +238,7 @@ export function rejaSvg(o = {}) {
         // 2–5 — ayollar hojatxonasi (kabina va tambur), 6 — ZN1 ga o'tish yo'lagi
         const sy = { 2: 1050, 3: 1050, 4: 2450, 5: 2450, 6: 4950 }[x.kod];
         q.push(matn(cx, sy, x.kod, 240, `text-anchor="middle" fill="#666"`));
-        if (rejim !== 'havo') q.push(matn(cx, sy + 260 * k, { 2: 'kabina', 3: 'kabina', 4: 'tambur', 5: 'tambur', 6: "o'tish yo'lagi" }[x.kod], 160, `text-anchor="middle" fill="#666"`));
+        if (!HAVOSIMON) q.push(matn(cx, sy + 260 * k, { 2: 'kabina', 3: 'kabina', 4: 'tambur', 5: 'tambur', 6: "o'tish yo'lagi" }[x.kod], 160, `text-anchor="middle" fill="#666"`));
       }
     });
     // kirish strelkasi

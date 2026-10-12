@@ -297,6 +297,58 @@ for x, y, b in D['sanuzel']['rakovina']:     # b: 90 — devor sharqda, −90 �
     q.box(*((w - 440, w) if b > 0 else (w, w + 440)), y - 260, y + 260, 700, 850, M['keramika'], bevel=45, seg=4)
 q.obj('sanuzel_jihoz', 'asos')
 
+# ---------------- split konditsionerlar: ichki blok devorda (2.75 m), tashqi blok fasadda deraza ostida ----------------
+KDZ = D['kdZ']
+ROT = {'yuqori': 0, 'past': 180, 'chap': -90, 'ong': 90}     # lokal v — devordan xona ichiga
+for u in D['kd']:
+    b, (en, bal, chq) = u['b'], u['ichki']
+    cx, cy = (b['x1'] + b['x2']) / 2, (b['y1'] + b['y2']) / 2
+    joy = {'yuqori': (cx, b['y1']), 'past': (cx, b['y2']), 'chap': (b['x1'], cy), 'ong': (b['x2'], cy)}[u['devor']]
+    z, q = KDZ['ichki'], Q()
+    q.box(-en / 2, en / 2, 0, chq, z, z + bal, M['kond'], bevel=45, seg=4)
+    q.box(-en / 2 + 60, en / 2 - 60, chq * 0.35, chq - 30, z - 3, z + 4, M['korpus'])          # pastdagi havo chiqish teshigi
+    q.box(-en / 2 + 75, en / 2 - 75, chq - 45, chq + 12, z - 30, z - 12, M['kond'], bevel=6)           # jalyuzi (pastga ochilgan)
+    q.box(-en / 2 + 50, en / 2 - 50, chq - 1, chq + 1.5, z + 62, z + 68, M['alyuminiy_och'])           # old panel chizig'i
+    q.box(en / 2 - 250, en / 2 - 120, chq - 1, chq + 2, z + bal - 115, z + bal - 85, M['ekran_qora'])  # displey
+    q.box(en / 2 - 150, en / 2 - 136, chq + 1, chq + 3, z + bal - 106, z + bal - 94, M['brend_yashil_nur'])
+    q.obj(f"kd_ichki_{u['kod']}", 'asos', (*joy, 0), ROT[u['devor']])
+q = Q()
+for u in D['kd']:
+    t = u['tb']
+    if not t: continue
+    s_ = -1 if u['devor'] == 'yuqori' else 1                     # tashqariga yo'nalish (rejada y bo'yicha)
+    devor_yuz = -DV['yuqori'] if s_ < 0 else I['y'] + DV['past']
+    tash = t['y1'] if s_ < 0 else t['y2']
+    z1, z2 = KDZ['tashqi'], KDZ['tashqi'] + u['tashqi'][1]
+    q.box(t['x1'], t['x2'], t['y1'], t['y2'], z1, z2, M['kond'], bevel=15, seg=2)
+    w = t['x2'] - t['x1']; gx, zc, r = t['x1'] + 0.42 * w, (z1 + z2) / 2, 0.36 * (z2 - z1)
+    q.cyl((gx, tash, zc), (gx, tash + s_ * 10, zc), r, M['korpus'], 40)                # ventilyator panjarasi
+    for k_ in range(-3, 4):
+        q.box(gx - r * 0.97, gx + r * 0.97, *sorted((tash + s_ * 10, tash + s_ * 16)), zc + k_ * r / 3.6 - 6, zc + k_ * r / 3.6 + 6, M['alyuminiy_och'])
+    q.box(gx - 6, gx + 6, *sorted((tash + s_ * 10, tash + s_ * 16)), zc - r * 0.97, zc + r * 0.97, M['alyuminiy_och'])
+    q.box(t['x2'] - 170, t['x2'] - 40, *sorted((tash, tash + s_ * 4)), z1 + 60, z2 - 60, M['alyuminiy_och'])   # yon panel
+    for bx in (t['x1'] + 110, t['x2'] - 110):                                                  # kronshteyn
+        q.box(bx - 20, bx + 20, *sorted((devor_yuz, tash + s_ * 30)), z1 - 45, z1, M['qora_metall'])
+        q.box(bx - 20, bx + 20, *sorted((devor_yuz, devor_yuz + s_ * 40)), z1 - 450, z1, M['qora_metall'])
+    # trassa qutisi fasadda: ichki blok yonidan devor teshigi, deraza o'ng chetidan pastga, tashqi blokning yon tomoniga
+    der = next(d for d in DER if d['devor'] == u['devor'] and d['x1'] <= t['x1'] and t['x2'] <= d['x2'])
+    vx, ya, yb = der['x2'] + 180, *sorted((devor_yuz, devor_yuz + s_ * 80))
+    hx = u['b']['x2'] + 90
+    q.box(hx - 50, vx + 50, ya, yb, KDZ['ichki'] + 60, KDZ['ichki'] + 160, M['kond'])
+    q.box(vx - 50, vx + 50, ya, yb, z2 - 170, KDZ['ichki'] + 160, M['kond'])
+    q.box(t['x2'], vx + 50, ya, yb, z2 - 170, z2 - 70, M['kond'])
+q.obj('kd_tashqi', 'asos')
+# fasad ko'rinishi uchun pastki qavat (oddiy hajm, derazalar shu o'qlarda) — faqat «kd_fasad» kamerasida yoqiladi
+bu.K['kd_pastki'] = bu.kol('kd_pastki'); bu.kor_yashir('kd_pastki', True)
+q = Q()
+q.box(-DV['chap'], I['x'] + DV['ong'], -DV['yuqori'], I['y'] + DV['past'], -6300, -250, M['devor'])
+for d in DER:
+    if d['devor'] != 'yuqori': continue
+    for z0 in (-3750, -7500):
+        q.box(d['x1'], d['x2'], -DV['yuqori'] - 25, -DV['yuqori'] + 1, z0 + 900, z0 + 2600, M['ramka'])
+        q.box(d['x1'] + 60, d['x2'] - 60, -DV['yuqori'] - 30, -DV['yuqori'] - 20, z0 + 960, z0 + 2540, M['ekran_qora'])
+q.obj('kd_pastki', 'kd_pastki')
+
 # ---------------- zinalar ----------------
 q = Q()
 n, rz = 11, 1750 / 11
@@ -374,10 +426,13 @@ KOR = {
     'sahna': dict(cam=kam('kamera_sahna', (300, 14300, 1650), (5850, 12100, 1550), 19), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
     'tomoshabin': dict(cam=kam('kamera_tomoshabin', (250, 12200, 1650), (5850, 12200, 1650), 24), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0),
                        korsat=('kw_tadbir',), yashir=('kw_kundalik',)),
+    'kd_fasad': dict(cam=kam('kamera_kd_fasad', (18300, -5600, 800), (14400, 0, 1350), 22), res=(1920, 1080), ichki=True, quyosh=(200, 40, 3.0),
+                     korsat=('kd_pastki',)),
+    'konditsioner': dict(cam=kam('kamera_konditsioner', (15050, 6900, 1500), (15050, 0, 2150), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
 }
 FAYL = {'umumiy': '1-umumiy', 'k1': '2-koridor-K1', 'k2': '3-koridor-K2', 'logo': '4-koridor-logotip', 'doskalar': '5-koridor-doskalar',
         'sotuv': '6-sotuv-xonasi', 'admin': '7-admin-xonasi', 'sinf': '8-sinf-doska', 'kw': '9-koworking', 'sahna': '10-koworking-sahna',
-        'tomoshabin': '11-sahna-tomoshabin'}
+        'tomoshabin': '11-sahna-tomoshabin', 'konditsioner': '12-konditsioner', 'kd_fasad': '13-konditsioner-fasad'}
 bu.render_sozla(A['tez'])
 os.makedirs(A['chiq'], exist_ok=True)
 BELGI = {k: (*mk(X[k]), 0) for k in ('SR1', 'SR2', 'SR3', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2', 'XZ3', 'XZ4', 'KW', 'X12')}

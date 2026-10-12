@@ -15,6 +15,9 @@ import { qavat3Html, tekshiruv3 } from './qavat3.mjs';
 import { qavat1Html, tekshiruv1 } from './qavat1.mjs';
 import { hvacHtml } from './hvac.mjs';
 import { tizimHtml } from './hvac-tizim.mjs';
+import { kdDetalHtml } from './konditsioner.mjs';
+import { PDFDocument } from 'pdf-lib';
+import { existsSync } from 'node:fs';
 
 const require = createRequire(import.meta.url);
 let chromium;
@@ -91,6 +94,23 @@ await hs.setContent(varaqlarHtml([3]), { waitUntil: 'load' });
 await hs.pdf({ path: join(CHIQISH, `Xadra_2-qavat_HVAC_sxema_${LOYIHA.versiya}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
 await (await hs.$('section.varaq')).screenshot({ path: join(CHIQISH, `Xadra_2-qavat_HVAC_sxema_${LOYIHA.versiya}.png`) });
 await hs.close();
+
+// 2b. Konditsionerlar: joylashuv rejasi (chizmalar 4-varag'i) va o'rnatish detallari — bitta PDF (2 bet) va PNG
+{
+  const jpg = async f => { const p = join(CHIQISH, '3d', `Xadra_2-qavat_3D_${f}.jpg`); return existsSync(p) ? `data:image/jpeg;base64,${(await readFile(p)).toString('base64')}` : null; };
+  const sahifalar = [varaqlarHtml([4]), kdDetalHtml({ ichki: await jpg('12-konditsioner'), fasad: await jpg('13-konditsioner-fasad') })];
+  const birlash = await PDFDocument.create();
+  for (let i = 0; i < sahifalar.length; i++) {
+    const pg = await brauzer.newPage({ viewport: { width: 1588, height: 1123 }, deviceScaleFactor: 2 });
+    await pg.setContent(sahifalar[i], { waitUntil: 'load' });
+    const buf = await pg.pdf({ width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
+    await (await pg.$('section.varaq')).screenshot({ path: join(CHIQISH, `Xadra_2-qavat_konditsionerlar_${LOYIHA.versiya}-${i + 1}.png`) });
+    const d = await PDFDocument.load(buf);
+    (await birlash.copyPages(d, d.getPageIndices())).forEach(p => birlash.addPage(p));
+    await pg.close();
+  }
+  await writeFile(join(CHIQISH, `Xadra_2-qavat_konditsionerlar_${LOYIHA.versiya}.pdf`), await birlash.save());
+}
 
 // 3b. HVAC hisobi (A4): 2 ta rekuperator va xonalar bo'yicha split tanlovi
 const hh = await brauzer.newPage();

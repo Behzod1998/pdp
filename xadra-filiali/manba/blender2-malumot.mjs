@@ -5,6 +5,7 @@ import {
   ICHKI, DEVOR, H, DEVORLAR, DERAZALAR, USTUNLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ, KW_KUNDALIK,
   KORIDOR_LOGO, DOSKALAR, AYOLLAR_WC, KW_SAHNA, KW_TADBIR, sinflar, bolaklar,
 } from './model.mjs';
+import { kdRoyxat, KD_Z } from './hvac-tizim.mjs';
 
 // eshik o'rnidagi devor qalinligi: eshik chetiga tutashgan devor bo'lagidan
 function qalinlik(e) {
@@ -25,4 +26,7 @@ console.log(JSON.stringify({
   xizmat: XIZMAT_JIHOZ, kw: KW_KUNDALIK, logo: KORIDOR_LOGO, doskalar: DOSKALAR, sahna: KW_SAHNA, kw_tadbir: KW_TADBIR.stullar,
   osimlik: [[23550, 9750], [23500, 16200], [8750, 10600], [11550, 11700], [14700, 9800], [17550, 11900], [3900, 13950], [3700, 17650], [5650, 24050]],
   sanuzel: { unitaz: AYOLLAR_WC.unitaz, rakovina: AYOLLAR_WC.rakovina },
+  // split konditsionerlar: ichki blok (devor, rejadagi joyi), tashqi blok (fasadda; xizmat xonalarida joyi aniqlanadi — modellanmaydi)
+  kd: kdRoyxat().map(u => ({ kod: u.kod, xona: u.xona, btu: u.btu, ichki: u.o.ichki, tashqi: u.o.tashqi, b: u.b, devor: u.devor, tb: u.tb && !u.tbTaxminiy ? u.tb : null })),
+  kdZ: KD_Z,
 }));

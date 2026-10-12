@@ -151,7 +151,7 @@ function xulosaVaraq(x) {
       <div class="matn" style="margin-top:3mm">
         <p>Dollar kursi: ${x.kurs.toLocaleString('en-US')} so'm/$. Kutilmagan xarajatlar — umumiy summadan 10%.</p>
         <p><b>Taxminiy narxlar</b> (sariq): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, 1-qavat resepshni, mehmonlar mebeli va logotiplari — buyurtmachi «narxi noma'lum» degan qismlar; mebelchi va reklama ustasi narxi bilan almashtiriladi (Excel, «Narxlar» varag'i).</p>
-        <p>Tekshirib qo'ying: sovuq suv quvuri «12 0000» — 12 000 so'm/m deb olindi; 2-qavat konditsioneri $7000 — 2 ta uchun jami, o'rnatish bilan. Turniketlar (2 ta) — mavjud; to'siq va evakuatsiya darvozasi kirmagan.</p>
+        <p>Tekshirib qo'ying: sovuq suv quvuri «12 0000» — 12 000 so'm/m deb olindi; 2-qavat HVAC: rekuperator 28 mln so'm — 1 dona narxi deb olindi (2 ta = 56 mln); split va rekuperator narxiga o'rnatish kiradimi — aniqlanadi. Turniketlar (2 ta) — mavjud; to'siq va evakuatsiya darvozasi kirmagan.</p>
       </div>
     </div>
   </div></section>`;
@@ -199,16 +199,24 @@ const BOLIMLAR = [
   ['1-qavat — reja (resepshn, turniketlar, logotiplar)', `Xadra_1-qavat_reja_${V}.pdf`],
   ["1-qavat — 3D ko'rinishlar", f1],
   ['2-qavat — taqdimot rejasi', `Xadra_2-qavat_taqdimot_reja_${V}.pdf`],
-  ["2-qavat — chizmalar: mavjud holat, jihozlash, havo almashinuvi", `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_${V}.pdf`],
+  ["2-qavat — chizmalar: mavjud holat, jihozlash, ventilyatsiya, konditsionerlar joylashuvi", `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_${V}.pdf`],
+  ["2-qavat — konditsionerlar: o'rnatish detallari va 3D", `Xadra_2-qavat_konditsionerlar_${V}.pdf`, [1]],
   ["2-qavat — 3D ko'rinishlar", f2],
   ['2-qavat — xonalar izohi (A4)', `Xadra_2-qavat_xonalar_izoh_${V}.pdf`],
   ['2-qavat — HVAC hisobi: 2 ta rekuperator va split (A4)', `Xadra_2-qavat_HVAC_hisob_${V}.pdf`],
   ['3-qavat — reja', `Xadra_3-qavat_reja_${V}.pdf`],
   ["3-qavat — 3D ko'rinishlar", `Xadra_3-qavat_3D_${V}.pdf`],
   ['Xarajatlar — yakuniy', fx],
-].map(([n, f]) => [n, f.startsWith('/') ? f : join(CH, f)]);
+].map(([n, f, b]) => [n, f.startsWith('/') ? f : join(CH, f), b]);
 
-const hujjatlar = await Promise.all(BOLIMLAR.map(async ([n, f]) => [n, await PDFDocument.load(await readFile(f))]));
+// [nom, fayl, betlar?] — betlar berilsa, faqat shu betlar olinadi (masalan, konditsionerlar PDF'ining 1-beti chizmalar to'plamida bor)
+const hujjatlar = await Promise.all(BOLIMLAR.map(async ([n, f, b]) => {
+  const d = await PDFDocument.load(await readFile(f));
+  if (!b) return [n, d];
+  const t = await PDFDocument.create();
+  (await t.copyPages(d, b)).forEach(p => t.addPage(p));
+  return [n, t];
+}));
 const mundarija = []; let bet = 2;
 for (const [n, d] of hujjatlar) { const k = d.getPageCount(); mundarija.push([n, k > 1 ? `${bet}–${bet + k - 1}` : `${bet}`]); bet += k; }
 const fm = await pdfQil(brauzer, muqova(x, mundarija, await rasm('Xadra_2-qavat_3D_4-koridor-logotip.jpg')), join(BU, '..', '.muqova.pdf'));

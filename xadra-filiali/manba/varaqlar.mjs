@@ -1,7 +1,7 @@
 // A3 chizma varaqlari (HTML → PDF): 1 — mavjud holat va o'zgarishlar, 2 — jihozlash rejasi, 3 — havo almashinuvi.
 import { LOYIHA, ICHKI, USTUNLAR, OQLAR, STANDART, PARTA, STUL, H, ESKI_XONALAR, XONALAR, KW_TADBIR } from './model.mjs';
 import { rejaSvg, RANG, son, KOR_RANG } from './reja-svg.mjs';
-import { tizimPanel, TZ_RANG, REK } from './hvac-tizim.mjs';
+import { tizimPanel, kdPanel, TZ_RANG, REK } from './hvac-tizim.mjs';
 import { korsatkichlar, ishlar, xizmatHavo, kwHavo, ceoHavo, xonaMaydoni, HAVO } from './tekshiruv.mjs';
 
 const VB = { x1: -2500, y1: -2300, x2: 25600, y2: 25700 };
@@ -54,7 +54,7 @@ function shtamp(chizma, varaq) {
     <div class="chizma"><span>Chizma</span><span>${chizma}</span></div>
     <div>Manba: mavjud holat chizmasi (foto), ${LOYIHA.qavat} · umumiy ${LOYIHA.umumiy} m², foydali ${String(LOYIHA.foydali).replace('.', ',')} m²</div>
     <div>${LOYIHA.manzil} — ${LOYIHA.qavat}</div>
-    <div class="grid4"><span><small>Masshtab</small><b>1:100</b></span><span><small>Sana</small><b>${LOYIHA.sana}</b></span><span><small>Versiya</small><b>${LOYIHA.versiya}</b></span><span><small>Varaq</small><b>${varaq} / 3</b></span></div>
+    <div class="grid4"><span><small>Masshtab</small><b>1:100</b></span><span><small>Sana</small><b>${LOYIHA.sana}</b></span><span><small>Versiya</small><b>${LOYIHA.versiya}</b></span><span><small>Varaq</small><b>${varaq} / 4</b></span></div>
     <div class="imzo">Bajardi <i></i></div>
     <div class="imzo">Tekshirdi / tasdiqladi — direktor <i></i></div>
   </div>`;
@@ -154,6 +154,13 @@ function belgilar(rejim) {
     sw(`background:${KOR_RANG.etirof};height:1.2mm;border:0`, "e'tirof doskasi (faxriylar, oy o'quvchisi)"),
     sw(`background:#2a2e33;height:1.4mm;border:0;box-shadow:inset -1mm 0 0 ${KOR_RANG.logo}`, 'koworking sahnasi (XZ1 devori): logotip, ekran, reyka'),
   ];
+  else if (rejim === 'kd') q = [
+    sw(`background:#fff;border:.45mm solid #1d2733;border-radius:.6mm;width:4mm`, 'KD — split ichki bloki (devorda, 2.75 m dan yuqori)'),
+    sw(`background:#fff;border:.3mm solid #333;width:3.2mm;border-radius:0`, 'TB — tashqi blok (fasadda, kronshteynda)'),
+    sw(`background:#fff;border:.3mm dashed #333;width:3.2mm`, 'TB — joyi aniqlanadi (tom yoki oraliq)'),
+    sw(`border:0;border-top:.6mm solid #e07a1f`, 'freon trassasi va drenaj (punktir — aniqlanadi)'),
+    sw(`border:0;border-top:.5mm dashed #2f78b7`, 'sovuq havo oqimi yo\'nalishi'),
+  ];
   else q = [
     sw(`background:#fff;border:.35mm dashed #222`, `R1, R2 — ${REK.brend} rekuperatori (koridor shiftida)`),
     sw(`background:${TZ_RANG.sa};height:1.2mm;border:0`, 'toza havo kanali (rekuperatordan xonalarga)'),
@@ -194,7 +201,7 @@ function havoPanel() {
   return tizimPanel();
 }
 
-export function varaqlarHtml(faqat = [1, 2, 3]) {
+export function varaqlarHtml(faqat = [1, 2, 3, 4]) {
   const plan = rejim => rejaSvg({ rejim, vb: VB, olchamlar: true, olchamMm: true, annotatsiya: rejim === 'jihoz' });
   const varaq = (rejim, panel, nom, n) => `<section class="varaq"><div class="ramka">
       <div class="reja">${plan(rejim)}</div>
@@ -204,5 +211,6 @@ export function varaqlarHtml(faqat = [1, 2, 3]) {
     ${faqat.includes(1) ? varaq('mavjud', mavjudPanel(), 'Mavjud holat va o\'zgarishlar', 1) : ''}
     ${faqat.includes(2) ? varaq('jihoz', maydonJadvali() + xonalarJadvali() + ustunJadvali() + partaQoidasi(), 'Jihozlash rejasi', 2) : ''}
     ${faqat.includes(3) ? varaq('havo', havoPanel(), 'Ventilyatsiya va konditsionerlash', 3) : ''}
+    ${faqat.includes(4) ? varaq('kd', kdPanel(), 'Konditsionerlar joylashuvi', 4) : ''}
   </body></html>`;
 }
