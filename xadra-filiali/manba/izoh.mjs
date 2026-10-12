@@ -135,7 +135,7 @@ function xonaMatni(k, ev) {
       : `Barcha devorlari GKL (buyurtmachi qarori), koridorga faqat shisha eshik chiqadi — dars paytida koridordan chalg'imaydi; koridor oxiridagi devorlarda yorituvchi logotip.`);
     if (ustunlar.length) q.push(`${ustunMatn} ustuni orqa devorda, guruhlar orasidagi yo'lak ro'parasida — doskani to'smaydi.`);
     n.push(`<b>Derazasiz</b>: tabiiy yorug'lik va shamollatish yo'q — tashqi havo R2 rekuperatoridan, sovutish splitlar bilan (majburiy), yoritish kunduzgi spektrda (4000 K).`);
-    n.push(`O'ng devor qo'shni bino bilan umumiy; orqasida tor oraliq bor — splitlarning tashqi bloklari shu oraliqda yoki tomda (oraliq eni joyida o'lchanadi).`);
+    n.push(`O'ng devor qo'shni bino bilan umumiy; split tashqi bloki — tomda.`);
     n.push(`L shaklidagi xona: 1–2-qatorlar butun uzunlik bo'ylab (4 tadan parta, 8 o'rin), 3-qator faqat keng qismda (2 parta, 4 o'rin) — tor uchlari 4.5 m chuqur.`);
     n.push(`Doska → 1-parta ${sm(k.doska)} sm, stul orqasidan keyingi partagacha ${sm(k.stulOrqasi)} sm, chetki old o'rindan qarash burchagi ${b1(k.burchak)}° (Beruniy: ${sm(STANDART.doska)} sm, 36 sm, 39.8°) — Beruniy mezoni bo'yicha "Qoniqarli"; orqa bo'sh zona ${sm(k.orqaZona)} sm.`);
     tavsiya = `${shishaTavsiya}Devorlar va shift och rangda, yoritish ≥ 500 lk. CO₂ datchigi majburiy.`;
@@ -167,7 +167,9 @@ function xonaBeti(k, i, ev) {
   const vb = { x1: x.x1 - 600, y1: x.y1 - 600, x2: x.x2 + 600, y2: x.y2 + 600 };
   const plan = rejaSvg({ rejim: 'izoh', vb, urgu: x, k: 1 });
   const d = k.derazalar;
-  const derazaMatn = d.length ? `${d.map(z => mm(z.uz)).join(' + ')} m, ${d[0].devor} devorda (${d[0].tomon}) — taxminiy` : 'yo\'q (derazasiz xona)';
+  const derazaMatn = !d.length ? 'yo\'q (derazasiz xona)' : d[0].vitraj
+    ? `to'liq oynali fasad ${d.map(z => mm(z.uz)).join(' + ')} m (${d[0].yon}, ${d[0].tomon}), oyna ${d[0].tokcha ? `${b1(d[0].tokcha / 1000)}–${b1(d[0].tepa / 1000)} m` : 'poldan shiftgacha'}; steklopaket + reklama plyonkasi`
+    : `${d.map(z => mm(z.uz)).join(' + ')} m, ${d[0].devor} devorda (${d[0].tomon}) — taxminiy`;
   const ustun = k.ustunlar.filter(u => u.partagacha < 1000);
   const ustunMatn = ustun.length ? `${ustun.map(u => u.kod + (u.holat === 'taxminiy' ? '*' : '')).join(', ')} devordan 10 sm chiqadi; eng yaqin partagacha ${sm(Math.min(...ustun.map(u => u.partagacha)))} sm (${x.kod === 'SR4' ? 'orqa devorda, yo\'lak ro\'parasida' : 'yon tomonda'})` : 'yo\'q';
   const esh = `${x.koridor} koridori devorida, ${k.eshikOldda ? 'old tomonda (doska yonida)' : 'orqa tomonda'}, 90 sm`;
@@ -211,11 +213,12 @@ function xonaBeti(k, i, ev) {
 // ---------- havo almashinuvi ----------
 export function kesimSvg(m = 1) {
   // Sinf kesimi doska devoriga parallel: chapda deraza (fasad), o'ngda koridor devori, orqa fonda yon devordagi doska.
-  // Koridor shiftidagi rekuperatordan kanallar, diffuzorlar (doska tomonda), so'rish panjaralari (orqa devor yonida); fasad devorida split.
+  // Koridor shiftidagi rekuperatordan kanallar, diffuzorlar (doska tomonda), so'rish panjaralari (orqa devor yonida).
+  // Fasad — to'liq oynali (SR2: pastida 1 m devor); split orqa yon devorda (kesimda ko'rinmaydi), tashqi bloki tomda.
   const sr = korsatkichlar().find(k => k.kod === 'SR2');
   const L = sr.W, Hh = 3000, s = [], j = sr.xona.j;
   s.push(`<rect x="0" y="0" width="${L}" height="${Hh}" fill="#f5f3ee"/>`);
-  s.push(`<rect x="-300" y="-500" width="300" height="${Hh + 700}" fill="#4d5566"/><rect x="-300" y="900" width="300" height="1500" fill="#fff" stroke="#555" stroke-width="15"/>`);
+  s.push(`<rect x="-300" y="-500" width="300" height="${Hh + 700}" fill="#4d5566"/><rect x="-300" y="80" width="300" height="${Hh - 1000 - 80}" fill="#cfe4f2" stroke="#555" stroke-width="15"/>`);
   s.push(`<rect x="${L}" y="-500" width="100" height="${Hh + 700}" fill="#262b36"/>`);
   s.push(`<rect x="-300" y="${Hh}" width="${L + 400}" height="200" fill="#8a8f99"/><rect x="-300" y="-500" width="${L + 400}" height="200" fill="#8a8f99"/>`);
   s.push(`<line x1="0" y1="-20" x2="${L}" y2="-20" stroke="#bbb" stroke-width="10"/><line x1="0" y1="300" x2="${L}" y2="300" stroke="#999" stroke-width="15" stroke-dasharray="80 50"/>`);
@@ -243,14 +246,13 @@ export function kesimSvg(m = 1) {
   s.push(`<rect x="${L + 1300}" y="20" width="1100" height="270" fill="#fff" stroke="#222" stroke-width="20" stroke-dasharray="60 30"/><text x="${L + 1850}" y="200" font-size="160" text-anchor="middle" font-weight="700">R1/R2</text>`);
   df.forEach(x => s.push(`<rect x="${x - 250}" y="280" width="500" height="40" fill="#1f6fd1"/><path d="M${x},340 L${x},900" stroke="#1f6fd1" stroke-width="40" marker-end="url(#kk)"/>`));
   df.forEach(x => s.push(`<rect x="${x + 250}" y="280" width="450" height="40" fill="#d1452f" opacity=".75"/><path d="M${x + 475},1000 L${x + 475},360" stroke="#d1452f" stroke-width="40" stroke-dasharray="90 50" marker-end="url(#kq)"/>`));
-  s.push(`<rect x="0" y="420" width="240" height="330" rx="40" fill="#eef0f3" stroke="#5f6b78" stroke-width="18"/>`,
-    `<path d="M250,720 Q 800,820 1250,1150" stroke="#5f6b78" stroke-width="30" fill="none" stroke-dasharray="70 40" marker-end="url(#kh)"/>`,
-    `<rect x="-1150" y="300" width="700" height="450" fill="#fff" stroke="#5f6b78" stroke-width="18"/>`);
+  s.push(`<rect x="${L - 1900}" y="-560" width="900" height="300" fill="#fff" stroke="#5f6b78" stroke-width="18" stroke-dasharray="60 35"/>`);
   const t = (x, y, matn, a = 'middle', c = '#333') => `<text x="${x}" y="${y}" font-size="${210 * m}" text-anchor="${a}" fill="${c}">${matn}</text>`;
   const fs = 210 * m;
   const R = L + 250;
-  s.push(t(-2550, 1000 + fs, 'split —', 'start', '#5f6b78'), t(-2550, 1000 + 2 * fs, 'tashqi', 'start', '#5f6b78'), t(-2550, 1000 + 3 * fs, 'devorda', 'start', '#5f6b78'),
-    t(-2550, 2300 + fs, 'deraza', 'start', '#333'),
+  s.push(t(-2550, 300 + fs, 'oyna —', 'start', '#3d5a73'), t(-2550, 300 + 2 * fs, 'to\'liq', 'start', '#3d5a73'), t(-2550, 300 + 3 * fs, '(g\'arb)', 'start', '#3d5a73'),
+    t(-2550, 2300 + fs, '1 m devor', 'start', '#333'),
+    t(L - 2050, -330, 'split TB — tomda', 'end', '#5f6b78'),
     t(L / 2, 1300, 'doska (yon devorda)', 'middle', '#2e5e45'),
     t(R, 650, 'diffuzor —', 'start', '#1f6fd1'), t(R, 650 + fs, 'doska oldida', 'start', '#1f6fd1'),
     t(R, 900 + 2 * fs, 'so\'rish —', 'start', '#d1452f'), t(R, 900 + 3 * fs, 'orqa devorda', 'start', '#d1452f'),
@@ -268,13 +270,13 @@ function havoBeti(kor, n) {
     <table class="havo"><tr><th>Xona</th><th>Odam</th><th>Maydon, m²</th><th>Havo, m³/soat</th><th>Rekuperator</th><th>CO₂, ppm</th><th>Yuk, kVt</th><th>Split</th></tr>
       ${T.xona.map(q).join('')}
       <tr class="jami"><td>Jami</td><td></td><td></td><td>${T.Qjami}</td><td>R1 ${T.guruh[0].Q} · R2 ${T.guruh[1].Q}</td><td></td><td></td><td>${b1(T.nominal11)} kVt</td></tr></table>
-    <p class="izohm">Sinflarda 24 m³/soat har bir kishiga (me'yoriy minimum ~22 — KMK va ASHRAE 62.1), derazasiz xizmat xonalarida 60 m³/soat (KMK). Yuk — odamlar, yoritish, uskuna, devor-oyna-tom (deraza o'lchami va yo'nalishi noma'lum — oraliq) va rekuperatordan keyingi tashqi havo qoldig'i; split 42–43 °C da (quvvat ~${Math.round(ISSIQ * 100)}%) yuqori chegarani qoplaydi. Batafsil — Xadra_2-qavat_HVAC_hisob_${LOYIHA.versiya}.pdf.</p>
+    <p class="izohm">Sinflarda 24 m³/soat har bir kishiga (me'yoriy minimum ~22 — KMK va ASHRAE 62.1), derazasiz xizmat xonalarida 60 m³/soat (KMK). Yuk — odamlar, yoritish, uskuna, oynali fasad (quyosh — yo'nalish va paytga qarab, steklopaket + reklama plyonkasi), devor, tom va rekuperatordan keyingi tashqi havo qoldig'i; split 42–43 °C da (quvvat ~${Math.round(ISSIQ * 100)}%) yuqori chegarani qoplaydi. Batafsil — Xadra_2-qavat_HVAC_hisob_${LOYIHA.versiya}.pdf.</p>
     <h2>Yechim</h2>
     <div style="margin:1mm auto 2mm;width:76%">${kesimSvg(1.1)}</div>
     <ul>
       <li><b>Rekuperatorlar:</b> R2 ga ${T.guruh[1].Q} m³/soat kerak — ${REK.nominal[1]} m³/soatlik model, ~${REK.esp} Pa kanal qarshiligida. ${REK.nominal[0]} m³/soatlik model R2 uchun kam.</li>
       <li><b>Havo taqsimoti:</b> toza havo <b>doska oldida</b> beriladi, <b>orqa devor yonida</b> so'riladi. Kanallar koridorlarning osma shifti ichida (~2.8 m), kirish va chiqishda shovqin so'ndirgich.</li>
-      <li><b>Splitlar (buyurtmachi tanlovi):</b> sinflarga bittadan ${T.xona[0].split.btu / 1000}k — deraza ustida, tashqi bloki shu fasadda; xizmat xonalariga ${T.xona.find(x => x.tur === 'ofis').split.btu / 1000}k. Derazali sinflarda 24k yukning past–o'rta qismini qoplaydi (derazalar yo'nalishi va tomga bog'liq). SR4 va xizmat xonalarining tashqi bloklari — tomda yoki o'ng devor ortidagi oraliqda (aniqlanadi).</li>
+      <li><b>Splitlar (buyurtmachi tanlovi):</b> sinflarga bittadan ${T.xona[0].split.btu / 1000}k, xizmat xonalariga ${T.xona.find(x => x.tur === 'ofis').split.btu / 1000}k. Sinflarning ko'cha tomoni to'liq oynali (SR1–SR3 — g'arb, SR5–SR7 — sharq): ichki blok doskaga qarama-qarshi yon devorda, oynadan ~1.8 m; tashqi bloklar — tomda (fasad o'zgarmaydi). Oynali sinflarda reklama plyonkasi bilan ham eng issiq paytda bitta 24k ~1–2.5 kW kam — tavsiyalar konditsionerlar chizmasining 2-varag'ida.</li>
       <li><b>Koworking:</b> konditsionerlari mavjud (${T.qoshimcha[0].mavjud.map(b => b / 1000 + 'k').join(' + ')}), koridorlarni ham sovutadi; tadbirda ~${T.qoshimcha[0].oa} m³/soat tashqi havo kerak — R1 va R2 ga sig'maydi, alohida qaror kerak. CEO — konditsioner mavjud, derazali.</li>
       <li><b>CO₂ datchigi</b> har sinfda; yong'in signalida rekuperatorlar o'chadi.</li>
       <li><b>V-1</b> — sanuzel chiqarish ventilyatsiyasi 4 × 50 = 200 m³/soat; mavjud shaxta ishlashini tekshirish. Tutun chiqarish talabini yong'in xavfsizligi mutaxassisi belgilaydi.</li>
@@ -303,7 +305,7 @@ function qavatBeti(kor, t, ev, n) {
       ${m('Ayollar hojatxonasi', `6-xona — xo'jalik emas, koworkingdan ZN1 zinasiga (3-qavatga) <b>o'tish yo'lagi</b>: odamlar o'tib-qaytadi. Shuning uchun ayollar hojatxonasi 2 kabinali, kabinalar <b>eng ichkarida</b> (2 va 3-xona, unitaz), oldida tambur (4 va 5-xona, rakovina): har biriga <b>ikki eshik</b> orqali kiriladi — yo'lakdan eshik ochilganda faqat tambur ko'rinadi. Devor va eshiklar mavjud, o'zgarmaydi.`)}
       ${m('Hojatxona yetishmaydi', `2-qavatda ayollar hojatxonasi — 2 kabina, 3-qavatda erkaklar hojatxonasi — 4 kabina (1 unitaz, 3 chashagen): jami 6 ta. ${t.orinlar} o'quvchi va ~10 xodimga taxminan 6–8 ta kerak (1 ta 20–30 kishiga) — chegarada. Yechim: tanaffuslarni xonalar bo'yicha 5–10 daqiqa farq bilan qo'yish; 1-qavatdagi hojatxonalardan foydalanish imkonini ijaraga beruvchi bilan aniqlash.`)}
       ${m('Yangi devorlar', `~${ish.yangiUz.toFixed(1)} m GKL 100 (≈ ${Math.round(ish.yangiUz * H / 1000)} m²) va ~${ish.shishaUz.toFixed(1)} m shisha devor (sinflar, sotuv va admin), ${ish.buzUz.toFixed(1)} m devor buziladi (eski o'rta devor va koridorlarga tushgan bo'laklar), ${ish.yangiEshik} ta yangi eshik. Doskalar mavjud yoki tashqi devorlarda (4-xonada — o'ng tashqi devorda).`)}
-      ${m('Joyida o\'lchanmagan', `Derazalar joyi va o'lchami; U8, U9 ustunlari (fotoda ko'rinmaydi); devor qalinliklari; to'sinlar (balandlik buyurtmachi ma'lumoti bo'yicha ${H / 1000} m); radiatorlar; o'ng devor ortidagi oraliq eni.`)}
+      ${m('Joyida o\'lchanmagan', `Oynalarning aniq balandligi (SR1–SR3 da oyna ustidagi devor), reklama plyonkasi turi; U8, U9 ustunlari (fotoda ko'rinmaydi); devor qalinliklari; to'sinlar (balandlik buyurtmachi ma'lumoti bo'yicha ${H / 1000} m); radiatorlar; o'ng devor ortidagi oraliq eni.`)}
       ${m('Hujjatlar', `Mavjud chizmada: «Xonalar ichki qismi loyiha hujjatlarisiz qayta ta'mirlangan». Devorlarni buzish va qurishdan oldin ijaraga beruvchining yozma roziligi olinadi. 8-xonaning raqami fotoda ko'rinmaydi.`)}
     </table>
   `) + bet(n + 1, `
@@ -318,7 +320,7 @@ function qavatBeti(kor, t, ev, n) {
     <h2>Tasdiqlash uchun savollar</h2>
     <ul>
       <li>XZ1 (offline sotuv) ning koworking tomonidagi devorini ham shisha qilamizmi — mijoz kirish zalidan to'g'ridan-to'g'ri ko'radi?</li>
-      <li>O'ng devor ortidagi oraliq eni — SR4 splitlarining tashqi bloklari uchun.</li>
+      <li>Tomga chiqish va tashqi bloklarni tomga o'rnatishga ruxsat (ijaraga beruvchi); 3-qavatning 2-qavatga nisbatan aniq joyi.</li>
       <li>Rekuperator (Welkin) aniq modeli va kanal qarshiligidagi sarfi; koworking tashqi havosi qanday beriladi?</li>
       <li>Tanaffuslarni xonalar bo'yicha surish (hojatxona va koridorlar yuklamasi uchun) ma'qulmi?</li>
     </ul>

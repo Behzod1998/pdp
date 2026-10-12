@@ -55,23 +55,32 @@ export const USTUNLAR = [
   return r;
 });
 
-// ---------- Derazalar (joylari taxminiy: chizmada ko'rsatilmagan) ----------
-// devor: yuqori | past | chap; a..b — devor bo'ylab oraliq.
+// ---------- Fasadlar yo'nalishi (buyurtmachi, 12.10) ----------
+// Quyosh pastki (old, ko'cha) fasad tomondan chiqadi, tushda koworking tomonida (9:00–15:00), yuqori (orqa) fasad tomonga botadi.
+export const FASAD_YON = { past: 'sharq', chap: 'janub', yuqori: "g'arb", ong: 'shimol' };
+
+// ---------- Derazalar ----------
+// devor: yuqori | past | chap; a..b — devor bo'ylab oraliq; tokcha/tepa — poldan, mm (berilmasa 900/2600 — taxminiy).
+// Sinflarning ko'chaga qaragan fasadlari (buyurtmachi, 12.10) — to'liq oynali, ikki qavatli shisha (steklopaket),
+// ustiga reklama plyonkasi tortiladi; oyna ustunlar orasida butun xona eni bo'ylab:
+//   SR1–SR3 (yuqori, g'arb): pastida 1 m devor, ustida devor bor (tepasi ~3.1 m — taxminiy, joyida o'lchanadi);
+//   SR5–SR7 (past, sharq): poldan shiftgacha oyna.
+const VITRAJ_G = { tokcha: 1000, tepa: 3100, vitraj: true }, VITRAJ_S = { tokcha: 0, tepa: H, vitraj: true };
 export const DERAZALAR = [
   { devor: 'yuqori', a: 900, b: 2100 },
-  { devor: 'yuqori', a: 7900, b: 10300 },
-  { devor: 'yuqori', a: 13850, b: 16250 },
-  { devor: 'yuqori', a: 19825, b: 22225 },
+  { devor: 'yuqori', a: 6250, b: 11850, ...VITRAJ_G },
+  { devor: 'yuqori', a: 12250, b: 17850, ...VITRAJ_G },
+  { devor: 'yuqori', a: 18250, b: ICHKI.x, ...VITRAJ_G },
   { devor: 'past', a: 1775, b: 4175 },
-  { devor: 'past', a: 7850, b: 10250 },
-  { devor: 'past', a: 13850, b: 16250 },
-  { devor: 'past', a: 19825, b: 22225 },
+  { devor: 'past', a: 6250, b: 11850, ...VITRAJ_S },
+  { devor: 'past', a: 12250, b: 17850, ...VITRAJ_S },
+  { devor: 'past', a: 18250, b: ICHKI.x, ...VITRAJ_S },
   { devor: 'chap', a: 2400, b: 3600 },
   { devor: 'chap', a: 8100, b: 10500 },
   { devor: 'chap', a: 14175, b: 16575 },
   { devor: 'chap', a: 19250, b: 20450 },
   { devor: 'chap', a: 22300, b: 23600 },
-].map(d => {
+].map(d => ({ tokcha: 900, tepa: 2600, ...d, yon: FASAD_YON[d.devor] })).map(d => {
   if (d.devor === 'yuqori') return { ...d, x1: d.a, x2: d.b, y1: -DEVOR.yuqori, y2: 0 };
   if (d.devor === 'past') return { ...d, x1: d.a, x2: d.b, y1: ICHKI.y, y2: ICHKI.y + DEVOR.past };
   return { ...d, x1: -DEVOR.chap, x2: 0, y1: d.a, y2: d.b };

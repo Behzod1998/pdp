@@ -311,42 +311,49 @@ for u in D['kd']:
     q.box(-en / 2 + 50, en / 2 - 50, chq - 1, chq + 1.5, z + 62, z + 68, M['alyuminiy_och'])           # old panel chizig'i
     q.box(en / 2 - 250, en / 2 - 120, chq - 1, chq + 2, z + bal - 115, z + bal - 85, M['ekran_qora'])  # displey
     q.box(en / 2 - 150, en / 2 - 136, chq + 1, chq + 3, z + bal - 106, z + bal - 94, M['brend_yashil_nur'])
-    q.obj(f"kd_ichki_{u['kod']}", 'asos', (*joy, 0), ROT[u['devor']])
+    q.box(en / 2 - 230, en / 2 - 130, 0, 70, z + bal - 20, H, M['kond'])                               # trassa qutisi (devorda, shiftgacha)
+    q.obj(f"kd_ichki_{u['kod']}", 'toliq', (*joy, 0), ROT[u['devor']])     # umumiy (kesilgan) ko'rinishda yashiriladi
+# tashqi bloklar — tomda (2-qavat tomi: shift plitasi ustida), tayanch ramada; trassa tomga gusak orqali chiqadi
+TOM = H + 200
 q = Q()
 for u in D['kd']:
-    t = u['tb']
-    if not t: continue
-    s_ = -1 if u['devor'] == 'yuqori' else 1                     # tashqariga yo'nalish (rejada y bo'yicha)
-    devor_yuz = -DV['yuqori'] if s_ < 0 else I['y'] + DV['past']
-    tash = t['y1'] if s_ < 0 else t['y2']
-    z1, z2 = KDZ['tashqi'], KDZ['tashqi'] + u['tashqi'][1]
+    t, b = u['tb'], u['b']
+    tw, th, td = u['tashqi'][0], u['tashqi'][1], u['tashqi'][2]
+    gor = (t['x2'] - t['x1']) >= (t['y2'] - t['y1'])
+    z1, z2 = TOM + 400, TOM + 400 + th
     q.box(t['x1'], t['x2'], t['y1'], t['y2'], z1, z2, M['kond'], bevel=15, seg=2)
-    w = t['x2'] - t['x1']; gx, zc, r = t['x1'] + 0.42 * w, (z1 + z2) / 2, 0.36 * (z2 - z1)
-    q.cyl((gx, tash, zc), (gx, tash + s_ * 10, zc), r, M['korpus'], 40)                # ventilyator panjarasi
+    for s_ in (0.12, 0.88):                                                                    # tayanch rama
+        if gor: q.box(t['x1'] + (t['x2'] - t['x1']) * s_ - 25, t['x1'] + (t['x2'] - t['x1']) * s_ + 25, t['y1'] - 120, t['y2'] + 120, TOM, z1, M['qora_metall'])
+        else: q.box(t['x1'] - 120, t['x2'] + 120, t['y1'] + (t['y2'] - t['y1']) * s_ - 25, t['y1'] + (t['y2'] - t['y1']) * s_ + 25, TOM, z1, M['qora_metall'])
+    L_ = (t['x2'] - t['x1']) if gor else (t['y2'] - t['y1'])
+    g0 = (t['x1'] if gor else t['y1']) + 0.42 * L_
+    zc, r = (z1 + z2) / 2, 0.36 * th
+    yuz = t['y2'] if gor else t['x2']                                                          # ventilyator tomoni
+    a_, b_ = ((g0, yuz, zc), (g0, yuz + 10, zc)) if gor else ((yuz, g0, zc), (yuz + 10, g0, zc))
+    q.cyl(a_, b_, r, M['korpus'], 40)
     for k_ in range(-3, 4):
-        q.box(gx - r * 0.97, gx + r * 0.97, *sorted((tash + s_ * 10, tash + s_ * 16)), zc + k_ * r / 3.6 - 6, zc + k_ * r / 3.6 + 6, M['alyuminiy_och'])
-    q.box(gx - 6, gx + 6, *sorted((tash + s_ * 10, tash + s_ * 16)), zc - r * 0.97, zc + r * 0.97, M['alyuminiy_och'])
-    q.box(t['x2'] - 170, t['x2'] - 40, *sorted((tash, tash + s_ * 4)), z1 + 60, z2 - 60, M['alyuminiy_och'])   # yon panel
-    for bx in (t['x1'] + 110, t['x2'] - 110):                                                  # kronshteyn
-        q.box(bx - 20, bx + 20, *sorted((devor_yuz, tash + s_ * 30)), z1 - 45, z1, M['qora_metall'])
-        q.box(bx - 20, bx + 20, *sorted((devor_yuz, devor_yuz + s_ * 40)), z1 - 450, z1, M['qora_metall'])
-    # trassa qutisi fasadda: ichki blok yonidan devor teshigi, deraza o'ng chetidan pastga, tashqi blokning yon tomoniga
-    der = next(d for d in DER if d['devor'] == u['devor'] and d['x1'] <= t['x1'] and t['x2'] <= d['x2'])
-    vx, ya, yb = der['x2'] + 180, *sorted((devor_yuz, devor_yuz + s_ * 80))
-    hx = u['b']['x2'] + 90
-    q.box(hx - 50, vx + 50, ya, yb, KDZ['ichki'] + 60, KDZ['ichki'] + 160, M['kond'])
-    q.box(vx - 50, vx + 50, ya, yb, z2 - 170, KDZ['ichki'] + 160, M['kond'])
-    q.box(t['x2'], vx + 50, ya, yb, z2 - 170, z2 - 70, M['kond'])
-q.obj('kd_tashqi', 'asos')
+        zz = zc + k_ * r / 3.6
+        if gor: q.box(g0 - r * 0.97, g0 + r * 0.97, yuz + 10, yuz + 16, zz - 6, zz + 6, M['alyuminiy_och'])
+        else: q.box(yuz + 10, yuz + 16, g0 - r * 0.97, g0 + r * 0.97, zz - 6, zz + 6, M['alyuminiy_och'])
+    # gusak va izolyatsiyali trassa tom ustida: devor yonidan (blok ortidan) TB gacha
+    cx, cy = (b['x1'] + b['x2']) / 2, (b['y1'] + b['y2']) / 2
+    px, py = {'chap': (b['x1'] + 120, cy), 'ong': (b['x2'] - 120, cy), 'yuqori': (cx, b['y1'] + 120), 'past': (cx, b['y2'] - 120)}[u['devor']]
+    tcx, tcy = (t['x1'] + t['x2']) / 2, (t['y1'] + t['y2']) / 2
+    q.cyl((px, py, TOM), (px, py, TOM + 450), 70, M['kond'], 20)
+    yol = [(px, py), (px, tcy), (tcx, tcy)] if u['devor'] in ('chap', 'ong') else [(px, py), (tcx, py), (tcx, tcy)]
+    for (xa, ya), (xb, yb) in zip(yol, yol[1:]):
+        if abs(xa - xb) + abs(ya - yb) > 1: q.cyl((xa, ya, TOM + 450), (xb, yb, TOM + 450), 32, M['korpus'], 12)
+q.obj('kd_tashqi', 'tepa')
 # fasad ko'rinishi uchun pastki qavat (oddiy hajm, derazalar shu o'qlarda) — faqat «kd_fasad» kamerasida yoqiladi
 bu.K['kd_pastki'] = bu.kol('kd_pastki'); bu.kor_yashir('kd_pastki', True)
 q = Q()
 q.box(-DV['chap'], I['x'] + DV['ong'], -DV['yuqori'], I['y'] + DV['past'], -6300, -250, M['devor'])
 for d in DER:
-    if d['devor'] != 'yuqori': continue
+    if d['devor'] not in ('yuqori', 'past'): continue
+    yf, sy = (-DV['yuqori'], -1) if d['devor'] == 'yuqori' else (I['y'] + DV['past'], 1)
     for z0 in (-3750, -7500):
-        q.box(d['x1'], d['x2'], -DV['yuqori'] - 25, -DV['yuqori'] + 1, z0 + 900, z0 + 2600, M['ramka'])
-        q.box(d['x1'] + 60, d['x2'] - 60, -DV['yuqori'] - 30, -DV['yuqori'] - 20, z0 + 960, z0 + 2540, M['ekran_qora'])
+        q.box(d['x1'], d['x2'], *sorted((yf - 1, yf + sy * 25)), z0 + 900, z0 + 2600, M['ramka'])
+        q.box(d['x1'] + 60, d['x2'] - 60, *sorted((yf + sy * 20, yf + sy * 30)), z0 + 960, z0 + 2540, M['ekran_qora'])
 q.obj('kd_pastki', 'kd_pastki')
 
 # ---------------- zinalar ----------------
@@ -426,9 +433,9 @@ KOR = {
     'sahna': dict(cam=kam('kamera_sahna', (300, 14300, 1650), (5850, 12100, 1550), 19), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
     'tomoshabin': dict(cam=kam('kamera_tomoshabin', (250, 12200, 1650), (5850, 12200, 1650), 24), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0),
                        korsat=('kw_tadbir',), yashir=('kw_kundalik',)),
-    'kd_fasad': dict(cam=kam('kamera_kd_fasad', (18300, -5600, 800), (14400, 0, 1350), 22), res=(1920, 1080), ichki=True, quyosh=(200, 40, 3.0),
+    'kd_fasad': dict(cam=kam('kamera_kd_fasad', (2500, 40500, 11500), (14500, 21500, 1800), 30), res=(1920, 1080), ichki=True, quyosh=(200, 40, 3.0),
                      korsat=('kd_pastki',)),
-    'konditsioner': dict(cam=kam('kamera_konditsioner', (15050, 6900, 1500), (15050, 0, 2150), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'konditsioner': dict(cam=kam('kamera_konditsioner', (12750, 17500, 1550), (17300, 23400, 2000), 18), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
 }
 FAYL = {'umumiy': '1-umumiy', 'k1': '2-koridor-K1', 'k2': '3-koridor-K2', 'logo': '4-koridor-logotip', 'doskalar': '5-koridor-doskalar',
         'sotuv': '6-sotuv-xonasi', 'admin': '7-admin-xonasi', 'sinf': '8-sinf-doska', 'kw': '9-koworking', 'sahna': '10-koworking-sahna',

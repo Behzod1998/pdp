@@ -156,9 +156,9 @@ function belgilar(rejim) {
   ];
   else if (rejim === 'kd') q = [
     sw(`background:#fff;border:.45mm solid #1d2733;border-radius:.6mm;width:4mm`, 'KD — split ichki bloki (devorda, 2.75 m dan yuqori)'),
-    sw(`background:#fff;border:.3mm solid #333;width:3.2mm;border-radius:0`, 'TB — tashqi blok (fasadda, kronshteynda)'),
-    sw(`background:#fff;border:.3mm dashed #333;width:3.2mm`, 'TB — joyi aniqlanadi (tom yoki oraliq)'),
-    sw(`border:0;border-top:.6mm solid #e07a1f`, 'freon trassasi va drenaj (punktir — aniqlanadi)'),
+    sw(`background:#fff;border:.3mm dashed #333;width:3.2mm`, 'TB — tashqi blok tomda (kesimdan yuqorida — punktir)'),
+    sw(`border:0;border-top:.6mm dashed #e07a1f`, 'freon trassasi (shift ichida, tomga chiqadi)'),
+    sw(`background:#cfe4f2;height:1.2mm;border:0`, "oynali fasad: g'arb 1.0–3.1 m, sharq poldan shiftgacha"),
     sw(`border:0;border-top:.5mm dashed #2f78b7`, 'sovuq havo oqimi yo\'nalishi'),
   ];
   else q = [
@@ -170,7 +170,7 @@ function belgilar(rejim) {
     sw(`background:#dbe9fb;border:.3mm solid ${TZ_RANG.sa};width:3.2mm`, 'toza havo diffuzori'),
     sw(`background:#fbe1dc;border:.3mm solid ${TZ_RANG.ra};width:3.2mm`, "so'rish panjarasi"),
     sw(`background:#eef0f3;border:.3mm solid ${TZ_RANG.split};width:3.2mm`, 'split — ichki blok (devorda), yozuv: BTU/soat'),
-    sw(`background:#fff;border:.3mm solid ${TZ_RANG.split};width:3.2mm`, 'split — tashqi blok (fasadda; punktir — joyi aniqlanadi)'),
+    sw(`background:#fff;border:.3mm solid ${TZ_RANG.split};width:3.2mm`, 'split — tashqi blok (tomda, punktir)'),
   ];
   return `<h3>SHARTLI BELGILAR</h3><div class="belgi">${q.join('')}</div>`;
 }

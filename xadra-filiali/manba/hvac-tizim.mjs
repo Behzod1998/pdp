@@ -4,6 +4,7 @@
 //
 // Xonalarning issiqlik yuklamasi (odamlar, yoritish, uskuna, devor/oyna/tom) va me'yoriy tashqi havo — hvac.mjs dan.
 import { LOYIHA, H, ICHKI, XONALAR, XIZMAT_JIHOZ, KW_TADBIR, DERAZALAR, lokal, sinflar } from './model.mjs';
+const VITRAJ_G = { tokcha: 1000, tepa: 3100 };   // SR1–SR3 oynasi (model.mjs bilan bir xil; matn uchun)
 import { xonaMaydoni } from './tekshiruv.mjs';
 import { hvacHisob, F } from './hvac.mjs';
 
@@ -12,8 +13,15 @@ import { hvacHisob, F } from './hvac.mjs';
 export const REK = { brend: 'Welkin', nominal: [2500, 3000], tanlov: 3000, etaYoz: 0.55, etaQish: 0.70, esp: 300 };
 // Split: odatiy nominal sovutish quvvati (tashqi 35 °C); en — ichki blok eni (rejada), mm. Aniq qiymat — tanlangan model pasportidan.
 export const SPLIT = [
-  { btu: 9000, kw: 2.6, en: 800 }, { btu: 12000, kw: 3.5, en: 850 }, { btu: 18000, kw: 5.3, en: 1000 }, { btu: 24000, kw: 7.0, en: 1100 },
+  { btu: 9000, kw: 2.6, en: 800 }, { btu: 12000, kw: 3.5, kwMaks: 4.0, en: 850 }, { btu: 18000, kw: 5.3, en: 1000 }, { btu: 24000, kw: 7.0, kwMaks: 8.0, en: 1100 },
 ];
+// Devorga o'rnatiladigan split. O'lchamlar — shu sinfdagi odatiy bloklar uchun taxminiy (aniq — tanlangan model pasportidan).
+export const KD_OLCHAM = {
+  24000: { ichki: [1100, 330, 240], tashqi: [890, 700, 340], kg: 45, kabel: '3×2.5 mm²', avtomat: 20 },
+  18000: { ichki: [1000, 310, 230], tashqi: [850, 600, 320], kg: 38, kabel: '3×2.5 mm²', avtomat: 20 },
+  12000: { ichki: [850, 290, 210], tashqi: [780, 550, 290], kg: 30, kabel: '3×1.5 mm²', avtomat: 16 },
+  9000: { ichki: [800, 285, 200], tashqi: [720, 500, 270], kg: 26, kabel: '3×1.5 mm²', avtomat: 16 },
+};
 export const KASSETA = [{ btu: 36000, kw: 10.5 }, { btu: 48000, kw: 14.0 }];
 // Buyurtmachi tanlovi va narxlari (12.10): sinflarga bittadan 24 000 BTU, xizmat xonalariga bittadan 12 000 BTU;
 // CEO va koworkingda konditsioner mavjud (koworkingda 24 000 + 18 000 BTU — koridorlar ham shu orqali sovutiladi).
@@ -65,23 +73,69 @@ function tarmoq(nuqtalar, magY, xKir, aylanmaY) {
   return [[xKir, magY], [xKir, y], [x, y], [x, uzoq[1]]];
 }
 
-// split ichki bloklari: sinflarda tashqi (deraza) devorda, deraza ikki yonida; SR4 — o'ng devorda; xizmat xonalarida — ko'rsatilgan devorda
+// ---------- konditsioner joylari ----------
+// Sinflarning ko'cha tomoni to'liq oynali (buyurtmachi, 12.10) — oyna ustida ichki blokka joy yetmaydi, fasadni o'zgartirib
+// bo'lmaydi. Shuning uchun: ichki blok — doskaga qarama-qarshi yon devorda, oynadan ~1.8 m (havo o'quvchilar ustidan doskaga,
+// oyna zonasini ham sovutadi); tashqi blok — tomda, xona ustida (trassa shift ichidan, tomdagi germetik o'tish orqali).
+// 3-qavat (taxminan) binoning yuqori-chap qismida — uning ostidagi xonalarning tashqi bloki yaqin ochiq tomga qo'yiladi.
+export const UCHINCHI = { x1: -400, x2: 11550, y1: -300, y2: 12000 };
+const TB_TOM = { SR1: [13000, 4600, 'g'], XZ1: [7700, 12800, 'g'], XZ2: [10500, 12800, 'g'] };   // markaz va yo'nalish (g — x bo'ylab)
+export const KD_OYNADAN = 1800;      // ichki blok markazi oyna yuzasidan, mm
+function tbTom(kod, cx, cy, gor, tsh = [890, 340]) {
+  const [x, y, o] = TB_TOM[kod] ? TB_TOM[kod] : [cx, cy, gor ? 'g' : 'v'];
+  const [a, b] = o === 'g' ? [tsh[0] / 2, tsh[1] / 2] : [tsh[1] / 2, tsh[0] / 2];
+  return { x1: x - a, x2: x + a, y1: y - b, y2: y + b, tom: true, uchinchi: !!TB_TOM[kod] };
+}
 function splitJoy(kod, n, en) {
   const x = XONALAR.find(r => r.kod === kod);
   if (x.deraza) {
-    const der = DERAZALAR.find(d => d.devor === x.deraza && d.x1 >= x.x1 && d.x2 <= x.x2);
-    const yuq = x.deraza === 'yuqori', y1 = yuq ? 0 : x.y2 - 250, y2 = yuq ? 250 : x.y2;
-    const ty1 = yuq ? -700 : x.y2 + 350, ty2 = ty1 + 350;
-    const markazlar = n === 1 ? [(der.x1 + der.x2) / 2] : [(x.x1 + der.x1) / 2, (der.x2 + x.x2) / 2];
-    return markazlar.map(cx => ({
-      x1: cx - en / 2, x2: cx + en / 2, y1, y2, tb: { x1: cx - 450, x2: cx + 450, y1: ty1, y2: ty2 } }));
+    const yuq = x.deraza === 'yuqori', chapda = x.doska === 'ong';      // doska o'ngda — blok chap (orqa) devorda
+    const wx1 = chapda ? x.x1 : x.x2 - 250, wx2 = wx1 + 250, ich = chapda ? 1 : -1;
+    const yy = (n === 1 ? [KD_OYNADAN] : [KD_OYNADAN, KD_OYNADAN + 3400]).map(d => yuq ? x.y1 + d : x.y2 - d);
+    return yy.map(cy => ({ x1: wx1, x2: wx2, y1: cy - en / 2, y2: cy + en / 2,
+      tb: tbTom(kod, (chapda ? x.x1 : x.x2) + ich * 700, cy + (yuq ? 1400 : -1400), false) }));
   }
   if (kod === 'SR4') return (n === 1 ? [12200] : [9200, 15200]).map(cy => ({ x1: x.x2 - 250, x2: x.x2, y1: cy - en / 2, y2: cy + en / 2,
-    tb: { x1: x.x2 + 450, x2: x.x2 + 800, y1: cy - 450, y2: cy + 450, taxminiy: true } }));
+    tb: tbTom(kod, x.x2 - 700, cy + 1400, false) }));
   const v = { XZ1: ['x1', 10300], XZ2: ['x2', 10200], XZ3: ['y2', 13525], XZ4: ['y2', 16525] }[kod];
-  if (v[0] === 'x1') return [{ x1: x.x1, x2: x.x1 + 250, y1: v[1] - en / 2, y2: v[1] + en / 2 }];
-  if (v[0] === 'x2') return [{ x1: x.x2 - 250, x2: x.x2, y1: v[1] - en / 2, y2: v[1] + en / 2 }];
-  return [{ x1: v[1] - en / 2, x2: v[1] + en / 2, y1: x.y2 - 250, y2: x.y2 }];
+  const t12 = KD_OLCHAM[12000].tashqi;
+  if (v[0] === 'x1') return [{ x1: x.x1, x2: x.x1 + 250, y1: v[1] - en / 2, y2: v[1] + en / 2, tb: tbTom(kod, 0, 0, true, t12) }];
+  if (v[0] === 'x2') return [{ x1: x.x2 - 250, x2: x.x2, y1: v[1] - en / 2, y2: v[1] + en / 2, tb: tbTom(kod, 0, 0, true, t12) }];
+  return [{ x1: v[1] - en / 2, x2: v[1] + en / 2, y1: x.y2 - 250, y2: x.y2, tb: tbTom(kod, v[1] + 800, x.y2 - 1300, true, t12) }];
+}
+
+// ---------- oynali fasadlar: quyosh va oyna orqali issiqlik (buyurtmachi, 12.10) ----------
+// Fasad yo'nalishlari — model.mjs (FASAD_YON). Qiymatlar — hisob farazlari (ASHRAE usuli soddalashtirilgan), obyektda tasdiqlanadi.
+export const OYNA = {
+  U: 2.9,                    // W/(m²·K): ikki qavatli shisha (steklopaket), alyumin rom
+  g: [0.35, 0.45],           // shisha + reklama plyonkasi (perforatsiyali «one way vision») — quyosh o'tkazishi, plyonka turiga bog'liq
+  gToza: 0.70,               // plyonkasiz steklopaket (solishtirish uchun)
+  clf: 0.75,                 // sovutish yuklamasi koeffitsienti (xona massasi, ichki pardasiz)
+  quyosh: { sharq: 680, "g'arb": 680, janub: 350, shimol: 120 },   // W/m²: iyul, ~41° sh.k., tik yuzaga eng katta
+  sochma: 100,               // W/m²: quyosh to'g'ri tushmagan paytda (sochma nur)
+  devorU: 1.0,               // W/(m²·K): oyna ostidagi va ustidagi devor
+};
+// hisobiy paytlar: ertalab sharqiy oynaga quyosh tushadi (tashqi ~30 °C, split nominal quvvatda);
+// kechqurun g'arbiy oynaga quyosh tushadi va havo eng issiq (tashqi 38 °C, 42–43 °C li kunlarda split ~87%)
+export const PAYT = [
+  { kod: 'ertalab', soat: '9:00', t: 30, quyosh: 'sharq', kap: 1.0, tom: 0.4 },
+  { kod: 'kechqurun', soat: '16:00', t: F.tTashqi, quyosh: "g'arb", kap: ISSIQ, tom: 1.0 },
+];
+export function oynaYuk(x, r, oa) {
+  const ders = DERAZALAR.filter(d => d.vitraj && d.devor === x.deraza && d.x1 >= x.x1 - 1 && d.x2 <= x.x2 + 1);
+  const Ao = ders.reduce((t, d) => t + (d.x2 - d.x1) * (d.tepa - d.tokcha), 0) / 1e6;
+  const Ad = (x.x2 - x.x1) * H / 1e6 - Ao, yon = ders[0].yon;
+  const tomBor = !(x.x1 < UCHINCHI.x2 && x.y1 < UCHINCHI.y2);
+  return PAYT.map(p => {
+    const nur = yon === p.quyosh ? OYNA.quyosh[yon] : OYNA.sochma, dT = p.t - F.tIchki;
+    const quyosh = OYNA.g.map(g => Ao * nur * g * OYNA.clf / 1000), quyoshToza = Ao * nur * OYNA.gToza * OYNA.clf / 1000;
+    const otish = (Ao * OYNA.U * dT + Ad * OYNA.devorU * (dT + (yon === p.quyosh ? 8 : 3))) / 1000;
+    const tom = tomBor ? F.tom * r.A * p.tom : 0;
+    const oaQ = oa * F.rho * F.c * dT / 3600 * (1 - REK.etaYoz);
+    const env = [quyosh[0] + otish, quyosh[1] + otish + tom];
+    return { ...p, Ao, yon, nur, quyosh, quyoshToza, otish, tom, oaQ, env,
+      q: [r.ichki + env[0] + oaQ, r.ichki + env[1] + oaQ], qToza: r.ichki + quyoshToza + otish + tom + oaQ };
+  });
 }
 
 // kanal o'lchami: to'rtburchak kesimlar ichidan havo tezligi chegarasiga mos eng kichigi
@@ -96,19 +150,26 @@ export function tizimHisob() {
   const xona = xonalar.map(r => {
     const g = GURUH.find(g => g.xonalar.includes(r.kod));
     const oa = k10(Math.max(r.oaMin, r.tur === 'sinf' ? KISHI_SINF * r.odam : 0));
-    const oaQoldiq = oa * F.kwPerKm3 * (1 - REK.etaYoz);
-    const q = [r.ichki + r.env[0] + oaQoldiq, r.ichki + r.env[1] + oaQoldiq];
-    const nTav = r.tur === 'sinf' ? 2 : 1;
-    const tavsiya = SPLIT.find(s => s.kw * nTav >= q[1] / ISSIQ) || SPLIT.at(-1);
+    const X = XONALAR.find(z => z.kod === r.kod);
     const tn = TANLOV[r.tur], n = tn.n, split = SPLIT.find(s => s.btu === tn.btu);
-    const quvvat = n * split.kw, issiq = quvvat * ISSIQ;
-    // baho: 42–43 °C da ham yetadi | yukning past–o'rta qismida yetadi | kam
-    const baho = issiq >= q[1] ? 'yetarli' : quvvat >= q[0] ? 'chegarada' : 'kam';
+    const quvvat = n * split.kw;
+    // oynali sinflar: ertalab va kechqurun tekshiriladi, quvvatga nisbatan og'irrog'i olinadi; boshqalari — kechki issiq payt
+    const paytlar = X.deraza ? oynaYuk(X, r, oa) : null;
+    const pk = paytlar ? paytlar.reduce((a, b) => (b.q[1] - quvvat * b.kap > a.q[1] - quvvat * a.kap ? b : a)) : null;
+    const oaQoldiq = pk ? pk.oaQ : oa * F.kwPerKm3 * (1 - REK.etaYoz);
+    const env = pk ? pk.env : r.env;
+    const q = [r.ichki + env[0] + oaQoldiq, r.ichki + env[1] + oaQoldiq];
+    const kap = pk ? pk.kap : ISSIQ, issiq = quvvat * kap, issiqMaks = n * (split.kwMaks || split.kw) * kap;
+    const nTav = r.tur === 'sinf' ? 2 : 1;
+    const tavsiya = SPLIT.find(s => s.kw * nTav >= q[1] / kap) || SPLIT.at(-1);
+    // baho: eng og'ir paytda ham yetadi | yukning pastki chegarasigacha yetadi | kam
+    const baho = issiq >= q[1] ? 'yetarli' : issiq >= q[0] ? 'chegarada' : 'kam';
+    const bahoMaks = issiqMaks >= q[1] ? 'yetarli' : issiqMaks >= q[0] ? 'chegarada' : 'kam';
     const t = terminallar(r.kod);
     const kirish = g.kod === 'R2' && r.kod !== 'SR4' && r.kod.startsWith('SR') ? 'past' : 'yuqori';
     return {
-      ...r, R: g.kod, oa, oaMeyor: r.oaMin, co2: F.co2Tashqi + r.odam * F.co2Kishi / oa * 1e6, oaQoldiq, q, n, split,
-      nTav, tavsiya, quvvat, issiq, baho, narx: n * tn.narx,
+      ...r, env, R: g.kod, oa, oaMeyor: r.oaMin, co2: F.co2Tashqi + r.odam * F.co2Kishi / oa * 1e6, oaQoldiq, q, n, split,
+      nTav, tavsiya, quvvat, issiq, issiqMaks, kap, baho, bahoMaks, paytlar, payt: pk, narx: n * tn.narx,
       qNout: q[1] + r.noutbuk, noutbukOk: issiq >= q[1] + r.noutbuk,
       kanal: kanal(oa, 3.0), terminal: t,
       saYol: tarmoq(t.sa, g.sa, KOR_OXIRI, null),
@@ -193,12 +254,12 @@ export function tizimQatlam(id, k = 1) {
   T.xona.forEach(x => {
     x.splitlar.forEach(b => {
       q.push(`<rect x="${b.x1}" y="${b.y1}" width="${b.x2 - b.x1}" height="${b.y2 - b.y1}" rx="40" fill="#c9d1da" stroke="${TZ_RANG.split}" stroke-width="${22 * k}"/>`);
-      if (b.tb) q.push(`<rect x="${b.tb.x1}" y="${b.tb.y1}" width="${b.tb.x2 - b.tb.x1}" height="${b.tb.y2 - b.tb.y1}" fill="#fff" stroke="${TZ_RANG.split}" stroke-width="${12 * k}" ${b.tb.taxminiy ? `stroke-dasharray="${40 * k} ${25 * k}"` : ''}/>`);
+      if (b.tb) q.push(`<rect x="${b.tb.x1}" y="${b.tb.y1}" width="${b.tb.x2 - b.tb.x1}" height="${b.tb.y2 - b.tb.y1}" fill="#fff" stroke="${TZ_RANG.split}" stroke-width="${12 * k}" ${b.tb.tom || b.tb.taxminiy ? `stroke-dasharray="${40 * k} ${25 * k}"` : ''}/>`);
     });
-    const b = x.splitlar[0], gor = b.x2 - b.x1 > b.y2 - b.y1;
-    const lx = gor ? (x.splitlar.length > 1 ? (x.splitlar[0].x2 + x.splitlar[1].x1) / 2 : (b.x1 + b.x2) / 2) : b.x1 - 120;
+    const b = x.splitlar[0], gor = b.x2 - b.x1 > b.y2 - b.y1, chapda = !gor && b.x1 <= XONALAR.find(z => z.kod === x.kod).x1 + 1;
+    const lx = gor ? (x.splitlar.length > 1 ? (x.splitlar[0].x2 + x.splitlar[1].x1) / 2 : (b.x1 + b.x2) / 2) : chapda ? b.x2 + 120 : b.x1 - 120;
     const ly = gor ? (b.y1 < 1000 ? b.y2 + 330 : b.y1 - 160) : (x.splitlar.length > 1 ? (x.splitlar[0].y2 + x.splitlar[1].y1) / 2 : (b.y1 + b.y2) / 2);
-    q.push(t(lx, ly, `${x.n > 1 ? x.n + ' × ' : ''}${btuNom(x.split.btu)}`, 210, `text-anchor="${gor ? 'middle' : 'end'}" fill="#333" font-weight="700"`));
+    q.push(t(lx, ly, `${x.n > 1 ? x.n + ' × ' : ''}${btuNom(x.split.btu)}`, 210, `text-anchor="${gor ? 'middle' : chapda ? 'start' : 'end'}" fill="#333" font-weight="700"`));
   });
   // rekuperatorlar va fasad panjaralari
   T.guruh.forEach(g => {
@@ -277,10 +338,12 @@ export function tizimHtml() {
   const R2 = T.guruh[1];
   const sinf = T.xona.filter(x => x.tur === 'sinf'), ofis = T.xona.filter(x => x.tur === 'ofis');
   const perim = sinf.filter(x => x.derazali);
+  const oynali = T.xona.filter(x => x.payt), eng = yon => oynali.filter(x => x.payt.yon === yon).reduce((a, b) => (b.q[1] > a.q[1] ? b : a));
+  const sharq = eng('sharq'), garb = eng("g'arb"), kamMin = Math.min(...oynali.map(x => x.q[0] - x.issiq)), kamMax = Math.max(...oynali.map(x => x.q[1] - x.issiq));
   const [kw] = T.qoshimcha;
   const BAHO = { yetarli: '<span class="ok">yetarli</span>', chegarada: '<span class="f">chegarada</span>', kam: '<span class="og">kam</span>' };
   const som = v => (Math.round(v / 1e5) / 10).toLocaleString('en-US').replace(/,/g, ' ') + ' mln so\'m';
-  const xq = x => `<tr><td><b>${x.kod}</b></td><td class="r">${x.odam}</td><td class="r">${x.oa}</td><td class="r">${n0(x.co2)}</td><td class="r">${n1(x.odamS + x.odamL)}</td><td class="r">${n1(x.yorit + x.jihoz)}</td><td class="r f">${n1(x.env[0])}–${n1(x.env[1])}</td><td class="r">${n1(x.oaQoldiq)}</td><td class="r"><b>${n1(x.q[0])}–${n1(x.q[1])}</b></td><td style="white-space:nowrap"><b>${x.n > 1 ? x.n + ' × ' : ''}${btuNom(x.split.btu)}</b> <span class="kichik">${n1(x.quvvat)} / ${n1(x.issiq)} kW</span></td><td>${BAHO[x.baho]}</td><td class="kichik">${x.nTav > 1 ? x.nTav + ' × ' : ''}${btuNom(x.tavsiya.btu)}</td></tr>`;
+  const xq = x => `<tr><td><b>${x.kod}</b></td><td class="r">${x.odam}</td><td class="r">${x.oa}</td><td class="r">${n0(x.co2)}</td><td class="r">${n1(x.odamS + x.odamL)}</td><td class="r">${n1(x.yorit + x.jihoz)}</td><td class="r f">${n1(x.env[0])}–${n1(x.env[1])}</td><td class="r">${n1(x.oaQoldiq)}</td><td class="r"><b>${n1(x.q[0])}–${n1(x.q[1])}</b><br><span class="kichik">${x.payt ? x.payt.soat + ', ' + x.payt.yon : '16:00'}</span></td><td style="white-space:nowrap"><b>${x.n > 1 ? x.n + ' × ' : ''}${btuNom(x.split.btu)}</b> <span class="kichik">${n1(x.quvvat)} / ${n1(x.issiq)} kW</span></td><td>${BAHO[x.baho]}</td><td class="kichik">${x.nTav > 1 ? x.nTav + ' × ' : ''}${btuNom(x.tavsiya.btu)}</td></tr>`;
   const b1 = sahifa(`
     <div class="sub">${LOYIHA.brend} · ${LOYIHA.filial} · ${LOYIHA.manzil}</div>
     <h1>2-qavat: ventilyatsiya (2 ta rekuperator) va konditsionerlash (split) — hisob</h1>
@@ -294,17 +357,32 @@ export function tizimHtml() {
     <p class="kichik">Loyiha sarfi: sinflarda ${KISHI_SINF} m³/soat·kishi (me'yoriy ~22; CO₂ ~${n0(Math.min(...sinf.map(x => x.co2)))}–${n0(Math.max(...sinf.map(x => x.co2)))} ppm), derazasiz xizmat xonalarida 60 m³/soat·kishi (KMK). Kanal kesimi: magistral ≤ 4.5 m/s, fasadgacha ≤ 4.0, xona tarmog'i ≤ 3.0 m/s. Rejadagi kanallar yo'nalishi — taklif; uni buyurtmachi hal qiladi.</p>
 
     <h2>2. Split konditsionerlar — buyurtmachi tanlovi tekshiruvi</h2>
-    <table style="font-size:6.9pt"><tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo, m³/soat</th><th class="r">CO₂, ppm</th><th class="r">Odamlar</th><th class="r">Yoritish, uskuna</th><th class="r">Devor, oyna, tom</th><th class="r">Tashqi havo qoldig'i</th><th class="r">Yuk, kW</th><th>Tanlov (35 / 42 °C)</th><th>Baho</th><th>Hisob tavsiyasi</th></tr>
+    <table style="font-size:6.9pt"><tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo, m³/soat</th><th class="r">CO₂, ppm</th><th class="r">Odamlar</th><th class="r">Yoritish, uskuna</th><th class="r">Oyna, devor, tom</th><th class="r">Tashqi havo qoldig'i</th><th class="r">Yuk, kW (payt)</th><th>Tanlov: nominal / shu paytda</th><th>Baho</th><th>Hisob tavsiyasi</th></tr>
       ${T.xona.map(xq).join('')}
       <tr class="jami"><td colspan="8">11 xona</td><td class="r">${n1(T.xona.reduce((t, x) => t + x.q[0], 0))}–${n1(T.xona.reduce((t, x) => t + x.q[1], 0))}</td><td colspan="3">${n1(T.nominal11)} kW nominal</td></tr>
       <tr><td><b>KW</b></td><td class="r">35 / ${kw.odamTadbir}</td><td colspan="6" class="kichik">koworking va ikkala koridor (koridorlar koworkingga ochiq); ${kw.izoh}</td><td class="r"><b>${n1(kw.q[0])}–${n1(kw.q[1])}</b><br><span class="kichik">tadbirda ${n1(kw.qTadbir[0])}–${n1(kw.qTadbir[1])}</span></td><td><b>mavjud</b> <span class="kichik">${n1(kw.quvvat)} / ${n1(kw.quvvat * ISSIQ)} kW</span></td><td>${kw.quvvat * ISSIQ >= kw.q[1] ? BAHO.yetarli : BAHO.chegarada}<br><span class="kichik">tadbirda: ${kw.quvvat >= kw.qTadbir[0] ? 'chegarada' : 'kam'}</span></td><td></td></tr>
       <tr><td><b>CEO</b></td><td class="r">${T.qoshimcha[1].odam}</td><td colspan="8" class="kichik">${T.qoshimcha[1].izoh}</td><td><b>mavjud</b></td><td></td></tr>
     </table>
-    <p class="kichik"><b>Hisob:</b> yuk — odamlar (${F.odamS}+${F.odamL} W), yoritish ${F.yoritish} W/m², interaktiv panel ${F.panel} kW, kompyuterli ish joyi ${F.ishJoyi} kW, devor-oyna-tom oralig'i (derazalar o'lchami va yo'nalishi, tom noma'lum) va rekuperatordan keyin qolgan tashqi havo issiqligi (yozda ~${n1(T.tKirishYoz)} °C). Split nominali 35 °C da; 42–43 °C da ~${ISSIQ * 100}%. <b>Baho:</b> yetarli — 42–43 °C da ham yuqori chegarani qoplaydi; chegarada — yukning past–o'rta qismida yetadi. Hisob tavsiyasi — eng og'ir holat uchun (sinfda 2 ta blok).</p>
-    <div class="xulosa"><b>Natija.</b> Xizmat xonalari (12k) va 4-xona (24k) — <b>yetarli</b>. Derazali 6 sinfda bitta 24k (7.0 kW, 42–43 °C da ~${n1(perim[0].issiq)} kW) yuk ${n1(perim[0].q[0])}–${n1(perim[0].q[1])} kW ning past–o'rta qismini qoplaydi: derazalar shimol yoki sharqqa qaragan, pardali va xona ustida 3-qavat bo'lsa — yetadi; g'arbga qaragan pardasiz deraza, ochiq tom va 42 °C li kunda ~${n1(perim[0].q[1] - perim[0].issiq)} kW kam (noutbuklar bilan ~${n1(perim[0].qNout - perim[0].issiq)} kW). Bitta blok 44 m² sinfda havoni bir tomondan beradi — deraza ustida, o'rtada joylashgan. Koworkingdagi mavjud ${kw.mavjud.map(btuNom).join(' + ')} (${n1(kw.quvvat)} kW) kundalik rejimda koridorlar bilan birga yetadi; 70 kishilik tadbirda chegarada (${n1(kw.qTadbir[0])}–${n1(kw.qTadbir[1])} kW, tashqi havosiz), derazadan shamollatilsa — kam.</div>
+    <p class="kichik"><b>Hisob:</b> yuk — odamlar (${F.odamS}+${F.odamL} W), yoritish ${F.yoritish} W/m², interaktiv panel ${F.panel} kW, kompyuterli ish joyi ${F.ishJoyi} kW, oynali fasad (2a-bo'lim), devor va tom, rekuperatordan keyin qolgan tashqi havo issiqligi. Oynali sinflar ertalab (9:00, sharqqa quyosh, tashqi ~30 °C, split nominal quvvatda) va kechqurun (16:00, g'arbga quyosh, ${F.tTashqi} °C, split ~${ISSIQ * 100}%) tekshiriladi — og'irrog'i olinadi; boshqa xonalar — kechqurun. <b>Baho:</b> yetarli — yuqori chegarani ham qoplaydi; chegarada — pastki chegarani qoplaydi; kam — pastki chegaraga ham yetmaydi.</p>
+    <div class="xulosa"><b>Natija.</b> Xizmat xonalari (12k) va 4-xona (24k, quyoshsiz) — <b>yetarli</b>. Oynali 6 sinfda reklama plyonkasi bilan ham eng og'ir paytda yuk bitta 24k dan katta: SR5–SR7 (sharq, ertalab) ${n1(sharq.q[0])}–${n1(sharq.q[1])} kW, 24k ~${n1(sharq.issiq)} kW; SR1–SR3 (g'arb, kechqurun) ${n1(garb.q[0])}–${n1(garb.q[1])} kW, 24k ~${n1(garb.issiq)} kW — <b>kam</b>, ${n1(kamMin)}–${n1(kamMax)} kW yetishmaydi. Narx o'zgarmagan holda yumshatish choralari — 2a-bo'lim. Koworkingdagi mavjud ${kw.mavjud.map(btuNom).join(' + ')} (${n1(kw.quvvat)} kW) kundalik rejimda koridorlar bilan birga yetadi; 70 kishilik tadbirda chegarada (${n1(kw.qTadbir[0])}–${n1(kw.qTadbir[1])} kW).</div>
   `);
+  const oq = x => { const [e, k] = x.paytlar; return `<tr><td><b>${x.kod}</b></td><td>${x.payt.yon}</td><td class="r">${n1(e.Ao)}</td><td class="r">${n1(e.q[0])}–${n1(e.q[1])}</td><td class="r">${n1(k.q[0])}–${n1(k.q[1])}</td><td class="r">${n1(x.payt.qToza)}</td><td class="r">${n1(x.issiq)} / ${n1(x.issiqMaks)}</td><td>${BAHO[x.baho]} / ${BAHO[x.bahoMaks]}</td></tr>`; };
   const b2 = sahifa(`
-    <h2 style="margin-top:0">3. Narx (buyurtmachi narxlari, 12.10)</h2>
+    <h2 style="margin-top:0">2a. Oynali sinflar: quyosh, reklama plyonkasi va narx o'zgarmagan holda tavsiyalar</h2>
+    <p class="kichik">Buyurtmachi (12.10): ko'cha tomoni to'liq oynali, steklopaket + reklama plyonkasi. SR1–SR3 — g'arb (quyosh botadi), oyna ~${n1(VITRAJ_G.tokcha / 1000)}–${n1(VITRAJ_G.tepa / 1000)} m, pastida 1 m devor; SR5–SR7 — sharq (quyosh chiqadi), oyna poldan shiftgacha; koworking — janub. Quyosh: tik yuzaga ${OYNA.quyosh.sharq} W/m² (iyul, sharq/g'arb), shisha + plyonka g = ${OYNA.g.join('–')} (plyonkasiz ${OYNA.gToza}), CLF ${OYNA.clf}; oyna U = ${OYNA.U} W/m²·K.</p>
+    <table><tr><th>Xona</th><th>Fasad</th><th class="r">Oyna, m²</th><th class="r">Yuk 9:00, kW</th><th class="r">Yuk 16:00, kW</th><th class="r">Plyonkasiz (og'ir payt)</th><th class="r">1 × 24k: nominal / inverter maks.</th><th>Baho</th></tr>
+      ${oynali.map(oq).join('')}
+    </table>
+    <div class="xulosa"><b>Narx o'zgarmagan holda tavsiya</b> (7 × 24k + 4 × 12k va 2 ta rekuperator qoladi):
+      <ol style="margin-top:1mm">
+        <li><b>Reklama plyonkasi oynaning hammasiga</b>, perforatsiyali («one way vision»), tashqi tomoni oq yoki ochiq rangli — quyosh issiqligini ~40–50% kamaytiradi (SR5–SR7 da ${n1(sharq.payt.qToza)} → ${n1(sharq.q[0])}–${n1(sharq.q[1])} kW). Plyonka baribir tortiladi — faqat turi va rangini shunga qarab tanlash kerak.</li>
+        <li><b>Split — inverter, T3 (tropik, +52 °C gacha) sinfi, pasportida maksimal sovutish ≥ 8 kW</b> (24k) — shu narx oralig'ida tanlanadi. Sharqiy sinflarda ertalab maksimal rejimda yuk pastki chegarasigacha qoplanadi.</li>
+        <li><b>Ichki blok oynaga yaqin</b> (yon devorda, oynadan ~${KD_OYNADAN / 1000} m): sovuq havo issiq oyna zonasini ham qamraydi. <b>Tashqi blok tomda</b> — tayanchda (tomdan ≥ 0.4 m), qora yopma ustida emas, iloji bo'lsa soyada; R1/R2 tashqi havo olish joyidan ≥ 3 m uzoqda.</li>
+        <li><b>Oldindan sovutish:</b> SR5–SR7 — birinchi darsdan 30–40 daqiqa oldin (quyosh chiqqanda), SR1–SR3 — 13:00 dan; eshiklar yopiq; rekuperatorlar dars vaqtida doim ishlaydi; harorat 24–25 °C ga qo'yiladi.</li>
+        <li><b>Dars jadvali (iyul–avgust):</b> 14:00–18:00 da katta guruhlar quyoshsiz SR4 da, SR1–SR3 da kichikroq guruhlar.</li>
+      </ol>
+      Natija: SR5–SR7 — ko'p kunlarda yetadi, eng issiq ertalablarda chegarada; SR1–SR3 — eng issiq kunlarda 15:00–18:00 da to'liq guruh bilan ~1.5–3 kW yetishmaydi (xona ~26–28 °C gacha isishi mumkin). Shunda eng arzon qo'shimcha — faqat SR1–SR3 ga bittadan 12k (3 × $${TANLOV.ofis.narx} = $${n0(3 * TANLOV.ofis.narx)}); hozircha narxga kiritilmagan.</div>
+    <h2>3. Narx (buyurtmachi narxlari, 12.10)</h2>
     <table><tr><th>Nomi</th><th class="r">Soni</th><th class="r">Narxi</th><th class="r">Summa</th></tr>
       <tr><td>Rekuperator ${REK.brend}, ${REK.nominal[1]} m³/soat</td><td class="r">${GURUH.length} ta</td><td class="r">${som(NARX.rekuperator)}</td><td class="r">${som(T.narx.rekuperator)}</td></tr>
       <tr><td>Havo kanallari (chizmadan ${n0(T.kanalChizma / 1000)} m + ${NARX.kanalZaxira * 100}% burilish va ulanishlar)</td><td class="r">${T.kanalUz} m</td><td class="r">${n0(NARX.kanalM)} so'm/m</td><td class="r">${som(T.narx.kanal)}</td></tr>
@@ -318,8 +396,8 @@ export function tizimHtml() {
     <ul>
       <li><b>Elektr quvvati:</b> splitlar to'liq yuklamada ~${n0(T.elektr11)} kW (EER ≈ ${EER}); rekuperator ventilyatorlari — pasportdan (taxminan 2 × 1.5–2.5 kW).</li>
       <li><b>Qish:</b> tashqi ${F.tQish} °C da ${n0(T.Qjami)} m³/soat havoni isitish ~${n0(T.qishTashqi)} kW; rekuperatordan keyin (FIK ${REK.etaQish * 100}%) havo ~${n1(T.tKirishQish)} °C, qolgan ~${n0(T.qishQoldiq)} kW ni splitlar (isitish rejimi) yoki radiatorlar beradi; kerak bo'lsa kanalda isitgich (18 °C gacha ~${n0(T.isitgich)} kW). Rekuperatorda muzlashdan himoya.</li>
-      <li><b>Shovqin:</b> rekuperatorlar tebranishdan himoyalovchi osmalarda, kanallar bilan egiluvchan ulanadi; toza havo va so'rish kanallarida 1–1.5 m, tashqi havo va chiqarish kanallarida ≥ 1 m shovqin so'ndirgich; rekuperator ostida ~2.5 m yopiq GKL shift (mineral paxta bilan) va lyuk. Maqsad: koridorda ≤ 40, sinfda ≤ 35 dB(A). R2 ni SR7 va XZ1 eshiklari ustidan 1.5–2 m sharqqa surish tavsiya etiladi.</li>
-      <li><b>Kondensat va freon:</b> sinflarda split tashqi devorda — drenaj va trassa qisqa (3–5 m); SR4 va xizmat xonalarida tashqi blok joyi aniqlanadi (tom yoki o'ng devor ortidagi oraliq), trassa ≤ 15–20 m, drenaj nishab bilan yoki nasos.</li>
+      <li><b>Shovqin:</b> rekuperatorlar tebranishdan himoyalovchi osmalarda, kanallar bilan egiluvchan ulanadi; toza havo va so'rish kanallarida 1–1.5 m, tashqi havo va chiqarish kanallarida ≥ 1 m shovqin so'ndirgich; rekuperator ostida ~2.5 m yopiq GKL shift (mineral paxta bilan) va lyuk. Maqsad: koridorda ≤ 40, sinfda ≤ 35 dB(A).</li>
+      <li><b>Kondensat va freon:</b> tashqi bloklar tomda (fasad o'zgarmaydi): trassa ~5 m, SR1, XZ1, XZ2 da (ustida 3-qavat) 7–13 m — shift ichida, tomdagi germetik o'tish orqali; drenaj — shift ichida nishab bilan stoyakka yoki mini-nasos bilan tomga.</li>
       <li><b>Boshqarish:</b> har sinfda CO₂ datchigi; yong'in signalida rekuperatorlar o'chadi; kanallar devor va koridordan o'tishda yong'inga qarshi klapan.</li>
       <li><b>Koworking:</b> tadbirda ~${kw.oa} m³/soat tashqi havo kerak — R1, R2 ga sig'maydi; derazadan shamollatish yoki alohida qurilma — qaror kerak.</li>
     </ul>
@@ -328,8 +406,9 @@ export function tizimHtml() {
       <li>Rekuperator narxi — bittasi uchunmi (hisobda: 2 × 28 mln so'm)? Narxga montaj kiradimi?</li>
       <li>Splitlar narxiga montaj kiradimi?</li>
       <li>${REK.brend} modeli: aniq kodi, ${REK.nominal[1]} m³/soatda tashqi statik bosimi, shovqini, o'lchamlari.</li>
-      <li>Derazalar yo'nalishi va qaysi xonalar ochiq tom ostida — sinflardagi 24k ning yetarliligi shunga bog'liq.</li>
-      <li>Tashqi bloklar joyi (fasad, tom, o'ng devor ortidagi oraliq).</li>
+      <li>Reklama plyonkasi turi (perforatsiyali yoki yaxlit, rangi) — oynadan o'tadigan quyosh issiqligi shunga bog'liq; rasmini yuboring.</li>
+      <li>SR1–SR3 oyna tepasining aniq balandligi; tomga tashqi bloklarni o'rnatish va trassa o'tkazishga ruxsat, tom yopmasi turi.</li>
+      <li>Fasad o'zgarmasa — rekuperatorlarning tashqi havo olish va chiqarish panjaralari ham tomga chiqariladi (kanal yo'nalishi — buyurtmachi qarori).</li>
     </ol>
   `);
   return `<!doctype html><html lang="uz"><head><meta charset="utf-8"><title>${LOYIHA.brend} · ${LOYIHA.filial} — HVAC hisobi</title><style>${CSS}</style></head><body>${b1}${b2}</body></html>`;
@@ -344,13 +423,6 @@ if (import.meta.url === `file://${process.argv[1]}`) {
 }
 
 // ---------- konditsionerlar: o'rnatish (joylashuv rejasi, detallar, 3D) ----------
-// Devorga o'rnatiladigan split. O'lchamlar — shu sinfdagi odatiy bloklar uchun taxminiy (aniq — tanlangan model pasportidan).
-export const KD_OLCHAM = {
-  24000: { ichki: [1100, 330, 240], tashqi: [890, 700, 340], kg: 45, kabel: '3×2.5 mm²', avtomat: 20 },
-  18000: { ichki: [1000, 310, 230], tashqi: [850, 600, 320], kg: 38, kabel: '3×2.5 mm²', avtomat: 20 },
-  12000: { ichki: [850, 290, 210], tashqi: [780, 550, 290], kg: 30, kabel: '3×1.5 mm²', avtomat: 16 },
-  9000: { ichki: [800, 285, 200], tashqi: [720, 500, 270], kg: 26, kabel: '3×1.5 mm²', avtomat: 16 },
-};
 // balandliklar, mm: deraza tokchasi va tepasi (taxmin, joyida o'lchanadi), ichki blok pastki qirrasi, tashqi blok
 export const KD_Z = { tokcha: 900, derazaTepa: 2600, ichki: 2750, tashqi: 150, shift: H };
 
@@ -358,19 +430,21 @@ export function kdRoyxat() {
   const T = tizimHisob();
   const r = [];
   T.xona.forEach(x => x.splitlar.forEach((b, j) => {
-    const o = KD_OLCHAM[x.split.btu];
+    const o = KD_OLCHAM[x.split.btu], X = XONALAR.find(z => z.kod === x.kod);
     const gor = b.x2 - b.x1 > b.y2 - b.y1;
-    // ichki blok qaysi devorda va xonaga qaysi tomonga qaragan
-    const devor = gor ? (b.y1 <= 0 + 1 ? 'yuqori' : b.y2 >= ICHKI.y - 1 ? 'past' : b.y1 < (XONALAR.find(z => z.kod === x.kod).y1 + 300) ? 'yuqori' : 'past')
-      : (b.x1 <= XONALAR.find(z => z.kod === x.kod).x1 + 1 ? 'chap' : 'ong');
-    const derazali = x.derazali, sr4 = x.kod === 'SR4';
+    // ichki blok qaysi devorda (xona ichiga qaragan tomoni)
+    const devor = gor ? (b.y1 < X.y1 + 300 ? 'yuqori' : 'past') : (b.x1 <= X.x1 + 1 ? 'chap' : 'ong');
+    const oynali = !!X.deraza, sr4 = x.kod === 'SR4', tb = b.tb;
+    // trassa: blokdan tomdagi TB gacha — shift ichida (ortogonal) + vertikal (blokdan shiftgacha, plita, tomdagi tayanch) + 1 m zaxira
+    const cx = (b.x1 + b.x2) / 2, cy = (b.y1 + b.y2) / 2, tcx = (tb.x1 + tb.x2) / 2, tcy = (tb.y1 + tb.y2) / 2;
+    const trassaM = Math.ceil((Math.abs(tcx - cx) + Math.abs(tcy - cy)) / 1000 + (H - KD_Z.ichki) / 1000 + 0.3 + 0.6 + 1);
     r.push({
       kod: `KD-${r.length + 1}`, xona: x.kod, btu: x.split.btu, kw: x.split.kw, o, b, devor,
-      ichkiJoy: derazali ? 'deraza ustida, tashqi devorda' : sr4 ? "o'ng devorda, doska ustida" : 'ichki devorda',
-      tbJoy: derazali ? 'fasadda, deraza tokchasi ostida' : sr4 ? "o'ng devor ortidagi oraliqda yoki tomda" : 'tomda (xona ustida) yoki koworking fasadida',
-      trassa: derazali ? '3–4 m' : sr4 ? '3–8 m' : '4–6 m (tom) / 10–20 m (fasad)',
-      drenaj: derazali ? 'trassa bilan fasad bo\'ylab pastki quvurga' : sr4 ? 'oraliqqa' : 'shift ichida nishab bilan stoyakka yoki nasos',
-      tb: b.tb || null, tbTaxminiy: !derazali,
+      ichkiJoy: oynali ? `orqa yon devorda, oynadan ${KD_OYNADAN / 1000} m` : sr4 ? "o'ng devorda, doska ustida" : 'ichki devorda',
+      tbJoy: tb.uchinchi ? 'tomda, yaqin ochiq joyda (xona ustida 3-qavat)' : 'tomda, xona ustida',
+      trassa: `~${trassaM} m`, trassaM,
+      drenaj: 'shift ichida nishab bilan stoyakka yoki mini-nasos bilan tomga',
+      tb, tbTaxminiy: true,
     });
   }));
   return r;
@@ -387,30 +461,31 @@ export function kdQatlam(id, k = 1) {
     const yo = { yuqori: [0, 1], past: [0, -1], chap: [1, 0], ong: [-1, 0] }[u.devor];
     const [ax, ay] = [cx + yo[0] * 350, cy + yo[1] * 350], [bx, by] = [cx + yo[0] * 2600, cy + yo[1] * 2600];
     q.push(`<line x1="${ax}" y1="${ay}" x2="${bx}" y2="${by}" stroke="#2f78b7" stroke-width="${35 * k}" stroke-dasharray="${120 * k} ${70 * k}" marker-end="url(#${id}kd)"/>`);
-    // freon trassasi va tashqi blok
-    if (u.tb) {
-      const tb = u.tb, tcx = (tb.x1 + tb.x2) / 2, tcy = (tb.y1 + tb.y2) / 2;
-      const px = gor ? b.x2 - 120 : cx, py = gor ? cy : b.y2 - 120;
-      q.push(`<polyline points="${px},${py} ${gor ? tb.x2 - 120 : tcx},${gor ? tcy : tb.y2 - 120}" fill="none" stroke="#e07a1f" stroke-width="${28 * k}" ${u.tbTaxminiy ? `stroke-dasharray="${60 * k} ${40 * k}"` : ''}/>`);
-      q.push(`<rect x="${tb.x1}" y="${tb.y1}" width="${tb.x2 - tb.x1}" height="${tb.y2 - tb.y1}" fill="#fff" stroke="#333" stroke-width="${16 * k}" ${u.tbTaxminiy ? `stroke-dasharray="${50 * k} ${30 * k}"` : ''}/>`,
-        `<circle cx="${tcx}" cy="${tcy}" r="${Math.min(tb.x2 - tb.x1, tb.y2 - tb.y1) * 0.36}" fill="none" stroke="#333" stroke-width="${10 * k}"/>`);
-      // yozuv: fasad bo'ylab — blok yonida (o'lcham zanjiriga tegmaydi), vertikal blokda — ostida
-      const tl = gor ? [tb.x2 + 110, tcy + 65] : [tcx, tb.y2 + 300];
-      q.push(t(tl[0], tl[1], `TB-${u.kod.slice(3)}`, 190, `text-anchor="${gor ? 'start' : 'middle'}" fill="#333" font-weight="700"`));
-    }
+    // freon trassasi (shift ichida) va tomdagi tashqi blok — kesim tekisligidan yuqorida: punktir
+    const tb = u.tb, tcx = (tb.x1 + tb.x2) / 2, tcy = (tb.y1 + tb.y2) / 2;
+    const yol = gor ? [[cx, cy], [tcx, cy], [tcx, tcy]] : [[cx, cy], [cx, tcy], [tcx, tcy]];     // avval devor bo'ylab (havo strelkasiga tegmaydi)
+    q.push(`<polyline points="${yol.map(p => p.join(',')).join(' ')}" fill="none" stroke="#e07a1f" stroke-width="${26 * k}" stroke-dasharray="${60 * k} ${40 * k}"/>`);
+    q.push(`<rect x="${tb.x1}" y="${tb.y1}" width="${tb.x2 - tb.x1}" height="${tb.y2 - tb.y1}" fill="#fff" fill-opacity=".85" stroke="#333" stroke-width="${16 * k}" stroke-dasharray="${50 * k} ${30 * k}"/>`,
+      `<circle cx="${tcx}" cy="${tcy}" r="${Math.min(tb.x2 - tb.x1, tb.y2 - tb.y1) * 0.36}" fill="none" stroke="#333" stroke-width="${10 * k}"/>`);
+    const tg = tb.x2 - tb.x1 > tb.y2 - tb.y1;
+    const [tlx, tly, tan] = tg ? [tb.x2 + 110, tcy - 10, 'start'] : [tcx, tb.y2 + 260, 'middle'];
+    q.push(t(tlx, tly, `TB-${u.kod.slice(3)}`, 180, `text-anchor="${tan}" fill="#333" font-weight="700"`),
+      t(tlx, tly + 200, 'tomda', 140, `text-anchor="${tan}" fill="#555" font-style="italic"`));
     // ichki blok
     q.push(`<rect x="${b.x1}" y="${b.y1}" width="${b.x2 - b.x1}" height="${b.y2 - b.y1}" rx="50" fill="#fff" stroke="#1d2733" stroke-width="${26 * k}"/>`);
     // yozuv havo strelkasiga tegmasin: fasad blokida — blok yonida; ichki devordagi gorizontal blokda — koridorda (devor ortida);
     // vertikal blokda — strelkaning ustida va ostida
-    const tom = !u.tb, ich = gor && tom;
+    const ich = gor && !XONALAR.find(z => z.kod === u.xona).deraza;
     let lx, ly, ly2, anc;
     if (ich) [lx, anc, ly] = [b.x1 + 300, 'start', u.devor === 'past' ? b.y2 + 420 : b.y1 - 620], ly2 = ly + 260;
     else if (gor) [lx, anc, ly] = [b.x2 + 150, 'start', u.devor === 'yuqori' ? b.y1 + 330 : b.y2 - 420], ly2 = ly + 260;
     else [lx, anc, ly] = [u.devor === 'ong' ? b.x1 - 150 : b.x2 + 150, u.devor === 'ong' ? 'end' : 'start', cy - 200], ly2 = cy + 330;
     q.push(t(lx, ly, u.kod, 230, `text-anchor="${anc}" fill="#1d2733" font-weight="700"`),
       t(lx, ly2, `${btuNom(u.btu)} · ${n1(u.kw)} kW`, 180, `text-anchor="${anc}" fill="#1d2733"`));
-    if (tom) q.push(t(lx, ly2 + 240, 'TB — joyi aniqlanadi', 140, `text-anchor="${anc}" fill="#555" font-style="italic"`));
   });
+  // oynali fasadlar (buyurtmachi, 12.10)
+  q.push(t(15050, -390, "G'ARB · oyna 1.0–3.1 m (pastida 1 m devor) · steklopaket + reklama plyonkasi", 150, 'text-anchor="middle" fill="#3d5a73" font-weight="700"'),
+    t(15050, ICHKI.y + 560, "SHARQ (ko'cha) · oyna poldan shiftgacha · steklopaket + reklama plyonkasi", 150, 'text-anchor="middle" fill="#3d5a73" font-weight="700"'));
   // mavjud konditsionerlar
   const [kw] = T.qoshimcha;
   q.push(t(2975, 12900, `mavjud: ${kw.mavjud.map(btuNom).join(' + ')}`, 230, 'text-anchor="middle" fill="#1d2733" font-weight="700"'),
@@ -430,9 +505,9 @@ export function kdPanel() {
     <tr><td>—</td><td>CEO</td><td>—</td><td colspan="4">mavjud</td></tr>
   </table></div>
   <div><h3>O'RNATISH</h3><p class="izoh">
-    <b>Sinflar:</b> ichki blok deraza ustida, o'rtada: pastki qirrasi ${KD_Z.ichki / 1000} m da (deraza tepasi ~${KD_Z.derazaTepa / 1000} m, shiftgacha ≥ 0.15 m) — havo deraza tomondan koridor tomonga, o'quvchilar ustidan. Tashqi blok fasadda, deraza tokchasi ostida, kronshteynda — xizmat derazadan. Trassa va drenaj blok yonidagi teshikdan (Ø 70) chiqib, fasad bo'ylab qutida pastga tushadi.<br>
-    <b>SR4:</b> ichki blok o'ng devorda, doska ustida; tashqi blok o'ng devor ortidagi oraliqda (eni yetarli bo'lsa) yoki tomda.<br>
-    <b>XZ1–XZ4:</b> ichki blok ichki devorda; tashqi blok tomda (xona ustida 3-qavat bo'lmasa) yoki koridor shifti orqali koworking fasadiga — tashqi havo olish panjaralaridan ≥ 3 m uzoqda; drenaj — nishab bilan stoyakka yoki nasos.<br>
+    <b>Sinflar (ko'cha tomoni to'liq oynali):</b> SR1–SR3 (g'arb) — oyna ~1.0–3.1 m, SR5–SR7 (sharq) — poldan shiftgacha; oyna ustida blokka joy yo'q, fasad o'zgarmaydi. Ichki blok — doskaga qarama-qarshi yon devorda, oynadan ~${KD_OYNADAN / 1000} m, pastki qirrasi ${KD_Z.ichki / 1000} m: havo o'quvchilar ustidan doska tomonga, oyna zonasini ham sovutadi.<br>
+    <b>Tashqi bloklar — tomda</b>, xona ustida, tayanch ramada (tomdan ≥ 0.4 m, tebranishga qarshi yostiqlar bilan); SR1, XZ1, XZ2 ustida 3-qavat — yaqin ochiq tomda. Trassa shift ichidan, tomdagi germetik o'tish (gusak) orqali; drenaj — shift ichida nishab bilan stoyakka yoki mini-nasos bilan tomga.<br>
+    <b>SR4:</b> ichki blok o'ng devorda, doska ustida. <b>XZ1–XZ4:</b> ichki devorda.<br>
     <b>Elektr:</b> har bir split — shitdan alohida liniya. Jami ~${n0(T.elektr11)} kW (to'liq yuklamada). Detallar — 2-varaq (o'rnatish detallari).
   </p></div>`;
 }

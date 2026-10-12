@@ -421,11 +421,11 @@ def devor_kesimlari(w, derazalar, h):
     """Devor to'rtburchagini derazalar bo'yicha bo'laklaydi: [(x1, x2, y1, y2, z1, z2)]."""
     boyY = (w['y2'] - w['y1']) > (w['x2'] - w['x1'])
     a0, a1 = (w['y1'], w['y2']) if boyY else (w['x1'], w['x2'])
-    ich = sorted((d['y1'], d['y2']) if boyY else (d['x1'], d['x2']) for d in derazalar
+    ich = sorted(((d['y1'], d['y2']) if boyY else (d['x1'], d['x2'])) + (d.get('tokcha', SILL), d.get('tepa', HEAD)) for d in derazalar
                  if d['x1'] >= w['x1'] and d['x2'] <= w['x2'] and d['y1'] >= w['y1'] and d['y2'] <= w['y2'])
     seg, pos = [], a0
-    for oa, ob in ich:
-        seg += [(pos, oa, 0, h), (oa, ob, 0, SILL), (oa, ob, HEAD, h)]; pos = ob
+    for oa, ob, sill, head in ich:     # oyna ostidagi va ustidagi devor (tokcha 0 / tepa = h bo'lsa — yo'q)
+        seg += [(pos, oa, 0, h), (oa, ob, 0, sill), (oa, ob, head, h)]; pos = ob
     seg.append((pos, a1, 0, h))
     out = []
     for sa, sb, z1, z2 in seg:
@@ -435,33 +435,32 @@ def devor_kesimlari(w, derazalar, h):
 
 
 def deraza(q, d, gl=None):
-    """Deraza (PVX rom, o'rtada impost, ichki tokcha). d — devor qalinligidagi to'rtburchak; ichki tomon — d['ichki'] (+1/−1)."""
+    """Deraza / oynali fasad (PVX yoki alyumin rom, impostlar ~1.5 m dan, baland oynada ko'ndalang impost, ichki tokcha).
+    d — devor qalinligidagi to'rtburchak; ichki tomon — d['ichki'] (+1/−1); tokcha/tepa — d['tokcha'], d['tepa'] (bo'lmasa SILL/HEAD)."""
     gl = gl or M['oyna']
+    sill, head = d.get('tokcha', SILL), d.get('tepa', HEAD)
     boyY = (d['y2'] - d['y1']) > (d['x2'] - d['x1'])
     f, t = 60, 35
     ich = d.get('ichki', -1)
-    if boyY:   # devor x bo'yicha qalin, deraza y bo'ylab
-        xc = (d['x1'] + d['x2']) / 2; y1, y2 = d['y1'], d['y2']
-        B = lambda a, b, z1, z2, m, tq=t: q.box(xc - tq, xc + tq, a, b, z1, z2, m)
-        ym = (y1 + y2) / 2
-        B(y1, y1 + f, SILL, HEAD, M['ramka']); B(y2 - f, y2, SILL, HEAD, M['ramka'])
-        B(y1, y2, SILL, SILL + f, M['ramka']); B(y1, y2, HEAD - f, HEAD, M['ramka'])
-        B(ym - 35, ym + 35, SILL, HEAD, M['ramka'])
-        for a, b in ((y1 + f, ym - 35), (ym + 35, y2 - f)): B(a, b, SILL + f, HEAD - f, gl, 6)
-        ichki_yuz = d['x1'] if ich < 0 else d['x2']
-        xa, xb = sorted((ichki_yuz + ich * 45, xc + ich * t))
-        q.box(xa, xb, y1 - 30, y2 + 30, SILL - 20, SILL, M['ramka'])
-    else:
-        yc = (d['y1'] + d['y2']) / 2; x1, x2 = d['x1'], d['x2']
-        B = lambda a, b, z1, z2, m, tq=t: q.box(a, b, yc - tq, yc + tq, z1, z2, m)
-        xm = (x1 + x2) / 2
-        B(x1, x1 + f, SILL, HEAD, M['ramka']); B(x2 - f, x2, SILL, HEAD, M['ramka'])
-        B(x1, x2, SILL, SILL + f, M['ramka']); B(x1, x2, HEAD - f, HEAD, M['ramka'])
-        B(xm - 35, xm + 35, SILL, HEAD, M['ramka'])
-        for a, b in ((x1 + f, xm - 35), (xm + 35, x2 - f)): B(a, b, SILL + f, HEAD - f, gl, 6)
-        ichki_yuz = d['y1'] if ich < 0 else d['y2']
-        ya, yb = sorted((ichki_yuz + ich * 45, yc + ich * t))
-        q.box(x1 - 30, x2 + 30, ya, yb, SILL - 20, SILL, M['ramka'])
+    a1, a2 = (d['y1'], d['y2']) if boyY else (d['x1'], d['x2'])
+    c = (d['x1'] + d['x2']) / 2 if boyY else (d['y1'] + d['y2']) / 2
+    B = (lambda a, b, z1, z2, m, tq=t: q.box(c - tq, c + tq, a, b, z1, z2, m)) if boyY else (lambda a, b, z1, z2, m, tq=t: q.box(a, b, c - tq, c + tq, z1, z2, m))
+    n = max(2, math.ceil((a2 - a1) / 1500))
+    imp = [a1 + (a2 - a1) * i / n for i in range(1, n)]
+    tr = [head - 700] if head - sill > 2600 else []          # baland oynada ko'ndalang impost
+    B(a1, a1 + f, sill, head, M['ramka']); B(a2 - f, a2, sill, head, M['ramka'])
+    B(a1, a2, sill, sill + f, M['ramka']); B(a1, a2, head - f, head, M['ramka'])
+    for m in imp: B(m - 35, m + 35, sill, head, M['ramka'])
+    for z in tr: B(a1, a2, z - 30, z + 30, M['ramka'])
+    chet = [a1 + f] + [v for m in imp for v in (m - 35, m + 35)] + [a2 - f]
+    zl = [sill + f] + [v for z in tr for v in (z - 30, z + 30)] + [head - f]
+    for i in range(0, len(chet), 2):
+        for j in range(0, len(zl), 2): B(chet[i], chet[i + 1], zl[j], zl[j + 1], gl, 6)
+    if sill > 0:     # ichki tokcha
+        ichki_yuz = (d['x1'] if ich < 0 else d['x2']) if boyY else (d['y1'] if ich < 0 else d['y2'])
+        pa, pb = sorted((ichki_yuz + ich * 45, c + ich * t))
+        if boyY: q.box(pa, pb, a1 - 30, a2 + 30, sill - 20, sill, M['ramka'])
+        else: q.box(a1 - 30, a2 + 30, pa, pb, sill - 20, sill, M['ramka'])
 
 
 def barg_burchak(e, theta):
