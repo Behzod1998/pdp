@@ -303,7 +303,7 @@ export function tizimPanel() {
   </table></div>
   <div><h3>HISOB ASOSI</h3><p class="izoh">
     <b>Tashqi havo:</b> sinflarda ${KISHI_SINF} m³/soat·kishi (me'yoriy ~22), derazasiz xizmat xonalarida 60 m³/soat·kishi (KMK). R2 ga ${n0(T.guruh[1].Q)} m³/soat kerak — <b>${REK.nominal[1]} m³/soatlik model</b> (kanal qarshiligi ~${REK.esp} Pa da).<br>
-    <b>Split:</b> yuk — odamlar (115 W/kishi), yoritish, panel/kompyuter, devor-oyna-tom (oraliq) va rekuperatordan keyingi tashqi havo qoldig'i. ✓ — 42–43 °C da ham yetadi; ≈ — yukning past–o'rta qismida yetadi (derazalar yo'nalishi va tomga bog'liq). Sinflarda 24k — deraza ustida, xizmat xonalarida 12k. Koworkingdagi mavjud konditsionerlar koridorlarni ham sovutadi.<br>
+    <b>Split:</b> yuk — odamlar (115 W/kishi), yoritish, panel/kompyuter, oynali fasad (quyosh: sharq — 9:00, g'arb — 16:00; steklopaket + reklama plyonkasi), devor, tom va rekuperatordan keyingi tashqi havo qoldig'i. ✓ — yetarli; ≈ — chegarada; ✗ — eng og'ir paytda kam (oynali sinflar: tavsiyalar — konditsionerlar chizmasi, 2-varaq). Ichki blok — orqa yon devorda, oynaga yaqin; tashqi bloklar — tomda (punktir). Koworkingdagi mavjud konditsionerlar koridorlarni ham sovutadi.<br>
     Toza havo doska oldida beriladi, orqa devor yonida so'riladi. Kanallar koridorlar osma shifti ichida (~2.8 m), koworkingda — shift ostida (fasadgacha). Kanallar yo'nalishi — taklif, buyurtmachi o'zgartirishi mumkin.
   </p></div>`;
 }

@@ -151,13 +151,17 @@ function xonaMatni(k, ev) {
     n.push(`Chetdagi old partadan doskaga qarash burchagi <b>${b1(k.burchak)}°</b> (Beruniy — 39.8°): doska devori uzun (${mm(k.W)} m), 1-qatorning chetki o'rinlaridan doska qiyaroq ko'rinadi.`);
     n.push(`Parta ${PARTA.chuq / 10} sm chuqur (Beruniyda ${STANDART.parta.chuq / 10} sm): 3 qator ${mm(k.D)} m ga sig'ishi uchun doska → 1-parta ${sm(k.doska)} sm (standart ${sm(STANDART.doska)}), stul orqasidan keyingi partagacha ${sm(k.stulOrqasi)} sm (standart 36) — Beruniy mezoni bo'yicha "Qoniqarli".`);
     n.push(`1 kishiga <b>${k.kishiga.toFixed(2)} m²</b>; orqa bo'sh zona <b>${sm(k.orqaZona)} sm</b> — oxirgi qator orqasidan o'tib bo'lmaydi, shkaf uchun joy yo'q.`);
-    n.push(`Deraza tomonidagi partalar devordan ${sm(k.partadanOynagacha ?? yon)} sm — radiator joyi joyida tekshiriladi (kerak bo'lsa yupqa panel radiator).`);
+    const vd = k.derazalar[0];
+    if (vd?.vitraj) {
+      n.push(vd.tokcha ? `Ko'cha tomoni <b>to'liq oynali</b> (${vd.yon}, 1 m devor ustida): kechki quyosh issig'i — reklama plyonkasi, oldindan sovutish; radiator joyi tekshiriladi.`
+        : `Ko'cha tomoni <b>to'liq oynali</b> (${vd.yon}, <b>poldan</b>): ertalabki quyosh issig'i — reklama plyonkasi, oldindan sovutish; pastki qismi zarbaga chidamli shisha yoki 0.9 m to'siq.`);
+    } else n.push(`Deraza tomonidagi partalar devordan ${sm(k.partadanOynagacha ?? yon)} sm — radiator joyi joyida tekshiriladi (kerak bo'lsa yupqa panel radiator).`);
     n.push(k.eshikOldda ? `Eshik doska tomonda — kechikkan o'quvchi sinf oldidan kiradi.`
       : `Eshik orqa tomonda (K1 uchida, boshqa joy yo'q) — eshik oldidagi 2 o'rin olingan, sig'im ${k.orin}.`);
     n.push(`Doska ${devor} — doska va proyektor qavsi uchun devor mustahkamligi tekshiriladi.`);
     if (taxminiy.length) n.push(`${taxminiy.join(', ')} ustun(lar)i fotoda ko'rinmaydi — joyida tekshirish kerak.`);
     if (x.kod === 'SR3' || x.kod === 'SR5') n.push(`Koridorning berk uchida: eng uzoq o'rindan ZN2 zinasigacha ~${Math.round(ev.gacha2 / 1000)} m.`);
-    tavsiya = `${shishaTavsiya}Derazalarga roller parda yoki jalyuzi. Proyektor o'rniga interaktiv panel (LED) qo'yilsa, yorug'lik muammosi umuman qolmaydi. Sumkalar uchun parta ostiga ilgak.`;
+    tavsiya = `${shishaTavsiya}${k.derazalar[0]?.vitraj ? 'Oynaga reklama plyonkasi (perforatsiyali, ochiq rang) va ichkaridan roller parda.' : 'Derazalarga roller parda yoki jalyuzi.'} Proyektor o'rniga interaktiv panel (LED) qo'yilsa, yorug'lik muammosi umuman qolmaydi. Sumkalar uchun parta ostiga ilgak.`;
   }
   return { q, n, tavsiya };
 }
