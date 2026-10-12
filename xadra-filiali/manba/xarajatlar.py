@@ -87,8 +87,12 @@ NARX_QATORLAR = [
     ('aksessuar', "Quvur aksessuarlari (fitinglar)", 5000, "so'm/dona", "Buyurtmachi"),
     ('aksessuarSoni', "Quvur aksessuarlari soni", 100, "dona", "Buyurtmachi: jami 500 000 so'm"),
     ('kanal', "Kanalizatsiya quvuri (40 m) va otvodlar", 4000000, "so'm/komplekt", "Buyurtmachi: jami summa"),
-    ('kond2', "Konditsioner — 2-qavat (2 ta «96-ka», 96 000 BTU/soat ≈ 28 kW, o'rnatish bilan)", 7000, "$/komplekt", "Buyurtmachi: 2 ta uchun jami, o'rnatish bilan; «100-lik» = 96-ka (09.10)"),
-    ('vozdux', "Havo kanallari (vozduxovod), 200 m²", 7000, "$/komplekt", "Buyurtmachi: jami summa"),
+    ('rekuperator', "Rekuperator Welkin, 3 000 m³/soat", 28000000, "so'm/dona", "Buyurtmachi (12.10): bittasining narxi deb olindi"),
+    ('rekuperatorSoni', "Rekuperatorlar soni", 2, "dona", "Sxema: R1 (K1 shiftida), R2 (K2 shiftida)"),
+    ('kanalM', "Havo kanali (vozduxovod), 1 m", 300000, "so'm/m", "Buyurtmachi (12.10)"),
+    ('kanalUz', "Havo kanallari uzunligi", d['kanalUz'], "m", f"HVAC sxemasidan: {d['kanalChizma']} m (taklif yo'nalish) + 10% burilish va ulanishlar"),
+    ('split24', "Split konditsioner 24 000 BTU", 1120, "$/dona", "Buyurtmachi (12.10): SR1–SR7 ga bittadan"),
+    ('split12', "Split konditsioner 12 000 BTU", 380, "$/dona", "Buyurtmachi (12.10): XZ1–XZ4 ga bittadan"),
     ('kond3', "Konditsioner — 3-qavat o'quv xonasi", 1000, "$/dona", "Buyurtmachi"),
     # Taxminiy narxlar (buyurtmachi: «narxi va qanday mebel bo'lishi noma'lum — taxminan narx qo'yib berasan»)
     ('stolOfis', "Ofis stoli 140 × 70 (LDSP, tumba bilan)", 220, "$/dona", "TAXMIN — Toshkent bozori; mebelchi narxi bilan almashtiring"),
@@ -233,8 +237,12 @@ for w in d['buziladi']:
     qosh('BQ', 'Buzish ishlari', f"Devorni buzish — {joy}", w['uz'] / 1000, 'H', narx=('som', 'buzish'))
 qosh('BQ', 'Buzish ishlari', "Qurilish chiqindisini olib chiqish (jami)", miqdor=1, birlik='komplekt', narx=('som', 'chiqindi'))
 # Konditsioner va ventilyatsiya (buyurtmachi summalari, o'rnatish bilan)
-qosh('BQ', 'Konditsioner va ventilyatsiya', "Konditsioner — 2 ta «96-ka» (96 000 BTU/soat), o'rnatish bilan (jami)", miqdor=1, birlik='komplekt', narx='kond2')
-qosh('BQ', 'Konditsioner va ventilyatsiya', "Havo kanallari (vozduxovod), 200 m² (jami)", miqdor=1, birlik='komplekt', narx='vozdux')
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Rekuperator Welkin 3 000 m³/soat (R1 — K1, R2 — K2 koridori shiftida)", miqdor='rekuperatorSoni', birlik='dona', narx=('som', 'rekuperator'))
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Havo kanallari (vozduxovod) — HVAC sxemasi bo'yicha", miqdor='kanalUz', birlik='m', narx=('som', 'kanalM'))
+for kod in ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7']:
+    qosh(kod, 'Konditsioner va ventilyatsiya', "Split konditsioner 24 000 BTU", miqdor=1, birlik='dona', narx='split24')
+for kod in ['XZ1', 'XZ2', 'XZ3', 'XZ4']:
+    qosh(kod, 'Konditsioner va ventilyatsiya', "Split konditsioner 12 000 BTU", miqdor=1, birlik='dona', narx='split12')
 qosh('YQ', 'Konditsioner va ventilyatsiya', "Konditsioner (o'quv xonasi)", miqdor=1, birlik='dona', narx='kond3')
 
 # Sotuv (XZ1) va admin (XZ2) xonalari: mebel va interyer — taxminiy (jihozlar soni chizmadagi kabi)
@@ -349,11 +357,11 @@ izohlar = [
     "• Uzunliklar chizma v1.2 dan (mavjud holat chizmasining fotosi asosida) — ish boshlanishidan oldin joyida o'lchanadi.",
     "• Yoritish: koridorlar (K1, K2) va koworking zaliga 336 $ dan, o'quv xonalari (7), ofis xonalari (4) va CEO xonasiga 168 $ dan. Kirish zali, WC va yuqori qavat xonasi kiritilmagan.",
     "• Videokuzatuv: 16 ta kamera (40 $) va o'rnatish (21 $ dan), NVR, kabellar jami; logotiplar jami — «Butun qavat» qatorida.",
-    "• So'mdagi narxlar (matli plyonka, yong'in xavfsizligi, devor buzish va chiqindi) «Dollar kursi» katagi bo'yicha (11 900 so'm/$) $ ga o'tkaziladi.",
+    "• So'mdagi narxlar (matli plyonka, yong'in xavfsizligi, devor buzish va chiqindi, rekuperator va havo kanallari, santexnika) «Dollar kursi» katagi bo'yicha (11 900 so'm/$) $ ga o'tkaziladi.",
     "• Devor buzish: chizmadagi buziladigan devorlar uzunligi × devor balandligi (3.5 m) × 50 000 so'm/m².",
     "• Kutilmagan xarajatlar: umumiy summadan 10% — «Xonalar bo'yicha» varag'ining oxirida.",
     "• 3-qavat: 5-xona — o'quv xonasi (24 o'rin, bambuk panel va interaktiv doska); 2-xona — erkaklar hojatxonasi. Santexnika soni ikkala hojatxona uchun jami (2-qavatdagisi — ayollar: 2 kabina, unitazli, eng ichkarida; oldida rakovinali tambur — 6-xona 3-qavatga o'tish yo'lagi bo'lgani uchun ikki eshik orqali kiriladi); kafel faqat erkaklar hojatxonasi uchun (devor 58 m², pol 16 m²).",
-    "• Konditsioner va ventilyatsiya (buyurtmachi summalari, o'rnatish bilan): 2-qavatga 2 ta «96-ka» (96 000 BTU/soat) konditsioner va 200 m² havo kanali — «Butun qavat» qatorida; 3-qavat o'quv xonasiga 1 ta konditsioner.",
+    "• Ventilyatsiya va konditsionerlash (buyurtmachi, 12.10): 2 ta Welkin rekuperatori (28 mln so'm dan) va havo kanallari (HVAC sxemasidagi uzunlik × 300 000 so'm/m) — «Butun qavat» qatorida; split konditsionerlar: SR1–SR7 ga bittadan 24 000 BTU ($1 120), XZ1–XZ4 ga bittadan 12 000 BTU ($380) — xonalar qatorida; CEO xonasi va koworkingda konditsioner mavjud (koworkingdagisi koridorlarni ham sovutadi); 3-qavat o'quv xonasiga 1 ta konditsioner. Kirmagan: montaj (narxga kirmagan bo'lsa), diffuzor va panjaralar, shovqin so'ndirgichlar, kanal izolyatsiyasi, freon trassalari.",
     "• Santexnika: 4 ta kabina, issiq va sovuq suv quvurlari (40 m dan), 100 ta aksessuar, kanalizatsiya quvuri va otvodlar — «Hojatxonalar» qatorida.",
     "• 2-qavat koridorlari: 4-xonaning koridor oxiridagi devorlari GKL (avval shisha edi), markazida yorituvchi logotip; e'lonlar va e'tirof doskalari — K1 va K2 qatorlarida.",
     "• TAXMINIY narxlar (to'q sariq fon): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, koworking sahnasi (karkas devor, reyka, logotip, trek yoritish, ovoz, pol, minbar), 1-qavat resepshn stoykasi, mehmonlar mebeli va logotiplari — Toshkent bozori bo'yicha dastlabki baho; mebelchi va reklama ustasi narxi bilan almashtiring. «Yakuniy» varag'ida taxminiy qism alohida ko'rsatilgan.",

@@ -1,6 +1,7 @@
 // Xarajatlar jadvali uchun ma'lumot: har bir yangi devorning qaysi xonaga qaragan yuzlari va uzunligi,
 // yangi eshiklar, sinflar, ofis xonalari va CEO xonasidagi bambuk panel devorlari. Natija JSON — xarajatlar.py o'qiydi.
 import { DEVORLAR, XONALAR, ESHIKLAR, bolaklar, lokal } from './model.mjs';
+import { tizimHisob } from './hvac-tizim.mjs';
 const xonalar = XONALAR.flatMap(x => bolaklar(x).map(b => ({ kod: x.kod, ...b })));
 const ustma = (a1, a2, b1, b2) => Math.max(0, Math.min(a2, b2) - Math.max(a1, b1));
 const yuzlar = w => {
@@ -48,4 +49,6 @@ const ofislar = [
 ];
 // buziladigan devorlar (uzunligi va izohi)
 const buziladi = DEVORLAR.filter(w => w.holat === 'buziladi').map(w => ({ uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), izoh: w.izoh }));
-console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi }, null, 0));
+// HVAC: havo kanallari uzunligi (chizmadagi taklif yo'nalish + 10%), m
+const T = tizimHisob();
+console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi, kanalUz: T.kanalUz, kanalChizma: Math.round(T.kanalChizma / 1000) }, null, 0));

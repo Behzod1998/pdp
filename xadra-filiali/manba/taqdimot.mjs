@@ -70,8 +70,8 @@ export function taqdimotHtml() {
           <div>${kesimSvg(1.75)}</div>
           <ul>
             <li><b>2 ta ${REK.brend} rekuperatori</b> (${REK.nominal[1]} m³/soat) koridorlar shiftida: R1 — ${TZ.guruh[0].xonalar.join(', ')} (${TZ.guruh[0].Q} m³/soat), R2 — ${TZ.guruh[1].xonalar.join(', ')} (${TZ.guruh[1].Q} m³/soat). Sinfga ${TZ.xona[0].oa} m³/soat (CO₂ ~${Math.round(TZ.xona[0].co2 / 10) * 10} ppm).</li>
-            <li><b>Har xonaga split:</b> sinflarda 2 × ${TZ.xona[0].split.btu / 1000}k, 4-xonada 2 × ${TZ.xona.find(x => x.kod === 'SR4').split.btu / 1000}k, xizmat xonalarida ${[...new Set(TZ.xona.filter(x => x.tur === 'ofis').map(x => x.split.btu / 1000 + 'k'))].join(' / ')}. 4-xona va xizmat xonalarida deraza yo'q — ventilyatsiya majburiy.</li>
-            <li>Koworking: tadbirda ~${TZ.qoshimcha[0].oa} m³/soat tashqi havo — R1, R2 ga kirmaydi; split 2 × ${TZ.qoshimcha[0].split.btu / 1000}k (kasseta).</li>
+            <li><b>Split konditsionerlar:</b> sinflarga bittadan ${TZ.xona[0].split.btu / 1000}k (deraza ustida), xizmat xonalariga bittadan ${TZ.xona.find(x => x.tur === 'ofis').split.btu / 1000}k; CEO va koworkingda mavjud. 4-xona va xizmat xonalarida deraza yo'q — ventilyatsiya majburiy.</li>
+            <li>Koworking: mavjud konditsionerlar (${TZ.qoshimcha[0].mavjud.map(b => b / 1000 + 'k').join(' + ')}) koridorlarni ham sovutadi; tadbirda ~${TZ.qoshimcha[0].oa} m³/soat tashqi havo — R1, R2 ga kirmaydi.</li>
             <li>Doska yon devorda, deraza o'quvchilarning chap tomonida (3-xonada — doska kirish tomonida, buyurtmachi qarori) — yorug'lik doska va proyektorga tushmaydi. Toza havo doska oldida beriladi, orqada so'riladi; CO₂ datchigi.</li>
           </ul></div>
       </div>

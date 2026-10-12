@@ -15,10 +15,16 @@ export const SPLIT = [
   { btu: 9000, kw: 2.6, en: 800 }, { btu: 12000, kw: 3.5, en: 850 }, { btu: 18000, kw: 5.3, en: 1000 }, { btu: 24000, kw: 7.0, en: 1100 },
 ];
 export const KASSETA = [{ btu: 36000, kw: 10.5 }, { btu: 48000, kw: 14.0 }];
+// Buyurtmachi tanlovi va narxlari (12.10): sinflarga bittadan 24 000 BTU, xizmat xonalariga bittadan 12 000 BTU;
+// CEO va koworkingda konditsioner mavjud (koworkingda 24 000 + 18 000 BTU — koridorlar ham shu orqali sovutiladi).
+export const TANLOV = { sinf: { btu: 24000, n: 1, narx: 1120 }, ofis: { btu: 12000, n: 1, narx: 380 } };
+export const MAVJUD = { KW: [24000, 18000], X12: [] };
+export const NARX = { rekuperator: 28000000, kanalM: 300000, kurs: 11900, kanalZaxira: 0.10 };   // so'm; rekuperator — bittasi
 export const ISSIQ = 0.87;           // 42–43 °C li kunlarda split quvvati (nominalga nisbatan, umumiy holat)
 export const KISHI_SINF = 24;        // m³/soat har bir kishiga — sinflar uchun loyiha qiymati (me'yoriy ~22, CO₂ ≈ 1 150–1 200 ppm)
 export const EER = 3.2;              // sovutishda o'rtacha energiya samaradorligi (elektr quvvatini baholash uchun)
 const k10 = v => Math.ceil(v / 10) * 10;
+const uzunlik = pts => pts.slice(1).reduce((t, p, i) => t + Math.hypot(p[0] - pts[i][0], p[1] - pts[i][1]), 0);
 const btuNom = b => `${b / 1000}k`;
 
 // ---------- joylashuv (reja koordinatalari, mm) ----------
@@ -66,10 +72,11 @@ function splitJoy(kod, n, en) {
     const der = DERAZALAR.find(d => d.devor === x.deraza && d.x1 >= x.x1 && d.x2 <= x.x2);
     const yuq = x.deraza === 'yuqori', y1 = yuq ? 0 : x.y2 - 250, y2 = yuq ? 250 : x.y2;
     const ty1 = yuq ? -700 : x.y2 + 350, ty2 = ty1 + 350;
-    return [(x.x1 + der.x1) / 2, (der.x2 + x.x2) / 2].slice(0, n).map(cx => ({
+    const markazlar = n === 1 ? [(der.x1 + der.x2) / 2] : [(x.x1 + der.x1) / 2, (der.x2 + x.x2) / 2];
+    return markazlar.map(cx => ({
       x1: cx - en / 2, x2: cx + en / 2, y1, y2, tb: { x1: cx - 450, x2: cx + 450, y1: ty1, y2: ty2 } }));
   }
-  if (kod === 'SR4') return [9200, 15200].slice(0, n).map(cy => ({ x1: x.x2 - 250, x2: x.x2, y1: cy - en / 2, y2: cy + en / 2,
+  if (kod === 'SR4') return (n === 1 ? [12200] : [9200, 15200]).map(cy => ({ x1: x.x2 - 250, x2: x.x2, y1: cy - en / 2, y2: cy + en / 2,
     tb: { x1: x.x2 + 450, x2: x.x2 + 800, y1: cy - 450, y2: cy + 450, taxminiy: true } }));
   const v = { XZ1: ['x1', 10300], XZ2: ['x2', 10200], XZ3: ['y2', 13525], XZ4: ['y2', 16525] }[kod];
   if (v[0] === 'x1') return [{ x1: x.x1, x2: x.x1 + 250, y1: v[1] - en / 2, y2: v[1] + en / 2 }];
@@ -91,14 +98,18 @@ export function tizimHisob() {
     const oa = k10(Math.max(r.oaMin, r.tur === 'sinf' ? KISHI_SINF * r.odam : 0));
     const oaQoldiq = oa * F.kwPerKm3 * (1 - REK.etaYoz);
     const q = [r.ichki + r.env[0] + oaQoldiq, r.ichki + r.env[1] + oaQoldiq];
-    const n = r.tur === 'sinf' ? 2 : 1;
-    const tanla = qq => SPLIT.find(s => s.kw * n >= qq) || SPLIT.at(-1);
-    const split = tanla(q[1] / ISSIQ), splitMin = tanla(q[0] / ISSIQ);
+    const nTav = r.tur === 'sinf' ? 2 : 1;
+    const tavsiya = SPLIT.find(s => s.kw * nTav >= q[1] / ISSIQ) || SPLIT.at(-1);
+    const tn = TANLOV[r.tur], n = tn.n, split = SPLIT.find(s => s.btu === tn.btu);
+    const quvvat = n * split.kw, issiq = quvvat * ISSIQ;
+    // baho: 42–43 °C da ham yetadi | yukning past–o'rta qismida yetadi | kam
+    const baho = issiq >= q[1] ? 'yetarli' : quvvat >= q[0] ? 'chegarada' : 'kam';
     const t = terminallar(r.kod);
     const kirish = g.kod === 'R2' && r.kod !== 'SR4' && r.kod.startsWith('SR') ? 'past' : 'yuqori';
     return {
-      ...r, R: g.kod, oa, oaMeyor: r.oaMin, co2: F.co2Tashqi + r.odam * F.co2Kishi / oa * 1e6, oaQoldiq, q, n, split, splitMin,
-      qNout: q[1] + r.noutbuk, noutbukOk: n * split.kw * ISSIQ >= q[1] + r.noutbuk,
+      ...r, R: g.kod, oa, oaMeyor: r.oaMin, co2: F.co2Tashqi + r.odam * F.co2Kishi / oa * 1e6, oaQoldiq, q, n, split,
+      nTav, tavsiya, quvvat, issiq, baho, narx: n * tn.narx,
+      qNout: q[1] + r.noutbuk, noutbukOk: issiq >= q[1] + r.noutbuk,
       kanal: kanal(oa, 3.0), terminal: t,
       saYol: tarmoq(t.sa, g.sa, KOR_OXIRI, null),
       raYol: tarmoq(t.ra, g.ra, KOR_OXIRI - 300, kirish === 'yuqori' ? 6700 : 17700),
@@ -110,35 +121,44 @@ export function tizimHisob() {
     const Q = xs.reduce((t, x) => t + x.oa, 0), Qmin = xs.reduce((t, x) => t + x.oaMeyor, 0);
     return { ...g, Q, Qmin, zaxira: REK.tanlov - Q, magistral: kanal(Q, 4.5), tashqi: kanal(Q, 4.0) };
   });
-  // 11 xonadan tashqari: koworking (tadbir rejimi) va CEO — split tanlovi; tashqi havosi R1/R2 ga kirmaydi
+  // 11 xonadan tashqari: koworking va CEO — konditsionerlari mavjud (buyurtmachi). Koworking tekshiruvi: kundalik ~35 va
+  // tadbirda ~70 kishi; uning sovug'i koridorlarga ham yetadi (koridorlar koworkingga to'g'ridan ochiladi).
   const kwX = XONALAR.find(x => x.kod === 'KW'), ceoX = XONALAR.find(x => x.kod === 'X12');
   const kwA = xonaMaydoni(kwX), kwOdam = KW_TADBIR.stullar.length + 2;
   const kwOa = kwOdam * 20;   // KMK: ≤ 3 soatlik tadbirlar — 20 m³/soat·kishi
-  const kwIchki = kwOdam * (F.odamS + F.odamL) / 1000 + kwA * F.yoritish / 1000 + 0.3;
-  const kwQ = [kwIchki + 0.6 + kwOa * F.kwPerKm3 * (1 - REK.etaYoz), kwIchki + 3.4 + F.tom * kwA + kwOa * F.kwPerKm3 * (1 - REK.etaYoz)];
-  const kwK = KASSETA.find(s => 2 * s.kw >= kwQ[1] / ISSIQ) || KASSETA.at(-1);
-  const ceoA = xonaMaydoni(ceoX), ceoOdam = XIZMAT_JIHOZ.find(z => z.kod === 'X12').stullar.length;
-  const ceoQ = [ceoOdam * (F.odamS + F.odamL) / 1000 + ceoA * F.yoritish / 1000 + F.ishJoyi + 0.4,
-    ceoOdam * (F.odamS + F.odamL) / 1000 + ceoA * F.yoritish / 1000 + F.ishJoyi + 2.6 + F.tom * ceoA];
-  const ceoS = SPLIT.find(s => s.kw >= ceoQ[1] / ISSIQ) || SPLIT.at(-1);
+  const korYuk = 2 * (0.3 + 0.2);   // ikkala koridor: yoritish va o'tib-qaytuvchi odamlar, kW (taxminiy)
+  const kwYuk = odam => {
+    const ichki = odam * (F.odamS + F.odamL) / 1000 + kwA * F.yoritish / 1000 + 0.3;
+    return [ichki + 0.6 + korYuk, ichki + 3.4 + F.tom * kwA + korYuk];
+  };
+  const kwMavjud = MAVJUD.KW.reduce((t, b) => t + SPLIT.find(s => s.btu === b).kw, 0);
   const qoshimcha = [
-    { kod: 'KW', nomi: 'Koworking (tadbirda)', odam: kwOdam, A: kwA, oa: kwOa, q: kwQ, n: 2, split: kwK, kasseta: true,
-      izoh: `tashqi havo ~${kwOa} m³/soat — R1/R2 ga kirmaydi; alohida rekuperator bilan hisoblangan` },
-    { kod: 'X12', nomi: 'CEO xonasi', odam: ceoOdam, A: ceoA, oa: null, q: ceoQ, n: 1, split: ceoS,
-      izoh: 'derazali (2 devor) — tashqi havo derazadan; mexanik ventilyatsiya kirmagan' },
+    { kod: 'KW', nomi: 'Koworking + koridorlar', odam: 35, odamTadbir: kwOdam, A: kwA, oa: kwOa, q: kwYuk(35), qTadbir: kwYuk(kwOdam),
+      mavjud: MAVJUD.KW, quvvat: kwMavjud, izoh: `mavjud ${MAVJUD.KW.map(btuNom).join(' + ')}; tashqi havo (tadbirda ~${kwOa} m³/soat) R1/R2 ga kirmaydi` },
+    { kod: 'X12', nomi: 'CEO xonasi', odam: XIZMAT_JIHOZ.find(z => z.kod === 'X12').stullar.length, A: xonaMaydoni(ceoX), oa: null, mavjud: [], quvvat: null,
+      izoh: 'konditsioner mavjud; derazali — tashqi havo derazadan' },
   ];
   // jamlar
-  const barcha = [...xona.map(x => ({ n: x.n, kw: x.split.kw, btu: x.split.btu })), ...qoshimcha.map(x => ({ n: x.n, kw: x.split.kw, btu: x.split.btu }))];
   const soni = {};
-  barcha.forEach(b => { soni[b.btu] = (soni[b.btu] || 0) + b.n; });
-  const nominal11 = xona.reduce((t, x) => t + x.n * x.split.kw, 0);
-  const nominalJami = barcha.reduce((t, b) => t + b.n * b.kw, 0);
+  xona.forEach(x => { soni[x.split.btu] = (soni[x.split.btu] || 0) + x.n; });
+  const nominal11 = xona.reduce((t, x) => t + x.quvvat, 0);
+  const nominalJami = nominal11;
+  // havo kanallari uzunligi (chizmadagi taklif yo'nalish bo'yicha) va narx
+  const kanalChizma = guruh.reduce((t, g) => t + uzunlik(g.oa) + uzunlik(g.ea) + 2 * (KOR_OXIRI - g.joy.x2), 0)
+    + xona.reduce((t, x) => t + uzunlik(x.saYol) + uzunlik(x.raYol), 0);
+  const kanalUz = Math.ceil(kanalChizma / 1000 * (1 + NARX.kanalZaxira));
+  const narx = {
+    rekuperator: GURUH.length * NARX.rekuperator, kanal: kanalUz * NARX.kanalM,
+    split: xona.reduce((t, x) => t + x.narx, 0),
+  };
+  narx.somJami = narx.rekuperator + narx.kanal;
+  narx.usdJami = narx.somJami / NARX.kurs + narx.split;
   const Qjami = xona.reduce((t, x) => t + x.oa, 0);
   const qishTashqi = Qjami * F.rho * F.c * (F.tIchkiQish - F.tQish) / 3600;
   const tKirishQish = F.tQish + REK.etaQish * (F.tIchkiQish - F.tQish);
   const tKirishYoz = F.tTashqi - REK.etaYoz * (F.tTashqi - F.tIchki);
   return {
-    xona, guruh, qoshimcha, soni, nominal11, nominalJami, Qjami,
+    xona, guruh, qoshimcha, soni, nominal11, nominalJami, Qjami, kanalChizma, kanalUz, narx,
     elektr11: nominal11 / EER, elektrJami: nominalJami / EER,
     qishTashqi, qishQoldiq: qishTashqi * (1 - REK.etaQish), tKirishQish, tKirishYoz,
     isitgich: Qjami * F.rho * F.c * (18 - tKirishQish) / 3600,
@@ -206,21 +226,24 @@ const n0 = v => Math.round(v).toLocaleString('en-US').replace(/,/g, ' ');
 const n1 = v => v.toFixed(1);
 export function tizimPanel() {
   const T = tizimHisob();
-  const qator = x => `<tr><td>${x.kod}</td><td class="r">${x.odam}</td><td class="r">${x.oa}</td><td>${x.R}</td><td class="r">${n0(x.co2)}</td><td class="r">${n1(x.q[0])}–${n1(x.q[1])}</td><td><b>${x.n > 1 ? x.n + ' × ' : ''}${btuNom(x.split.btu)}</b></td></tr>`;
-  const qo = x => `<tr><td>${x.kod}</td><td class="r">${x.odam}</td><td class="r">${x.oa ?? '—'}</td><td>—</td><td></td><td class="r">${n1(x.q[0])}–${n1(x.q[1])}</td><td><b>${x.n} × ${btuNom(x.split.btu)}${x.kasseta ? ' kas.' : ''}</b></td></tr>`;
+  const BAHO = { yetarli: '✓', chegarada: '≈', kam: '✗' };
+  const qator = x => `<tr><td>${x.kod}</td><td class="r">${x.odam}</td><td class="r">${x.oa}</td><td>${x.R}</td><td class="r">${n0(x.co2)}</td><td class="r">${n1(x.q[0])}–${n1(x.q[1])}</td><td><b>${x.n > 1 ? x.n + ' × ' : ''}${btuNom(x.split.btu)}</b> ${BAHO[x.baho]}</td></tr>`;
+  const [kw, ceo] = T.qoshimcha;
   return `<div><h3>VENTILYATSIYA — 2 TA REKUPERATOR (${REK.brend.toUpperCase()})</h3><table>
     <tr><th>Qurilma</th><th>Xonalar</th><th class="r">Loyiha, m³/soat</th><th class="r">Me'yoriy min</th><th class="r">Kanal</th></tr>
     ${T.guruh.map(g => `<tr><td><b>${g.kod}</b> · ${g.koridor}</td><td>${g.xonalar.join(', ')}</td><td class="r">${n0(g.Q)}</td><td class="r">${n0(g.Qmin)}</td><td class="r">${g.magistral.a}×${g.magistral.b}</td></tr>`).join('')}
-    <tr class="jami"><td>Jami</td><td></td><td class="r">${n0(T.Qjami)}</td><td class="r">${n0(T.guruh.reduce((t, g) => t + g.Qmin, 0))}</td><td></td></tr>
+    <tr class="jami"><td>Jami</td><td>havo kanallari ~${T.kanalUz} m</td><td class="r">${n0(T.Qjami)}</td><td class="r">${n0(T.guruh.reduce((t, g) => t + g.Qmin, 0))}</td><td></td></tr>
   </table></div>
-  <div><h3>XONALAR: TASHQI HAVO VA SPLIT</h3><table>
+  <div><h3>XONALAR: TASHQI HAVO VA SPLIT (BUYURTMACHI TANLOVI)</h3><table>
     <tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo, m³/soat</th><th>Rek.</th><th class="r">CO₂, ppm</th><th class="r">Yuk, kW</th><th>Split</th></tr>
-    ${T.xona.map(qator).join('')}${T.qoshimcha.map(qo).join('')}
+    ${T.xona.map(qator).join('')}
+    <tr><td>KW</td><td class="r">35/${kw.odamTadbir}</td><td class="r">—</td><td>—</td><td></td><td class="r">${n1(kw.q[0])}–${n1(kw.qTadbir[1])}</td><td>mavjud ${kw.mavjud.map(btuNom).join(' + ')}</td></tr>
+    <tr><td>CEO</td><td class="r">${ceo.odam}</td><td class="r">—</td><td>—</td><td></td><td></td><td>mavjud</td></tr>
   </table></div>
   <div><h3>HISOB ASOSI</h3><p class="izoh">
-    <b>Tashqi havo:</b> sinflarda ${KISHI_SINF} m³/soat·kishi (me'yoriy ~22), derazasiz xizmat xonalarida 60 m³/soat·kishi (KMK). Har rekuperator ${REK.nominal[0]}–${REK.nominal[1]} m³/soat: R2 ga ${n0(T.guruh[1].Q)} m³/soat kerak — <b>${REK.nominal[1]} m³/soatlik model</b> (kanal qarshiligi ~${REK.esp} Pa da).<br>
-    <b>Split:</b> xona yuklamasi (odamlar 115 W/kishi, yoritish, panel/kompyuter, devor-oyna-tom oralig'i) + rekuperatordan keyingi tashqi havo qoldig'i (FIK ${Math.round(REK.etaYoz * 100)}%); tanlov — 42–43 °C da (quvvat ~${ISSIQ * 100}%) yuqori chegarani qoplaydi. Sinflarda 2 tadan blok — havo bir tekis taqsimlanadi.<br>
-    Toza havo doska oldida beriladi, orqa devor yonida so'riladi. Kanallar koridorlar osma shifti ichida (~2.8 m), koworkingda — shift ostida (fasadgacha). Tashqi bloklar fasadda; SR4 va xizmat xonalarinikini — tomda yoki o'ng devor ortidagi oraliqda (aniqlanadi). Kanallar yo'nalishi — taklif, buyurtmachi o'zgartirishi mumkin.
+    <b>Tashqi havo:</b> sinflarda ${KISHI_SINF} m³/soat·kishi (me'yoriy ~22), derazasiz xizmat xonalarida 60 m³/soat·kishi (KMK). R2 ga ${n0(T.guruh[1].Q)} m³/soat kerak — <b>${REK.nominal[1]} m³/soatlik model</b> (kanal qarshiligi ~${REK.esp} Pa da).<br>
+    <b>Split:</b> yuk — odamlar (115 W/kishi), yoritish, panel/kompyuter, devor-oyna-tom (oraliq) va rekuperatordan keyingi tashqi havo qoldig'i. ✓ — 42–43 °C da ham yetadi; ≈ — yukning past–o'rta qismida yetadi (derazalar yo'nalishi va tomga bog'liq). Sinflarda 24k — deraza ustida, xizmat xonalarida 12k. Koworkingdagi mavjud konditsionerlar koridorlarni ham sovutadi.<br>
+    Toza havo doska oldida beriladi, orqa devor yonida so'riladi. Kanallar koridorlar osma shifti ichida (~2.8 m), koworkingda — shift ostida (fasadgacha). Kanallar yo'nalishi — taklif, buyurtmachi o'zgartirishi mumkin.
   </p></div>`;
 }
 
@@ -247,57 +270,66 @@ tr.jami td { font-weight: 700; background: #eef1f6; }
 .kichik { font-size: 7pt; color: #555; }
 .rasm { border: .3mm solid #ddd; border-radius: 1mm; margin: 1mm 0 2mm; }
 `;
-export function tizimHtml(rejaSvgHtml = '') {
+export function tizimHtml() {
   const T = tizimHisob();
   let bet = 0;
   const sahifa = ichki => `<section class="bet"><div class="bar"></div>${ichki}<footer><span>${LOYIHA.brend} · ${LOYIHA.filial} · 2-qavat · HVAC hisobi (rekuperator + split) · ${LOYIHA.versiya} · ${LOYIHA.sanaISO}</span><span>${++bet}</span></footer></section>`;
-  const [R1, R2] = T.guruh;
-  const sinf = T.xona.filter(x => x.tur === 'sinf');
-  const xq = x => `<tr><td><b>${x.kod}</b></td><td class="r">${x.odam}</td><td class="r">${x.oa}</td><td class="r">${n0(x.co2)}</td><td class="r">${n1(x.odamS + x.odamL)}</td><td class="r">${n1(x.yorit + x.jihoz)}</td><td class="r f">${n1(x.env[0])}–${n1(x.env[1])}</td><td class="r">${n1(x.oaQoldiq)}</td><td class="r"><b>${n1(x.q[0])}–${n1(x.q[1])}</b></td><td style="white-space:nowrap"><b>${x.n > 1 ? x.n + ' × ' : ''}${btuNom(x.split.btu)}</b> <span class="kichik">${n1(x.n * x.split.kw)} kW</span></td><td class="kichik">${x.splitMin.btu !== x.split.btu ? `${x.n > 1 ? x.n + ' × ' : ''}${btuNom(x.splitMin.btu)}` : '—'}</td><td class="kichik">${x.noutbuk ? (x.noutbukOk ? '<span class="ok">yetadi</span>' : `<span class="og">+${n1(x.qNout - x.n * x.split.kw * ISSIQ)} kW</span>`) : '—'}</td></tr>`;
-  const qo = x => `<tr><td><b>${x.kod}</b></td><td class="r">${x.odam}</td><td class="r">${x.oa ?? '—'}</td><td></td><td colspan="4" class="kichik">${x.izoh}</td><td class="r"><b>${n1(x.q[0])}–${n1(x.q[1])}</b></td><td style="white-space:nowrap"><b>${x.n} × ${btuNom(x.split.btu)}${x.kasseta ? ' kas.' : ''}</b> <span class="kichik">${n1(x.n * x.split.kw)} kW</span></td><td></td><td></td></tr>`;
-  const sonlar = Object.entries(T.soni).sort((a, b) => +a[0] - +b[0]).map(([b, n]) => `${n} × ${btuNom(+b)}`).join(', ');
-  const IKKI = `
-    <h2>2. Xonalar bo'yicha: tashqi havo va split konditsioner tanlovi</h2>
-    <table style="font-size:6.9pt"><tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo, m³/soat</th><th class="r">CO₂, ppm</th><th class="r">Odamlar</th><th class="r">Yoritish, uskuna</th><th class="r">Devor, oyna, tom</th><th class="r">Tashqi havo qoldig'i</th><th class="r">Yuk, kW</th><th>Tanlov (BTU/soat)</th><th>Kichikroq¹</th><th>Noutbuk²</th></tr>
-      ${T.xona.map(xq).join('')}
-      <tr class="jami"><td colspan="8">11 xona</td><td class="r">${n1(T.xona.reduce((t, x) => t + x.q[0], 0))}–${n1(T.xona.reduce((t, x) => t + x.q[1], 0))}</td><td colspan="3">${n1(T.nominal11)} kW nominal</td></tr>
-      ${T.qoshimcha.map(qo).join('')}
-    </table>
-    <p class="kichik"><b>Tanlov qoidasi:</b> yuk — xonaning o'z issiqligi (odamlar ${F.odamS}+${F.odamL} W, yoritish ${F.yoritish} W/m², interaktiv panel ${F.panel} kW, kompyuterli ish joyi ${F.ishJoyi} kW, devor-oyna-tom oralig'i) va rekuperatordan keyin qolgan tashqi havo issiqligi (yozda ${F.tTashqi} °C → rekuperatordan keyin ~${n1(T.tKirishYoz)} °C). Split nominali (35 °C) × ${ISSIQ} (42–43 °C) ≥ yukning yuqori chegarasi. Sinflarda 2 ta bir xil blok. Standart qator: ${SPLIT.map(s => `${btuNom(s.btu)} ≈ ${s.kw} kW`).join(', ')} (aniq — model pasportidan). Xona tarmoqlari (≤ 3 m/s): ${Object.entries(T.xona.reduce((m, x) => { const k = x.kanal.a + '×' + x.kanal.b; (m[k] ||= []).push(x.kod); return m; }, {})).map(([k, v]) => `${v.join(', ')} — ${k}`).join('; ')} mm; sinfda 2 diffuzor va 2 so'rish panjarasi (har biri ~${T.xona[0].oa / 2} m³/soat).
-      ¹ Derazalar shimolda yoki soyada va xona ustida 3-qavat bo'lsa (yukning pastki chegarasi) — kichikroq blok yetadi. ² Har o'quvchi noutbuk bilan (+50 W): sinflarda tanlangan blok 42–43 °C da ham yetadimi.</p>
-    <div class="xulosa"><b>Natija:</b> 11 xonaga ${T.xona.reduce((t, x) => t + x.n, 0)} ta ichki blok — ${Object.entries(T.xona.reduce((m, x) => ({ ...m, [x.split.btu]: (m[x.split.btu] || 0) + x.n }), {})).sort((a, b) => +a[0] - +b[0]).map(([b, n]) => `${n} × ${btuNom(+b)}`).join(', ')} (jami ${n1(T.nominal11)} kW nominal). Koworking va CEO bilan: ${sonlar} (${n1(T.nominalJami)} kW). Har sinfda 2 × ${btuNom(sinf[0].split.btu)}: 25 kishi + quyosh + tom eng og'ir holatda ham, noutbuklar bilan ham yetadi; derazalar shimolda bo'lsa 2 × ${btuNom(sinf[0].splitMin.btu)} yetarli.</div>`;
+  const R2 = T.guruh[1];
+  const sinf = T.xona.filter(x => x.tur === 'sinf'), ofis = T.xona.filter(x => x.tur === 'ofis');
+  const perim = sinf.filter(x => x.derazali);
+  const [kw] = T.qoshimcha;
+  const BAHO = { yetarli: '<span class="ok">yetarli</span>', chegarada: '<span class="f">chegarada</span>', kam: '<span class="og">kam</span>' };
+  const som = v => (Math.round(v / 1e5) / 10).toLocaleString('en-US').replace(/,/g, ' ') + ' mln so\'m';
+  const xq = x => `<tr><td><b>${x.kod}</b></td><td class="r">${x.odam}</td><td class="r">${x.oa}</td><td class="r">${n0(x.co2)}</td><td class="r">${n1(x.odamS + x.odamL)}</td><td class="r">${n1(x.yorit + x.jihoz)}</td><td class="r f">${n1(x.env[0])}–${n1(x.env[1])}</td><td class="r">${n1(x.oaQoldiq)}</td><td class="r"><b>${n1(x.q[0])}–${n1(x.q[1])}</b></td><td style="white-space:nowrap"><b>${x.n > 1 ? x.n + ' × ' : ''}${btuNom(x.split.btu)}</b> <span class="kichik">${n1(x.quvvat)} / ${n1(x.issiq)} kW</span></td><td>${BAHO[x.baho]}</td><td class="kichik">${x.nTav > 1 ? x.nTav + ' × ' : ''}${btuNom(x.tavsiya.btu)}</td></tr>`;
   const b1 = sahifa(`
     <div class="sub">${LOYIHA.brend} · ${LOYIHA.filial} · ${LOYIHA.manzil}</div>
     <h1>2-qavat: ventilyatsiya (2 ta rekuperator) va konditsionerlash (split) — hisob</h1>
-    <div class="sub">Buyurtmachi qarori (12.10): tashqi havo — 2 ta ${REK.brend} rekuperatori (${REK.nominal[0]}–${REK.nominal[1]} m³/soat); har xonaga alohida split konditsioner. Oldingi tahlil (2 ta 96-ka + 30% toza havo): Xadra_2-qavat_HVAC_tahlil_${LOYIHA.versiya}.pdf.</div>
-    ${rejaSvgHtml ? `<div class="rasm">${rejaSvgHtml}</div>` : ''}
+    <div class="sub">Buyurtmachi qarori (12.10): tashqi havo — 2 ta ${REK.brend} rekuperatori (${REK.nominal[0]}–${REK.nominal[1]} m³/soat); sinflarga bittadan 24 000 BTU, xizmat xonalariga bittadan 12 000 BTU split; CEO va koworkingda konditsioner mavjud. Oldingi tahlil (2 ta 96-ka + 30% toza havo): Xadra_2-qavat_HVAC_tahlil_${LOYIHA.versiya}.pdf.</div>
     <h2>1. Rekuperatorlar</h2>
     <table><tr><th>Qurilma</th><th>Joyi</th><th>Xonalar</th><th class="r">Loyiha sarfi</th><th class="r">Me'yoriy min</th><th class="r">3 000 lik bilan zaxira</th><th class="r">Magistral</th><th class="r">Fasadgacha</th></tr>
       ${T.guruh.map(g => `<tr><td><b>${g.kod}</b></td><td>${g.koridor} koridori shiftida (g'arbiy uchi)</td><td>${g.xonalar.join(', ')}</td><td class="r">${n0(g.Q)} m³/soat</td><td class="r">${n0(g.Qmin)}</td><td class="r">${n0(g.zaxira)} (${n0(g.zaxira / REK.tanlov * 100)}%)</td><td class="r">${g.magistral.a}×${g.magistral.b} · ${n1(g.magistral.v)} m/s</td><td class="r">${g.tashqi.a}×${g.tashqi.b} · ${n1(g.tashqi.v)} m/s</td></tr>`).join('')}
       <tr class="jami"><td colspan="3">Jami 11 xona</td><td class="r">${n0(T.Qjami)}</td><td class="r">${n0(T.guruh.reduce((t, g) => t + g.Qmin, 0))}</td><td colspan="3"></td></tr>
     </table>
-    <div class="xulosa"><b>Xulosa.</b> 2 ta ${REK.brend} 11 xonaning tashqi havosini ta'minlaydi, agar har biri <b>~${REK.esp} Pa kanal qarshiligida ham ≥ ${n0(R2.Q)} m³/soat</b> bersa — shuning uchun <b>${REK.nominal[1]} m³/soatlik model</b> kerak. ${REK.nominal[0]} m³/soatlik model R2 ning me'yoriy minimumiga (${n0(R2.Qmin)} m³/soat) ham yetmaydi. Pasportdan: ventilyator egri chizig'i (sarf — bosim), rekuperator FIK (yoz/qish), muzlashdan himoya, filtrlar (kamida G4 + F7), shovqin, elektr quvvati, o'lchamlari (koridor shiftiga sig'ishi: eni ≤ ~1.3 m, balandligi ≤ ~0.5 m).</div>
-    <p class="kichik">Loyiha sarfi: sinflarda ${KISHI_SINF} m³/soat·kishi (me'yoriy minimum ~22 — KMK va ASHRAE 62.1 dan kattasi; CO₂ ~${n0(Math.min(...sinf.map(x => x.co2)))}–${n0(Math.max(...sinf.map(x => x.co2)))} ppm), derazasiz xizmat xonalarida 60 m³/soat·kishi (KMK). Kanal kesimi: magistral ≤ 4.5 m/s, fasadgacha ≤ 4.0 m/s, xona tarmog'i ≤ 3.0 m/s (shovqin). Rejadagi kanallar yo'nalishi — taklif; uni buyurtmachi hal qiladi.</p>
-  ` + IKKI);
+    <div class="xulosa"><b>Xulosa.</b> 2 ta ${REK.brend} 11 xonaning tashqi havosini ta'minlaydi, agar har biri <b>~${REK.esp} Pa kanal qarshiligida ham ≥ ${n0(R2.Q)} m³/soat</b> bersa — <b>${REK.nominal[1]} m³/soatlik model</b> kerak; ${REK.nominal[0]} lik R2 ning me'yoriy minimumiga (${n0(R2.Qmin)}) yetmaydi. Pasportdan: sarf — bosim egri chizig'i, FIK, muzlashdan himoya, filtrlar (G4 + F7), shovqin (korpus va kanal chiqishlari, oktava bo'yicha), elektr quvvati, o'lchamlari (koridor shiftiga: eni ≤ ~1.3 m, balandligi ≤ ~0.5 m).</div>
+    <p class="kichik">Loyiha sarfi: sinflarda ${KISHI_SINF} m³/soat·kishi (me'yoriy ~22; CO₂ ~${n0(Math.min(...sinf.map(x => x.co2)))}–${n0(Math.max(...sinf.map(x => x.co2)))} ppm), derazasiz xizmat xonalarida 60 m³/soat·kishi (KMK). Kanal kesimi: magistral ≤ 4.5 m/s, fasadgacha ≤ 4.0, xona tarmog'i ≤ 3.0 m/s. Rejadagi kanallar yo'nalishi — taklif; uni buyurtmachi hal qiladi.</p>
 
+    <h2>2. Split konditsionerlar — buyurtmachi tanlovi tekshiruvi</h2>
+    <table style="font-size:6.9pt"><tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo, m³/soat</th><th class="r">CO₂, ppm</th><th class="r">Odamlar</th><th class="r">Yoritish, uskuna</th><th class="r">Devor, oyna, tom</th><th class="r">Tashqi havo qoldig'i</th><th class="r">Yuk, kW</th><th>Tanlov (35 / 42 °C)</th><th>Baho</th><th>Hisob tavsiyasi</th></tr>
+      ${T.xona.map(xq).join('')}
+      <tr class="jami"><td colspan="8">11 xona</td><td class="r">${n1(T.xona.reduce((t, x) => t + x.q[0], 0))}–${n1(T.xona.reduce((t, x) => t + x.q[1], 0))}</td><td colspan="3">${n1(T.nominal11)} kW nominal</td></tr>
+      <tr><td><b>KW</b></td><td class="r">35 / ${kw.odamTadbir}</td><td colspan="6" class="kichik">koworking va ikkala koridor (koridorlar koworkingga ochiq); ${kw.izoh}</td><td class="r"><b>${n1(kw.q[0])}–${n1(kw.q[1])}</b><br><span class="kichik">tadbirda ${n1(kw.qTadbir[0])}–${n1(kw.qTadbir[1])}</span></td><td><b>mavjud</b> <span class="kichik">${n1(kw.quvvat)} / ${n1(kw.quvvat * ISSIQ)} kW</span></td><td>${kw.quvvat * ISSIQ >= kw.q[1] ? BAHO.yetarli : BAHO.chegarada}<br><span class="kichik">tadbirda: ${kw.quvvat >= kw.qTadbir[0] ? 'chegarada' : 'kam'}</span></td><td></td></tr>
+      <tr><td><b>CEO</b></td><td class="r">${T.qoshimcha[1].odam}</td><td colspan="8" class="kichik">${T.qoshimcha[1].izoh}</td><td><b>mavjud</b></td><td></td></tr>
+    </table>
+    <p class="kichik"><b>Hisob:</b> yuk — odamlar (${F.odamS}+${F.odamL} W), yoritish ${F.yoritish} W/m², interaktiv panel ${F.panel} kW, kompyuterli ish joyi ${F.ishJoyi} kW, devor-oyna-tom oralig'i (derazalar o'lchami va yo'nalishi, tom noma'lum) va rekuperatordan keyin qolgan tashqi havo issiqligi (yozda ~${n1(T.tKirishYoz)} °C). Split nominali 35 °C da; 42–43 °C da ~${ISSIQ * 100}%. <b>Baho:</b> yetarli — 42–43 °C da ham yuqori chegarani qoplaydi; chegarada — yukning past–o'rta qismida yetadi. Hisob tavsiyasi — eng og'ir holat uchun (sinfda 2 ta blok).</p>
+    <div class="xulosa"><b>Natija.</b> Xizmat xonalari (12k) va 4-xona (24k) — <b>yetarli</b>. Derazali 6 sinfda bitta 24k (7.0 kW, 42–43 °C da ~${n1(perim[0].issiq)} kW) yuk ${n1(perim[0].q[0])}–${n1(perim[0].q[1])} kW ning past–o'rta qismini qoplaydi: derazalar shimol yoki sharqqa qaragan, pardali va xona ustida 3-qavat bo'lsa — yetadi; g'arbga qaragan pardasiz deraza, ochiq tom va 42 °C li kunda ~${n1(perim[0].q[1] - perim[0].issiq)} kW kam (noutbuklar bilan ~${n1(perim[0].qNout - perim[0].issiq)} kW). Bitta blok 44 m² sinfda havoni bir tomondan beradi — deraza ustida, o'rtada joylashgan. Koworkingdagi mavjud ${kw.mavjud.map(btuNom).join(' + ')} (${n1(kw.quvvat)} kW) kundalik rejimda koridorlar bilan birga yetadi; 70 kishilik tadbirda chegarada (${n1(kw.qTadbir[0])}–${n1(kw.qTadbir[1])} kW, tashqi havosiz), derazadan shamollatilsa — kam.</div>
+  `);
   const b2 = sahifa(`
-    <h2 style="margin-top:0">3. Elektr, qishki rejim va boshqa talablar</h2>
+    <h2 style="margin-top:0">3. Narx (buyurtmachi narxlari, 12.10)</h2>
+    <table><tr><th>Nomi</th><th class="r">Soni</th><th class="r">Narxi</th><th class="r">Summa</th></tr>
+      <tr><td>Rekuperator ${REK.brend}, ${REK.nominal[1]} m³/soat</td><td class="r">${GURUH.length} ta</td><td class="r">${som(NARX.rekuperator)}</td><td class="r">${som(T.narx.rekuperator)}</td></tr>
+      <tr><td>Havo kanallari (chizmadan ${n0(T.kanalChizma / 1000)} m + ${NARX.kanalZaxira * 100}% burilish va ulanishlar)</td><td class="r">${T.kanalUz} m</td><td class="r">${n0(NARX.kanalM)} so'm/m</td><td class="r">${som(T.narx.kanal)}</td></tr>
+      <tr><td>Split 24 000 BTU (SR1–SR7)</td><td class="r">${sinf.length} ta</td><td class="r">$${TANLOV.sinf.narx}</td><td class="r">$${n0(sinf.length * TANLOV.sinf.narx)}</td></tr>
+      <tr><td>Split 12 000 BTU (XZ1–XZ4)</td><td class="r">${ofis.length} ta</td><td class="r">$${TANLOV.ofis.narx}</td><td class="r">$${n0(ofis.length * TANLOV.ofis.narx)}</td></tr>
+      <tr class="jami"><td colspan="3">Jami (kurs ${n0(NARX.kurs)} so'm/$)</td><td class="r">$${n0(T.narx.usdJami)} · ${som(T.narx.usdJami * NARX.kurs)}</td></tr>
+    </table>
+    <p class="kichik">Kirmagan (narxi aniqlanadi): montaj (agar narxga kirmagan bo'lsa), diffuzor va so'rish panjaralari (sinfga 2 + 2, xizmat xonasiga 1 + 1), fasad panjaralari (4 ta), shovqin so'ndirgichlar (8 ta), egiluvchan ulanishlar, kanal izolyatsiyasi (koworking orqali o'tadigan tashqi havo va chiqarish kanallari), freon trassalari va drenaj, CO₂ datchiklari. Kanal uzunligi — taklif yo'nalish bo'yicha; yo'nalish o'zgarsa qayta hisoblanadi.</p>
+
+    <h2>4. Elektr, qishki rejim va boshqa talablar</h2>
     <ul>
-      <li><b>Elektr quvvati:</b> splitlar to'liq yuklamada ~${n0(T.elektr11)} kW (11 xona), koworking va CEO bilan ~${n0(T.elektrJami)} kW (EER ≈ ${EER}); rekuperator ventilyatorlari — pasportdan (taxminan 2 × 1.5–2.5 kW). Binoda ajratilgan quvvat va uch fazali liniya tekshiriladi.</li>
-      <li><b>Qish:</b> tashqi ${F.tQish} °C da ${n0(T.Qjami)} m³/soat havoni isitish ~${n0(T.qishTashqi)} kW; rekuperatordan keyin (FIK ${REK.etaQish * 100}%) havo ~${n1(T.tKirishQish)} °C bo'ladi, qolgan ~${n0(T.qishQoldiq)} kW ni splitlar (isitish rejimi) yoki radiatorlar beradi. Sinfga ~${n0(T.tKirishQish)} °C li havo noqulay bo'lsa — kanalda isitgich (18 °C gacha ~${n0(T.isitgich)} kW, elektr yoki suvli) yoki diffuzorlarni splitlar yoniga qo'yish. Rekuperatorda muzlashdan himoya (pasport bo'yicha).</li>
-      <li><b>Kondensat:</b> sinflarda splitlar tashqi devorda — drenaj fasadga qisqa; SR4 va xizmat xonalarida — shift ichida nishab bilan sanuzel stoyakigacha yoki drenaj nasosi.</li>
-      <li><b>Freon trassalari:</b> sinflarda 3–5 m (tashqi blok shu xona fasadida); SR4 va XZ1–XZ4 da tashqi blok joyi aniqlanadi (tom yoki o'ng devor ortidagi oraliq), trassa ≤ 15–20 m.</li>
-      <li><b>Shovqin:</b> rekuperatorlar koridor shiftida, sinflar yonida — kirish va chiqish kanallarida shovqin so'ndirgich (≥ 1 m), sinfda ≤ 35 dB(A). Splitlar «tun» rejimida ~25–30 dB(A).</li>
-      <li><b>Boshqarish:</b> har sinfda CO₂ datchigi (rekuperator tezligini boshqaradi yoki xona klapanini ochadi); splitlar — xona bo'yicha termostat bilan. Yong'in signalida rekuperatorlar o'chadi; kanallar devor va koridordan o'tishda yong'inga qarshi klapan (yong'in xavfsizligi mutaxassisi belgilaydi).</li>
-      <li><b>Koworking (tadbirda ${T.qoshimcha[0].odam} kishi):</b> tashqi havosi (~${T.qoshimcha[0].oa} m³/soat) ikkala rekuperatorga sig'maydi (R1, R2 deyarli to'liq) — alohida qurilma yoki derazadan shamollatish masalasi ochiq.</li>
+      <li><b>Elektr quvvati:</b> splitlar to'liq yuklamada ~${n0(T.elektr11)} kW (EER ≈ ${EER}); rekuperator ventilyatorlari — pasportdan (taxminan 2 × 1.5–2.5 kW).</li>
+      <li><b>Qish:</b> tashqi ${F.tQish} °C da ${n0(T.Qjami)} m³/soat havoni isitish ~${n0(T.qishTashqi)} kW; rekuperatordan keyin (FIK ${REK.etaQish * 100}%) havo ~${n1(T.tKirishQish)} °C, qolgan ~${n0(T.qishQoldiq)} kW ni splitlar (isitish rejimi) yoki radiatorlar beradi; kerak bo'lsa kanalda isitgich (18 °C gacha ~${n0(T.isitgich)} kW). Rekuperatorda muzlashdan himoya.</li>
+      <li><b>Shovqin:</b> rekuperatorlar tebranishdan himoyalovchi osmalarda, kanallar bilan egiluvchan ulanadi; toza havo va so'rish kanallarida 1–1.5 m, tashqi havo va chiqarish kanallarida ≥ 1 m shovqin so'ndirgich; rekuperator ostida ~2.5 m yopiq GKL shift (mineral paxta bilan) va lyuk. Maqsad: koridorda ≤ 40, sinfda ≤ 35 dB(A). R2 ni SR7 va XZ1 eshiklari ustidan 1.5–2 m sharqqa surish tavsiya etiladi.</li>
+      <li><b>Kondensat va freon:</b> sinflarda split tashqi devorda — drenaj va trassa qisqa (3–5 m); SR4 va xizmat xonalarida tashqi blok joyi aniqlanadi (tom yoki o'ng devor ortidagi oraliq), trassa ≤ 15–20 m, drenaj nishab bilan yoki nasos.</li>
+      <li><b>Boshqarish:</b> har sinfda CO₂ datchigi; yong'in signalida rekuperatorlar o'chadi; kanallar devor va koridordan o'tishda yong'inga qarshi klapan.</li>
+      <li><b>Koworking:</b> tadbirda ~${kw.oa} m³/soat tashqi havo kerak — R1, R2 ga sig'maydi; derazadan shamollatish yoki alohida qurilma — qaror kerak.</li>
     </ul>
-    <h3>Aniqlashtirilishi va o'lchanishi kerak</h3>
+    <h3>Aniqlashtirilishi kerak</h3>
     <ol>
-      <li>${REK.brend} modeli: aniq kodi, ${REK.nominal[1]} m³/soatda tashqi statik bosimi, FIK, o'lchamlari, elektr quvvati.</li>
-      <li>Derazalar o'lchami va dunyo tomonlari, qaysi xonalar ochiq tom ostida — split tanlovini ${'«agar yuk past bo\'lsa»'} ustuniga tushirish mumkinmi.</li>
-      <li>O'quvchilar noutbuk bilan ishlaydimi; dars paytidagi maksimal odamlar soni.</li>
-      <li>Tashqi bloklar joyi (fasad, tom, o'ng devor ortidagi oraliq eni), fasadda panjaralar uchun ruxsat.</li>
-      <li>Koridorlarda osma shift balandligi (rekuperator va kanallar uchun ≥ 0.6–0.7 m bo'shliq).</li>
+      <li>Rekuperator narxi — bittasi uchunmi (hisobda: 2 × 28 mln so'm)? Narxga montaj kiradimi?</li>
+      <li>Splitlar narxiga montaj kiradimi?</li>
+      <li>${REK.brend} modeli: aniq kodi, ${REK.nominal[1]} m³/soatda tashqi statik bosimi, shovqini, o'lchamlari.</li>
+      <li>Derazalar yo'nalishi va qaysi xonalar ochiq tom ostida — sinflardagi 24k ning yetarliligi shunga bog'liq.</li>
+      <li>Tashqi bloklar joyi (fasad, tom, o'ng devor ortidagi oraliq).</li>
     </ol>
   `);
   return `<!doctype html><html lang="uz"><head><meta charset="utf-8"><title>${LOYIHA.brend} · ${LOYIHA.filial} — HVAC hisobi</title><style>${CSS}</style></head><body>${b1}${b2}</body></html>`;
@@ -305,8 +337,8 @@ export function tizimHtml(rejaSvgHtml = '') {
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const T = tizimHisob();
-  T.xona.forEach(x => console.log(x.kod, x.R, x.odam, x.oa, Math.round(x.co2), x.q.map(v => v.toFixed(2)).join('–'), `${x.n}x${x.split.btu}`, 'min', x.splitMin.btu, 'nout', x.noutbukOk, x.kanal.a + 'x' + x.kanal.b, JSON.stringify(x.saYol), JSON.stringify(x.raYol)));
+  T.xona.forEach(x => console.log(x.kod, x.R, x.odam, x.oa, Math.round(x.co2), x.q.map(v => v.toFixed(2)).join('–'), `${x.n}x${x.split.btu}`, x.quvvat.toFixed(1), x.issiq.toFixed(2), x.baho, 'tavsiya', `${x.nTav}x${x.tavsiya.btu}`));
   T.guruh.forEach(g => console.log(g.kod, g.Q, g.Qmin, g.magistral, g.tashqi));
-  T.qoshimcha.forEach(x => console.log(x.kod, x.odam, x.q.map(v => v.toFixed(1)), x.n, x.split.btu));
-  console.log(T.soni, T.nominal11.toFixed(1), T.nominalJami.toFixed(1), T.elektr11.toFixed(1), T.elektrJami.toFixed(1), T.qishTashqi.toFixed(1), T.tKirishQish.toFixed(1), T.isitgich.toFixed(1), T.tKirishYoz.toFixed(1));
+  T.qoshimcha.forEach(x => console.log(x.kod, x.odam, x.q && x.q.map(v => v.toFixed(1)), x.qTadbir && x.qTadbir.map(v => v.toFixed(1)), x.quvvat));
+  console.log(T.soni, 'nominal', T.nominal11.toFixed(1), 'elektr', T.elektr11.toFixed(1), 'kanal', (T.kanalChizma / 1000).toFixed(1), T.kanalUz, 'narx', T.narx);
 }

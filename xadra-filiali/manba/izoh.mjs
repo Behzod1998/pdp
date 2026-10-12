@@ -274,8 +274,8 @@ function havoBeti(kor, n) {
     <ul>
       <li><b>Rekuperatorlar:</b> R2 ga ${T.guruh[1].Q} m³/soat kerak — ${REK.nominal[1]} m³/soatlik model, ~${REK.esp} Pa kanal qarshiligida. ${REK.nominal[0]} m³/soatlik model R2 uchun kam.</li>
       <li><b>Havo taqsimoti:</b> toza havo <b>doska oldida</b> beriladi, <b>orqa devor yonida</b> so'riladi. Kanallar koridorlarning osma shifti ichida (~2.8 m), kirish va chiqishda shovqin so'ndirgich.</li>
-      <li><b>Splitlar:</b> sinflarda 2 tadan, tashqi (deraza) devorda — tashqi bloklari shu fasadda; SR4 va xizmat xonalarining tashqi bloklari — tomda yoki o'ng devor ortidagi oraliqda (aniqlanadi).</li>
-      <li><b>Koworking:</b> tadbirda ~${T.qoshimcha[0].oa} m³/soat tashqi havo kerak — R1 va R2 ga sig'maydi; alohida qaror kerak. Split 2 × ${T.qoshimcha[0].split.btu / 1000}k (kasseta). CEO — derazali, split ${T.qoshimcha[1].split.btu / 1000}k.</li>
+      <li><b>Splitlar (buyurtmachi tanlovi):</b> sinflarga bittadan ${T.xona[0].split.btu / 1000}k — deraza ustida, tashqi bloki shu fasadda; xizmat xonalariga ${T.xona.find(x => x.tur === 'ofis').split.btu / 1000}k. Derazali sinflarda 24k yukning past–o'rta qismini qoplaydi (derazalar yo'nalishi va tomga bog'liq). SR4 va xizmat xonalarining tashqi bloklari — tomda yoki o'ng devor ortidagi oraliqda (aniqlanadi).</li>
+      <li><b>Koworking:</b> konditsionerlari mavjud (${T.qoshimcha[0].mavjud.map(b => b / 1000 + 'k').join(' + ')}), koridorlarni ham sovutadi; tadbirda ~${T.qoshimcha[0].oa} m³/soat tashqi havo kerak — R1 va R2 ga sig'maydi, alohida qaror kerak. CEO — konditsioner mavjud, derazali.</li>
       <li><b>CO₂ datchigi</b> har sinfda; yong'in signalida rekuperatorlar o'chadi.</li>
       <li><b>V-1</b> — sanuzel chiqarish ventilyatsiyasi 4 × 50 = 200 m³/soat; mavjud shaxta ishlashini tekshirish. Tutun chiqarish talabini yong'in xavfsizligi mutaxassisi belgilaydi.</li>
     </ul>
