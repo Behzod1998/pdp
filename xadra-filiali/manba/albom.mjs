@@ -157,6 +157,87 @@ function xulosaVaraq(x) {
   </div></section>`;
 }
 
+// ---------- xarajatlar fazalar bo'yicha (founder uchun) ----------
+const sana = t => { const [d, m, y] = t.split('.').map(Number); return new Date(Date.UTC(y, m - 1, d)); };
+const OYLAR = ['yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun', 'iyul', 'avgust', 'sentabr', 'oktabr', 'noyabr', 'dekabr'];
+function fazaGantt(F) {
+  // haftalik shkala: birinchi fazaning dushanbasidan oxirgi fazadan keyingi yakshanbagacha; bitta rang — qator yozuvi fazani bildiradi
+  const kun = 864e5, b0 = sana(F[0].bosh), d0 = new Date(b0 - ((b0.getUTCDay() + 6) % 7) * kun);
+  const oxir = sana(F.at(-1).tugash), hafta = Math.ceil((oxir - d0) / kun / 7 + 0.01);
+  const L = 300, W = 1180, qH = 46, top = 46, w = (W - L - 120) / (hafta * 7);
+  const x = t => L + ((sana(t) - d0) / kun) * w;
+  const q = [];
+  for (let h = 0; h <= hafta; h++) {
+    const xx = L + h * 7 * w, dd = new Date(+d0 + h * 7 * kun);
+    q.push(`<line x1="${xx}" y1="${top - 6}" x2="${xx}" y2="${top + F.length * qH}" stroke="#e3e3e3" stroke-width="1"/>`);
+    if (h < hafta) q.push(`<text x="${xx + 3.5 * w}" y="${top - 12}" font-size="11" fill="#666" text-anchor="middle">${String(dd.getUTCDate()).padStart(2, '0')}.${String(dd.getUTCMonth() + 1).padStart(2, '0')}</text>`);
+  }
+  // oy chegaralari va nomlari
+  let m = new Date(Date.UTC(d0.getUTCFullYear(), d0.getUTCMonth(), 1));
+  while (m < new Date(+d0 + hafta * 7 * kun)) {
+    const xm = Math.max(L, L + ((m - d0) / kun) * w);
+    if (m > d0) q.push(`<line x1="${xm}" y1="${top - 34}" x2="${xm}" y2="${top + F.length * qH}" stroke="#9aa5b4" stroke-width="1.2" stroke-dasharray="4 3"/>`);
+    q.push(`<text x="${xm + 6}" y="${top - 30}" font-size="12" font-weight="700" fill="#1F3657">${OYLAR[m.getUTCMonth()]} ${m.getUTCFullYear()}</text>`);
+    m = new Date(Date.UTC(m.getUTCFullYear(), m.getUTCMonth() + 1, 1));
+  }
+  F.forEach((f, i) => {
+    const y = top + i * qH, x1 = x(f.bosh), x2 = x(f.tugash) + w;
+    q.push(`<text x="10" y="${y + qH / 2 - 3}" font-size="13" font-weight="700" fill="#1f1f1f">${f.kod} · ${f.nom}</text>`,
+      `<text x="10" y="${y + qH / 2 + 13}" font-size="11" fill="#555">${f.bosh} – ${f.tugash} · ${f.kun} ish kuni</text>`,
+      `<rect x="${x1}" y="${y + 11}" width="${Math.max(4, x2 - x1)}" height="${qH - 22}" rx="3" fill="#1F3657"/>`,
+      `<text x="${x2 + 8}" y="${y + qH / 2 + 5}" font-size="13" font-weight="700" fill="#1f1f1f">${usd(f.usd)}</text>`);
+    if (i < F.length - 1) q.push(`<line x1="0" y1="${y + qH}" x2="${W}" y2="${y + qH}" stroke="#f0f0f0" stroke-width="1"/>`);
+  });
+  return `<svg viewBox="0 0 ${W} ${top + F.length * qH + 6}" width="100%" font-family="Liberation Sans, Arial">${q.join('')}</svg>`;
+}
+// avans bilan buyurtma qilinadiganlar (qolgan bo'linishlar — ish hajmi bo'yicha)
+const AVANS = /^(stolOfis|kreslo|mijozStul|divan|shkaf|stolcha|resepshn|resepshnPanel|logo|logoDevor1|logoStol1|sahnaLogo|rekuperator|shisha)$/;
+const guruh = t => /^rekuperator$/.test(t.kalit) ? 'Rekuperatorlar' : t.kalit === 'kanalM' ? 'Havo kanallari'
+  : /^(split24|split12|kond3)$/.test(t.kalit) ? 'Split konditsionerlar' : /^(sahna|minbar)/.test(t.kalit) && t.kalit !== 'sahnaLogo' ? 'Koworking sahnasi'
+  : /^(resepshn|resepshnPanel)$/.test(t.kalit) ? 'Resepshn (1-qavat)' : t.tur;
+function fazaVaraq(x) {
+  const F = x.fazalar, n = F.length;
+  // har fazadagi asosiy xarajatlar: xarajat turi bo'yicha; avans / qoldiq belgisi
+  const top = F.map((f, i) => {
+    const g = {};
+    x.taqsim.forEach(t => {
+      const v = t.faza[i]; if (!v) return;
+      const birinchi = t.ulush.findIndex(u => u > 0), ul = t.ulush[i], avans = AVANS.test(t.kalit);
+      const izoh = ul >= 1 ? '' : avans ? (i === birinchi ? `avans ${Math.round(ul * 100)}%` : `qoldiq ${Math.round(ul * 100)}%`) : `ishning ${Math.round(ul * 100)}%`;
+      const k = guruh(t) + (izoh ? ` (${izoh})` : '');
+      g[k] = (g[k] || 0) + v;
+    });
+    return Object.entries(g).sort((a, b) => b[1] - a[1]);
+  });
+  const jami = F.reduce((t, f) => t + f.usd, 0), xar = F.reduce((t, f) => t + f.xarajat, 0);
+  const qator = (f, i) => `<tr><td><b>${f.kod}</b></td><td><b>${f.nom}</b><div class="kch">${f.bosh} – ${f.tugash} · ${f.kun} ish kuni</div></td>
+    <td class="kch">${f.ish}</td>
+    <td class="kch">${top[i].slice(0, 6).map(([k, v]) => `${k} — <b>${usd(v)}</b>`).join('<br>')}${top[i].length > 6 ? `<br>va boshqalar (${top[i].length - 6})` : ''}</td>
+    <td class="r"><b>${usd(f.usd)}</b><div class="kch">${som(f.som)}</div></td><td class="r">${(f.ulush * 100).toFixed(0)}%</td><td class="r">${usd(f.yigma)}</td></tr>`;
+  return `<section class="varaq">${bosh("Xarajatlar fazalar bo'yicha — ishlar ketma-ketligi, sanalar va pul oqimi",
+    `Boshlanish ${F[0].bosh} (taxmin) · tugash ${F.at(-1).tugash} · Excel: hisob/${x.fayl}, «Fazalar» varag'i`)}
+  <style>.kch{font-size:7.2pt;color:#444;line-height:1.35} .faz td{vertical-align:top} .oy td,.oy th{font-size:8.4pt}</style>
+  <div style="margin-top:2mm;border:.3mm solid #ddd;border-radius:1.2mm;padding:2mm 3mm">${fazaGantt(F)}</div>
+  <div style="display:grid;grid-template-columns:1fr 92mm;gap:5mm;margin-top:3mm">
+    <table class="faz"><tr><th>Faza</th><th style="width:44mm">Nomi va sanalar</th><th>Ishlar</th><th style="width:88mm">Asosiy xarajatlar (shu fazada to'lanadi; 10% siz)</th><th class="r">Jami (+10%)</th><th class="r">Ulush</th><th class="r">Yig'ma</th></tr>
+      ${F.map(qator).join('')}
+      <tr class="katta"><td></td><td>JAMI</td><td class="kch">${F.reduce((t, f) => t + f.kun, 0)} ish kuni (~${Math.round((sana(F.at(-1).tugash) - sana(F[0].bosh)) / 864e5 / 7 + 0.2)} hafta)</td><td class="kch">xarajatlar ${usd(xar)} + kutilmagan 10% ${usd(jami - xar)}</td><td class="r">${usd(jami)}<div class="kch">${som(jami * x.kurs)}</div></td><td class="r">100%</td><td></td></tr>
+    </table>
+    <div>
+      <table class="oy"><tr><th>Oy</th><th class="r">To'lov, $</th><th class="r">so'm</th></tr>
+        ${x.oylar.filter(o => o.usd > 0.5).map(o => `<tr><td>${OYLAR[+o.oy.slice(0, 2) - 1]} ${o.oy.slice(3)}</td><td class="r"><b>${usd(o.usd)}</b></td><td class="r">${som(o.som)}</td></tr>`).join('')}
+        <tr class="jami"><td>Jami</td><td class="r">${usd(jami)}</td><td class="r">${som(jami * x.kurs)}</td></tr></table>
+      <div class="matn" style="margin-top:3mm">
+        <p><b>Qanday bo'lingan.</b> Har bir xarajat qatori ish qachon bajarilsa yoki pul qachon to'lansa — o'sha fazaga yozilgan. Uzoq tayyorlanadiganlarga avans: mebel, resepshn va logotiplar — 50% F0 da, qoldig'i yetkazilganda (F5); rekuperatorlar — 50% F0 da, 50% F2 da; shisha devorlar — o'lchovdan keyin 50% (F3), qoldig'i o'rnatishda (F4). Splitlar F3 da xarid qilinadi, F4 da o'rnatiladi.</p>
+        <p><b>Ketma-ketlik nega shunday:</b> tarmoqlar (havo kanallari, freon trassalari, kabellar, quvurlar) shift va devorlar yopilishidan oldin — F2; shisha devor o'lchovi GKL karkasdan keyin; mebel va logotiplar — chang ishlar tugagach.</p>
+        <p><b>Oylik summa</b> — faza summasi uning kalendar kunlariga teng bo'lingan; avanslar faza boshida to'lanadi.</p>
+        <p><b>Sanalar taxminiy:</b> boshlanish sanasi Excelda bitta katakda — o'zgartirilsa, hammasi qayta hisoblanadi. Ish haftasi dushanba–shanba, 8 dekabr bayram.</p>
+        <p><b>Jadvalda yo'q</b> (narxi berilmagan): montaj ishlari (agar narxga kirmagan bo'lsa), elektr kabellari va shit, osma shift, pol, bo'yoq — narxi kelishilgach shu fazalarga qo'shiladi.</p>
+      </div>
+    </div>
+  </div></section>`;
+}
+
 // ---------- muqova ----------
 function muqova(x, mundarija, rasmSrc) {
   const orin = tekshiruv().orinlar + sinf3Korsatkich().orin;
@@ -194,6 +275,13 @@ const brauzer = await chromium.launch();
 const f1 = await pdfQil(brauzer, await q1Varaq(), join(CH, `Xadra_1-qavat_3D_${V}.pdf`));
 const f2 = await pdfQil(brauzer, await q2Varaqlar(x), join(CH, `Xadra_2-qavat_3D_${V}.pdf`));
 const fx = await pdfQil(brauzer, xulosaVaraq(x), join(CH, `Xadra_xarajatlar_xulosa_${V}.pdf`));
+const ff = await pdfQil(brauzer, fazaVaraq(x), join(CH, `Xadra_xarajatlar_fazalar_${V}.pdf`));
+{ // ko'rib chiqish uchun PNG
+  const p = await brauzer.newPage({ viewport: { width: 1588, height: 1123 }, deviceScaleFactor: 2 });
+  await p.setContent(`<!doctype html><html lang="uz"><head><meta charset="utf-8"><style>${CSS}</style></head><body>${fazaVaraq(x)}</body></html>`, { waitUntil: 'load' });
+  await (await p.$('section.varaq')).screenshot({ path: join(CH, `Xadra_xarajatlar_fazalar_${V}.png`) });
+  await p.close();
+}
 
 const BOLIMLAR = [
   ['1-qavat — reja (resepshn, turniketlar, logotiplar)', `Xadra_1-qavat_reja_${V}.pdf`],
@@ -207,6 +295,7 @@ const BOLIMLAR = [
   ['3-qavat — reja', `Xadra_3-qavat_reja_${V}.pdf`],
   ["3-qavat — 3D ko'rinishlar", `Xadra_3-qavat_3D_${V}.pdf`],
   ['Xarajatlar — yakuniy', fx],
+  ["Xarajatlar fazalar bo'yicha — sanalar va pul oqimi", ff],
 ].map(([n, f, b]) => [n, f.startsWith('/') ? f : join(CH, f), b]);
 
 // [nom, fayl, betlar?] — betlar berilsa, faqat shu betlar olinadi (masalan, konditsionerlar PDF'ining 1-beti chizmalar to'plamida bor)

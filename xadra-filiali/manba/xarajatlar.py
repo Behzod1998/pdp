@@ -387,7 +387,7 @@ wd['A1'] = "PDP Academy · Xadra filiali (1, 2 va 3-qavat): xarajatlar hisobi, x
 wd['A1'].font = f_sarlavha
 wd['A2'] = "Uzunliklar chizmadan (m). Balandlik va narx «Narxlar» varag'idan olinadi (yashil). Miqdor = uzunlik × balandlik; summa = miqdor × narx."
 wd['A2'].font = f_kichik
-SARLAVHA = ['№', 'Xona', 'Ish turi', 'Joyi / izoh', 'Uzunlik, m', 'Balandlik, m', 'Miqdor', 'Birlik', 'Narx, $', 'Summa, $']
+SARLAVHA = ['№', 'Xona', 'Ish turi', 'Joyi / izoh', 'Uzunlik, m', 'Balandlik, m', 'Miqdor', 'Birlik', 'Narx, $', 'Summa, $', 'Kalit (narx)']
 for i, h in enumerate(SARLAVHA, 1):
     c = wd.cell(row=4, column=i, value=h)
     c.font, c.fill, c.border = f_bosh, fill_bosh, chegara
@@ -416,7 +416,8 @@ for kod, nom in XONALAR:
             miqdor = f"=-E{r}*F{r}" if q['manfiy'] else f"=E{r}*F{r}"
         else:
             miqdor = f"=E{r}"
-        vals = [n, nom, q['tur'], q['joy'], uz_val, bal_val, miqdor, q['birlik'], narx_havola(q['narx']), f"=G{r}*I{r}"]
+        kalit = q['narx'][1] if isinstance(q['narx'], tuple) else q['narx']
+        vals = [n, nom, q['tur'], q['joy'], uz_val, bal_val, miqdor, q['birlik'], narx_havola(q['narx']), f"=G{r}*I{r}", kalit]
         for j, v in enumerate(vals, 1):
             c = wd.cell(row=r, column=j, value=v)
             c.font, c.border = f_oddiy, chegara
@@ -426,6 +427,7 @@ for kod, nom in XONALAR:
         if q['miqdor'] is not None:
             wd.cell(row=r, column=7).font = f_yashil if isinstance(q['miqdor'], str) else f_kok
         wd.cell(row=r, column=9).font = f_yashil
+        wd.cell(row=r, column=11).font = f_kichik
         wd.cell(row=r, column=1).alignment = Alignment(horizontal='center')
         wd.cell(row=r, column=8).alignment = Alignment(horizontal='center')
         for j, fmt in [(5, SON), (6, SON), (7, SON if q['birlik'] in ('m²', 'm') else DONA), (9, USD), (10, USD)]:
@@ -448,7 +450,7 @@ c.font, c.number_format = f_qalin, USD
 for j in range(1, 11):
     wd.cell(row=r, column=j).fill = fill_jami
     wd.cell(row=r, column=j).border = chegara
-for col, w in zip('ABCDEFGHIJ', [5, 24, 18, 58, 11, 11, 10, 7, 11, 13]):
+for col, w in zip('ABCDEFGHIJK', [5, 24, 18, 58, 11, 11, 10, 7, 11, 13, 12]):
     wd.column_dimensions[col].width = w
 wd.freeze_panes = 'A5'
 
@@ -609,6 +611,216 @@ c = wy.cell(row=r, column=3, value=f"={KURS}")
 c.font, c.number_format = f_yashil, '#,##0'
 for col, w in zip('ABCDE', [5, 46, 16, 20, 9]):
     wy.column_dimensions[col].width = w
+
+# ---------- 5. Fazalar: ishlar ketma-ketligi, sanalar va pul oqimi ----------
+# Har bir narx kaliti bo'yicha summa fazalarga ulush bilan taqsimlanadi (ko'k — o'zgartirish mumkin): uzoq tayyorlanadigan
+# buyurtmalarga avans (mebel, logotip, rekuperator, shisha), qoldig'i yetkazib berish / o'rnatishda. Sanalar — boshlanish
+# sanasidan, ish kunlari bo'yicha (dushanba–shanba, bayramlar chiqarib tashlanadi).
+import datetime as dt
+from openpyxl.formatting.rule import FormulaRule
+FAZALAR = [
+    ('F0', "Tayyorgarlik va buyurtmalar", 6,
+     "Ijaraga beruvchining yozma roziligi (devor buzish, tomga tashqi bloklar); joyida o'lchov (oynalar, ustunlar, tom); pudratchilar bilan shartnomalar; "
+     "uzoq tayyorlanadigan buyurtmalar — rekuperatorlar, mebel va resepshn, logotiplar (avans)"),
+    ('F1', "Buzish ishlari", 4, "Eski devorlarni buzish, qurilish chiqindisini olib chiqish; pol, oyna va eshiklarni himoyalash"),
+    ('F2', "Qora ishlar va muhandislik tarmoqlari", 12,
+     "GKL karkaslar va birinchi tomoni; elektr (yoritish, split liniyalari, kamera va yong'in signalizatsiyasi kabellari); santexnika quvurlari va nuqtalari; "
+     "rekuperatorlar, havo kanallari, freon trassalari va drenaj — shift yopilishidan oldin; tomdagi tayanch ramalar"),
+    ('F3', "Pardoz ishlari", 10,
+     "GKL ikkinchi tomoni, shpaklyovka, bo'yoq; hojatxona kafeli; bambuk panellar; sahna poli; shisha devorlar o'lchovi va buyurtmasi (avans); splitlar xaridi"),
+    ('F4', "O'rnatish ishlari", 10,
+     "Shisha devor va eshiklar, perila, yoritish, split ichki va tomdagi tashqi bloklari, santexnika jihozlari va kabinalar, kameralar va NVR, "
+     "yong'in signalizatsiyasi asboblari, interaktiv doskalar, matli plyonka, sahna yoritishi va ekran"),
+    ('F5', "Mebel, brending va ishga tushirish", 6,
+     "Mebel va resepshn (qoldiq), logotiplar, e'lon va e'tirof doskalari, sahna reykalari, ovoz, minbar; HVAC sozlash va sinov, "
+     "yong'in xavfsizligi qabuli, tozalash"),
+]
+NF = len(FAZALAR)
+def ul(**k): return [k.get(f, 0) for f, *_ in FAZALAR]
+TAQSIMOT = {
+    'buzish': ul(F1=1), 'chiqindi': ul(F1=1),
+    'gkl': ul(F2=.5, F3=.5), 'sahnaDevor': ul(F2=.5, F3=.5),
+    'issiqQuvur': ul(F2=1), 'sovuqQuvur': ul(F2=1), 'aksessuar': ul(F2=1), 'kanal': ul(F2=1), 'tochka': ul(F2=.5, F4=.5),
+    'rekuperator': ul(F0=.5, F2=.5), 'kanalM': ul(F2=1), 'kabel': ul(F2=1), 'yongin': ul(F2=.4, F4=.6),
+    'kafel': ul(F3=1), 'kafelUsta': ul(F3=1), 'bambuk': ul(F3=1), 'sahnaPol': ul(F3=1),
+    'shisha': ul(F3=.5, F4=.5), 'split24': ul(F3=1), 'split12': ul(F3=1), 'kond3': ul(F3=1),
+    'doska': ul(F4=1), 'perila': ul(F4=1), 'yorXona': ul(F4=1), 'yorKatta': ul(F4=1),
+    'chashagen': ul(F4=1), 'unitaz': ul(F4=1), 'rakovina': ul(F4=1), 'mustahab': ul(F4=1), 'taxoratSm': ul(F4=1), 'rakovinaSm': ul(F4=1), 'kabina': ul(F4=1),
+    'kamera': ul(F4=1), 'kameraOrn': ul(F4=1), 'nvr': ul(F4=1), 'plyonka': ul(F4=1), 'sahnaYor': ul(F4=1), 'sahnaEkran': ul(F4=1),
+    'stolOfis': ul(F0=.5, F5=.5), 'kreslo': ul(F0=.5, F5=.5), 'mijozStul': ul(F0=.5, F5=.5), 'divan': ul(F0=.5, F5=.5), 'shkaf': ul(F0=.5, F5=.5),
+    'stolcha': ul(F0=.5, F5=.5), 'resepshn': ul(F0=.5, F5=.5), 'resepshnPanel': ul(F0=.5, F5=.5),
+    'logo': ul(F0=.5, F5=.5), 'logoDevor1': ul(F0=.5, F5=.5), 'logoStol1': ul(F0=.5, F5=.5), 'sahnaLogo': ul(F0=.5, F5=.5),
+    'interyerXZ1': ul(F5=1), 'interyerXZ2': ul(F5=1), 'elonDoska': ul(F5=1), 'etirofDoska': ul(F5=1),
+    'sahnaReyka': ul(F5=1), 'sahnaAudio': ul(F5=1), 'minbar': ul(F5=1), 'sahnaOsimlik': ul(F5=1),
+}
+# ishlatilgan kalitlar (Hisob qatorlari tartibida) — har biriga taqsimot bo'lishi shart
+KALITLAR, KTUR = [], {}
+for kod, _ in XONALAR:
+    for q in qatorlar[kod]:
+        k = q['narx'][1] if isinstance(q['narx'], tuple) else q['narx']
+        if k not in KTUR: KALITLAR.append(k); KTUR[k] = q['tur']
+yoq = [k for k in KALITLAR if k not in TAQSIMOT]
+assert not yoq, f"Fazalar taqsimoti yo'q: {yoq}"
+assert all(abs(sum(v) - 1) < 1e-9 for v in TAQSIMOT.values())
+KALITLAR.sort(key=lambda k: (min(i for i, v in enumerate(TAQSIMOT[k]) if v), TURLAR.index(KTUR[k])))
+NARX_NOM = {k: nom for k, nom, *_ in NARX_QATORLAR}
+
+wf = wb.create_sheet('Fazalar', 1)
+wf['A1'] = "PDP Academy · Xadra filiali: xarajatlar fazalar bo'yicha — ishlar ketma-ketligi, sanalar va pul oqimi"
+wf['A1'].font = f_sarlavha
+wf['A2'] = ("Boshlanish sanasini (ko'k) o'zgartirsangiz, barcha sanalar qayta hisoblanadi. Ish haftasi — dushanba–shanba, bayramlar chiqariladi. "
+            "Summalar «Hisob (batafsil)» dan, fazalarga ulush bilan (pastdagi 3-jadval; ko'k ulushlarni o'zgartirish mumkin).")
+wf['A2'].font = f_kichik
+SANA = 'DD.MM.YYYY'
+wf['B4'] = 'Boshlanish sanasi'; wf['B4'].font = f_qalin
+c = wf['C4']; c.value = dt.date(2026, 10, 19); c.number_format = SANA; c.font = Font(name=SHRIFT, size=10, bold=True, color='0000FF'); c.fill = PatternFill('solid', fgColor='FFF2CC')
+wf['D4'] = "Taxmin: ruxsat va shartnomalardan keyingi dushanba — aniq sana bilan almashtiring"; wf['D4'].font = f_kichik
+wf['B5'] = 'Bayramlar (ish kuni emas)'; wf['B5'].font = f_qalin
+BAYRAM = [dt.date(2026, 12, 8), dt.date(2026, 12, 31), dt.date(2027, 1, 1), dt.date(2027, 1, 2)]
+for i, b in enumerate(BAYRAM):
+    c = wf.cell(row=5, column=3 + i, value=b); c.number_format = SANA; c.font = f_kok
+BAY = f"$C$5:${get_column_letter(2 + len(BAYRAM))}$5"
+WK = '"0000001"'    # faqat yakshanba dam
+
+# 1-jadval: fazalar
+r = 7
+wf.cell(row=r, column=1, value="1. Fazalar: ishlar va sanalar").font = f_qalin
+r += 1
+SAR1 = ['Faza', 'Nomi', 'Ishlar', 'Ish kuni', 'Boshlanishi', 'Tugashi', 'Xarajat, $', 'Kutilmagan, $', 'Jami, $', "Jami, so'm", 'Ulush', "Yig'ma, $"]
+for i, h in enumerate(SAR1, 1):
+    c = wf.cell(row=r, column=i, value=h); c.font, c.fill, c.border = f_bosh, fill_bosh, chegara
+    c.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+F1R = r + 1
+fq = {}
+for i, (fk, nom, kun, ish) in enumerate(FAZALAR):
+    r = F1R + i; fq[fk] = r
+    bosh = f"=WORKDAY.INTL($C$4-1,1,{WK},{BAY})" if i == 0 else f"=WORKDAY.INTL(F{r - 1},1,{WK},{BAY})"
+    vals = [fk, nom, ish, kun, bosh, f"=WORKDAY.INTL(E{r},D{r}-1,{WK},{BAY})", None, f"=G{r}*Narxlar!$C${N['zaxira']}", f"=G{r}+H{r}",
+            f"=I{r}*{KURS}", f"=IF($I${F1R + NF}=0,0,I{r}/$I${F1R + NF})", f"=SUM($I${F1R}:I{r})"]
+    for j, v in enumerate(vals, 1):
+        c = wf.cell(row=r, column=j, value=v); c.font, c.border = f_oddiy, chegara
+        c.alignment = Alignment(vertical='top', wrap_text=j in (2, 3))
+    wf.cell(row=r, column=1).font = f_qalin; wf.cell(row=r, column=2).font = f_qalin
+    wf.cell(row=r, column=4).font = f_kok
+    for j, fm in [(5, SANA), (6, SANA), (7, USD0), (8, USD0), (9, USD0), (10, '#,##0'), (11, '0.0%'), (12, USD0)]:
+        wf.cell(row=r, column=j).number_format = fm
+    wf.row_dimensions[r].height = 52
+r = F1R + NF
+vals = ['', 'JAMI', '', f"=SUM(D{F1R}:D{r - 1})", f"=E{F1R}", f"=F{r - 1}", f"=SUM(G{F1R}:G{r - 1})", f"=SUM(H{F1R}:H{r - 1})",
+        f"=SUM(I{F1R}:I{r - 1})", f"=I{r}*{KURS}", f"=SUM(K{F1R}:K{r - 1})", '']
+for j, v in enumerate(vals, 1):
+    c = wf.cell(row=r, column=j, value=v); c.font, c.border, c.fill = f_qalin, chegara, fill_jami
+for j, fm in [(5, SANA), (6, SANA), (7, USD0), (8, USD0), (9, USD0), (10, '#,##0'), (11, '0.0%')]:
+    wf.cell(row=r, column=j).number_format = fm
+FJ = r
+r += 1
+wf.cell(row=r, column=2, value="Tekshiruv: «Yakuniy» UMUMIY JAMI bilan farq (0 bo'lishi kerak)").font = f_kichik
+c = wf.cell(row=r, column=9, value=f"=I{FJ}-Yakuniy!$C${UY}"); c.font, c.number_format = f_kichik, USD
+r += 1
+wf.cell(row=r, column=2, value="Kalendar kunlar (boshlanishdan tugashgacha)").font = f_kichik
+c = wf.cell(row=r, column=4, value=f"=F{FJ}-E{FJ}+1"); c.font = f_kichik
+
+# 2-jadval: haftalik grafik va oylik pul oqimi
+r += 2
+wf.cell(row=r, column=1, value="2. Haftalik grafik (rangli — faza ishlaydigan hafta)").font = f_qalin
+r += 1
+HAFTA = 10
+HR = r
+wf.cell(row=r, column=1, value='Faza').font = f_bosh
+wf.cell(row=r, column=2, value='Hafta boshi (dushanba)').font = f_bosh
+for j in (1, 2): wf.cell(row=r, column=j).fill = fill_bosh
+for h in range(HAFTA):
+    c = wf.cell(row=r, column=3 + h, value=f"=$C$4-WEEKDAY($C$4,2)+1+7*{h}")
+    c.number_format = 'DD.MM'; c.font, c.fill, c.border = f_bosh, fill_bosh, chegara
+    c.alignment = Alignment(horizontal='center')
+for i, (fk, nom, *_rest) in enumerate(FAZALAR):
+    r += 1
+    wf.cell(row=r, column=1, value=fk).font = f_qalin
+    wf.cell(row=r, column=2, value=nom).font = f_oddiy
+    for h in range(HAFTA):
+        col = get_column_letter(3 + h)
+        c = wf.cell(row=r, column=3 + h, value=f"=IF(AND($E${fq[fk]}<={col}${HR}+6,$F${fq[fk]}>={col}${HR}),1,0)")
+        c.number_format = ';;;'; c.border = chegara
+G1, G2 = HR + 1, r
+wf.conditional_formatting.add(f"C{G1}:{get_column_letter(2 + HAFTA)}{G2}", FormulaRule(formula=[f'C{G1}=1'], fill=PatternFill('solid', fgColor='5B9BD5')))
+r += 2
+wf.cell(row=r, column=1, value="Oylik pul oqimi: faza summasi uning kalendar kunlariga teng taqsimlanadi (avanslar faza boshida to'lanishini hisobga oling)").font = f_qalin
+r += 1
+OY = 4
+OR_ = r
+wf.cell(row=r, column=1, value='Faza').font = f_bosh
+wf.cell(row=r, column=2, value='Oy').font = f_bosh
+for j in (1, 2): wf.cell(row=r, column=j).fill = fill_bosh
+for m in range(OY):
+    c = wf.cell(row=r, column=3 + m, value=f"=EDATE(DATE(YEAR($C$4),MONTH($C$4),1),{m})")
+    c.number_format = 'MMM YYYY'; c.font, c.fill, c.border = f_bosh, fill_bosh, chegara
+    c.alignment = Alignment(horizontal='center')
+for i, (fk, nom, *_rest) in enumerate(FAZALAR):
+    r += 1
+    wf.cell(row=r, column=1, value=fk).font = f_qalin
+    wf.cell(row=r, column=2, value=nom).font = f_oddiy
+    for m in range(OY):
+        col = get_column_letter(3 + m)
+        f = (f"=$I${fq[fk]}*MAX(0,MIN($F${fq[fk]},EOMONTH({col}${OR_},0))-MAX($E${fq[fk]},{col}${OR_})+1)"
+             f"/($F${fq[fk]}-$E${fq[fk]}+1)")
+        c = wf.cell(row=r, column=3 + m, value=f); c.number_format = USD0; c.border = chegara
+r += 1
+wf.cell(row=r, column=2, value="Jami, $").font = f_qalin
+wf.cell(row=r + 1, column=2, value="Jami, so'm").font = f_qalin
+for m in range(OY):
+    col = get_column_letter(3 + m)
+    c = wf.cell(row=r, column=3 + m, value=f"=SUM({col}{OR_ + 1}:{col}{r - 1})"); c.number_format, c.font, c.fill, c.border = USD0, f_qalin, fill_jami, chegara
+    c = wf.cell(row=r + 1, column=3 + m, value=f"={col}{r}*{KURS}"); c.number_format, c.font, c.fill, c.border = '#,##0', f_qalin, fill_jami, chegara
+r += 3
+
+# 3-jadval: taqsimot (narx kaliti × faza ulushi)
+wf.cell(row=r, column=1, value="3. Xarajatlarning fazalarga taqsimoti (ulush — ko'k, o'zgartirish mumkin; har qatorda jami 100%)").font = f_qalin
+r += 1
+SAR3 = ['Kalit', 'Xarajat', 'Turi', 'Jami, $'] + [f"{fk}, %" for fk, *_ in FAZALAR] + ['Σ %'] + [f"{fk}, $" for fk, *_ in FAZALAR]
+for i, h in enumerate(SAR3, 1):
+    c = wf.cell(row=r, column=i, value=h); c.font, c.fill, c.border = f_bosh, fill_bosh, chegara
+    c.alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
+T3 = r + 1
+for k in KALITLAR:
+    r += 1
+    vals = [k, NARX_NOM.get(k, k), KTUR[k], f'=SUMIFS({rng("J")},{rng("K")},$A{r})'] + TAQSIMOT[k] \
+        + [f"=SUM({get_column_letter(5)}{r}:{get_column_letter(4 + NF)}{r})"] \
+        + [f"=$D{r}*{get_column_letter(5 + i)}{r}" for i in range(NF)]
+    for j, v in enumerate(vals, 1):
+        c = wf.cell(row=r, column=j, value=v); c.font, c.border = f_oddiy, chegara
+    wf.cell(row=r, column=1).font = f_kichik
+    wf.cell(row=r, column=4).font = f_yashil; wf.cell(row=r, column=4).number_format = USD0
+    for i in range(NF):
+        c = wf.cell(row=r, column=5 + i); c.font, c.number_format = f_kok, '0%;;"-"'
+        wf.cell(row=r, column=6 + NF + i).number_format = USD0
+    wf.cell(row=r, column=5 + NF).number_format = '0%'
+    if k.startswith(('stol', 'kreslo', 'mijoz', 'divan', 'shkaf', 'resepshn', 'logo', 'sahna', 'interyer', 'minbar', 'elon', 'etirof')):
+        wf.cell(row=r, column=2).fill = fill_taxmin
+T3E = r
+r += 1
+vals = ['', 'JAMI', '', f"=SUM(D{T3}:D{T3E})"] + ['' for _ in range(NF)] + [''] + [f"=SUM({get_column_letter(6 + NF + i)}{T3}:{get_column_letter(6 + NF + i)}{T3E})" for i in range(NF)]
+for j, v in enumerate(vals, 1):
+    c = wf.cell(row=r, column=j, value=v); c.font, c.border, c.fill = f_qalin, chegara, fill_jami
+for j in [4] + list(range(6 + NF, 6 + 2 * NF)): wf.cell(row=r, column=j).number_format = USD0
+T3J = r
+r += 1
+wf.cell(row=r, column=2, value="Tekshiruv: «Yakuniy» JAMI (kutilmagansiz) bilan farq (0 bo'lishi kerak)").font = f_kichik
+c = wf.cell(row=r, column=4, value=f"=D{T3J}-Yakuniy!$C${JY}"); c.font, c.number_format = f_kichik, USD
+wf.conditional_formatting.add(f"{get_column_letter(5 + NF)}{T3}:{get_column_letter(5 + NF)}{T3E}",
+                              FormulaRule(formula=[f'ABS({get_column_letter(5 + NF)}{T3}-1)>0.0001'], fill=PatternFill('solid', fgColor='FFC7CE')))
+# 1-jadvaldagi faza xarajati — 3-jadval ustunlari jamisidan
+for i, (fk, *_r) in enumerate(FAZALAR):
+    c = wf.cell(row=fq[fk], column=7, value=f"={get_column_letter(6 + NF + i)}{T3J}"); c.font, c.border, c.number_format = f_yashil, chegara, USD0
+r += 2
+for t in ["Izoh:",
+          "• Avanslar (F0): mebel, resepshn va logotiplarga 50% (tayyorlash 3–4 hafta); rekuperatorlarga 50% — qoldig'i yetkazib berilganda (F2).",
+          "• Shisha devorlar: o'lchov GKL karkasdan keyin (F3) — avans 50%, qoldig'i o'rnatishda (F4). Splitlar F3 da xarid qilinadi, F4 da o'rnatiladi; freon trassalari F2 da (shiftdan oldin).",
+          "• Montaj, osma shift, pol, elektr kabellari va bo'yoq narxlari jadvalda yo'q (buyurtmachi bermagan) — kelishilgach shu fazalarga qo'shiladi.",
+          "• Fazalar ketma-ket olingan; ustalar soni yetarli bo'lsa F2 va F3 qisman parallel ketishi mumkin — shunda «Ish kuni» ni kamaytiring."]:
+    wf.cell(row=r, column=1, value=t).font = f_kichik; r += 1
+for col, w in zip('ABCDEFGHIJKLMNOPQ', [7, 34, 60, 10, 12, 12, 12, 12, 12, 16, 9, 12, 10, 10, 10, 10, 10]):
+    wf.column_dimensions[col].width = w
+wf.freeze_panes = 'A4'
 
 for sh in wb.worksheets:
     sh.page_setup.orientation = 'landscape'

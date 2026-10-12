@@ -20,8 +20,9 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 | `Xadra_3-qavat_reja_v1.2.pdf` / `.png` | A3, 1:50: 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi); 1, 3, 4-xonalar o'zgarmaydi |
 | `Xadra_3-qavat_3D_v1.2.pdf` / `.png` | A3: 3-qavatning Blender 3D ko'rinishlari — umumiy, 5-xona doska tomonga, hojatxona ichidan |
 | `Xadra_xarajatlar_xulosa_v1.2.pdf` | A3: xarajatlar — turlar, qavatlar va xonalar bo'yicha jami |
+| `Xadra_xarajatlar_fazalar_v1.2.pdf` / `.png` | A3: xarajatlar fazalar bo'yicha (F0 tayyorgarlik va buyurtmalar → F1 buzish → F2 qora ishlar va tarmoqlar → F3 pardoz → F4 o'rnatish → F5 mebel, brending, ishga tushirish): haftalik grafik, sanalar, har fazada to'lanadigan xarajatlar (avans/qoldiq), oylik pul oqimi |
 | `3d/` | Alohida 3D rasmlar (JPG) va Blender fayllari: `Xadra_1-qavat.blend`, `Xadra_2-qavat.blend`, `Xadra_3-qavat.blend` (Blender 4.2, kameralar bilan, logotip rasmlari faylga qadalgan) |
-| `../hisob/Xadra_xarajatlar_v1.2.xlsx` | Xarajatlar (Excel), 1, 2 va 3-qavat: yakuniy, xonalar bo'yicha, batafsil hisob, narxlar varag'i (so'mdagi narxlar kurs bo'yicha). Narxi noma'lum qismlar (sotuv va admin mebeli, doskalar, koworking sahnasi, resepshn, 1-qavat logotiplari) — to'q sariq fonda, taxminiy. Narx yoki balandlik o'zgarsa, formulalar qayta hisoblaydi |
+| `../hisob/Xadra_xarajatlar_v1.2.xlsx` | Xarajatlar (Excel), 1, 2 va 3-qavat: yakuniy, fazalar (boshlanish sanasi bitta katakda — o'zgartirilsa, barcha sanalar, haftalik grafik va oylik pul oqimi qayta hisoblanadi; xarajatlarning fazalarga ulushi — ko'k, o'zgartirish mumkin), xonalar bo'yicha, batafsil hisob, narxlar varag'i (so'mdagi narxlar kurs bo'yicha). Narxi noma'lum qismlar (sotuv va admin mebeli, doskalar, koworking sahnasi, resepshn, 1-qavat logotiplari) — to'q sariq fonda, taxminiy. Narx yoki balandlik o'zgarsa, formulalar qayta hisoblaydi |
 
 ## Asosiy yechim
 
