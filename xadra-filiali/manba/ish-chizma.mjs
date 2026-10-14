@@ -355,3 +355,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(nom + '.pdf', 'eshik', ESH.length, 'shisha', SHISHA.length, 'gkl', GKL.length);
 }
 export { html as ishChizmaHtml };
+// boshqa ish chizmalari (vent-chizma.mjs) uchun umumiy yordamchilar
+export { asos, zanjir, oqBelgi, T, R, son, RANG, NOM, CSS as ISH_CSS };

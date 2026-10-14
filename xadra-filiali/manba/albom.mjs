@@ -291,6 +291,7 @@ const BOLIMLAR = [
   ["2-qavat — chizmalar: mavjud holat, jihozlash, ventilyatsiya, konditsionerlar joylashuvi", `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_${V}.pdf`],
   ["2-qavat — konditsionerlar: o'rnatish detallari va 3D", `Xadra_2-qavat_konditsionerlar_${V}.pdf`, [1]],
   ["2-qavat — ish chizmasi ustalar uchun: devorlar, shisha va eshiklar (o'lchamli)", `Xadra_2-qavat_ish_chizmasi_${V}.pdf`],
+  ["2-qavat — vitechka va kanalli konditsioner (buyurtmachi eskizi, 15.10): kanallar rejasi", `Xadra_2-qavat_vitechka_konditsioner_${V}.pdf`],
   ["2-qavat — 3D ko'rinishlar", f2],
   ['2-qavat — xonalar izohi (A4)', `Xadra_2-qavat_xonalar_izoh_${V}.pdf`],
   ['2-qavat — HVAC hisobi: 2 ta rekuperator va split (A4)', `Xadra_2-qavat_HVAC_hisob_${V}.pdf`],

@@ -155,6 +155,8 @@ await q1.close();
 
 // 2c. Ish chizmasi (ustalar uchun, o'lchamli) — alohida skript
 execFileSync(process.execPath, [join(BU, 'ish-chizma.mjs')], { stdio: 'inherit' });
+// 2d. Vitechka va kanalli konditsioner — buyurtmachi eskizi bo'yicha (15.10)
+execFileSync(process.execPath, [join(BU, 'vent-chizma.mjs')], { stdio: 'inherit' });
 await brauzer.close();
 server.close();
 console.log('Tayyor:', CHIQISH);
