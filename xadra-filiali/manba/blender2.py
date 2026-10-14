@@ -427,7 +427,7 @@ KOR = {
     'k2': dict(cam=kam('kamera_K2', (6150, K2y - 150, 1600), (19300, K2y + 60, 1450), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'logo': dict(cam=kam('kamera_logo', (14800, K2y + 450, 1650), (19300, K2y - 250, 1500), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'doskalar': dict(cam=kam('kamera_doskalar', (5300, 10600, 1600), (2100, 6500, 1350), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
-    'sotuv': dict(cam=kam('kamera_sotuv', (11650, 14800, 1650), (7300, 12400, 1250), 16), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'sotuv': dict(cam=kam('kamera_sotuv', (11250, 14850, 1650), (7300, 12500, 1250), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'admin': dict(cam=kam('kamera_admin', (11650, 9600, 1650), (7300, 12200, 1150), 16), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'sinf': dict(cam=kam('kamera_sinf', (12450, 5600, 1650), (17950, 3700, 1300), 19), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'kw': dict(cam=kam('kamera_koworking', (5350, 17500, 1700), (1300, 8800, 1000), 18), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
