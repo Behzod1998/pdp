@@ -98,8 +98,9 @@ async function q2Varaqlar(x) {
     ['Xadra_2-qavat_3D_5-koridor-doskalar.jpg', "<b>E'lonlar va e'tirof doskasi</b> (faxriylar, oy o'quvchisi nomzodlari) — koworkingning shimoliy devorida, K1 ga kirishda."],
     ['Xadra_2-qavat_3D_6-sotuv-xonasi.jpg', "<b>Offline sotuv (XZ1, K2 tomoni):</b> 2 konsultant, mijoz stullari, shkaf; eski o'rta devorda brend devor (logotip), yon devorlarda bambuk panel; old tomoni shisha, eshik o'rtada."],
     ['Xadra_2-qavat_3D_7-admin-xonasi.jpg', "<b>Admin (XZ2, K2 tomoni — sotuv yonida):</b> 2 ish o'rni eshikka qaragan, shkaf, o'rta devorda logotip, bambuk panel; old tomoni shisha, eshik o'rtada."],
-    ['Xadra_2-qavat_3D_8-sinf-doska.jpg', "<b>2-xona → doska:</b> interaktiv doska yon devorda, bambuk panel; chapda derazalar, o'ngda koridor tomondagi shisha devor."],
+    ['Xadra_2-qavat_3D_8-sinf-doska.jpg', "<b>2-xona → doska:</b> interaktiv doska yon devorda, bambuk panel; chapda oynali fasad, o'ngda koridor tomondagi shisha devor."],
     ['Xadra_2-qavat_3D_9-koworking.jpg', "<b>Koworking</b> — kundalik rejim, kirish zalidan; o'ngda sahna devori."],
+    ['Xadra_2-qavat_3D_14-kirish-zina.jpg', "<b>Kirish qismi:</b> ZN2 zinasi koworkingga ochiq — devor o'rniga metall panjara (h 1.1 m)."],
   ];
   const kat = (await Promise.all(r.map(async ([f, iz]) => `<div>${fig(await rasm(f), iz)}</div>`))).join('');
   const b2 = `<section class="varaq">${bosh("2-qavat — 3D ko'rinishlar (Blender): doskalar, sotuv va admin, sinf, koworking")}
