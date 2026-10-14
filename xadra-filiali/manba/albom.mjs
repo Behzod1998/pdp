@@ -88,11 +88,11 @@ async function q2Varaqlar(x) {
   const a = `<section class="varaq">${bosh("2-qavat — 3D ko'rinishlar (Blender): umumiy va koridorlar", `Rejalar: Xadra_2-qavat_taqdimot_reja_${V}.pdf`)}
   <div class="ikki"><div>
     ${fig(await rasm('Xadra_2-qavat_3D_1-umumiy.jpg'), `<b>Umumiy ko'rinish</b> — shiftsiz, devorlar 2.7 m da kesilgan. 7 sinf (${tekshiruv().orinlar} o'rin), sotuv, admin, ustozlar, call-markaz, koworking va CEO xonasi; ayollar WC — 2 kabina tambur ortida.`, yorliqlar(b, nom))}
-    <div class="matn"><p><b>Koridorlar yorug' va zamonaviy:</b> shiftda uzluksiz chiziqli LED, och pol va devorlar, sinflarning shisha devorlari (1.0–1.6 m da matli polosa). Ikkala koridor oxirida 4-xonaning devori GKL, markazida ichidan yoritilgan PDP Academy logotipi — koridor boshidan to'g'ri ko'rinadi. 4-xonaning barcha devorlari GKL, faqat eshigi shisha. Xizmat xonalarining old tomoni ham shisha (14.10) — e'lonlar va e'tirof doskalari koworkingning shimoliy devorida.</p></div>
+    <div class="matn"><p><b>Koridorlar yorug' va zamonaviy</b> (15.10, Jahon School namunasi uslubida): shiftda har 1.2 m da ko'ndalang chiziqli chiroqlar, chetlarida yashil LED; och pol va devorlar, sinflarning shisha devorlari (1.0–1.6 m da matli polosa). Ikkala koridor oxirida — marmar ko'rinishli panelda yoritilgan PDP Academy logotipi, ikki yonida mox polosalari va yashil LED, tepasida shiftdan devorga egilib tushadigan yog'och reykalar — koridor boshidan to'g'ri ko'rinadi. 4-xonaning barcha devorlari GKL, faqat eshigi shisha. Xizmat xonalarining old tomoni ham shisha (14.10) — e'lonlar va e'tirof doskalari koworkingning shimoliy devorida.</p></div>
   </div><div>
     ${fig(await rasm('Xadra_2-qavat_3D_2-koridor-K1.jpg'), "<b>K1 koridori</b> — koworkingdan: chapda 1–3-xona, o'ngda call-markaz (XZ4) va ustozlar (XZ3) xonalarining shisha old tomoni, oxirida logotip.")}
     ${fig(await rasm('Xadra_2-qavat_3D_3-koridor-K2.jpg'), "<b>K2 koridori</b> — chapda sotuv (XZ1) va admin (XZ2) — shisha, yonma-yon; o'ngda 5–7-xona, oxirida logotip.")}
-    ${fig(await rasm('Xadra_2-qavat_3D_4-koridor-logotip.jpg'), "<b>K2 oxiri:</b> yorituvchi logotip devori.")}
+    ${fig(await rasm('Xadra_2-qavat_3D_4-koridor-logotip.jpg'), "<b>K2 oxiri:</b> marmar panelda logotip, mox polosalari, egilgan yog'och reykalar va LED.")}
   </div></div></section>`;
   const r = [
     ['Xadra_2-qavat_3D_5-koridor-doskalar.jpg', "<b>E'lonlar va e'tirof doskasi</b> (faxriylar, oy o'quvchisi nomzodlari) — koworkingning shimoliy devorida, K1 ga kirishda."],

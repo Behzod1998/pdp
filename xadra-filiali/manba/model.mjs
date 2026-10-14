@@ -171,6 +171,9 @@ export const PANJARA = [
 // ---------- Koridorlar: logotip devori va doskalar ----------
 // Ikkala koridor (K1, K2) oxirida 4-xonaning devori GKL; markazida yorituvchi (ichidan yoritilgan) PDP Academy logotipi —
 // koridor boshidan (koworkingdan) to'g'ri qaraganda ko'rinadi. Logotip design.pdp.uz dan (asosiy, to'q fon uchun).
+// Buyurtmachi (15.10, Jahon School namunasi): devor pardozi — markazda marmar ko'rinishli panel (1.0 m, logotip ~0.9 m,
+// och fon uchun), ikki yonida 250 mm mox polosalari va yashil LED; shiftdan devorga egilib tushadigan yog'och reykali
+// kanopi (~2.4 m); koridor shiftida ko'ndalang chiziqli chiroqlar va chetlarida yashil LED — 3D (blender2.py, KOR_OXIR).
 // en — logotip eni, bal — balandligi, z — markazi poldan, mm.
 export const KORIDOR_LOGO = DEVORLAR.filter(w => w.logo).map(w => ({
   koridor: w.logo, x: w.x1, y1: w.y1, y2: w.y2, en: 1200, bal: 352, z: 1650, panel: { en: 1500, z1: 0, z2: H },

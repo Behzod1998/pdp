@@ -154,6 +154,46 @@ def nuqtali_pol(nom, qadam, d, c1, c2, rough=0.25, coat=0.3, romb=True):
     return m
 
 
+def marmar_mat(nom='marmar', asos='#f3f2ee', tomir='#7d8088', rough=0.12):
+    """Marmar ko'rinishli keramogranit (Calacatta uslubi): oq asos, ingichka kulrang tomirlar, yaltiroq."""
+    m, n, l, b = yangi_mat(nom)
+    tc = n.new('ShaderNodeTexCoord')
+    ns = n.new('ShaderNodeTexNoise'); ns.inputs['Scale'].default_value = 2.2; ns.inputs['Detail'].default_value = 6; ns.inputs['Distortion'].default_value = 1.2
+    l.new(tc.outputs['Object'], ns.inputs['Vector'])
+    wv = n.new('ShaderNodeTexWave'); wv.wave_type = 'BANDS'; wv.bands_direction = 'DIAGONAL'
+    wv.inputs['Scale'].default_value = 1.3; wv.inputs['Distortion'].default_value = 3.5; wv.inputs['Detail'].default_value = 6; wv.inputs['Detail Scale'].default_value = 1.5
+    l.new(ns.outputs['Color'], wv.inputs['Vector'])
+    cr = n.new('ShaderNodeValToRGB'); e = cr.color_ramp.elements
+    e[0].position = 0.0; e[0].color = lin(tomir); e[1].position = 0.035; e[1].color = lin(asos)
+    l.new(wv.outputs['Fac'], cr.inputs['Fac'])
+    # yengil bulutsimon kulrang dog'lar
+    ns2 = n.new('ShaderNodeTexNoise'); ns2.inputs['Scale'].default_value = 3.0; ns2.inputs['Detail'].default_value = 4
+    l.new(tc.outputs['Object'], ns2.inputs['Vector'])
+    mx = n.new('ShaderNodeMix'); mx.data_type = 'RGBA'; mx.blend_type = 'MULTIPLY'; mx.inputs['Factor'].default_value = 0.12
+    l.new(cr.outputs['Color'], mx.inputs['A']); l.new(ns2.outputs['Color'], mx.inputs['B'])
+    l.new(mx.outputs['Result'], b.inputs['Base Color'])
+    b.inputs['Roughness'].default_value = rough
+    b.inputs['Coat Weight'].default_value = 0.6; b.inputs['Coat Roughness'].default_value = 0.05
+    m.diffuse_color = lin(asos)
+    return m
+
+
+def mox_mat(nom='mox', c1='#2f5a22', c2='#7aa84a'):
+    """Stabillashgan mox / o'simlik devori: yashil rang dog'lari va bo'rtiqlik."""
+    m, n, l, b = yangi_mat(nom)
+    tc = n.new('ShaderNodeTexCoord')
+    ns = n.new('ShaderNodeTexNoise'); ns.inputs['Scale'].default_value = 38; ns.inputs['Detail'].default_value = 8
+    l.new(tc.outputs['Object'], ns.inputs['Vector'])
+    cr = n.new('ShaderNodeValToRGB'); e = cr.color_ramp.elements
+    e[0].position = 0.35; e[0].color = lin(c1); e[1].position = 0.7; e[1].color = lin(c2)
+    l.new(ns.outputs['Fac'], cr.inputs['Fac']); l.new(cr.outputs['Color'], b.inputs['Base Color'])
+    bm = n.new('ShaderNodeBump'); bm.inputs['Strength'].default_value = 0.9; bm.inputs['Distance'].default_value = 0.02
+    l.new(ns.outputs['Fac'], bm.inputs['Height']); l.new(bm.outputs['Normal'], b.inputs['Normal'])
+    b.inputs['Roughness'].default_value = 0.85
+    m.diffuse_color = lin(c1)
+    return m
+
+
 def rasm_mat(nom, fayl, kuch=0.0, rang_kuch=1.0):
     """PNG (alfa bilan) — plastinka materiali. kuch > 0 bo'lsa, rasm o'zi nur sochadi (yorituvchi logotip)."""
     m, n, l, b = yangi_mat(nom)
@@ -217,6 +257,9 @@ def materiallar():
         yer=mat('yer', '#9aa58b', 0.9),
         taglik=mat('taglik', '#e3e1dc', 0.9),
         grafit=mat('grafit_panel', '#2a2e33', 0.55),
+        marmar=marmar_mat(), mox=mox_mat(),
+        yogoch_reyka=mat('yogoch_reyka', '#b98a57', 0.45),
+        led_yashil=mat('led_yashil', '#22c55e', 0.4, emit=7.0, emit_rang='#2fd36b'),
         brend_yashil=mat('brend_yashil', '#00B533', 0.45),
         brend_yashil_nur=mat('brend_yashil_nur', '#00B533', 0.4, emit=4.0),
         brend_sariq=mat('brend_sariq', '#FFCC19', 0.45),

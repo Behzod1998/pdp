@@ -13,6 +13,8 @@ bu.boshla()
 I = D['ichki']; DV = D['devor']
 X = {x['kod']: x for x in D['xonalar']}
 mk = lambda r: ((r['x1'] + r['x2']) / 2, (r['y1'] + r['y2']) / 2)
+# koridor oxiri: mox polosasi eni, reykalar (shiftda uzunligi, egilish radiusi, devorda pastki chegarasi), mm
+KOR_OXIR = {'mox': 250, 'kanopi': 2400, 'R': 450, 'reykaPast': 2850, 'reyka': (40, 80, 80)}   # reyka: eni, qalinligi, qadami
 
 # ---------------- pol va plita ----------------
 ZN1 = next(z for z in D['zinalar'] if z['kod'] == 'ZN1'); ZN2 = next(z for z in D['zinalar'] if z['kod'] == 'ZN2')
@@ -115,9 +117,17 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
     e12 = next(e for e in ESH if e['kod'] == 'X12')
     qoplama_xona(q, x12, 'y1', M['bambuk_x'], M['bambuk_y'], h, [(e12['a'], e12['b'], 0, ESH_H)])
     qoplama_xona(q, x12, 'x2', M['bambuk_x'], M['bambuk_y'], h)
-    # koridor oxiridagi logotip devori — to'q grafit panel
+    # koridor oxiri (buyurtmachi, 15.10 — Jahon School namunasi uslubida): markazda marmar ko'rinishli panel (logotip ostida),
+    # ikki yonida yashil o'simlik (mox) polosalari va ular orasida yashil LED; tepasida shiftdan egilib tushadigan reykalar
     for l in D['logo']:
-        bu.qoplama(q, 'v', l['x'], -1, l['y1'], l['y2'], 0, h, [], M['grafit'], 15)
+        fx, y1, y2 = l['x'], l['y1'], l['y2']
+        zt = min(h, KOR_OXIR['reykaPast'])
+        q.box(fx - 25, fx, y1 + KOR_OXIR['mox'], y2 - KOR_OXIR['mox'], 0, zt, M['marmar'])
+        for a, b in ((y1, y1 + KOR_OXIR['mox']), (y2 - KOR_OXIR['mox'], y2)):
+            q.box(fx - 45, fx, a, b, 0, zt, M['mox'])
+        for ya in (y1 + KOR_OXIR['mox'], y2 - KOR_OXIR['mox'] - 14):
+            q.box(fx - 50, fx - 20, ya, ya + 14, 60, zt - 40, M['led_yashil'])
+        if h > zt: q.box(fx - 12, fx, y1, y2, zt, h, M['grafit'])
     # koworking sahnasi (XZ1 devori): GKL karkas, markazda grafit panel, yonlarida qora asos ustida yog'och reykalar
     sd = SAHNA['devor']; fx = sd['x1']
     q.box(fx, sd['x2'], sd['y1'], sd['y2'], 0, h, M['devor'], top=M['qopqoq'] if k == 'kesim' else None)
@@ -135,8 +145,33 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
 # ---------------- koridor: logotip, doskalar ----------------
 for i, l in enumerate(D['logo']):
     ym = (l['y1'] + l['y2']) / 2
-    bu.logo_panel(l['x'] - 15, ym, 90, l['en'], l['z'], 'primary-on-dark', kuch=2.2, halqa=0.5, nom=f"logo_{l['koridor']}")
-    bu.spot(l['x'] - 700, ym, H - 40, 60, (l['x'] - 15, ym, 1300), 70, f"logo_spot_{l['koridor']}")
+    bu.logo_panel(l['x'] - 25, ym, 90, 900, 1700, 'primary-on-light', kuch=0.6, halqa=0.35, nom=f"logo_{l['koridor']}", ofset=30)
+    bu.spot(l['x'] - 900, ym, H - 120, 45, (l['x'] - 25, ym, 1500), 60, f"logo_spot_{l['koridor']}")
+# koridor oxiri: shiftdan devorga egilib tushadigan yog'och reykalar (kanopi) — profil yo'l bo'ylab cho'ziladi
+def lenta(q, yol, yc, w, d, m):
+    from mathutils import Vector
+    pts = [P(x, yc, z) for x, z in yol]
+    halq = []
+    for i, p in enumerate(pts):
+        t = (pts[min(i + 1, len(pts) - 1)] - pts[max(i - 1, 0)]).normalized()
+        yv = Vector((0, 1, 0)); nv = t.cross(yv).normalized()
+        halq.append([q.bm.verts.new(p + nv * sx * d / 2000 + yv * sy * w / 2000) for sx, sy in ((-1, -1), (1, -1), (1, 1), (-1, 1))])
+    mi = q.mi(m)
+    for a, b in zip(halq, halq[1:]):
+        for j in range(4):
+            f = q.bm.faces.new((a[j], a[(j + 1) % 4], b[(j + 1) % 4], b[j])); f.material_index = mi
+    for r in (halq[0], halq[-1]):
+        f = q.bm.faces.new(r); f.material_index = mi
+q = Q()
+for l in D['logo']:
+    fx, y1, y2 = l['x'], l['y1'], l['y2']
+    w, d, qd = KOR_OXIR['reyka']; R = KOR_OXIR['R']; zc = H - 10 - d / 2; xa = fx - 12 - d / 2 - R
+    yol = [(fx - KOR_OXIR['kanopi'], zc), (xa, zc)]
+    yol += [(xa + R * math.sin(math.radians(a)), zc - R + R * math.cos(math.radians(a))) for a in range(10, 91, 10)]
+    yol += [(fx - 12 - d / 2, KOR_OXIR['reykaPast'])]
+    n = int((y2 - y1 - 60) // qd); y0 = (y1 + y2) / 2 - (n - 1) * qd / 2
+    for i in range(n): lenta(q, yol, y0 + i * qd, w, d, M['yogoch_reyka'])
+q.obj('koridor_kanopi', 'toliq')
 for b in D['doskalar']:
     rot = 180 if b['yon'] < 0 else 0
     xc = (b['x1'] + b['x2']) / 2
@@ -406,10 +441,16 @@ for kod in ('XZ1', 'XZ2', 'XZ3', 'XZ4'):     # 5.7–5.8 × 2.6–2.8 m: chiroql
 x12 = X['X12']; LED += [(1500, 22900, 600, 600), (4400, 22900, 600, 600)]
 LED += [(x, y, 600, 600) for x in (1150, 3000, 4800) for y in (8000, 11500, 15000)] + [(1500, 17200, 600, 600), (3300, 17200, 600, 600)]
 LED += [(4800, 19800, 600, 600), (4500, 2800, 400, 400), (4500, 5100, 400, 400)]
-for kod in ('K1', 'K2'):   # koridor: markazida uzluksiz chiziqli chiroq
-    kr = X[kod]; yc = (kr['y1'] + kr['y2']) / 2
-    LED += [(x + 600, yc, 1200, 50) for x in range(6200, 18800, 1300)]
+YASHIL = []
+for kod in ('K1', 'K2'):   # koridor (15.10): ko'ndalang chiziqli chiroqlar har 1.2 m da, ikki chetida yashil LED; oxirida reykali kanopi
+    kr = X[kod]; yc = (kr['y1'] + kr['y2']) / 2; xk = kr['x2'] - KOR_OXIR['kanopi']
+    LED += [(x, yc, 50, 1150) for x in range(6700, int(xk) - 300, 1200)]
+    LED += [(xk + 1000, yc + dy, 1900, 26) for dy in (-160, 0, 160)]      # kanopi: reykalar orasidagi chiziqli LED
+    YASHIL += [(6000, xk, kr['y1'] + 15, kr['y1'] + 40), (6000, xk, kr['y2'] - 40, kr['y2'] - 15)]
 bu.led_panellar(LED, 'led')
+q = Q()
+for x1_, x2_, ya, yb in YASHIL: q.box(x1_, x2_, ya, yb, H - 40, H - 10, M['led_yashil'])
+q.obj('koridor_yashil_led', 'tepa')
 q = Q()
 for x, y in DIF:
     q.box(x - 300, x + 300, y - 300, y + 300, H - 10, H, M['alyuminiy_och'])
@@ -427,7 +468,7 @@ KOR = {
     'umumiy': dict(cam=kam('kamera_umumiy', (-6500, 41000, 36000), (12300, 11800, -500), 35), res=(2400, 1700), ichki=False, quyosh=(125, 55, 3.2)),
     'k1': dict(cam=kam('kamera_K1', (6150, K1y + 150, 1600), (19300, K1y - 60, 1450), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'k2': dict(cam=kam('kamera_K2', (6150, K2y - 150, 1600), (19300, K2y + 60, 1450), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
-    'logo': dict(cam=kam('kamera_logo', (14800, K2y + 450, 1650), (19300, K2y - 250, 1500), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'logo': dict(cam=kam('kamera_logo', (15300, K2y + 380, 1600), (19300, K2y - 120, 1750), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'doskalar': dict(cam=kam('kamera_doskalar', (5300, 10600, 1600), (2100, 6500, 1350), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'sotuv': dict(cam=kam('kamera_sotuv', (11250, 14850, 1650), (7300, 12500, 1250), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'admin': dict(cam=kam('kamera_admin', (12650, 14850, 1650), (16900, 12450, 1250), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),

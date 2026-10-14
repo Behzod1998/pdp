@@ -118,6 +118,11 @@ NARX_QATORLAR = [
     ('sahnaPol', "Sahna maydoni poli: yog'och ko'rinishli vinil ~9 m², pol bilan bir sathda (o'tish profili bilan)", 250, "$/komplekt", "TAXMIN"),
     ('minbar', "Minbar (tribuna), ko'chma, logotip bilan", 300, "$/dona", "TAXMIN"),
     ('sahnaOsimlik', "Katta o'simlik tuvakda (sahna yonida)", 100, "$/dona", "TAXMIN"),
+    # 15.10: koridor oxiri — Jahon School namunasi uslubida (marmar panel, mox polosalari, egilgan yog'och reykalar, yashil LED)
+    ('korMarmar', "Koridor oxiri: marmar ko'rinishli keramogranit panel 1.0 × 2.85 m (logotip ostida), o'rnatish bilan", 250, "$/dona", "TAXMIN"),
+    ('korMox', "Koridor oxiri: stabillashgan mox polosalari 2 × 0.25 × 2.85 m (ramkada), orasida yashil LED chiziqlar", 300, "$/komplekt", "TAXMIN — namuna bo'yicha dizayner narxi bilan almashtiring"),
+    ('korReyka', "Koridor oxiri: yog'och reykali kanopi — shiftda ~2.4 m, devorga egilib tushadi (R ≈ 0.45 m), 18 reyka 40 × 80 mm, reykalar orasida 3 ta chiziqli LED", 800, "$/komplekt", "TAXMIN — egilgan reyka buyurtma asosida (MDF shpon yoki yog'och ko'rinishli alyuminiy profil)"),
+    ('korYashil', "Koridor: shift chetlarida yashil LED chiziqlar (2 × ~11 m, profil va blok bilan)", 250, "$/komplekt", "TAXMIN"),
     ('turniketSoni', "Turniketlar (buyurtmachida mavjud: kirish va chiqish)", 2, "dona", "Buyurtmachi: mavjud — narxi hisobga kirmaydi"),
     ('zaxira', "Kutilmagan xarajatlar", 0.10, "ulush", "Buyurtmachi: umumiy summadan 10%"),
     ('H', "Devor balandligi (poldan shiftgacha)", 3.5, "m", "Buyurtmachi: bino balandligi 3.5 m"),
@@ -263,6 +268,12 @@ qosh('XZ2', 'Mebel va interyer', "Interyer: dekor, o'simliklar", miqdor=1, birli
 # 14.10: xizmat xonalarining oldi shisha — doskalar koworkingning shimoliy (mavjud) devoriga ko'chirildi, bittadan
 qosh('KW', "E'lon va e'tirof doskalari", "E'lonlar doskasi (koworking shimoliy devorida, K1 ga kirishda)", miqdor=1, birlik='dona', narx='elonDoska')
 qosh('KW', "E'lon va e'tirof doskalari", "E'tirof doskasi — faxriylar, oy o'quvchisi nomzodlari (koworking shimoliy devorida)", miqdor=1, birlik='dona', narx='etirofDoska')
+# Koridor oxiri (15.10): logotip devorining pardozi va koridor yoritishi — taxminiy, har koridorda bir xil
+for kod in ['K1', 'K2']:
+    qosh(kod, 'Mebel va interyer', "Koridor oxiri: marmar ko'rinishli panel (logotip ostida)", miqdor=1, birlik='dona', narx='korMarmar')
+    qosh(kod, 'Mebel va interyer', "Koridor oxiri: mox polosalari va yashil LED", miqdor=1, birlik='komplekt', narx='korMox')
+    qosh(kod, 'Mebel va interyer', "Koridor oxiri: egilgan yog'och reykali kanopi, LED bilan", miqdor=1, birlik='komplekt', narx='korReyka')
+    qosh(kod, 'Mebel va interyer', "Koridor shifti chetlarida yashil LED chiziqlar", miqdor=1, birlik='komplekt', narx='korYashil')
 # 1-qavat: resepshn, mehmonlar joyi, logotiplar — taxminiy; turniket buyurtmachida mavjud
 qosh('Q1', 'Mebel va interyer', "Resepshn stoykasi (buyurtma asosida)", miqdor=1, birlik='dona', narx='resepshn')
 qosh('Q1', 'Mebel va interyer', "Resepshn to'siq panellari va xodim eshikchasi (L shaklida)", miqdor=1, birlik='komplekt', narx='resepshnPanel')
@@ -365,7 +376,7 @@ izohlar = [
     "• 3-qavat: 5-xona — o'quv xonasi (24 o'rin, bambuk panel va interaktiv doska); 2-xona — erkaklar hojatxonasi. Santexnika soni ikkala hojatxona uchun jami (2-qavatdagisi — ayollar: 2 kabina, unitazli, eng ichkarida; oldida rakovinali tambur — 6-xona 3-qavatga o'tish yo'lagi bo'lgani uchun ikki eshik orqali kiriladi); kafel faqat erkaklar hojatxonasi uchun (devor 58 m², pol 16 m²).",
     "• Ventilyatsiya va konditsionerlash (buyurtmachi, 12.10): 2 ta Welkin rekuperatori (28 mln so'm dan) va havo kanallari (HVAC sxemasidagi uzunlik × 300 000 so'm/m) — «Butun qavat» qatorida; split konditsionerlar: SR1–SR7 ga bittadan 24 000 BTU ($1 120), XZ1–XZ4 ga bittadan 12 000 BTU ($380) — xonalar qatorida; CEO xonasi va koworkingda konditsioner mavjud (koworkingdagisi koridorlarni ham sovutadi); 3-qavat o'quv xonasiga 1 ta konditsioner. Sinflarning ko'cha tomoni to'liq oynali (buyurtmachi, 12.10) — tashqi bloklar tomda, trassa ~5–13 m. Kirmagan: montaj (narxga kirmagan bo'lsa), diffuzor va panjaralar, shovqin so'ndirgichlar, kanal izolyatsiyasi, freon trassalari, tomdagi tayanch ramalar, drenaj nasoslari (kerak bo'lsa).",
     "• Santexnika: 4 ta kabina, issiq va sovuq suv quvurlari (40 m dan), 100 ta aksessuar, kanalizatsiya quvuri va otvodlar — «Hojatxonalar» qatorida.",
-    "• 2-qavat koridorlari: 4-xonaning koridor oxiridagi devorlari GKL (avval shisha edi), markazida yorituvchi logotip; e'lonlar va e'tirof doskalari — K1 va K2 qatorlarida.",
+    "• 2-qavat koridorlari: 4-xonaning koridor oxiridagi devorlari GKL (avval shisha edi), markazida yorituvchi logotip; 15.10 dan — Jahon School namunasi uslubida: marmar ko'rinishli panel, mox polosalari, egilgan yog'och reykali kanopi, shift chetlarida yashil LED (taxmin, K1 va K2 qatorlarida); e'lonlar va e'tirof doskalari — koworking qatorida.",
     "• TAXMINIY narxlar (to'q sariq fon): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, koworking sahnasi (karkas devor, reyka, logotip, trek yoritish, ovoz, pol, minbar), 1-qavat resepshn stoykasi, mehmonlar mebeli va logotiplari — Toshkent bozori bo'yicha dastlabki baho; mebelchi va reklama ustasi narxi bilan almashtiring. «Yakuniy» varag'ida taxminiy qism alohida ko'rsatilgan.",
     "• Kirmagan: o'quv xonalari, ustozlar xonasi, call-markaz, CEO va koworking mebeli — mavjud; pol (kafel) va internet — mavjud; turniketlar (2 ta) — mavjud (o'rnatish, to'siq va evakuatsiya darvozasi alohida aniqlanadi); eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
     "Ranglar: ko'k — qo'lda kiritilgan qiymat; yashil — boshqa varaqdan olingan; qora — formula; sariq fon — o'zgartirish mumkin bo'lgan kataklar.",
@@ -589,7 +600,7 @@ qator(r, ['', 'UMUMIY JAMI', f"=C{JY}+C{JY + 1}", f"=C{r}*{KURS}", ''], [None, N
 r += 1
 taxmin_f = (f'=SUMIFS({rng("J")},{rng("C")},"Mebel va interyer")+SUMIFS({rng("J")},{rng("C")},"E\'lon va e\'tirof doskalari")'
             f'+SUMIFS({rng("J")},{rng("B")},"{NOM["Q1"]}",{rng("C")},"Logotip")')
-qator(r, ['', "shundan taxminiy narxlar (mebel, interyer, koworking sahnasi, doskalar, 1-qavat logotiplari) — kutilmagan xarajatsiz", taxmin_f, f"=C{r}*{KURS}", ''], [None, None, USD, SOM, None], f_kichik)
+qator(r, ['', "shundan taxminiy narxlar (mebel, interyer, koworking sahnasi, koridor oxiri dekori, doskalar, 1-qavat logotiplari) — kutilmagan xarajatsiz", taxmin_f, f"=C{r}*{KURS}", ''], [None, None, USD, SOM, None], f_kichik)
 wy.cell(row=r, column=3).fill = fill_taxmin
 r += 2
 wy.cell(row=r, column=1, value="2. Qavat va bo'limlar bo'yicha").font = f_qalin
@@ -654,6 +665,7 @@ TAQSIMOT = {
     'logo': ul(F0=.5, F5=.5), 'logoDevor1': ul(F0=.5, F5=.5), 'logoStol1': ul(F0=.5, F5=.5), 'sahnaLogo': ul(F0=.5, F5=.5),
     'interyerXZ1': ul(F5=1), 'interyerXZ2': ul(F5=1), 'elonDoska': ul(F5=1), 'etirofDoska': ul(F5=1),
     'sahnaReyka': ul(F5=1), 'sahnaAudio': ul(F5=1), 'minbar': ul(F5=1), 'sahnaOsimlik': ul(F5=1),
+    'korMarmar': ul(F4=1), 'korYashil': ul(F4=1), 'korMox': ul(F5=1), 'korReyka': ul(F0=.5, F5=.5),
 }
 # ishlatilgan kalitlar (Hisob qatorlari tartibida) — har biriga taqsimot bo'lishi shart
 KALITLAR, KTUR = [], {}
