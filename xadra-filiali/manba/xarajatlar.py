@@ -34,7 +34,7 @@ BOLIM = [("1-qavat: kirish zali", ['Q1']),
          ("2-qavat: ofis xonalari", ['XZ1', 'XZ2', 'XZ3', 'XZ4', 'X12']),
          ("2-qavat: umumiy joylar", ['K1', 'K2', 'KW', 'ZL', 'ZINA', 'BQ']),
          ("3-qavat va hojatxonalar", ['YQ', 'HJ'])]
-KORIDOR = {'XZ1': 'K2', 'XZ2': 'K1', 'XZ3': 'K1', 'XZ4': 'K2'}   # 14.10: XZ1, XZ4 — K2 tomonda; XZ2, XZ3 — K1 tomonda
+KORIDOR = {'XZ1': 'K2', 'XZ2': 'K2', 'XZ3': 'K1', 'XZ4': 'K1'}   # 14.10: XZ1, XZ2 — K2 tomonda (yonma-yon); XZ3, XZ4 — K1 tomonda
 UMUMIY = {'K1', 'K2', 'KW', 'ZL'}
 
 # ---------- Narxlar varag'i: kataklar ----------
@@ -217,6 +217,8 @@ qosh('HJ', 'Kafel', "Erkaklar hojatxonasi devori — yotqizish (usta)", miqdor='
 qosh('HJ', 'Kafel', "Erkaklar hojatxonasi poli — kafel (material)", miqdor='kafelPol', birlik='m²', narx=('som', 'kafel'))
 qosh('HJ', 'Kafel', "Erkaklar hojatxonasi poli — yotqizish (usta)", miqdor='kafelPol', birlik='m²', narx=('som', 'kafelUsta'))
 qosh('ZINA', 'Perila', "Perila (buyurtmachi bergan uzunlik)", 'perilaUz', None, birlik='m', narx='perila')
+for p in d['panjara']:     # 14.10: ZN2 bilan koworking orasidagi devor o'rniga zina panjarasi
+    qosh('ZINA', 'Perila', f"Zina panjarasi — {p['izoh']}", p['uz'], None, birlik='m', narx='perila')
 
 # Yoritish (buyurtmachi narxi joy boshiga): koridorlar va koworking — katta, xonalar — kichik komplekt
 for kod in ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2', 'XZ3', 'XZ4', 'X12']:

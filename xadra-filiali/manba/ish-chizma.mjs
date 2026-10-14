@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { PDFDocument } from 'pdf-lib';
-import { LOYIHA, H, ICHKI, DEVOR, DEVORLAR, ESHIKLAR, USTUNLAR, XONALAR, OQLAR, ZINALAR, DERAZALAR } from './model.mjs';
+import { LOYIHA, H, ICHKI, DEVOR, DEVORLAR, ESHIKLAR, USTUNLAR, XONALAR, OQLAR, ZINALAR, DERAZALAR, PANJARA } from './model.mjs';
 import { xonaMaydoni } from './tekshiruv.mjs';
 
 const require = createRequire(import.meta.url);
@@ -111,6 +111,11 @@ function asos(vb, k, { oqlar = true, xonaYozuv = true, kodlar = false } = {}) {
         `<path d="M${x},${oy} A${w},${w} 0 0 ${(e.ilgak === 'a') === (e.yon < 0) ? 1 : 0} ${xx},${hy}" fill="none" stroke="${rang}" stroke-width="${6 * k}" stroke-dasharray="${40 * k} ${25 * k}"/>`);
     }
   });
+  // zina panjarasi (devor o'rniga)
+  PANJARA.forEach(p => {
+    q.push(`<line x1="${p.x1}" y1="${p.y}" x2="${p.x2}" y2="${p.y}" stroke="#2b2f36" stroke-width="${32 * k}"/>`);
+    for (let x = p.x1 + 150; x < p.x2; x += 450) q.push(R({ x1: x - 45, x2: x + 45, y1: p.y - 45, y2: p.y + 45 }, 'fill="#2b2f36"'));
+  });
   // xona yozuvlari: nomi va ichki o'lchami
   if (xonaYozuv) XONALAR.forEach(x => {
     if (['sanuzel', 'zina'].includes(x.tur) || !NOM[x.kod] || x.kod === 'ZN1') return;
@@ -168,6 +173,9 @@ function varaq1Svg() {
     zanjir([16600, 18250, 18650, 21250, 21450], 6450, false, k, Zo),
     zanjir([6500, 7400, 7800, 9300, 10000, 12100], 6550, false, k, Zo),
     zanjir([9400, 10300, 12100], 12450, false, k, Zo), zanjir([9400, 10400, 12100], 18450, false, k, Zo));
+  // zina panjarasi: uzunligi va yozuv
+  PANJARA.forEach(p => q.push(zanjir([p.x1, p.x2], p.y - 380, true, k, { tomon: -1, size: 1.9 }),
+    T((p.x1 + p.x2) / 2, p.y + 420, `${p.kod}: zina panjarasi, h ${son(p.bal)}`, 170, 'text-anchor="middle" font-weight="700" fill="#2b2f36"')));
   // 1:50 detal chegarasi
   const det = { x1: 5600, y1: 7150, x2: 19750, y2: 17150 };
   q.push(R(det, `fill="none" stroke="#1F3657" stroke-width="${16 * k}" stroke-dasharray="${180 * k} ${80 * k}"`),
@@ -280,7 +288,8 @@ const belgilar = () => `<div class="belgi">
   <div><i style="background:${RANG.shisha};border:.3mm solid ${RANG.shishaCh}"></i>yangi shisha devor (S…)</div>
   <div><i style="border:.3mm dashed ${RANG.buz};background-image:repeating-linear-gradient(-45deg,${RANG.buz} 0 .25mm,transparent .25mm 1.3mm)"></i>buziladigan devor</div>
   <div><i style="border-top:.5mm solid ${RANG.shishaCh};height:0"></i>yangi shisha eshik (E…), yoy — ochilishi</div>
-  <div><i style="border:.3mm dashed #111"></i>ustun — joyida tekshiriladi</div></div>`;
+  <div><i style="border:.3mm dashed #111"></i>ustun — joyida tekshiriladi</div>
+  <div><i style="border-top:.9mm solid #2b2f36;height:0"></i>zina panjarasi (P1), metall</div></div>`;
 
 function html() {
   const xz = ['XZ1', 'XZ2', 'XZ3', 'XZ4'].map(k => XONALAR.find(r => r.kod === k));
@@ -298,13 +307,14 @@ function html() {
       <li><b>Eshiklar:</b> shisha, ${son(900)} × ${son(BAL.eshik)} mm, ustida ${son(BAL.shisha - BAL.eshik)} mm qo'zg'almas shisha; hammasi xona ichiga ochiladi. Jadvali — 2-varaqda.</li>
       <li><b>Bo'shliqlarni yopish</b> (eski eshik va o'tish joylari, 1-varaqdagi to'q sariq bo'laklar) — GKL, mavjud devor qalinligida (200–300 mm), ikki tomoni tekislanadi.</li>
     </ul>
-    <div class="ogoh"><b>Buyurtmachi qarori (14.10):</b> xizmat xonalari zonasidagi <b>eski o'rta devor (C o'qi) buzilmaydi</b> — XZ1–XZ4 shu devor bilan 2 × 2 xonaga bo'linadi; har birining koridor tomoni shisha, eshigi bilan. XZ1 va XZ2 eshiklari old tomonning o'rtasida.</div>
+    <div class="ogoh"><b>Buyurtmachi qarorlari (14.10):</b> (1) xizmat xonalari zonasidagi <b>eski o'rta devor (C o'qi) buzilmaydi</b> — 2 × 2 xona: K2 tomonda XZ1 sotuv va XZ2 admin (yonma-yon, eshiklari o'rtada), K1 tomonda XZ4 call-markaz va XZ3 ustozlar; koridor tomoni shisha. (2) <b>Kirishdagi ZN2 zinasi bilan koworking orasidagi devor buziladi</b> — o'rniga zina tuynugi chetida metall panjara P1 (h ${son(PANJARA[0].bal)}, uzunligi ${son(PANJARA[0].x2 - PANJARA[0].x1)}).</div>
     <h3>Ishni boshlashdan oldin joyida tekshiriladi</h3>
     <ul>
       <li>Barcha o'lchamlar mavjud chizma fotosidan olingan: ish boshlashdan oldin ustunlar (U1–U9) va mavjud devorlar yuzasi o'lchab chiqiladi; farq 30 mm dan katta bo'lsa — loyihachiga xabar beriladi.</li>
       <li>U8, U9 ustunlari fotoda ko'rinmaydi — U7 bilan bir chiziqda deb olingan (punktir).</li>
       <li>Shisha devorlar GKL karkas va eshik o'rinlari belgilangandan keyin <b>joyida o'lchanib</b> buyurtma qilinadi (jadvaldagi o'lchamlar — loyiha bo'yicha).</li>
       <li>Poldan shiftgacha ${son(H)} mm (buyurtmachi); to'sinlar bo'lsa, GKL va shisha ustidagi qism moslanadi.</li>
+      <li>ZN2 devorini buzishdan oldin: devor yuk ko'taruvchi emasligi va zinapoya to'sig'i bo'yicha yong'in xavfsizligi talabi tekshiriladi (ijaraga beruvchi va yong'in nazorati bilan kelishiladi). Panjara: balandligi ${son(PANJARA[0].bal)} mm, tik ustunchalar orasi ≤ 110 mm (bolalar uchun xavfsiz).</li>
     </ul>
     ${shtamp("Devorlar va eshiklar rejasi (o'lchamli)", '1:100', 1)}
   </div></section>`;

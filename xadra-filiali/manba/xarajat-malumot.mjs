@@ -1,6 +1,6 @@
 // Xarajatlar jadvali uchun ma'lumot: har bir yangi devorning qaysi xonaga qaragan yuzlari va uzunligi,
 // yangi eshiklar, sinflar, ofis xonalari va CEO xonasidagi bambuk panel devorlari. Natija JSON — xarajatlar.py o'qiydi.
-import { DEVORLAR, XONALAR, ESHIKLAR, bolaklar, lokal } from './model.mjs';
+import { DEVORLAR, XONALAR, ESHIKLAR, PANJARA, bolaklar, lokal } from './model.mjs';
 import { tizimHisob } from './hvac-tizim.mjs';
 const xonalar = XONALAR.flatMap(x => bolaklar(x).map(b => ({ kod: x.kod, ...b })));
 const ustma = (a1, a2, b1, b2) => Math.max(0, Math.min(a2, b2) - Math.max(a1, b1));
@@ -34,15 +34,15 @@ const sinflar = XONALAR.filter(x => x.tur === 'sinf').map(x => {
   return { kod: x.kod, doskaDevor: W, orqaDevor: orqa, koridor: x.koridor };
 });
 // bambuk panel ofis xonalarida va CEO xonasida — sinflardagi kabi ikkita devor (14.10: XZ xonalari 2 × 2):
-// sotuv va admin — ikkala kalta yon devor (o'rta devor — logotipli brend devor); ustozlar va call-markaz — o'rta devor va
-// g'arbiy yon devor. CEO xonasida ikkita ichki kar devor (derazali tashqi devorlarga qilinmaydi), eshik o'rni ayiriladi.
+// sotuv va admin (K2 tomonda, yonma-yon) — ikkala kalta yon devor (o'rta devor — logotipli brend devor); ustozlar va
+// call-markaz (K1 tomonda) — o'rta devor va g'arbiy yon devor. CEO xonasida ikkita ichki kar devor (derazali tashqi devorlarga qilinmaydi), eshik o'rni ayiriladi.
 const xona = kod => XONALAR.find(r => r.kod === kod);
 const chuq = kod => xona(kod).y2 - xona(kod).y1, en = kod => xona(kod).x2 - xona(kod).x1;
 const ofislar = [
-  { kod: 'XZ1', devorlar: [{ nom: "Koworking (sahna) bilan orasidagi devor", uz: chuq('XZ1') }, { nom: "Call-markaz (XZ4) bilan orasidagi devor", uz: chuq('XZ1') }] },
-  { kod: 'XZ2', devorlar: [{ nom: "Koworking (sahna) bilan orasidagi devor", uz: chuq('XZ2') }, { nom: "Ustozlar xonasi (XZ3) bilan orasidagi devor", uz: chuq('XZ2') }] },
-  { kod: 'XZ3', devorlar: [{ nom: "Eski o'rta devor (call-markaz bilan orasida)", uz: en('XZ3') }, { nom: "Admin (XZ2) bilan orasidagi devor", uz: chuq('XZ3') }] },
-  { kod: 'XZ4', devorlar: [{ nom: "Eski o'rta devor (ustozlar xonasi bilan orasida)", uz: en('XZ4') }, { nom: "Offline sotuv (XZ1) bilan orasidagi devor", uz: chuq('XZ4') }] },
+  { kod: 'XZ1', devorlar: [{ nom: "Koworking (sahna) bilan orasidagi devor", uz: chuq('XZ1') }, { nom: "Admin (XZ2) bilan orasidagi devor", uz: chuq('XZ1') }] },
+  { kod: 'XZ2', devorlar: [{ nom: "Offline sotuv (XZ1) bilan orasidagi devor", uz: chuq('XZ2') }, { nom: "4-xona bilan orasidagi devor", uz: chuq('XZ2') }] },
+  { kod: 'XZ3', devorlar: [{ nom: "Eski o'rta devor (admin bilan orasida)", uz: en('XZ3') }, { nom: "Call-markaz (XZ4) bilan orasidagi devor", uz: chuq('XZ3') }] },
+  { kod: 'XZ4', devorlar: [{ nom: "Eski o'rta devor (sotuv bilan orasida)", uz: en('XZ4') }, { nom: "Koworking (sahna) bilan orasidagi devor", uz: chuq('XZ4') }] },
   { kod: 'X12', devorlar: [
     { nom: "Zinapoya va kirish zali bilan orasidagi devor (eshikli)", uz: en('X12'), eshik: true },
     { nom: "7-xona bilan orasidagi devor", uz: chuq('X12') }] },
@@ -51,4 +51,4 @@ const ofislar = [
 const buziladi = DEVORLAR.filter(w => w.holat === 'buziladi').map(w => ({ uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), izoh: w.izoh }));
 // HVAC: havo kanallari uzunligi (chizmadagi taklif yo'nalish + 10%), m
 const T = tizimHisob();
-console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi, kanalUz: T.kanalUz, kanalChizma: Math.round(T.kanalChizma / 1000) }, null, 0));
+console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi, panjara: PANJARA.map(p => ({ uz: (p.x2 - p.x1) / 1000, izoh: p.izoh })), kanalUz: T.kanalUz, kanalChizma: Math.round(T.kanalChizma / 1000) }, null, 0));

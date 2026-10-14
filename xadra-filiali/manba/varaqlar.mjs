@@ -90,9 +90,9 @@ function xonalarJadvali() {
   const xz = XONALAR.filter(r => r.tur === 'xizmat');
   return `<h3>XONALAR</h3><table><tr><th>Xona</th><th>O'lcham, m</th><th class="r">m²</th><th class="r">O'rin</th><th class="r">m²/kishi</th><th>Partalar</th></tr>${rows}
     <tr><td>XZ1 · sotuv</td><td>5.70 × 2.60</td><td class="r">${v(xonaMaydoni(xz[0]))}</td><td class="r">2</td><td class="r">—</td><td>2 stol + 4 mijoz stuli, shisha devor</td></tr>
-    <tr><td>XZ2 · admin</td><td>5.70 × 2.80</td><td class="r">${v(xonaMaydoni(xz[1]))}</td><td class="r">2</td><td class="r">—</td><td>2 stol + 2 mehmon stuli, shisha devor</td></tr>
+    <tr><td>XZ2 · admin</td><td>5.80 × 2.60</td><td class="r">${v(xonaMaydoni(xz[1]))}</td><td class="r">2</td><td class="r">—</td><td>2 stol + 2 mehmon stuli, shisha devor</td></tr>
     <tr><td>XZ3 · ustozlar</td><td>5.80 × 2.80</td><td class="r">${v(xonaMaydoni(xz[2]))}</td><td class="r">9</td><td class="r">—</td><td>umumiy stol, lokerlar</td></tr>
-    <tr><td>XZ4 · call-markaz</td><td>5.80 × 2.60</td><td class="r">${v(xonaMaydoni(xz[3]))}</td><td class="r">6</td><td class="r">—</td><td>o'rta devor bo'ylab 5 + 1 ish o'rni</td></tr>
+    <tr><td>XZ4 · call-markaz</td><td>5.70 × 2.80</td><td class="r">${v(xonaMaydoni(xz[3]))}</td><td class="r">6</td><td class="r">—</td><td>o'rta devor bo'ylab 5 + 1 ish o'rni</td></tr>
     <tr><td>CEO (12-xona)</td><td>5.95 × 2.95</td><td class="r">${v(xonaMaydoni(x12))}</td><td class="r">1</td><td class="r">—</td><td>ish stoli + 4 kishilik stol, derazali</td></tr>
     <tr><td>KW</td><td>5.95 × 11.85</td><td class="r">${v(xonaMaydoni(XONALAR.find(r => r.kod === 'KW')))}</td><td class="r">~35</td><td class="r">—</td><td>koworking; sahna — XZ1 devori, tadbirda ${KW_TADBIR.stullar.length} o'rin</td></tr>
     <tr class="jami"><td>Jami</td><td></td><td class="r">${v(kor.reduce((t, k) => t + k.A, 0))}</td><td class="r">${kor.reduce((t, k) => t + k.orin, 0)}</td><td></td><td>${[...new Set(kor.map(k => k.orin))].sort((a, b) => b - a).map(o => `${kor.filter(k => k.orin === o).length} × ${o}`).join(' + ')}</td></tr></table>`;
@@ -118,7 +118,7 @@ function partaQoidasi() {
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100; sinflarning koridor tomoni — akustik shisha.<br>
     KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (6-xona — ZN1 ga o'tish, K1, K2, kirish zali); sahna — XZ1/XZ2 devorida, podiumsiz; e'lon va e'tirof doskalari — koworkingning shimoliy devorida.<br>
     Ayollar WC: 2 kabina eng ichkarida (2, 3 — unitaz), oldida tambur (4, 5 — rakovina); ikki eshik orqali kiriladi.<br>
-    Ofis xonalari (XZ1–XZ4): eski o'rta devor qoladi (14.10) — 2 × 2 xona, koridor tomoni shisha; barcha yangi eshiklar shisha.<br>
+    Ofis xonalari (XZ1–XZ4): eski o'rta devor qoladi (14.10) — 2 × 2 xona: K2 tomonda sotuv va admin yonma-yon, K1 tomonda call-markaz va ustozlar; koridor tomoni shisha. Kirishdagi ZN2 devori o'rniga zina panjarasi.<br>
     XZ3 — ustozlar xonasi, XZ4 — call-markaz va online sotuv; 12-xona — CEO (mavjud holicha).<br>
     Zinalar mavjud holicha; 1-qavatda zina oldida resepshn va turniket.
   </p>`;

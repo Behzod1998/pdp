@@ -3,7 +3,7 @@
 // Ishlatish: node blender2-malumot.mjs > 2qavat.json  (blender2.py shu faylni o'qiydi)
 import {
   ICHKI, DEVOR, H, DEVORLAR, DERAZALAR, USTUNLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ, KW_KUNDALIK,
-  KORIDOR_LOGO, DOSKALAR, AYOLLAR_WC, KW_SAHNA, KW_TADBIR, sinflar, bolaklar,
+  KORIDOR_LOGO, DOSKALAR, AYOLLAR_WC, KW_SAHNA, KW_TADBIR, PANJARA, sinflar, bolaklar,
 } from './model.mjs';
 import { kdRoyxat, KD_Z } from './hvac-tizim.mjs';
 
@@ -24,9 +24,10 @@ console.log(JSON.stringify({
   sinflar: sinflar().map(x => ({ kod: x.kod, doska: x.doska, x1: x.x1, x2: x.x2, y1: x.y1, y2: x.y2, bolaklar: bolaklar(x),
     partalar: x.j.partalar, stullar: x.j.stullar, doskaR: x.j.doska, ustozStoli: x.j.ustozStoli, ustozStuli: x.j.ustozStuli })),
   xizmat: XIZMAT_JIHOZ, kw: KW_KUNDALIK, logo: KORIDOR_LOGO, doskalar: DOSKALAR, sahna: KW_SAHNA, kw_tadbir: KW_TADBIR.stullar,
-  osimlik: [[23550, 9750], [23500, 16200], [8400, 12750], [8400, 11850], [12500, 11850], [12450, 14700], [3900, 13950], [3700, 17650], [5650, 24050]],
+  osimlik: [[23550, 9750], [23500, 16200], [8400, 12750], [15050, 12750], [12500, 11850], [11600, 9800], [3900, 13950], [3700, 17650], [5650, 24050]],
   sanuzel: { unitaz: AYOLLAR_WC.unitaz, rakovina: AYOLLAR_WC.rakovina },
   // split konditsionerlar: ichki blok (devor, rejadagi joyi) va tashqi blok (tomda — fasad o'zgarmaydi)
   kd: kdRoyxat().map(u => ({ kod: u.kod, xona: u.xona, btu: u.btu, ichki: u.o.ichki, tashqi: u.o.tashqi, b: u.b, devor: u.devor, tb: u.tb })),   // tb — tomda (2-qavat tomi)
   kdZ: KD_Z,
+  panjara: PANJARA,
 }));

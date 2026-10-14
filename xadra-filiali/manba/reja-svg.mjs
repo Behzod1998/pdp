@@ -1,7 +1,7 @@
 // Reja chizmasi (SVG). Rejimlar: 'mavjud' (1-varaq), 'jihoz' (2-varaq), 'havo' (3-varaq), 'kd' (4-varaq — konditsionerlar), 'izoh' (A4 hujjat).
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, ESKI_XONALAR, ADM_JIHOZ,
-  XIZMAT_JIHOZ, KW_KUNDALIK, KW_SAHNA, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI, wcJihozlari,
+  XIZMAT_JIHOZ, KW_KUNDALIK, KW_SAHNA, PANJARA, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI, wcJihozlari,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 import { tizimQatlam, kdQatlam } from './hvac-tizim.mjs';
@@ -97,6 +97,11 @@ export function rejaSvg(o = {}) {
     });
     const s = z.strelka;
     q.push(chiziq(s.x, s.y1, s.x, s.y2, `stroke="#333" stroke-width="${10 * k}" marker-end="url(#${id}ad)"`));
+  });
+  // ---- zina panjarasi (ZN2 — koworking tomoni, devor o'rniga) ----
+  PANJARA.forEach(p => {
+    q.push(chiziq(p.x1, p.y, p.x2, p.y, `stroke="#2b2f36" stroke-width="${30 * k}"`));
+    for (let x = p.x1 + 150; x < p.x2; x += 450) q.push(rect({ x1: x - 40, x2: x + 40, y1: p.y - 40, y2: p.y + 40 }, 'fill="#2b2f36"'));
   });
 
   // ---- devorlar ----
@@ -216,8 +221,8 @@ export function rejaSvg(o = {}) {
         q.push(matn(p.x, ust + 680 * k, `${K.A.toFixed(1)} m²`, 240, `text-anchor="middle" fill="#666"`));
         q.push(matn(p.x, ust + 960 * k, `${K.orin} o'rin`, 240, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'xizmat') {
-        const ly = { XZ1: 13450, XZ2: 11300, XZ3: 11050, XZ4: 14300 }[x.kod];
-        const lx = { XZ1: 9100, XZ2: 9100, XZ3: 13000, XZ4: 13700 }[x.kod];
+        const ly = { XZ1: 13450, XZ2: 13400, XZ3: 11050, XZ4: 10600 }[x.kod];
+        const lx = { XZ1: 9100, XZ2: 15050, XZ3: 13000, XZ4: 10300 }[x.kod];
         q.push(matn(lx, ly, x.kod, 380, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         if (!HAVOSIMON) q.push(matn(lx, ly + 360 * k, `${x.qisqa} · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'koworking') {

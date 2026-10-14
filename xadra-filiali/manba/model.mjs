@@ -108,7 +108,8 @@ const qotgan = [
   d(3100, 3500, 3850, 3950, 'mavjud'), d(4150, 4750, 3850, 3950, 'mavjud'), d(5400, 5900, 3850, 3950, 'mavjud'),
   d(5900, 6250, 0, 6300, 'mavjud'),
   d(0, 4450, 6300, 6500, 'mavjud'), d(5150, 6250, 6300, 6500, 'mavjud'),
-  d(0, 3650, 18350, 18450, 'mavjud', 'ZN2 to\'sig\'i'),
+  // ZN2 zinasi bilan koworking orasidagi devor buziladi (buyurtmachi, 14.10) — o'rniga zina panjarasi (PANJARA)
+  d(0, 3650, 18350, 18450, 'buziladi', 'ZN2 to\'sig\'i — o\'rniga zina panjarasi'),
   d(0, 4550, 21250, 21450, 'mavjud'), d(5450, 5950, 21250, 21450, 'mavjud'),
 ];
 
@@ -123,7 +124,7 @@ const ichki = [
   d(5950, 6150, 16600, 18250, 'yangi', 'bo\'shliq yopiladi'), d(5950, 6150, 18650, 21250, 'yangi', 'bo\'shliq yopiladi'),
   d(5950, 6150, 21250, ICHKI.y, 'mavjud'),
   // eski o'rta devor (C o'qi): xizmat xonalari zonasida QOLADI (buyurtmachi, 14.10) — XZ1–XZ4 shu devor bilan 2 qatorga
-  // bo'linadi (K1 tomonda XZ2, XZ3; K2 tomonda XZ1, XZ4); 4-xona ichidagi bo'laklari buziladi
+  // bo'linadi (K1 tomonda XZ4, XZ3; K2 tomonda XZ1, XZ2 — sotuv va admin yonma-yon); 4-xona ichidagi bo'laklari buziladi
   d(6250, 11850, 12200, 12400, 'mavjud', 'eski o\'rta devor — qoladi'), d(12250, 17850, 12200, 12400, 'mavjud', 'eski o\'rta devor — qoladi'),
   d(18250, 19000, 12200, 12400, 'buziladi', 'eski o\'rta devor'), d(20500, ICHKI.x, 12200, 12400, 'buziladi', 'eski o\'rta devor'),
   d(0, 4200, 12200, 12400, 'buziladi', '7 va 11-xonalar orasidagi devor'),
@@ -144,14 +145,14 @@ const ichki = [
   sh(6250, 10850, 7700, 7800), d(11750, 12150, 7700, 7800, 'yangi'), sh(12150, 16850, 7700, 7800),
   d(17750, 18300, 7700, 7800, 'yangi'), d(19200, ICHKI.x, 7700, 7800, 'yangi'),
   lg(19300, 19400, 7800, 9300, 'K1'),
-  // K1 janubiy devori: XZ2 (admin) va XZ3 (ustozlar) oldi — shisha, eshiklari bilan (buyurtmachi, 14.10: XZ2 eshigi o'rtada);
+  // K1 janubiy devori: XZ4 (call-markaz) va XZ3 (ustozlar) oldi — shisha, eshiklari bilan (XZ4 eshigi o'rtada);
   // 3-o'qdagi mavjud devor uchi va 4-xonaning devorlari GKL
   sh(6250, 8650, 9300, 9400), sh(9550, 11950, 9300, 9400), d(11950, 12150, 9300, 9400, 'yangi'),
   sh(12150, 12300, 9300, 9400), sh(13200, 17950, 9300, 9400), d(17950, 18150, 9300, 9400, 'yangi'),
   d(18150, 19300, 9300, 9400, 'yangi'), d(19300, 19400, 9300, 9400, 'yangi'),
-  // K2 shimoliy devori: XZ1 (offline sotuv, eshigi o'rtada) va XZ4 (call-markaz) oldi — shisha, eshiklari bilan
+  // K2 shimoliy devori: XZ1 (offline sotuv) va XZ2 (admin) oldi — shisha, eshiklari o'rtada (buyurtmachi, 14.10)
   sh(6250, 8650, 15000, 15100), sh(9550, 11950, 15000, 15100), d(11950, 12150, 15000, 15100, 'yangi'),
-  sh(12150, 15250, 15000, 15100), sh(16150, 17950, 15000, 15100), d(17950, 18250, 15000, 15100, 'yangi'),
+  sh(12150, 14600, 15000, 15100), sh(15500, 17950, 15000, 15100), d(17950, 18250, 15000, 15100, 'yangi'),
   // 4-xona: eshik K2 shimoliy devorida (orqa tomonda, shisha); K2 uchidagi devor GKL, logotip bilan
   d(19150, 19400, 15000, 15100, 'yangi'), lg(19300, 19400, 15100, 16600, 'K2'),
   // K2 janubiy devori (5–7-xonalar) — eshiklar bilan
@@ -160,6 +161,12 @@ const ichki = [
 ];
 
 export const DEVORLAR = [...tashqi, ...qotgan, ...ichki];
+
+// Zina panjarasi (perila): kirish qismida ZN2 zinasi koworkingga ochiladi — devor o'rniga zina tuynugi chetida metall
+// panjara (buyurtmachi, 14.10). y — panjara o'qi (tuynuk cheti), bal — balandligi, mm.
+export const PANJARA = [
+  { kod: 'P1', x1: 0, x2: 3650, y: 18450, bal: 1100, izoh: "ZN2 zinasi — koworking tomoni (devor o'rniga)" },
+];
 
 // ---------- Koridorlar: logotip devori va doskalar ----------
 // Ikkala koridor (K1, K2) oxirida 4-xonaning devori GKL; markazida yorituvchi (ichidan yoritilgan) PDP Academy logotipi —
@@ -190,11 +197,11 @@ export const ESHIKLAR = [
   e('SR5', 'h', 18300, 19200, 16700, +1, 'a'),
   e('SR6', 'h', 12350, 13250, 16700, +1, 'a'),
   e('SR7', 'h', 6350, 7250, 16700, +1, 'a'),
-  // XZ1, XZ2 — old tomonining o'rtasida (buyurtmachi, 14.10); XZ3 — joyida; XZ4 — K2 tomonda, avvalgi o'qda
+  // XZ1 (sotuv), XZ2 (admin) — K2 tomonda, old tomonining o'rtasida (buyurtmachi, 14.10); XZ3 — joyida; XZ4 (call-markaz) — K1 tomonda, o'rtada
   e('XZ1', 'h', 8650, 9550, 15000, -1, 'a'),
-  e('XZ2', 'h', 8650, 9550, 9400, +1, 'a'),
+  e('XZ2', 'h', 14600, 15500, 15000, -1, 'a'),
   e('XZ3', 'h', 12300, 13200, 9400, +1, 'a'),
-  e('XZ4', 'h', 15250, 16150, 15000, -1, 'a'),
+  e('XZ4', 'h', 8650, 9550, 9400, +1, 'a'),
   e('X12', 'h', 4550, 5450, 21250, -1, 'b', 'mavjud'),
   e('SU6', 'h', 4450, 5150, 6500, +1, 'a', 'mavjud'),
   e('ZN1', 'v', 5300, 6100, 3100, +1, 'b', 'mavjud'),
@@ -240,9 +247,9 @@ export const XONALAR = [
   { kod: 'SR7', nomi: 'Study Room 7', tur: 'sinf', x1: 6150, y1: 16700, x2: 11950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR7', eskiRaqam: '13', koridor: 'K2', sinf: YON_TOR },
   // Xizmat xonalari (buyurtmachi, 14.10): eski o'rta devor qoladi — 2 × 2 xona, oldi shisha, har biriga eshik
   { kod: 'XZ1', nomi: 'Offline sotuv bo\'limi', qisqa: 'sotuv', tur: 'xizmat', x1: 6250, y1: 12400, x2: 11950, y2: 15000, eshik: 'XZ1', eskiRaqam: '13', odam: 6 },
-  { kod: 'XZ2', nomi: 'Admin', qisqa: 'admin', tur: 'xizmat', x1: 6250, y1: 9400, x2: 11950, y2: 12200, eshik: 'XZ2', eskiRaqam: '8', odam: 4 },
+  { kod: 'XZ2', nomi: 'Admin', qisqa: 'admin', tur: 'xizmat', x1: 12150, y1: 12400, x2: 17950, y2: 15000, eshik: 'XZ2', eskiRaqam: '14', odam: 4 },
   { kod: 'XZ3', nomi: 'Ustozlar xonasi', qisqa: 'ustozlar', odam: 9, tur: 'xizmat', x1: 12150, y1: 9400, x2: 17950, y2: 12200, eshik: 'XZ3', eskiRaqam: '9' },
-  { kod: 'XZ4', nomi: 'Call-markaz va online sotuv', qisqa: 'call-markaz', odam: 6, tur: 'xizmat', x1: 12150, y1: 12400, x2: 17950, y2: 15000, eshik: 'XZ4', eskiRaqam: '14' },
+  { kod: 'XZ4', nomi: 'Call-markaz va online sotuv', qisqa: 'call-markaz', odam: 6, tur: 'xizmat', x1: 6250, y1: 9400, x2: 11950, y2: 12200, eshik: 'XZ4', eskiRaqam: '8' },
   { kod: 'KW', nomi: 'Koworking / Tadbirlar zali', tur: 'koworking', x1: 0, y1: 6500, x2: 5950, y2: 18350, eskiRaqam: '7, 11' },
   { kod: 'X12', nomi: 'CEO xonasi', qisqa: 'CEO', odam: 5, tur: 'ofis', x1: 0, y1: 21450, x2: 5950, y2: ICHKI.y, eshik: 'X12', eskiRaqam: '12', qotgan: true },
   { kod: 'K1', nomi: 'Koridor 1500', tur: 'koridor', x1: 5950, y1: 7800, x2: 19300, y2: 9300 },
@@ -370,21 +377,21 @@ export const XIZMAT_JIHOZ = [
     stullar: [st(7275, 7725, 12450, 12900, 'n', true), st(10425, 10875, 12450, 12900, 'n', true),
       st(6950, 7400, 13750, 14200, 's'), st(7600, 8050, 13750, 14200, 's'), st(10100, 10550, 13750, 14200, 's'), st(10750, 11200, 13750, 14200, 's')],
     shkaflar: [r4(11500, 11950, 12600, 14600)], divanlar: [r4(6250, 6700, 13750, 14850)], dumaloq: [] },
-  { kod: 'XZ2',   // admin (K1 tomoni, 5.7 × 2.8 m): 2 ish o'rni — xodimlar o'rta devorga orqa o'girib, eshikka qaragan
-    stollar: [r4(6900, 8100, 10950, 11650, { monitor: 'past' }), r4(10050, 11250, 10950, 11650, { monitor: 'past' })],
-    stullar: [st(7275, 7725, 11700, 12150, 's', true), st(10425, 10875, 11700, 12150, 's', true),
-      st(7275, 7725, 10450, 10900, 'n'), st(10425, 10875, 10450, 10900, 'n')],
-    shkaflar: [r4(6250, 6700, 9600, 11800)], divanlar: [], dumaloq: [] },
+  { kod: 'XZ2',   // admin (K2 tomoni, sotuv yonida, 5.8 × 2.6 m): 2 ish o'rni — xodimlar o'rta devorga orqa o'girib, eshikka qaragan
+    stollar: [r4(12800, 14000, 12950, 13650, { monitor: 'yuqori' }), r4(16100, 17300, 12950, 13650, { monitor: 'yuqori' })],
+    stullar: [st(13175, 13625, 12450, 12900, 'n', true), st(16475, 16925, 12450, 12900, 'n', true),
+      st(13175, 13625, 13750, 14200, 's'), st(16475, 16925, 13750, 14200, 's')],
+    shkaflar: [r4(17500, 17950, 12550, 14750)], divanlar: [], dumaloq: [] },
   { kod: 'XZ3',   // ustozlar xonasi (K1 tomoni, 5.8 × 2.8 m): umumiy stol 3.2 × 0.8 m, 9 o'rin, lokerlar sharqiy devorda
     stollar: [r4(13900, 17100, 10400, 11200)],
     stullar: [...[14050, 14650, 15250, 15850, 16450].map(x => st(x, x + 450, 9900, 10350, 'n')),
       ...[14200, 14900, 15600, 16300].map(x => st(x, x + 450, 11250, 11700, 's'))],
     shkaflar: [r4(17500, 17950, 9600, 11900)], divanlar: [], dumaloq: [] },
-  { kod: 'XZ4',   // call-markaz va online sotuv (K2 tomoni, 5.8 × 2.6 m): o'rta devor bo'ylab 5 ta (1.0 × 0.6 m), sharqiy devorda 1 ta ish o'rni
-    stollar: [...[12250, 13250, 14250, 15250, 16250].map(x => r4(x, x + 1000, 12450, 13050, { monitor: 'yuqori' })),
-      r4(17350, 17950, 13650, 14850, { monitor: 'ong' })],
-    stullar: [...[12250, 13250, 14250, 15250, 16250].map(x => st(x + 275, x + 725, 13100, 13550, 's', true)),
-      st(16850, 17300, 14025, 14475, 'w', true)],
+  { kod: 'XZ4',   // call-markaz va online sotuv (K1 tomoni, 5.7 × 2.8 m): o'rta devor bo'ylab 5 ta (1.0 × 0.6 m), g'arbiy devorda 1 ta ish o'rni
+    stollar: [...[6350, 7350, 8350, 9350, 10350].map(x => r4(x, x + 1000, 11550, 12150, { monitor: 'past' })),
+      r4(6250, 6850, 9600, 10800, { monitor: 'chap' })],
+    stullar: [...[6350, 7350, 8350, 9350, 10350].map(x => st(x + 275, x + 725, 11050, 11500, 'n', true)),
+      st(6900, 7350, 9975, 10425, 'e', true)],
     shkaflar: [], divanlar: [], dumaloq: [] },
   { kod: 'X12',   // CEO xonasi: ish stoli, 2 mehmon stuli, 4 kishilik uchrashuv stoli
     stollar: [r4(800, 2400, 22500, 23300, { monitor: 'yuqori' })],
@@ -414,7 +421,7 @@ export const KW_KUNDALIK = {
   divan: [{ x1: 3400, x2: 4250, y1: 10800, y2: 12800 }],
   kreslo: [{ x1: 2650, x2: 3350, y1: 9900, y2: 10600 }, { x1: 2650, x2: 3350, y1: 13000, y2: 13700 }],
   jurnal: [{ x1: 2750, x2: 3250, y1: 11300, y2: 12300 }],
-  shkaf: [{ x1: 300, x2: 3300, y1: 17950, y2: 18350 }],
+  shkaf: [],   // 14.10: shkaf turgan devor buzildi (zina panjarasi) — shkaf olib tashlandi
 };
 // ---------- Koworking sahnasi ----------
 // Buyurtmachi (09.10): xizmat xonalarining (14.10 dan — XZ2 va XZ1) koworkingga qaragan devori — koworking sahnasi. Uslub — buyurtmachi

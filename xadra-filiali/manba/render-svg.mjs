@@ -2,7 +2,7 @@
 // Geometriya model.mjs dan olinadi — o'lchamlar chizma bilan bir xil.
 import {
   ICHKI, DEVOR, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR, XIZMAT_JIHOZ,
-  KW_KUNDALIK, KW_TADBIR, KW_SAHNA, AYOLLAR_WC, sinflar, bolaklar, lokal, PARTA,
+  KW_KUNDALIK, KW_TADBIR, KW_SAHNA, AYOLLAR_WC, PANJARA, sinflar, bolaklar, lokal, PARTA,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
 import { koridorElementlar, sahnaElementlar } from './reja-svg.mjs';
@@ -59,7 +59,7 @@ const DOSKA_BURISH = { yuqori: 0, past: 180, ong: 90, chap: -90 };
 function osimliklar() {
   const r = [];
   r.push([23550, 9750], [23500, 16200]);
-  r.push([8400, 12750], [8400, 11850], [12500, 11850], [12450, 14700]);   // XZ1, XZ2, XZ3, XZ4
+  r.push([8400, 12750], [15050, 12750], [12500, 11850], [11600, 9800]);   // XZ1, XZ2, XZ3, XZ4
   r.push([3900, 13950], [3700, 17650], [5650, 24050], KW_SAHNA.osimlik);
   return r;
 }
@@ -92,6 +92,11 @@ export function renderSvg(o = {}) {
     });
     const s = z.strelka;
     q.push(`<line x1="${s.x}" y1="${s.y1}" x2="${s.x}" y2="${s.y2 - 150}" stroke="#333" stroke-width="22"/><path d="M${s.x - 110},${s.y2 - 200} L${s.x},${s.y2} L${s.x + 110},${s.y2 - 200}" fill="none" stroke="#333" stroke-width="22"/>`);
+  });
+  // zina panjarasi (ZN2 — koworking tomoni, devor o'rniga)
+  PANJARA.forEach(p => {
+    q.push(`<line x1="${p.x1}" y1="${p.y}" x2="${p.x2}" y2="${p.y}" stroke="#3a3f47" stroke-width="45"/>`);
+    for (let x = p.x1 + 150; x < p.x2; x += 450) q.push(`<rect x="${x - 45}" y="${p.y - 45}" width="90" height="90" fill="#3a3f47"/>`);
   });
 
   // ---- jihozlar (soya bilan) ----
@@ -211,9 +216,9 @@ export function renderSvg(o = {}) {
     XONALAR.filter(x => x.tur === 'xizmat').forEach(x => {
       const cx = (x.x1 + x.x2) / 2 - 150;
       if (x.kod === 'XZ1') L.push(t(9100, 13350, 'Offline sotuv', 280, B), t(9100, 13650, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 210, R));
-      else if (x.kod === 'XZ2') L.push(t(9100, 11250, 'Admin', 340, B), t(9100, 11560, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 210, R));
+      else if (x.kod === 'XZ2') L.push(t(15050, 13350, 'Admin', 340, B), t(15050, 13660, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 210, R));
       else if (x.kod === 'XZ3') L.push(t(13000, 10950, 'Ustozlar', 290, B), t(13000, 11270, 'xonasi', 290, B), t(13000, 11580, `${xonaMaydoni(x).toFixed(1)} m² · 9 o'rin`, 200, R));
-      else L.push(t(13700, 14250, 'Call-markaz', 290, B), t(13700, 14560, `online sotuv · ${xonaMaydoni(x).toFixed(1)} m² · 6`, 200, R));
+      else L.push(t(10300, 10500, 'Call-markaz', 290, B), t(10300, 10810, `online sotuv · ${xonaMaydoni(x).toFixed(1)} m² · 6`, 200, R));
     });
     const kwx = XONALAR.find(x => x.kod === 'KW');
     L.push(t(2975, 9460, 'Koworking / Tadbirlar zali', 330, B), t(2975, 9820, `${xonaMaydoni(kwx).toFixed(1)} m²`, 300, R));

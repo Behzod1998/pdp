@@ -109,7 +109,7 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
         qoplama_xona(q, s, t, M['bambuk_x'], M['bambuk_y'], h)
         qoplama_xona(q, s, QARSHI[t], M['bambuk_x'], M['bambuk_y'], h)
     # 14.10: XZ xonalari 2 × 2 — sotuv va admin: ikkala kalta devor (o'rta devor — brend devor); ustozlar va call-markaz: o'rta va g'arbiy devor
-    for kod, tt in (('XZ1', ('x1', 'x2')), ('XZ2', ('x1', 'x2')), ('XZ3', ('y2', 'x1')), ('XZ4', ('y1', 'x1'))):
+    for kod, tt in (('XZ1', ('x1', 'x2')), ('XZ2', ('x1', 'x2')), ('XZ3', ('y2', 'x1')), ('XZ4', ('y2', 'x1'))):
         for t in tt: qoplama_xona(q, X[kod], t, M['bambuk_x'], M['bambuk_y'], h)
     x12 = X['X12']
     e12 = next(e for e in ESH if e['kod'] == 'X12')
@@ -182,11 +182,11 @@ for z in D['xizmat']:
         f = YON[st['yon']]
         if st['ofis']: bu.joyla(km, f"{z['kod']}_kreslo_{i}", 'asos', mk(st), bu.burchak_xona(*f))
         else: bu.joyla(stul_xodim, f"{z['kod']}_stul_{i}", 'asos', mk(st), {'n': 180, 's': 0, 'w': 90, 'e': -90}[st['yon']])
-# sotuv va admin xonalari: eski o'rta devorda brend devor — logotip (sotuvda — shimoliy, adminda — janubiy devor); sotuvda ostida yashil chiziq
+# sotuv va admin xonalari (K2 tomonda, yonma-yon): eski o'rta devorda brend devor — logotip; sotuvda ostida yashil chiziq
 x1 = X['XZ1']; x2 = X['XZ2']
 bu.logo_panel((x1['x1'] + x1['x2']) / 2, x1['y1'] + 12, 0, 1500, 1950, 'primary-on-light', kuch=0.0, halqa=0, nom='logo_sotuv')
 q = Q(); q.box(x1['x1'] + 150, x1['x2'] - 150, x1['y1'], x1['y1'] + 14, 1500, 1525, M['brend_yashil']); q.obj('sotuv_chiziq', 'asos')
-bu.logo_panel((x2['x1'] + x2['x2']) / 2, x2['y2'] - 12, 180, 1100, 1950, 'primary-on-light', kuch=0.0, halqa=0, nom='logo_admin')
+bu.logo_panel((x2['x1'] + x2['x2']) / 2, x2['y1'] + 12, 0, 1100, 1950, 'primary-on-light', kuch=0.0, halqa=0, nom='logo_admin')
 
 # ---------------- koworking ----------------
 # kundalik va tadbir rejimlari alohida to'plamlarda: tadbir rejimi faqat «tomoshabin» ko'rinishida yoqiladi
@@ -381,6 +381,8 @@ q.obj('zinalar', 'asos')
 q = Q()
 bu.perila(q, (180, 1270, 0), (1500, 1270, 0)); bu.perila(q, (1500, 1270, 0), (1500, 4400, -1750))
 bu.perila(q, (1450, 19900, 0), (3650, 19900, 0)); bu.perila(q, (1450, 19950, 0), (1450, 21150, 0))
+for p in D.get('panjara', []):     # ZN2 — koworking tomonidagi devor o'rniga zina panjarasi (14.10)
+    bu.perila(q, (p['x1'] + 150, p['y'] + 50, 0), (p['x2'], p['y'] + 50, 0), bal=p['bal'] - 40, tutqich=M['qora_metall'], ustun=M['qora_metall'])
 q.obj('perila', 'asos')
 
 # ---------------- shift, chiroqlar, diffuzorlar ----------------
@@ -428,7 +430,7 @@ KOR = {
     'logo': dict(cam=kam('kamera_logo', (14800, K2y + 450, 1650), (19300, K2y - 250, 1500), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'doskalar': dict(cam=kam('kamera_doskalar', (5300, 10600, 1600), (2100, 6500, 1350), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'sotuv': dict(cam=kam('kamera_sotuv', (11250, 14850, 1650), (7300, 12500, 1250), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
-    'admin': dict(cam=kam('kamera_admin', (11650, 9600, 1650), (7300, 12200, 1150), 16), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'admin': dict(cam=kam('kamera_admin', (12650, 14850, 1650), (16900, 12450, 1250), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'sinf': dict(cam=kam('kamera_sinf', (12450, 5600, 1650), (17950, 3700, 1300), 19), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'kw': dict(cam=kam('kamera_koworking', (5350, 17500, 1700), (1300, 8800, 1000), 18), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
     'sahna': dict(cam=kam('kamera_sahna', (300, 14300, 1650), (5850, 12100, 1550), 19), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
@@ -436,11 +438,12 @@ KOR = {
                        korsat=('kw_tadbir',), yashir=('kw_kundalik',)),
     'kd_fasad': dict(cam=kam('kamera_kd_fasad', (2500, 40500, 11500), (14500, 21500, 1800), 30), res=(1920, 1080), ichki=True, quyosh=(200, 40, 3.0),
                      korsat=('kd_pastki',)),
+    'kirish': dict(cam=kam('kamera_kirish', (5300, 15900, 1650), (1700, 19700, 450), 19), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
     'konditsioner': dict(cam=kam('kamera_konditsioner', (12750, 17500, 1550), (17300, 23400, 2000), 18), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
 }
 FAYL = {'umumiy': '1-umumiy', 'k1': '2-koridor-K1', 'k2': '3-koridor-K2', 'logo': '4-koridor-logotip', 'doskalar': '5-koridor-doskalar',
         'sotuv': '6-sotuv-xonasi', 'admin': '7-admin-xonasi', 'sinf': '8-sinf-doska', 'kw': '9-koworking', 'sahna': '10-koworking-sahna',
-        'tomoshabin': '11-sahna-tomoshabin', 'konditsioner': '12-konditsioner', 'kd_fasad': '13-konditsioner-fasad'}
+        'tomoshabin': '11-sahna-tomoshabin', 'konditsioner': '12-konditsioner', 'kd_fasad': '13-konditsioner-fasad', 'kirish': '14-kirish-zina'}
 bu.render_sozla(A['tez'])
 os.makedirs(A['chiq'], exist_ok=True)
 BELGI = {k: (*mk(X[k]), 0) for k in ('SR1', 'SR2', 'SR3', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2', 'XZ3', 'XZ4', 'KW', 'X12')}

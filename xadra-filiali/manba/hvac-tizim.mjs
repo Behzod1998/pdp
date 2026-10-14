@@ -36,15 +36,15 @@ const uzunlik = pts => pts.slice(1).reduce((t, p, i) => t + Math.hypot(p[0] - pt
 const btuNom = b => `${b / 1000}k`;
 
 // ---------- joylashuv (reja koordinatalari, mm) ----------
-// R1 — K1 koridori shiftida (g'arbiy uchida): SR1, SR2, SR3, XZ2, XZ3 va XZ4 (XZ3 shifti orqali, eski o'rta devordagi teshikdan).
-// R2 — K2 shiftida: SR4, SR5, SR6, SR7, XZ1. (14.10: XZ xonalari 2 × 2 — sarflar teng bo'lishi uchun XZ4 R1 ga ulanadi.)
+// R1 — K1 koridori shiftida (g'arbiy uchida): SR1, SR2, SR3 va K1 tomondagi XZ4 (call-markaz), XZ3 (ustozlar).
+// R2 — K2 shiftida: SR4, SR5, SR6, SR7 va K2 tomondagi XZ1 (sotuv), XZ2 (admin). (14.10: XZ xonalari 2 × 2.)
 // Tashqi havo olish va chiqarish — koworkingning chap (fasad) devoridagi kar qismlarda: chiqarish panjaralari chetlarda,
 // olish panjaralari o'rtada (R1 va R2 olishi bir-biridan ~2 m, chiqarishlardan ~4 m uzoq). Kanallar koworking shifti ostidan.
 export const GURUH = [
-  { kod: 'R1', koridor: 'K1', xonalar: ['SR1', 'SR2', 'SR3', 'XZ2', 'XZ3', 'XZ4'], joy: { x1: 6350, x2: 7850, y1: 7950, y2: 9150 }, sa: 8250, ra: 8850,
+  { kod: 'R1', koridor: 'K1', xonalar: ['SR1', 'SR2', 'SR3', 'XZ3', 'XZ4'], joy: { x1: 6350, x2: 7850, y1: 7950, y2: 9150 }, sa: 8250, ra: 8850,
     oa: [[0, 11300], [2400, 11300], [2400, 8850], [6350, 8850]], ea: [[6350, 8250], [5600, 8250], [5600, 7300], [0, 7300]],
     oaP: { y1: 11000, y2: 11600 }, eaP: { y1: 7000, y2: 7600 } },
-  { kod: 'R2', koridor: 'K2', xonalar: ['SR4', 'SR5', 'SR6', 'SR7', 'XZ1'], joy: { x1: 6350, x2: 7850, y1: 15250, y2: 16450 }, sa: 15550, ra: 16150,
+  { kod: 'R2', koridor: 'K2', xonalar: ['SR4', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2'], joy: { x1: 6350, x2: 7850, y1: 15250, y2: 16450 }, sa: 15550, ra: 16150,
     oa: [[0, 13300], [2400, 13300], [2400, 15550], [6350, 15550]], ea: [[6350, 16150], [5600, 16150], [5600, 17500], [0, 17500]],
     oaP: { y1: 13000, y2: 13600 }, eaP: { y1: 17200, y2: 17800 } },
 ];
@@ -78,7 +78,7 @@ function tarmoq(nuqtalar, magY, xKir, aylanmaY) {
 // oyna zonasini ham sovutadi); tashqi blok — tomda, xona ustida (trassa shift ichidan, tomdagi germetik o'tish orqali).
 // 3-qavat (taxminan) binoning yuqori-chap qismida — uning ostidagi xonalarning tashqi bloki yaqin ochiq tomga qo'yiladi.
 export const UCHINCHI = { x1: -400, x2: 11550, y1: -300, y2: 12000 };
-const TB_TOM = { SR1: [13000, 4600, 'g'], XZ1: [7600, 14300, 'g'], XZ2: [10700, 12900, 'g'], XZ3: [13300, 10800, 'g'], XZ4: [13300, 14300, 'g'] };   // markaz va yo'nalish (g — x bo'ylab)
+const TB_TOM = { SR1: [13000, 4600, 'g'], XZ1: [7600, 14300, 'g'], XZ2: [13300, 14300, 'g'], XZ3: [13300, 10800, 'g'], XZ4: [10700, 12900, 'g'] };   // markaz va yo'nalish (g — x bo'ylab)
 export const KD_OYNADAN = 1800;      // ichki blok markazi oyna yuzasidan, mm
 function tbTom(kod, cx, cy, gor, tsh = [890, 340]) {
   const [x, y, o] = TB_TOM[kod] ? TB_TOM[kod] : [cx, cy, gor ? 'g' : 'v'];
@@ -97,7 +97,7 @@ function splitJoy(kod, n, en) {
   if (kod === 'SR4') return (n === 1 ? [12200] : [9200, 15200]).map(cy => ({ x1: x.x2 - 250, x2: x.x2, y1: cy - en / 2, y2: cy + en / 2,
     tb: tbTom(kod, x.x2 - 700, cy + 1400, false) }));
   // xizmat xonalari: ichki blok g'arbiy (kalta) devorda, havo xona bo'ylab sharqqa
-  const v = { XZ1: ['x1', 13700], XZ2: ['x1', 10800], XZ3: ['x1', 10800], XZ4: ['x1', 13700] }[kod];
+  const v = { XZ1: ['x1', 13700], XZ2: ['x1', 13700], XZ3: ['x1', 10800], XZ4: ['x1', 10800] }[kod];
   const t12 = KD_OLCHAM[12000].tashqi;
   if (v[0] === 'x1') return [{ x1: x.x1, x2: x.x1 + 250, y1: v[1] - en / 2, y2: v[1] + en / 2, tb: tbTom(kod, 0, 0, true, t12) }];
   if (v[0] === 'x2') return [{ x1: x.x2 - 250, x2: x.x2, y1: v[1] - en / 2, y2: v[1] + en / 2, tb: tbTom(kod, 0, 0, true, t12) }];
