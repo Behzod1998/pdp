@@ -216,8 +216,8 @@ export function rejaSvg(o = {}) {
         q.push(matn(p.x, ust + 680 * k, `${K.A.toFixed(1)} m²`, 240, `text-anchor="middle" fill="#666"`));
         q.push(matn(p.x, ust + 960 * k, `${K.orin} o'rin`, 240, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'xizmat') {
-        const ly = { XZ1: 9950, XZ2: 12200, XZ3: 14400, XZ4: 14350 }[x.kod];
-        const lx = { XZ1: 7650, XZ2: 10400, XZ3: 13300, XZ4: 15950 }[x.kod];
+        const ly = { XZ1: 13450, XZ2: 11300, XZ3: 11050, XZ4: 14300 }[x.kod];
+        const lx = { XZ1: 9100, XZ2: 9100, XZ3: 13000, XZ4: 13700 }[x.kod];
         q.push(matn(lx, ly, x.kod, 380, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         if (!HAVOSIMON) q.push(matn(lx, ly + 360 * k, `${x.qisqa} · ${xonaMaydoni(x).toFixed(1)} m²`, 200, `text-anchor="middle" fill="#666"`));
       } else if (x.tur === 'koworking') {

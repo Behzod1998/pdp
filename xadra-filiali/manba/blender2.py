@@ -108,8 +108,9 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
             continue
         qoplama_xona(q, s, t, M['bambuk_x'], M['bambuk_y'], h)
         qoplama_xona(q, s, QARSHI[t], M['bambuk_x'], M['bambuk_y'], h)
-    for kod in ('XZ1', 'XZ2', 'XZ3', 'XZ4'):
-        for t in ('x1', 'x2'): qoplama_xona(q, X[kod], t, M['bambuk_x'], M['bambuk_y'], h)
+    # 14.10: XZ xonalari 2 × 2 — sotuv va admin: ikkala kalta devor (o'rta devor — brend devor); ustozlar va call-markaz: o'rta va g'arbiy devor
+    for kod, tt in (('XZ1', ('x1', 'x2')), ('XZ2', ('x1', 'x2')), ('XZ3', ('y2', 'x1')), ('XZ4', ('y1', 'x1'))):
+        for t in tt: qoplama_xona(q, X[kod], t, M['bambuk_x'], M['bambuk_y'], h)
     x12 = X['X12']
     e12 = next(e for e in ESH if e['kod'] == 'X12')
     qoplama_xona(q, x12, 'y1', M['bambuk_x'], M['bambuk_y'], h, [(e12['a'], e12['b'], 0, ESH_H)])
@@ -181,11 +182,11 @@ for z in D['xizmat']:
         f = YON[st['yon']]
         if st['ofis']: bu.joyla(km, f"{z['kod']}_kreslo_{i}", 'asos', mk(st), bu.burchak_xona(*f))
         else: bu.joyla(stul_xodim, f"{z['kod']}_stul_{i}", 'asos', mk(st), {'n': 180, 's': 0, 'w': 90, 'e': -90}[st['yon']])
-# sotuv va admin xonalari: shimoliy (orqa) devorda brend devor — logotip; sotuvda ostida yashil chiziq
+# sotuv va admin xonalari: eski o'rta devorda brend devor — logotip (sotuvda — shimoliy, adminda — janubiy devor); sotuvda ostida yashil chiziq
 x1 = X['XZ1']; x2 = X['XZ2']
-bu.logo_panel((x1['x1'] + x1['x2']) / 2, x1['y1'] + 12, 0, 1500, 1900, 'primary-on-light', kuch=0.0, halqa=0, nom='logo_sotuv')
-q = Q(); q.box(x1['x1'] + 150, x1['x2'] - 150, x1['y1'], x1['y1'] + 14, 1450, 1475, M['brend_yashil']); q.obj('sotuv_chiziq', 'asos')
-bu.logo_panel((x2['x1'] + x2['x2']) / 2, x2['y1'] + 12, 0, 1100, 1900, 'primary-on-light', kuch=0.0, halqa=0, nom='logo_admin')
+bu.logo_panel((x1['x1'] + x1['x2']) / 2, x1['y1'] + 12, 0, 1500, 1950, 'primary-on-light', kuch=0.0, halqa=0, nom='logo_sotuv')
+q = Q(); q.box(x1['x1'] + 150, x1['x2'] - 150, x1['y1'], x1['y1'] + 14, 1500, 1525, M['brend_yashil']); q.obj('sotuv_chiziq', 'asos')
+bu.logo_panel((x2['x1'] + x2['x2']) / 2, x2['y2'] - 12, 180, 1100, 1950, 'primary-on-light', kuch=0.0, halqa=0, nom='logo_admin')
 
 # ---------------- koworking ----------------
 # kundalik va tadbir rejimlari alohida to'plamlarda: tadbir rejimi faqat «tomoshabin» ko'rinishida yoqiladi
@@ -397,9 +398,9 @@ for s in D['sinflar']:
                 LED.append((b['x1'] + (b['x2'] - b['x1']) * (2 * i + 1) / (2 * na), b['y1'] + (b['y2'] - b['y1']) * (2 * j + 1) / (2 * nb), 600, 600))
         DIF += [(b['x1'] + (b['x2'] - b['x1']) * 0.5, b['y1'] + (b['y2'] - b['y1']) * f) for f in (0.25, 0.75)] if not gor else \
                [(b['x1'] + (b['x2'] - b['x1']) * f, b['y1'] + (b['y2'] - b['y1']) * 0.5) for f in (0.25, 0.75)]
-for kod in ('XZ1', 'XZ2', 'XZ3', 'XZ4'):
-    x = X[kod]; LED += [((x['x1'] + x['x2']) / 2, x['y1'] + (x['y2'] - x['y1']) * f, 600, 600) for f in (0.3, 0.72)]
-    DIF.append(((x['x1'] + x['x2']) / 2, (x['y1'] + x['y2']) / 2))
+for kod in ('XZ1', 'XZ2', 'XZ3', 'XZ4'):     # 5.7–5.8 × 2.6–2.8 m: chiroqlar xona bo'ylab
+    x = X[kod]; LED += [(x['x1'] + (x['x2'] - x['x1']) * f, (x['y1'] + x['y2']) / 2, 600, 600) for f in (0.22, 0.5, 0.78)]
+    DIF.append((x['x1'] + (x['x2'] - x['x1']) * 0.36, (x['y1'] + x['y2']) / 2))
 x12 = X['X12']; LED += [(1500, 22900, 600, 600), (4400, 22900, 600, 600)]
 LED += [(x, y, 600, 600) for x in (1150, 3000, 4800) for y in (8000, 11500, 15000)] + [(1500, 17200, 600, 600), (3300, 17200, 600, 600)]
 LED += [(4800, 19800, 600, 600), (4500, 2800, 400, 400), (4500, 5100, 400, 400)]
@@ -425,9 +426,9 @@ KOR = {
     'k1': dict(cam=kam('kamera_K1', (6150, K1y + 150, 1600), (19300, K1y - 60, 1450), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'k2': dict(cam=kam('kamera_K2', (6150, K2y - 150, 1600), (19300, K2y + 60, 1450), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'logo': dict(cam=kam('kamera_logo', (14800, K2y + 450, 1650), (19300, K2y - 250, 1500), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
-    'doskalar': dict(cam=kam('kamera_doskalar', (6500, 7950, 1600), (9800, 9300, 1350), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
-    'sotuv': dict(cam=kam('kamera_sotuv', (8850, 14850, 1750), (7000, 10200, 1250), 16), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
-    'admin': dict(cam=kam('kamera_admin', (10950, 14700, 1650), (9800, 9800, 1100), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'doskalar': dict(cam=kam('kamera_doskalar', (5300, 10600, 1600), (2100, 6500, 1350), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'sotuv': dict(cam=kam('kamera_sotuv', (11650, 14800, 1650), (7300, 12400, 1250), 16), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'admin': dict(cam=kam('kamera_admin', (11650, 9600, 1650), (7300, 12200, 1150), 16), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'sinf': dict(cam=kam('kamera_sinf', (12450, 5600, 1650), (17950, 3700, 1300), 19), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'kw': dict(cam=kam('kamera_koworking', (5350, 17500, 1700), (1300, 8800, 1000), 18), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
     'sahna': dict(cam=kam('kamera_sahna', (300, 14300, 1650), (5850, 12100, 1550), 19), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),

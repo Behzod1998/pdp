@@ -33,19 +33,19 @@ const sinflar = XONALAR.filter(x => x.tur === 'sinf').map(x => {
   const orqa = x.kod === 'SR4' ? 15000 - 9400 : W;
   return { kod: x.kod, doskaDevor: W, orqaDevor: orqa, koridor: x.koridor };
 });
-// bambuk panel ofis xonalarida va CEO xonasida — sinflardagi kabi ikkita devor:
-// ofis xonalarida ikkala uzun yon devor (2.8 × 5.6 m xonada 5.6 m lik devorlar, eshik ularda yo'q);
-// CEO xonasida ikkita ichki kar devor (derazali tashqi devorlarga qilinmaydi), eshik o'rni ayiriladi.
+// bambuk panel ofis xonalarida va CEO xonasida — sinflardagi kabi ikkita devor (14.10: XZ xonalari 2 × 2):
+// sotuv va admin — ikkala kalta yon devor (o'rta devor — logotipli brend devor); ustozlar va call-markaz — o'rta devor va
+// g'arbiy yon devor. CEO xonasida ikkita ichki kar devor (derazali tashqi devorlarga qilinmaydi), eshik o'rni ayiriladi.
 const xona = kod => XONALAR.find(r => r.kod === kod);
-const uzun = kod => xona(kod).y2 - xona(kod).y1;
+const chuq = kod => xona(kod).y2 - xona(kod).y1, en = kod => xona(kod).x2 - xona(kod).x1;
 const ofislar = [
-  { kod: 'XZ1', devorlar: [{ nom: "Koworking bilan orasidagi devor", uz: uzun('XZ1') }, { nom: "Admin (XZ2) bilan orasidagi devor", uz: uzun('XZ1') }] },
-  { kod: 'XZ2', devorlar: [{ nom: "Offline sotuv (XZ1) bilan orasidagi devor", uz: uzun('XZ2') }, { nom: "Ustozlar xonasi (XZ3) bilan orasidagi devor", uz: uzun('XZ2') }] },
-  { kod: 'XZ3', devorlar: [{ nom: "Admin (XZ2) bilan orasidagi devor", uz: uzun('XZ3') }, { nom: "Call-markaz (XZ4) bilan orasidagi devor", uz: uzun('XZ3') }] },
-  { kod: 'XZ4', devorlar: [{ nom: "Ustozlar xonasi (XZ3) bilan orasidagi devor", uz: uzun('XZ4') }, { nom: "4-xona bilan orasidagi devor", uz: uzun('XZ4') }] },
+  { kod: 'XZ1', devorlar: [{ nom: "Koworking (sahna) bilan orasidagi devor", uz: chuq('XZ1') }, { nom: "Call-markaz (XZ4) bilan orasidagi devor", uz: chuq('XZ1') }] },
+  { kod: 'XZ2', devorlar: [{ nom: "Koworking (sahna) bilan orasidagi devor", uz: chuq('XZ2') }, { nom: "Ustozlar xonasi (XZ3) bilan orasidagi devor", uz: chuq('XZ2') }] },
+  { kod: 'XZ3', devorlar: [{ nom: "Eski o'rta devor (call-markaz bilan orasida)", uz: en('XZ3') }, { nom: "Admin (XZ2) bilan orasidagi devor", uz: chuq('XZ3') }] },
+  { kod: 'XZ4', devorlar: [{ nom: "Eski o'rta devor (ustozlar xonasi bilan orasida)", uz: en('XZ4') }, { nom: "Offline sotuv (XZ1) bilan orasidagi devor", uz: chuq('XZ4') }] },
   { kod: 'X12', devorlar: [
-    { nom: "Zinapoya va kirish zali bilan orasidagi devor (eshikli)", uz: xona('X12').x2 - xona('X12').x1, eshik: true },
-    { nom: "7-xona bilan orasidagi devor", uz: xona('X12').y2 - xona('X12').y1 }] },
+    { nom: "Zinapoya va kirish zali bilan orasidagi devor (eshikli)", uz: en('X12'), eshik: true },
+    { nom: "7-xona bilan orasidagi devor", uz: chuq('X12') }] },
 ];
 // buziladigan devorlar (uzunligi va izohi)
 const buziladi = DEVORLAR.filter(w => w.holat === 'buziladi').map(w => ({ uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), izoh: w.izoh }));

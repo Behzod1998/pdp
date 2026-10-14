@@ -88,16 +88,16 @@ async function q2Varaqlar(x) {
   const a = `<section class="varaq">${bosh("2-qavat — 3D ko'rinishlar (Blender): umumiy va koridorlar", `Rejalar: Xadra_2-qavat_taqdimot_reja_${V}.pdf`)}
   <div class="ikki"><div>
     ${fig(await rasm('Xadra_2-qavat_3D_1-umumiy.jpg'), `<b>Umumiy ko'rinish</b> — shiftsiz, devorlar 2.7 m da kesilgan. 7 sinf (${tekshiruv().orinlar} o'rin), sotuv, admin, ustozlar, call-markaz, koworking va CEO xonasi; ayollar WC — 2 kabina tambur ortida.`, yorliqlar(b, nom))}
-    <div class="matn"><p><b>Koridorlar yorug' va zamonaviy:</b> shiftda uzluksiz chiziqli LED, och pol va devorlar, sinflarning shisha devorlari (1.0–1.6 m da matli polosa). Ikkala koridor oxirida 4-xonaning devori GKL, markazida ichidan yoritilgan PDP Academy logotipi — koridor boshidan to'g'ri ko'rinadi. 4-xonaning barcha devorlari GKL, faqat eshigi shisha. Kar devorlarda e'lonlar va e'tirof doskalari.</p></div>
+    <div class="matn"><p><b>Koridorlar yorug' va zamonaviy:</b> shiftda uzluksiz chiziqli LED, och pol va devorlar, sinflarning shisha devorlari (1.0–1.6 m da matli polosa). Ikkala koridor oxirida 4-xonaning devori GKL, markazida ichidan yoritilgan PDP Academy logotipi — koridor boshidan to'g'ri ko'rinadi. 4-xonaning barcha devorlari GKL, faqat eshigi shisha. Xizmat xonalarining old tomoni ham shisha (14.10) — e'lonlar va e'tirof doskalari koworkingning shimoliy devorida.</p></div>
   </div><div>
-    ${fig(await rasm('Xadra_2-qavat_3D_2-koridor-K1.jpg'), "<b>K1 koridori</b> — koworkingdan: chapda 1–3-xona, o'ngda sotuv va admin orqa devorida doskalar, oxirida logotip.")}
-    ${fig(await rasm('Xadra_2-qavat_3D_3-koridor-K2.jpg'), "<b>K2 koridori</b> — chapda sotuv va admin (shisha), o'ngda 5–7-xona, oxirida logotip.")}
-    ${fig(await rasm('Xadra_2-qavat_3D_4-koridor-logotip.jpg'), "<b>K2 oxiri:</b> yorituvchi logotip devori va e'tirof doskasi.")}
+    ${fig(await rasm('Xadra_2-qavat_3D_2-koridor-K1.jpg'), "<b>K1 koridori</b> — koworkingdan: chapda 1–3-xona, o'ngda admin (XZ2) va ustozlar (XZ3) xonalarining shisha old tomoni, oxirida logotip.")}
+    ${fig(await rasm('Xadra_2-qavat_3D_3-koridor-K2.jpg'), "<b>K2 koridori</b> — chapda sotuv (XZ1) va call-markaz (XZ4) — shisha, o'ngda 5–7-xona, oxirida logotip.")}
+    ${fig(await rasm('Xadra_2-qavat_3D_4-koridor-logotip.jpg'), "<b>K2 oxiri:</b> yorituvchi logotip devori.")}
   </div></div></section>`;
   const r = [
-    ['Xadra_2-qavat_3D_5-koridor-doskalar.jpg', "<b>K1: e'lonlar va e'tirof doskasi</b> (faxriylar, oy o'quvchisi nomzodlari) — sotuv va admin xonalarining orqa devorida."],
-    ['Xadra_2-qavat_3D_6-sotuv-xonasi.jpg', "<b>Offline sotuv (XZ1):</b> 2 konsultant, mijoz stullari, shkaf; orqa devorda brend devor (logotip), yon devorlarda bambuk panel."],
-    ['Xadra_2-qavat_3D_7-admin-xonasi.jpg', "<b>Admin (XZ2):</b> 2 ish o'rni, shkaf, logotip, bambuk panel."],
+    ['Xadra_2-qavat_3D_5-koridor-doskalar.jpg', "<b>E'lonlar va e'tirof doskasi</b> (faxriylar, oy o'quvchisi nomzodlari) — koworkingning shimoliy devorida, K1 ga kirishda."],
+    ['Xadra_2-qavat_3D_6-sotuv-xonasi.jpg', "<b>Offline sotuv (XZ1, K2 tomoni):</b> 2 konsultant, mijoz stullari, shkaf; eski o'rta devorda brend devor (logotip), yon devorlarda bambuk panel; old tomoni shisha, eshik o'rtada."],
+    ['Xadra_2-qavat_3D_7-admin-xonasi.jpg', "<b>Admin (XZ2, K1 tomoni):</b> 2 ish o'rni eshikka qaragan, shkaf, o'rta devorda logotip, bambuk panel; old tomoni shisha, eshik o'rtada."],
     ['Xadra_2-qavat_3D_8-sinf-doska.jpg', "<b>2-xona → doska:</b> interaktiv doska yon devorda, bambuk panel; chapda derazalar, o'ngda koridor tomondagi shisha devor."],
     ['Xadra_2-qavat_3D_9-koworking.jpg', "<b>Koworking</b> — kundalik rejim, kirish zalidan; o'ngda sahna devori."],
   ];
@@ -108,11 +108,11 @@ async function q2Varaqlar(x) {
     <p>Narxi noma'lum bo'lgani uchun xarajatlar jadvalida <b>taxminiy</b> (Toshkent bozori): sotuv ~$2,340, admin ~$1,470 — mebelchi narxi bilan almashtiriladi.</p>
     <p>Ranglar va materiallar — namuna; logotip design.pdp.uz dan.</p></div></div></section>`;
   const S = KW_SAHNA, xs = x.sahna, m = v => (v / 1000).toFixed(2).replace(/0$/, '');
-  const b3 = `<section class="varaq">${bosh("2-qavat — koworking sahnasi (XZ1 devori): logotip va interyer", `Reja: Xadra_2-qavat_taqdimot_reja_${V}.pdf`)}
+  const b3 = `<section class="varaq">${bosh("2-qavat — koworking sahnasi (XZ1/XZ2 devori): logotip va interyer", `Reja: Xadra_2-qavat_taqdimot_reja_${V}.pdf`)}
   <div class="ikki"><div>
     ${fig(await rasm('Xadra_2-qavat_3D_11-sahna-tomoshabin.jpg'), `<b>Tomoshabin tomonidan</b> — tadbir rejimi (${KW_TADBIR.stullar.length} o'rin), oxirgi qator ortidan, ko'z balandligi 1.65 m. Uslub — buyurtmachi yuborgan namunalar (Najot Ta'lim sahnasi va AI varianti), real o'lchamlarda.`)}
     <div class="matn"><h3>Sahna devori — o'lchamlar</h3>
-      <p><b>Devor:</b> XZ1 xonasining koworkingga qaragan devori, ${m(S.devor.y2 - S.devor.y1)} × ${m(H)} m (K1 va K2 koridorlari orasida). Oldida GKL karkas 100 mm — U4 ustuni bilan tekislanadi.</p>
+      <p><b>Devor:</b> XZ1 va XZ2 xonalarining koworkingga qaragan devori, ${m(S.devor.y2 - S.devor.y1)} × ${m(H)} m (K1 va K2 koridorlari orasida). Oldida GKL karkas 100 mm — U4 ustuni bilan tekislanadi.</p>
       <p><b>Markaz:</b> to'q grafit panel ${m(S.panel.y2 - S.panel.y1)} m. <b>Logotip</b> (design.pdp.uz, to'q fon uchun) ~${m(S.logo.en)} m, ichidan yoritilgan, poldan ~${m(S.logo.z - 250)}–${m(S.logo.z + 250)} m — ma'ruzachi boshidan yuqorida. <b>Ekran</b> 86" (${m(S.ekran.en)} × ${m(S.ekran.z2 - S.ekran.z1)} m), poldan ${m(S.ekran.z1)}–${m(S.ekran.z2)} m.</p>
       <p><b>Yonlar:</b> ${m(S.reyka[0].y2 - S.reyka[0].y1)} m dan yog'och reykali panellar (qora asos ustida), chetlarida tik yashil LED chiziqlar; devor tepasida yashil chiziq. Kolonkalar reyka panellariga osiladi (2.05–2.5 m).</p>
       <p><b>Yoritish:</b> shiftdan ${m(S.devor.x1 - S.trek.x)} m narida qora trek shina (${m(S.trek.y2 - S.trek.y1)} m), ${S.trek.spot} ta spot — navbat bilan logotip va ekranga.</p>
@@ -289,6 +289,7 @@ const BOLIMLAR = [
   ['2-qavat — taqdimot rejasi', `Xadra_2-qavat_taqdimot_reja_${V}.pdf`],
   ["2-qavat — chizmalar: mavjud holat, jihozlash, ventilyatsiya, konditsionerlar joylashuvi", `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_${V}.pdf`],
   ["2-qavat — konditsionerlar: o'rnatish detallari va 3D", `Xadra_2-qavat_konditsionerlar_${V}.pdf`, [1]],
+  ["2-qavat — ish chizmasi ustalar uchun: devorlar, shisha va eshiklar (o'lchamli)", `Xadra_2-qavat_ish_chizmasi_${V}.pdf`],
   ["2-qavat — 3D ko'rinishlar", f2],
   ['2-qavat — xonalar izohi (A4)', `Xadra_2-qavat_xonalar_izoh_${V}.pdf`],
   ['2-qavat — HVAC hisobi: 2 ta rekuperator va split (A4)', `Xadra_2-qavat_HVAC_hisob_${V}.pdf`],

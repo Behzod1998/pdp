@@ -16,6 +16,7 @@ import { qavat1Html, tekshiruv1 } from './qavat1.mjs';
 import { hvacHtml } from './hvac.mjs';
 import { tizimHtml } from './hvac-tizim.mjs';
 import { kdDetalHtml } from './konditsioner.mjs';
+import { execFileSync } from 'node:child_process';
 import { PDFDocument } from 'pdf-lib';
 import { existsSync } from 'node:fs';
 
@@ -152,6 +153,8 @@ await q1.pdf({ path: join(CHIQISH, `${q1Nom}.pdf`), width: '420mm', height: '297
 await (await q1.$('section.varaq')).screenshot({ path: join(CHIQISH, `${q1Nom}.png`) });
 await q1.close();
 
+// 2c. Ish chizmasi (ustalar uchun, o'lchamli) — alohida skript
+execFileSync(process.execPath, [join(BU, 'ish-chizma.mjs')], { stdio: 'inherit' });
 await brauzer.close();
 server.close();
 console.log('Tayyor:', CHIQISH);

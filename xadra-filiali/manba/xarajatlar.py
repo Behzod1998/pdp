@@ -34,7 +34,7 @@ BOLIM = [("1-qavat: kirish zali", ['Q1']),
          ("2-qavat: ofis xonalari", ['XZ1', 'XZ2', 'XZ3', 'XZ4', 'X12']),
          ("2-qavat: umumiy joylar", ['K1', 'K2', 'KW', 'ZL', 'ZINA', 'BQ']),
          ("3-qavat va hojatxonalar", ['YQ', 'HJ'])]
-KORIDOR = {'XZ1': 'K2', 'XZ2': 'K2', 'XZ3': 'K1', 'XZ4': 'K1'}
+KORIDOR = {'XZ1': 'K2', 'XZ2': 'K1', 'XZ3': 'K1', 'XZ4': 'K2'}   # 14.10: XZ1, XZ4 — K2 tomonda; XZ2, XZ3 — K1 tomonda
 UMUMIY = {'K1', 'K2', 'KW', 'ZL'}
 
 # ---------- Narxlar varag'i: kataklar ----------
@@ -258,9 +258,9 @@ qosh('XZ2', 'Mebel va interyer', "Mehmon stuli", miqdor=2, birlik='dona', narx='
 qosh('XZ2', 'Mebel va interyer', "Hujjat shkafi", miqdor=1, birlik='dona', narx='shkaf')
 qosh('XZ2', 'Mebel va interyer', "Interyer: dekor, o'simliklar", miqdor=1, birlik='komplekt', narx='interyerXZ2')
 # Koridorlarning kar devorlarida doskalar (har bir koridorda bittadan) — taxminiy
-for kor, xonalar_ in (('K1', "sotuv va admin xonalari orqa devorida"), ('K2', "ustozlar va call-markaz orqa devorida")):
-    qosh(kor, "E'lon va e'tirof doskalari", f"E'lonlar doskasi ({xonalar_})", miqdor=1, birlik='dona', narx='elonDoska')
-    qosh(kor, "E'lon va e'tirof doskalari", f"E'tirof doskasi — faxriylar, oy o'quvchisi nomzodlari ({xonalar_})", miqdor=1, birlik='dona', narx='etirofDoska')
+# 14.10: xizmat xonalarining oldi shisha — doskalar koworkingning shimoliy (mavjud) devoriga ko'chirildi, bittadan
+qosh('KW', "E'lon va e'tirof doskalari", "E'lonlar doskasi (koworking shimoliy devorida, K1 ga kirishda)", miqdor=1, birlik='dona', narx='elonDoska')
+qosh('KW', "E'lon va e'tirof doskalari", "E'tirof doskasi — faxriylar, oy o'quvchisi nomzodlari (koworking shimoliy devorida)", miqdor=1, birlik='dona', narx='etirofDoska')
 # 1-qavat: resepshn, mehmonlar joyi, logotiplar — taxminiy; turniket buyurtmachida mavjud
 qosh('Q1', 'Mebel va interyer', "Resepshn stoykasi (buyurtma asosida)", miqdor=1, birlik='dona', narx='resepshn')
 qosh('Q1', 'Mebel va interyer', "Resepshn to'siq panellari va xodim eshikchasi (L shaklida)", miqdor=1, birlik='komplekt', narx='resepshnPanel')

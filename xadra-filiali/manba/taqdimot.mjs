@@ -64,7 +64,7 @@ export function taqdimotHtml() {
         <div class="rejimlar">
           <div><h2>Koworking rejimi (kundalik)</h2><div class="rasm">${kwKorinish('kundalik')}</div><p>~35 o'rin: stollar, dumaloq stollar, dam olish burchagi</p></div>
           <div class="strelka">⇄</div>
-          <div><h2>Tadbirlar rejimi (zarur paytda)</h2><div class="rasm">${kwKorinish('tadbir')}</div><p>${KW_TADBIR.stullar.length} o'rin, stullar sahnaga qaragan (XZ1 devori: logotip, ekran)</p></div>
+          <div><h2>Tadbirlar rejimi (zarur paytda)</h2><div class="rasm">${kwKorinish('tadbir')}</div><p>${KW_TADBIR.stullar.length} o'rin, stullar sahnaga qaragan (XZ1/XZ2 devori: logotip, ekran)</p></div>
         </div>
         <div class="havo"><h2>Havo aylanishi</h2>
           <div>${kesimSvg(1.75)}</div>
