@@ -1,7 +1,8 @@
 # 2-qavat — Blender sahnasi va renderlar (Cycles). Umumiy qismlar: blender_umumiy.py
 # Ishlatish:
 #   node blender2-malumot.mjs > 2qavat.json
-#   python blender2.py 2qavat.json ../chizma/3d [--tez] [--blend] [--faqat umumiy,k1,k2,logo,sotuv,admin,sinf,kw]
+#   python blender2.py 2qavat.json ../chizma/3d [--tez] [--blend] [--faqat umumiy,k1,k2,logo,sotuv,admin,sinf,kw] [--variant B]
+#   --variant B — koridor shisha devorlari tik profilsiz (faqat atrofida profil, oynalar yonma-yon tutashadi); fayllar «_B» bilan
 import json, math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import blender_umumiy as bu
@@ -60,7 +61,10 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
         if u['ichki']: q.box(u['x1'], u['x2'], u['y1'], u['y2'], 0, h, M['ustun'], top=M['qopqoq'] if k == 'kesim' else None)
     q.obj(f'devorlar_{k}', k)
 
-# shisha devorlar: 2.5 m gacha laminatlangan shisha, 1.0–1.6 m da matli polosa, alyuminiy profillar
+# shisha devorlar: 2.5 m gacha laminatlangan shisha, 1.0–1.6 m da matli polosa, alyuminiy profillar.
+# A — har ~1.5 m da tik profil; B (buyurtmachi, 15.10) — tik profil yo'q: profil faqat atrofida (pastda, tepada, chetlarda),
+# oynalar bir-biriga yonma-yon tutashadi (shaffof silikon chok, ~2 mm).
+VARIANT = A['variant']
 q = Q()
 _, SHISHA = devor_bolaklar(H)
 for w in SHISHA:
@@ -73,10 +77,17 @@ for w in SHISHA:
     B(a1, a2, 0, 50, M['alyuminiy'], 30); B(a1, a2, SHISHA_H - 50, SHISHA_H, M['alyuminiy'], 30)
     n = max(1, round((a2 - a1) / 1500))
     for i in range(n + 1):
+        if VARIANT == 'B' and 0 < i < n: continue          # B: oraliq tik profillar yo'q
         t = a1 + (a2 - a1) * i / n
         B(max(a1, t - 25), min(a2, t + 25), 0, SHISHA_H, M['alyuminiy'], 30)
-    for za, zb, gm in ((50, 1000, M['oyna']), (1000, 1600, M['xira']), (1600, SHISHA_H - 50, M['oyna'])):
-        B(a1, a2, za, zb, gm, 5)
+    if VARIANT == 'B':      # alohida oynalar, orasida ~2 mm shaffof chok
+        for i in range(n):
+            p1, p2 = a1 + (a2 - a1) * i / n + (1 if i else 0), a1 + (a2 - a1) * (i + 1) / n - (1 if i < n - 1 else 0)
+            for za, zb, gm in ((50, 1000, M['oyna']), (1000, 1600, M['xira']), (1600, SHISHA_H - 50, M['oyna'])):
+                B(p1, p2, za, zb, gm, 5)
+    else:
+        for za, zb, gm in ((50, 1000, M['oyna']), (1000, 1600, M['xira']), (1600, SHISHA_H - 50, M['oyna'])):
+            B(a1, a2, za, zb, gm, 5)
 q.obj('shisha_devorlar', 'asos')
 
 # mat plyonkadagi logo (buyurtmachi, 15.10): yangi PDP Academy logosi, bir rangli to'q — koridor tomonda, 1.0–1.6 m polosa
@@ -531,5 +542,6 @@ BELGI = {k: (*mk(X[k]), 0) for k in ('SR1', 'SR2', 'SR3', 'SR5', 'SR6', 'SR7', '
 BELGI['SR4'] = (21600, 12200, 0); BELGI['K1'] = (9000, 8550, 0); BELGI['K2'] = (14000, 15850, 0)
 BELGI['ZN1'] = (1500, 3000, 0); BELGI['ZL'] = (4800, 19800, 0)
 bu.belgilar(KOR['umumiy']['cam'], KOR['umumiy']['res'], BELGI, os.path.join(A['chiq'], 'umumiy-belgilar-2.json'))
-bu.renderla(KOR, A['chiq'], 'Xadra_2-qavat_3D', FAYL, A['tez'], A['faqat'], namuna=(48, 40))
+bu.renderla(KOR, A['chiq'], 'Xadra_2-qavat_3D' + ('_B' if VARIANT == 'B' else ''), FAYL, A['tez'], A['faqat'], namuna=(48, 40))
+if VARIANT == 'B': sys.exit(0)      # B — faqat renderlar; asosiy .blend A variant bilan qoladi
 bu.saqla(A['chiq'], 'Xadra_2-qavat.blend', KOR['k1']['cam'], tez=A['tez'], blend=A['blend'])

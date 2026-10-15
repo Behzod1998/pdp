@@ -21,7 +21,8 @@ sc = None
 def argv():
     a = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else sys.argv[1:]
     return dict(json=a[0], chiq=a[1], tez='--tez' in a, blend='--blend' in a,
-                faqat=a[a.index('--faqat') + 1].split(',') if '--faqat' in a else None)
+                faqat=a[a.index('--faqat') + 1].split(',') if '--faqat' in a else None,
+                variant=a[a.index('--variant') + 1] if '--variant' in a else 'A')
 
 
 def P(x, y, z=0):

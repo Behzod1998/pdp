@@ -279,19 +279,29 @@ const SHISHA_CSS = `
 .kv.x { background: #1F3657; box-shadow: inset 0 0 0 .7mm #fff; }
 .spek { font-size: 7.6pt; color: #333; line-height: 1.45; } .spek li { margin-left: 4mm; }
 .izohcha { font-size: 7pt; color: #666; }
+.sh-sol { display: grid; grid-template-columns: 1fr 1fr; gap: 0 4mm; margin-top: 2mm; }
+.sh-sol figure img { height: 100mm; object-fit: cover; }
+.sh-sar { font-size: 10pt; font-weight: 700; color: #fff; background: #1F3657; padding: 1.2mm 2.5mm; border-radius: 1mm; margin-bottom: 1.5mm; }
 `;
 const PLY = { devor: 700, eshik: 520, z: 1300 };   // blender2.py dagi PLY bilan bir xil
+// A — profilli (har ~1.5 m da tik profil); B — tik profilsiz (buyurtmachi, 15.10): profil faqat atrofida, oynalar yonma-yon
+const VAR = {
+  A: { nom: 'A — profilli', qisqa: "har ~1.5 m da tik profil", pref: 'Xadra_2-qavat_3D_',
+    shisha: "<b>Shisha devor (A — profilli):</b> poldan 2.5 m gacha, laminatlangan (2 × 6 mm) yoki 10 mm toblangan shisha; alyumin profil — pastda, tepada va har ~1.5 m da tik; ustida 1 m GKL (shiftgacha 3.5 m)." },
+  B: { nom: 'B — tik profilsiz', qisqa: "profil faqat atrofida, oynalar yonma-yon", pref: 'Xadra_2-qavat_3D_B_',
+    shisha: "<b>Shisha devor (B — tik profilsiz):</b> poldan 2.5 m gacha; oynalar (eni ~1.2–1.5 m) bir-biriga yonma-yon, shaffof silikon chok bilan ulanadi — oralig'ida tik profil yo'q; alyumin profil faqat pastda, tepada, devor va eshik yonida. Tik tayanch bo'lmagani uchun oyna 10–12 mm toblangan (yoki laminatlangan toblangan); ustida 1 m GKL." },
+};
 const tasdiqQuti = (kichik = false) => `<div class="tasdiq"><h3>Founder tasdig'i</h3>
-  <div class="q"><b>1. Shisha devorlar</b><span class="kv x"></span>Profilli (rasmlarda) <span class="kv"></span>To'liq oynali (ramkasiz)</div>
+  <div class="q"><b>1. Shisha devorlar</b><span class="kv"></span>A — profilli <span class="kv"></span>B — tik profilsiz</div>
   <div class="q"><b>2. Eshik eni</b><span class="kv x"></span>90 sm (rasmlarda) <span class="kv"></span>120 sm</div>
   <div class="q"><b>3. Mat plyonka va logo</b><span class="kv"></span>Ma'qul <span class="kv"></span>O'zgartirish: ______________</div>
   <div class="q" style="margin-top:2.5mm">Imzo: ____________________ &nbsp;&nbsp; Sana: ____________</div>
-  ${kichik ? '' : `<p class="izohcha" style="margin-top:1.5mm">Belgilangan katakchalar — rasmlarda ko'rsatilgan hozirgi yechim. «To'liq oynali» yoki «120 sm» tanlansa, shu ko'rinishlar o'sha variant bilan qayta tayyorlanadi.</p>`}</div>`;
-const spek = () => `<ul class="spek">
-  <li><b>Shisha devor:</b> poldan 2.5 m gacha, laminatlangan (2 × 6 mm) yoki 10 mm toblangan shisha; alyumin profil — pastda, tepada va har ~1.5 m da tik; ustida 1 m GKL (shiftgacha 3.5 m).</li>
-  <li><b>Eshik:</b> shisha, 900 × 2100 mm, ustida 400 mm qo'zg'almas shisha; tik quvur tutqich; hammasi xona ichiga ochiladi.</li>
+  ${kichik ? '' : `<p class="izohcha" style="margin-top:1.5mm">Shisha devorning ikkala varianti rasmlarda ko'rsatilgan (A va B). Eshik — rasmlarda 90 sm; «120 sm» tanlansa, ko'rinishlar shu bilan qayta tayyorlanadi.</p>`}</div>`;
+const spek = v => `<ul class="spek">
+  <li>${VAR[v].shisha}</li>
+  <li><b>Eshik:</b> shisha, 900 × 2100 mm, alyumin romda, ustida 400 mm qo'zg'almas shisha; tik quvur tutqich; hammasi xona ichiga ochiladi.</li>
   <li><b>Mat plyonka:</b> poldan 1.0–1.6 m, koridor tomonda, devor va eshiklarda uzluksiz.</li>
-  <li><b>Logo plyonkada:</b> yangi PDP Academy logosi, bir rangli to'q kulrang, plyonkaga bosma (koridordan to'g'ri o'qiladi, xona ichidan — teskari); devorning har panelida eni ${PLY.devor} mm, har eshikda ${PLY.eshik} mm; markazi poldan ${(PLY.z / 1000).toFixed(1)} m. Jami 38 ta (27 panel + 11 eshik).</li></ul>`;
+  <li><b>Logo plyonkada:</b> yangi PDP Academy logosi, bir rangli to'q kulrang, plyonkaga bosma (koridordan to'g'ri o'qiladi, xona ichidan — teskari); har oynada eni ${PLY.devor} mm, har eshikda ${PLY.eshik} mm; markazi poldan ${(PLY.z / 1000).toFixed(1)} m. Jami 38 ta (27 oyna + 11 eshik).</li></ul>`;
 async function shishaVaraqlar() {
   const K = {
     K1: { nom: 'K1', toliq: '2-koridor-K1', chap: '15-K1-chap-devor', ong: '16-K1-ong-devor', eshik: '17-K1-eshik',
@@ -303,16 +313,23 @@ async function shishaVaraqlar() {
       c: "<b>Chap devor</b> (XZ1 sotuv, XZ2 admin) — qiya ko'rinish.", o: "<b>O'ng devor</b> (7- va 6-xona) — qiya ko'rinish.",
       e: "<b>6-xona eshigi yaqindan</b> — 90 sm, ustida qo'zg'almas shisha." },
   };
-  const r = f => rasm(`Xadra_2-qavat_3D_${f}.jpg`);
+  const r = (v, f) => rasm(`${VAR[v].pref}${f}.jpg`);
   const fw = (src, izoh, cls = '') => `<div class="${cls}">${fig(src, izoh)}</div>`;   // rasm va izohi — bitta grid katagida
-  const bet = async k => `<section class="varaq">${bosh(`Koridor shisha devorlari — ${k.nom} (founder tasdig'i uchun)`, 'Profilli shisha, eshik 90 sm, mat plyonkada logo')}
-    <div class="sh-yuqori">${fw(await r(k.toliq), k.t, 'sh-katta')}<div class="sh-ong">${fw(await r(k.chap), k.c)}${fw(await r(k.ong), k.o)}</div></div>
-    <div class="sh-past">${fw(await r(k.eshik), k.e)}<div style="display:grid;grid-template-columns:1fr 122mm;gap:4mm">${spek()}${tasdiqQuti(true)}</div></div></section>`;
-  const tepa = `<section class="varaq">${bosh("Koridor shisha devorlari — tepadan umumiy ko'rinish", 'Shift olib tashlangan, devorlar 2.7 m da kesilgan')}
-    <div class="sh-tepa">${fw(await r('21-koridorlar-tepadan-1'), "<b>G'arbdan (koworking tomondan):</b> chapda K1, o'ngda K2 — shisha devorlar, eshiklar va mat plyonka polosasi.")}
-      ${fw(await r('22-koridorlar-tepadan-2'), "<b>Sharqdan (4-xona tomondan):</b> o'ngda K1, chapda K2; o'rtada XZ1–XZ4 xizmat xonalari.")}</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:3mm">${spek()}${tasdiqQuti()}</div></section>`;
-  return `<style>${SHISHA_CSS}</style>${await bet(K.K1)}${await bet(K.K2)}${tepa}`;
+  const bet = async (k, v) => `<section class="varaq">${bosh(`Koridor shisha devorlari — ${k.nom} · ${VAR[v].nom}`, `${VAR[v].qisqa}; eshik 90 sm; mat plyonkada logo`)}
+    <div class="sh-yuqori">${fw(await r(v, k.toliq), k.t, 'sh-katta')}<div class="sh-ong">${fw(await r(v, k.chap), k.c)}${fw(await r(v, k.ong), k.o)}</div></div>
+    <div class="sh-past">${fw(await r(v, k.eshik), k.e)}<div style="display:grid;grid-template-columns:1fr 122mm;gap:4mm">${spek(v)}${tasdiqQuti(true)}</div></div></section>`;
+  const tepa = async v => `<section class="varaq">${bosh(`Koridor shisha devorlari — tepadan · ${VAR[v].nom}`, 'Shift olib tashlangan, devorlar 2.7 m da kesilgan')}
+    <div class="sh-tepa">${fw(await r(v, '21-koridorlar-tepadan-1'), "<b>G'arbdan (koworking tomondan):</b> chapda K1, o'ngda K2 — shisha devorlar, eshiklar va mat plyonka polosasi.")}
+      ${fw(await r(v, '22-koridorlar-tepadan-2'), "<b>Sharqdan (4-xona tomondan):</b> o'ngda K1, chapda K2; o'rtada XZ1–XZ4 xizmat xonalari.")}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:3mm">${spek(v)}${tasdiqQuti()}</div></section>`;
+  // birinchi bet — A va B yonma-yon
+  const sol = `<section class="varaq">${bosh("Koridor shisha devorlari — A va B variant (founder tasdig'i uchun)", 'Ikkala variantda: eshik 90 sm, mat plyonkada logo')}
+    <div class="sh-sol"><div class="sh-sar">A — profilli: ${VAR.A.qisqa}</div><div class="sh-sar">B — tik profilsiz: ${VAR.B.qisqa}</div>
+      ${fw(await r('A', K.K1.toliq), "<b>A · K1 to'g'ridan.</b>")}${fw(await r('B', K.K1.toliq), "<b>B · K1 to'g'ridan.</b>")}
+      ${fw(await r('A', K.K1.chap), "<b>A · K1 chap devor</b> (1- va 2-xona).")}${fw(await r('B', K.K1.chap), "<b>B · K1 chap devor</b> (1- va 2-xona).")}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 122mm;gap:4mm;margin-top:1mm"><ul class="spek"><li>${VAR.A.shisha}</li></ul><ul class="spek"><li>${VAR.B.shisha}</li></ul>${tasdiqQuti(true)}</div>
+    <p class="izohcha" style="margin-top:1.5mm">Keyingi betlarda har variant alohida: K1, K2 (to'g'ridan, chap va o'ng devor qiya, eshik yaqindan) va tepadan umumiy ko'rinish.</p></section>`;
+  return `<style>${SHISHA_CSS}</style>${sol}${await bet(K.K1, 'A')}${await bet(K.K2, 'A')}${await tepa('A')}${await bet(K.K1, 'B')}${await bet(K.K2, 'B')}${await tepa('B')}`;
 }
 
 // ---------- yig'ish ----------
@@ -356,7 +373,7 @@ const BOLIMLAR = [
   ["2-qavat — ish chizmasi ustalar uchun: devorlar, shisha va eshiklar (o'lchamli)", `Xadra_2-qavat_ish_chizmasi_${V}.pdf`],
   ["2-qavat — vitechka va kanalli konditsioner (buyurtmachi eskizi, 15.10): kanallar rejasi", `Xadra_2-qavat_vitechka_konditsioner_${V}.pdf`],
   ["2-qavat — 3D ko'rinishlar", f2],
-  ["2-qavat — koridor shisha devorlari: founder tasdig'i uchun (profil, eshik, mat plyonkada logo)", fsh],
+  ["2-qavat — koridor shisha devorlari: founder tasdig'i uchun (A — profilli, B — tik profilsiz; eshik; mat plyonkada logo)", fsh],
   ['2-qavat — xonalar izohi (A4)', `Xadra_2-qavat_xonalar_izoh_${V}.pdf`],
   ['2-qavat — HVAC hisobi: 2 ta rekuperator va split (A4)', `Xadra_2-qavat_HVAC_hisob_${V}.pdf`],
   ['3-qavat — reja', `Xadra_3-qavat_reja_${V}.pdf`],
