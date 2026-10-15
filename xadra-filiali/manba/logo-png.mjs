@@ -12,7 +12,7 @@ try { ({ chromium } = require('playwright')); } catch {
   ({ chromium } = require(join(process.execPath, '../../lib/node_modules/playwright')));
 }
 const BU = join(dirname(fileURLToPath(import.meta.url)), 'logo');
-const NOMLAR = ['pdp-academy-primary-on-dark', 'pdp-academy-primary-on-light', 'pdp-academy-inline-on-dark', 'pdp-academy-inline-on-light'];
+const NOMLAR = ['pdp-academy-primary-on-dark', 'pdp-academy-primary-on-light', 'pdp-academy-inline-on-dark', 'pdp-academy-inline-on-light', 'pdp-academy-primary-mono-dark'];   // mono-dark — shisha devorlardagi mat plyonka uchun (15.10)
 const EN = 3000, CHET = 160;   // px; chekkadagi bo'sh joy — halqa kesilmasligi uchun
 
 const brauzer = await chromium.launch();

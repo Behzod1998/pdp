@@ -261,6 +261,59 @@ function muqova(x, mundarija, rasmSrc) {
     </div></section>`;
 }
 
+// ---------- koridor shisha devorlari — founder tasdig'i uchun (15.10) ----------
+// Buyurtmachi: founderdan (1) shisha devor — profilli yoki to'liq oynali, (2) eshik — 90 yoki 120 sm ni tasdiqlatish uchun
+// vizual. Rasmlarda hozirgi yechim: profilli, 90 sm eshik; mat plyonkada yangi logo — bir rangli to'q (namunadagidek).
+const SHISHA_CSS = `
+.sh-yuqori { display: grid; grid-template-columns: 1fr 128mm; gap: 3mm 4mm; margin-top: 2mm; }
+.sh-yuqori > figure img { height: 150mm; object-fit: cover; }
+.sh-ong figure img { height: 70.5mm; object-fit: cover; }
+.sh-past { display: grid; grid-template-columns: 128mm 1fr; gap: 4mm; margin-top: 1mm; }
+.sh-past figure img { height: 72mm; object-fit: cover; }
+.sh-tepa { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-top: 2mm; }
+.sh-tepa figure img { height: 124mm; object-fit: cover; }
+.tasdiq { border: .5mm solid #1F3657; border-radius: 1.5mm; padding: 3mm 4mm; font-size: 8.4pt; line-height: 1.5; }
+.tasdiq h3 { font-size: 10.5pt; color: #1F3657; margin-bottom: 1.5mm; }
+.tasdiq .q { margin: 1.4mm 0; } .tasdiq .q b { display: inline-block; min-width: 46mm; }
+.kv { display: inline-block; width: 3.6mm; height: 3.6mm; border: .4mm solid #1F3657; vertical-align: -.6mm; margin: 0 1.2mm 0 4mm; border-radius: .5mm; }
+.kv.x { background: #1F3657; box-shadow: inset 0 0 0 .7mm #fff; }
+.spek { font-size: 7.6pt; color: #333; line-height: 1.45; } .spek li { margin-left: 4mm; }
+.izohcha { font-size: 7pt; color: #666; }
+`;
+const PLY = { devor: 700, eshik: 520, z: 1300 };   // blender2.py dagi PLY bilan bir xil
+const tasdiqQuti = (kichik = false) => `<div class="tasdiq"><h3>Founder tasdig'i</h3>
+  <div class="q"><b>1. Shisha devorlar</b><span class="kv x"></span>Profilli (rasmlarda) <span class="kv"></span>To'liq oynali (ramkasiz)</div>
+  <div class="q"><b>2. Eshik eni</b><span class="kv x"></span>90 sm (rasmlarda) <span class="kv"></span>120 sm</div>
+  <div class="q"><b>3. Mat plyonka va logo</b><span class="kv"></span>Ma'qul <span class="kv"></span>O'zgartirish: ______________________</div>
+  <div class="q" style="margin-top:2.5mm">Imzo: ____________________ &nbsp;&nbsp; Sana: ____________</div>
+  ${kichik ? '' : `<p class="izohcha" style="margin-top:1.5mm">Belgilangan katakchalar — rasmlarda ko'rsatilgan hozirgi yechim. «To'liq oynali» yoki «120 sm» tanlansa, shu ko'rinishlar o'sha variant bilan qayta tayyorlanadi.</p>`}</div>`;
+const spek = () => `<ul class="spek">
+  <li><b>Shisha devor:</b> poldan 2.5 m gacha, laminatlangan (2 × 6 mm) yoki 10 mm toblangan shisha; alyumin profil — pastda, tepada va har ~1.5 m da tik; ustida 1 m GKL (shiftgacha 3.5 m).</li>
+  <li><b>Eshik:</b> shisha, 900 × 2100 mm, ustida 400 mm qo'zg'almas shisha; tik quvur tutqich; hammasi xona ichiga ochiladi.</li>
+  <li><b>Mat plyonka:</b> poldan 1.0–1.6 m, koridor tomonda, devor va eshiklarda uzluksiz.</li>
+  <li><b>Logo plyonkada:</b> yangi PDP Academy logosi, bir rangli to'q kulrang, plyonkaga bosma (koridordan to'g'ri o'qiladi, xona ichidan — teskari); devorning har panelida eni ${PLY.devor} mm, har eshikda ${PLY.eshik} mm; markazi poldan ${(PLY.z / 1000).toFixed(1)} m. Jami 38 ta (27 panel + 11 eshik).</li></ul>`;
+async function shishaVaraqlar() {
+  const K = {
+    K1: { nom: 'K1', toliq: '2-koridor-K1', chap: '15-K1-chap-devor', ong: '16-K1-ong-devor', eshik: '17-K1-eshik',
+      t: "<b>K1 — koworkingdan to'g'ri.</b> Chapda 1–3-xona, o'ngda XZ4 call-markaz va XZ3 ustozlar; oxirida logotip devori.",
+      c: "<b>Chap devor</b> (1- va 2-xona) — qiya ko'rinish.", o: "<b>O'ng devor</b> (XZ4 call-markaz, XZ3 ustozlar) — qiya ko'rinish.",
+      e: "<b>2-xona eshigi yaqindan</b> — 90 sm, ustida qo'zg'almas shisha." },
+    K2: { nom: 'K2', toliq: '3-koridor-K2', chap: '18-K2-chap-devor', ong: '19-K2-ong-devor', eshik: '20-K2-eshik',
+      t: "<b>K2 — koworkingdan to'g'ri.</b> Chapda XZ1 sotuv va XZ2 admin, o'ngda 7–5-xona; oxirida logotip devori.",
+      c: "<b>Chap devor</b> (XZ1 sotuv, XZ2 admin) — qiya ko'rinish.", o: "<b>O'ng devor</b> (7- va 6-xona) — qiya ko'rinish.",
+      e: "<b>6-xona eshigi yaqindan</b> — 90 sm, ustida qo'zg'almas shisha." },
+  };
+  const r = f => rasm(`Xadra_2-qavat_3D_${f}.jpg`);
+  const bet = async k => `<section class="varaq">${bosh(`Koridor shisha devorlari — ${k.nom} (founder tasdig'i uchun)`, 'Profilli shisha, eshik 90 sm, mat plyonkada logo')}
+    <div class="sh-yuqori">${fig(await r(k.toliq), k.t)}<div class="sh-ong">${fig(await r(k.chap), k.c)}${fig(await r(k.ong), k.o)}</div></div>
+    <div class="sh-past">${fig(await r(k.eshik), k.e)}<div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm">${spek()}${tasdiqQuti(true)}</div></div></section>`;
+  const tepa = `<section class="varaq">${bosh("Koridor shisha devorlari — tepadan umumiy ko'rinish", 'Shift olib tashlangan, devorlar 2.7 m da kesilgan')}
+    <div class="sh-tepa">${fig(await r('21-koridorlar-tepadan-1'), "<b>G'arbdan (koworking tomondan):</b> chapda K1, o'ngda K2 — shisha devorlar, eshiklar va mat plyonka polosasi.")}
+      ${fig(await r('22-koridorlar-tepadan-2'), "<b>Sharqdan (4-xona tomondan):</b> o'ngda K1, chapda K2; o'rtada XZ1–XZ4 xizmat xonalari.")}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:3mm">${spek()}${tasdiqQuti()}</div></section>`;
+  return `<style>${SHISHA_CSS}</style>${await bet(K.K1)}${await bet(K.K2)}${tepa}`;
+}
+
 // ---------- yig'ish ----------
 const pdfQil = async (brauzer, html, fayl) => {
   const p = await brauzer.newPage();
@@ -277,6 +330,15 @@ const f1 = await pdfQil(brauzer, await q1Varaq(), join(CH, `Xadra_1-qavat_3D_${V
 const f2 = await pdfQil(brauzer, await q2Varaqlar(x), join(CH, `Xadra_2-qavat_3D_${V}.pdf`));
 const fx = await pdfQil(brauzer, xulosaVaraq(x), join(CH, `Xadra_xarajatlar_xulosa_${V}.pdf`));
 const ff = await pdfQil(brauzer, fazaVaraq(x), join(CH, `Xadra_xarajatlar_fazalar_${V}.pdf`));
+const shV = await shishaVaraqlar();
+const fsh = await pdfQil(brauzer, shV, join(CH, `Xadra_2-qavat_shisha_devorlar_tasdiq_${V}.pdf`));
+{ // founderga yuborish uchun PNG (har bet alohida)
+  const p = await brauzer.newPage({ viewport: { width: 1588, height: 1123 }, deviceScaleFactor: 2 });
+  await p.setContent(`<!doctype html><html lang="uz"><head><meta charset="utf-8"><style>${CSS}</style></head><body>${shV}</body></html>`, { waitUntil: 'load' });
+  const v = await p.$$('section.varaq');
+  for (let i = 0; i < v.length; i++) await v[i].screenshot({ path: join(CH, `Xadra_2-qavat_shisha_devorlar_tasdiq_${V}-${i + 1}.png`) });
+  await p.close();
+}
 { // ko'rib chiqish uchun PNG
   const p = await brauzer.newPage({ viewport: { width: 1588, height: 1123 }, deviceScaleFactor: 2 });
   await p.setContent(`<!doctype html><html lang="uz"><head><meta charset="utf-8"><style>${CSS}</style></head><body>${fazaVaraq(x)}</body></html>`, { waitUntil: 'load' });
@@ -293,6 +355,7 @@ const BOLIMLAR = [
   ["2-qavat — ish chizmasi ustalar uchun: devorlar, shisha va eshiklar (o'lchamli)", `Xadra_2-qavat_ish_chizmasi_${V}.pdf`],
   ["2-qavat — vitechka va kanalli konditsioner (buyurtmachi eskizi, 15.10): kanallar rejasi", `Xadra_2-qavat_vitechka_konditsioner_${V}.pdf`],
   ["2-qavat — 3D ko'rinishlar", f2],
+  ["2-qavat — koridor shisha devorlari: founder tasdig'i uchun (profil, eshik, mat plyonkada logo)", fsh],
   ['2-qavat — xonalar izohi (A4)', `Xadra_2-qavat_xonalar_izoh_${V}.pdf`],
   ['2-qavat — HVAC hisobi: 2 ta rekuperator va split (A4)', `Xadra_2-qavat_HVAC_hisob_${V}.pdf`],
   ['3-qavat — reja', `Xadra_3-qavat_reja_${V}.pdf`],

@@ -79,6 +79,35 @@ for w in SHISHA:
         B(a1, a2, za, zb, gm, 5)
 q.obj('shisha_devorlar', 'asos')
 
+# mat plyonkadagi logo (buyurtmachi, 15.10): yangi PDP Academy logosi, bir rangli to'q — koridor tomonda, 1.0–1.6 m polosa
+# o'rtasida; shisha devorning har paneliga bittadan, har eshikka bittadan (namunadagidek). Xona ichidan ko'zgu aksida ko'rinadi.
+PLY = {'z': 1300, 'devor': 700, 'eshik': 520, 'versiya': 'primary-mono-dark'}
+KOR_Y = [(X[k]['y1'], X[k]['y2']) for k in ('K1', 'K2')]
+def koridor_tomon(c):
+    # shisha o'qi c koridorning qaysi tomonida: +1 — koridor +y da (devor koridorning yuqorisida), −1 — pastida, 0 — koridorga tegmaydi
+    for y1, y2 in KOR_Y:
+        if y1 - 200 <= c <= y1: return +1
+        if y2 <= c <= y2 + 200: return -1
+    return 0
+n_ply = 0
+for w in SHISHA:
+    if (w['x2'] - w['x1']) <= (w['y2'] - w['y1']): continue
+    c = (w['y1'] + w['y2']) / 2; t = koridor_tomon(c)
+    if not t: continue
+    a1, a2 = w['x1'], w['x2']; n = max(1, round((a2 - a1) / 1500))
+    for i in range(n):
+        p1, p2 = a1 + (a2 - a1) * i / n, a1 + (a2 - a1) * (i + 1) / n
+        if p2 - p1 < PLY['devor'] + 200: continue
+        bu.logo_panel((p1 + p2) / 2, c, 0 if t > 0 else 180, PLY['devor'], PLY['z'], PLY['versiya'], kuch=0.0, halqa=0, nom=f'plyonka_logo_{n_ply}', ofset=8)
+        n_ply += 1
+for e in ESH:
+    if e['holat'] != 'yangi' or not e.get('shisha') or e['devor'] != 'h': continue
+    yb = e['yuz'] - e['yon'] * 20; t = -e['yon']          # yopiq barg markazi; koridor — ochilishga qarshi tomonda
+    if not any(y1 - 200 <= yb <= y2 + 200 for y1, y2 in KOR_Y): continue   # faqat koridor devorlaridagi eshiklar
+    bu.logo_panel((e['a'] + e['b']) / 2, yb, 0 if t > 0 else 180, PLY['eshik'], PLY['z'], PLY['versiya'], kuch=0.0, halqa=0, nom=f"plyonka_logo_{e['kod']}", ofset=8)
+    n_ply += 1
+print('plyonka logolari:', n_ply)
+
 # derazalar
 ICH = {'yuqori': +1, 'past': -1, 'chap': +1}
 q = Q()
@@ -480,11 +509,22 @@ KOR = {
     'kd_fasad': dict(cam=kam('kamera_kd_fasad', (2500, 40500, 11500), (14500, 21500, 1800), 30), res=(1920, 1080), ichki=True, quyosh=(200, 40, 3.0),
                      korsat=('kd_pastki',)),
     'kirish': dict(cam=kam('kamera_kirish', (5300, 15900, 1650), (1700, 19700, 450), 19), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
+    # koridor shisha devorlari — founder tasdig'i uchun (15.10): qiya ko'rinishlar, eshik yaqindan, tepadan
+    'k1_chap': dict(cam=kam('kamera_K1_chap', (7300, 9100, 1600), (12600, 7750, 1300), 20), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'k1_ong': dict(cam=kam('kamera_K1_ong', (7300, 8000, 1600), (12600, 9350, 1300), 20), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'k1_eshik': dict(cam=kam('kamera_K1_eshik', (16550, 9250, 1500), (17300, 7750, 1150), 20), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'k2_chap': dict(cam=kam('kamera_K2_chap', (7300, 16450, 1600), (12600, 15050, 1300), 20), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'k2_ong': dict(cam=kam('kamera_K2_ong', (7300, 15250, 1600), (12600, 16650, 1300), 20), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'k2_eshik': dict(cam=kam('kamera_K2_eshik', (12050, 15150, 1500), (12800, 16650, 1150), 20), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'tepa1': dict(cam=kam('kamera_tepa1', (800, 12200, 9500), (13500, 12200, 0), 26), res=(1920, 1200), ichki=False, quyosh=(125, 55, 3.2)),
+    'tepa2': dict(cam=kam('kamera_tepa2', (25200, 12200, 9500), (11500, 12200, 0), 26), res=(1920, 1200), ichki=False, quyosh=(125, 55, 3.2)),
     'konditsioner': dict(cam=kam('kamera_konditsioner', (12750, 17500, 1550), (17300, 23400, 2000), 18), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
 }
 FAYL = {'umumiy': '1-umumiy', 'k1': '2-koridor-K1', 'k2': '3-koridor-K2', 'logo': '4-koridor-logotip', 'doskalar': '5-koridor-doskalar',
         'sotuv': '6-sotuv-xonasi', 'admin': '7-admin-xonasi', 'sinf': '8-sinf-doska', 'kw': '9-koworking', 'sahna': '10-koworking-sahna',
-        'tomoshabin': '11-sahna-tomoshabin', 'konditsioner': '12-konditsioner', 'kd_fasad': '13-konditsioner-fasad', 'kirish': '14-kirish-zina'}
+        'tomoshabin': '11-sahna-tomoshabin', 'konditsioner': '12-konditsioner', 'kd_fasad': '13-konditsioner-fasad', 'kirish': '14-kirish-zina',
+        'k1_chap': '15-K1-chap-devor', 'k1_ong': '16-K1-ong-devor', 'k1_eshik': '17-K1-eshik', 'k2_chap': '18-K2-chap-devor',
+        'k2_ong': '19-K2-ong-devor', 'k2_eshik': '20-K2-eshik', 'tepa1': '21-koridorlar-tepadan-1', 'tepa2': '22-koridorlar-tepadan-2'}
 bu.render_sozla(A['tez'])
 os.makedirs(A['chiq'], exist_ok=True)
 BELGI = {k: (*mk(X[k]), 0) for k in ('SR1', 'SR2', 'SR3', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2', 'XZ3', 'XZ4', 'KW', 'X12')}
