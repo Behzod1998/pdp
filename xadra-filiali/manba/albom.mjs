@@ -266,15 +266,15 @@ function muqova(x, mundarija, rasmSrc) {
 // vizual. Rasmlarda hozirgi yechim: profilli, 90 sm eshik; mat plyonkada yangi logo — bir rangli to'q (namunadagidek).
 const SHISHA_CSS = `
 .sh-yuqori { display: grid; grid-template-columns: 1fr 128mm; gap: 3mm 4mm; margin-top: 2mm; }
-.sh-yuqori > figure img { height: 150mm; object-fit: cover; }
-.sh-ong figure img { height: 70.5mm; object-fit: cover; }
-.sh-past { display: grid; grid-template-columns: 128mm 1fr; gap: 4mm; margin-top: 1mm; }
-.sh-past figure img { height: 72mm; object-fit: cover; }
+.sh-katta img { height: 150mm; object-fit: cover; }
+.sh-ong figure img { height: 69mm; object-fit: cover; }
+.sh-past { display: grid; grid-template-columns: 165mm 1fr; gap: 4mm; margin-top: 1mm; }
+.sh-past figure img { height: 92mm; object-fit: cover; }
 .sh-tepa { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-top: 2mm; }
 .sh-tepa figure img { height: 124mm; object-fit: cover; }
-.tasdiq { border: .5mm solid #1F3657; border-radius: 1.5mm; padding: 3mm 4mm; font-size: 8.4pt; line-height: 1.5; }
+.tasdiq { align-self: start; border: .5mm solid #1F3657; border-radius: 1.5mm; padding: 3mm 4mm; font-size: 8.4pt; line-height: 1.5; }
 .tasdiq h3 { font-size: 10.5pt; color: #1F3657; margin-bottom: 1.5mm; }
-.tasdiq .q { margin: 1.4mm 0; } .tasdiq .q b { display: inline-block; min-width: 46mm; }
+.tasdiq .q { margin: 1.4mm 0; white-space: nowrap; } .tasdiq .q b { display: inline-block; min-width: 40mm; }
 .kv { display: inline-block; width: 3.6mm; height: 3.6mm; border: .4mm solid #1F3657; vertical-align: -.6mm; margin: 0 1.2mm 0 4mm; border-radius: .5mm; }
 .kv.x { background: #1F3657; box-shadow: inset 0 0 0 .7mm #fff; }
 .spek { font-size: 7.6pt; color: #333; line-height: 1.45; } .spek li { margin-left: 4mm; }
@@ -284,7 +284,7 @@ const PLY = { devor: 700, eshik: 520, z: 1300 };   // blender2.py dagi PLY bilan
 const tasdiqQuti = (kichik = false) => `<div class="tasdiq"><h3>Founder tasdig'i</h3>
   <div class="q"><b>1. Shisha devorlar</b><span class="kv x"></span>Profilli (rasmlarda) <span class="kv"></span>To'liq oynali (ramkasiz)</div>
   <div class="q"><b>2. Eshik eni</b><span class="kv x"></span>90 sm (rasmlarda) <span class="kv"></span>120 sm</div>
-  <div class="q"><b>3. Mat plyonka va logo</b><span class="kv"></span>Ma'qul <span class="kv"></span>O'zgartirish: ______________________</div>
+  <div class="q"><b>3. Mat plyonka va logo</b><span class="kv"></span>Ma'qul <span class="kv"></span>O'zgartirish: ______________</div>
   <div class="q" style="margin-top:2.5mm">Imzo: ____________________ &nbsp;&nbsp; Sana: ____________</div>
   ${kichik ? '' : `<p class="izohcha" style="margin-top:1.5mm">Belgilangan katakchalar — rasmlarda ko'rsatilgan hozirgi yechim. «To'liq oynali» yoki «120 sm» tanlansa, shu ko'rinishlar o'sha variant bilan qayta tayyorlanadi.</p>`}</div>`;
 const spek = () => `<ul class="spek">
@@ -304,12 +304,13 @@ async function shishaVaraqlar() {
       e: "<b>6-xona eshigi yaqindan</b> — 90 sm, ustida qo'zg'almas shisha." },
   };
   const r = f => rasm(`Xadra_2-qavat_3D_${f}.jpg`);
+  const fw = (src, izoh, cls = '') => `<div class="${cls}">${fig(src, izoh)}</div>`;   // rasm va izohi — bitta grid katagida
   const bet = async k => `<section class="varaq">${bosh(`Koridor shisha devorlari — ${k.nom} (founder tasdig'i uchun)`, 'Profilli shisha, eshik 90 sm, mat plyonkada logo')}
-    <div class="sh-yuqori">${fig(await r(k.toliq), k.t)}<div class="sh-ong">${fig(await r(k.chap), k.c)}${fig(await r(k.ong), k.o)}</div></div>
-    <div class="sh-past">${fig(await r(k.eshik), k.e)}<div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm">${spek()}${tasdiqQuti(true)}</div></div></section>`;
+    <div class="sh-yuqori">${fw(await r(k.toliq), k.t, 'sh-katta')}<div class="sh-ong">${fw(await r(k.chap), k.c)}${fw(await r(k.ong), k.o)}</div></div>
+    <div class="sh-past">${fw(await r(k.eshik), k.e)}<div style="display:grid;grid-template-columns:1fr 122mm;gap:4mm">${spek()}${tasdiqQuti(true)}</div></div></section>`;
   const tepa = `<section class="varaq">${bosh("Koridor shisha devorlari — tepadan umumiy ko'rinish", 'Shift olib tashlangan, devorlar 2.7 m da kesilgan')}
-    <div class="sh-tepa">${fig(await r('21-koridorlar-tepadan-1'), "<b>G'arbdan (koworking tomondan):</b> chapda K1, o'ngda K2 — shisha devorlar, eshiklar va mat plyonka polosasi.")}
-      ${fig(await r('22-koridorlar-tepadan-2'), "<b>Sharqdan (4-xona tomondan):</b> o'ngda K1, chapda K2; o'rtada XZ1–XZ4 xizmat xonalari.")}</div>
+    <div class="sh-tepa">${fw(await r('21-koridorlar-tepadan-1'), "<b>G'arbdan (koworking tomondan):</b> chapda K1, o'ngda K2 — shisha devorlar, eshiklar va mat plyonka polosasi.")}
+      ${fw(await r('22-koridorlar-tepadan-2'), "<b>Sharqdan (4-xona tomondan):</b> o'ngda K1, chapda K2; o'rtada XZ1–XZ4 xizmat xonalari.")}</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:3mm">${spek()}${tasdiqQuti()}</div></section>`;
   return `<style>${SHISHA_CSS}</style>${await bet(K.K1)}${await bet(K.K2)}${tepa}`;
 }
