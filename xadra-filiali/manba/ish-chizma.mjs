@@ -10,8 +10,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
 import { PDFDocument } from 'pdf-lib';
-import { LOYIHA, H, ICHKI, DEVOR, DEVORLAR, ESHIKLAR, USTUNLAR, XONALAR, OQLAR, ZINALAR, DERAZALAR, PANJARA } from './model.mjs';
+import { LOYIHA, H, ICHKI, DEVOR, DEVORLAR, ESHIKLAR, USTUNLAR, XONALAR, OQLAR, ZINALAR, DERAZALAR, PANJARA, KLADOVKA, SURMA } from './model.mjs';
 import { xonaMaydoni } from './tekshiruv.mjs';
+import { surmaEshikSvg } from './eshik-svg.mjs';
 
 const require = createRequire(import.meta.url);
 let chromium;
@@ -25,7 +26,7 @@ const RANG = { mavjud: '#5b6270', gkl: '#e8913a', shisha: '#cfe8f7', shishaCh: '
 const NOM = {
   SR1: '1-xona', SR2: '2-xona', SR3: '3-xona', SR4: '4-xona', SR5: '5-xona', SR6: '6-xona', SR7: '7-xona',
   XZ1: 'XZ1 · sotuv', XZ2: 'XZ2 · admin', XZ3: 'XZ3 · ustozlar', XZ4: 'XZ4 · call-markaz', KW: 'Koworking', X12: 'CEO',
-  K1: 'K1', K2: 'K2', ZL: 'Kirish zali', ZN1: 'ZN1', ZN2: 'ZN2',
+  K1: 'K1', K2: 'K2', ZL: 'Kirish zali', ZN1: 'ZN1', ZN2: 'ZN2', KL1: 'KL1 · kladovka', KL2: 'KL2 · kladovka',
 };
 
 // ---------- belgilash: yangi elementlarga kod ----------
@@ -100,6 +101,7 @@ function asos(vb, k, { oqlar = true, xonaYozuv = true, kodlar = false } = {}) {
   USTUNLAR.forEach(u => q.push(R(u, u.holat === 'taxminiy' ? `fill="#fff" stroke="#111" stroke-width="${12 * k}" stroke-dasharray="${40 * k} ${25 * k}"` : 'fill="#111"')));
   // eshiklar: tabaqa va ochilish yoyi
   ESHIKLAR.forEach(e => {
+    if (e.surma) { q.push(surmaEshikSvg(e, { rang: RANG.shishaCh, k })); return; }
     const yangi = e.holat === 'yangi', w = e.b - e.a, rang = yangi ? RANG.shishaCh : '#555';
     if (e.devor === 'h') {
       const hx = e.ilgak === 'a' ? e.a : e.b, ox = e.ilgak === 'a' ? e.b : e.a, y = e.yuz, yy = y + e.yon * w;
@@ -164,7 +166,7 @@ function varaq1Svg() {
   // ichki zanjirlar: xonalar va koridorlar chuqurligi
   const Zc = { tomon: -1, size: 1.9 }, Zo = { tomon: 1, size: 1.9 };
   q.push(zanjir([0, 7700, 7800, 9300, 9400, 12200, 12400, 15000, 15100, 16600, 16700, ICHKI.y], 11300, false, k, Zc),
-    zanjir([0, 7700, 7800, 16600, 16700, ICHKI.y], 21300, false, k, Zc),
+    zanjir([0, 7700, 7800, 9300, 9400, 15000, 15100, 16600, 16700, ICHKI.y], 21300, false, k, Zc),
     zanjir([0, 5950, 6250, 11950, 12150, 17950, 18150, ICHKI.x], 14550, true, k, Zc),
     zanjir([0, 5950, 6250, 11950, 12150, 17950, 18150, ICHKI.x], 3900, true, k, Zc),
     zanjir([0, 5950, 6150, 11950, 12150, 17950, 18150, ICHKI.x], 20200, true, k, Zc));
@@ -177,7 +179,7 @@ function varaq1Svg() {
   PANJARA.forEach(p => q.push(zanjir([p.x1, p.x2], p.y - 380, true, k, { tomon: -1, size: 1.9 }),
     T((p.x1 + p.x2) / 2, p.y + 420, `${p.kod}: zina panjarasi, h ${son(p.bal)}`, 170, 'text-anchor="middle" font-weight="700" fill="#2b2f36"')));
   // 1:50 detal chegarasi
-  const det = { x1: 5600, y1: 7150, x2: 19750, y2: 17150 };
+  const det = { x1: 5600, y1: 7150, x2: ICHKI.x + 250, y2: 17150 };
   q.push(R(det, `fill="none" stroke="#1F3657" stroke-width="${16 * k}" stroke-dasharray="${180 * k} ${80 * k}"`),
     T(det.x1 + 120, det.y1 - 110, "2-varaq: 1:50 detal (shisha bo'laklari va eshiklar)", 170 * k, 'fill="#1F3657" font-weight="700"'));
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x1} ${vb.y1} ${vb.x2 - vb.x1} ${vb.y2 - vb.y1}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">${q.join('')}</svg>`;
@@ -185,37 +187,41 @@ function varaq1Svg() {
 
 // ---------- 2-varaq: koridorlar va xizmat xonalari 1:50 ----------
 function varaq2Svg() {
-  const vb = { x1: 5450, y1: 7000, x2: 19850, y2: 17250 }, k = 0.55;
+  const vb = { x1: 5450, y1: 7000, x2: ICHKI.x + 550, y2: 17250 }, k = 0.55;
   const q = [asos(vb, k, { oqlar: true, xonaYozuv: false, kodlar: true })];
   // o'q belgilari (faqat ko'rinadiganlar)
   const r = 190 * k;
   OQLAR.x.filter(([, x]) => x > vb.x1 && x < vb.x2).forEach(([n, x]) => q.push(`<circle cx="${x}" cy="${vb.y1 + 170}" r="${r}" fill="#fff" stroke="#333" stroke-width="${8 * k}"/>`, T(x, vb.y1 + 170 + 55 * k, n, 150 * k, 'text-anchor="middle" font-weight="700" fill="#333"')));
   OQLAR.y.filter(([, y]) => y > vb.y1 && y < vb.y2).forEach(([n, y]) => q.push(`<circle cx="${vb.x1 + 170}" cy="${y}" r="${r}" fill="#fff" stroke="#333" stroke-width="${8 * k}"/>`, T(vb.x1 + 170, y + 55 * k, n, 150 * k, 'text-anchor="middle" font-weight="700" fill="#333"')));
   // koridor devorlari bo'ylab zanjirlar (koridor ichida): K1 shimoliy / janubiy, K2 shimoliy / janubiy
-  const X0 = 5950, X1 = 19400;
+  const X0 = 5950, X1 = KLADOVKA.x;
   const S2 = 1.8;
-  q.push(zanjir([X0, ...chiziqNuqtalari(7700, 7800, 6250, 19400), X1], 7800 + 230, true, k, { tomon: 1, size: S2 }),
-    zanjir([X0, ...chiziqNuqtalari(9300, 9400, 6250, 19400), X1], 9300 - 230, true, k, { tomon: -1, size: S2 }),
-    zanjir([X0, ...chiziqNuqtalari(15000, 15100, 6250, 19400), X1], 15100 + 230, true, k, { tomon: 1, size: S2 }),
-    zanjir([X0, ...chiziqNuqtalari(16600, 16700, 6150, 19400), X1], 16600 - 230, true, k, { tomon: -1, size: S2 }));
+  q.push(zanjir([X0, ...chiziqNuqtalari(7700, 7800, 6250, X1), X1], 7800 + 230, true, k, { tomon: 1, size: S2 }),
+    zanjir([X0, ...chiziqNuqtalari(9300, 9400, 6250, X1), X1], 9300 - 230, true, k, { tomon: -1, size: S2 }),
+    zanjir([X0, ...chiziqNuqtalari(15000, 15100, 6250, X1), X1], 15100 + 230, true, k, { tomon: 1, size: S2 }),
+    zanjir([X0, ...chiziqNuqtalari(16600, 16700, 6150, X1), X1], 16600 - 230, true, k, { tomon: -1, size: S2 }));
+  // kladovkalar: ko'ndalang devor va eshik (koridor o'qida)
+  ESHIKLAR.filter(e => e.kladovka).forEach(e => q.push(zanjir([e.a - (e.a - (e.kod === 'KL1' ? 7800 : 15100)), e.a, e.b, e.kod === 'KL1' ? 9300 : 16600], KLADOVKA.x + KLADOVKA.t + 900, false, k, { tomon: 1, size: S2 })));
+  q.push(zanjir([KLADOVKA.x, KLADOVKA.x + KLADOVKA.t, ICHKI.x], 8550 + 420, true, k, { tomon: 1, size: S2 }), zanjir([KLADOVKA.x, KLADOVKA.x + KLADOVKA.t, ICHKI.x], 15850 + 420, true, k, { tomon: 1, size: S2 }));
   // umumiy (o'qdan o'qqa) zanjirlar — koridor o'rtasida
   q.push(zanjir([X0, 6050, 12050, 18050, X1], 8700, true, k, { tomon: -1, rang: '#6b7380', size: S2 }),
     zanjir([X0, 6050, 12050, 18050, X1], 16000, true, k, { tomon: -1, rang: '#6b7380', size: S2 }));
   // vertikal zanjirlar: xizmat xonalari va koridorlar chuqurligi
   q.push(zanjir([7700, 7800, 9300, 9400, 12200, 12400, 15000, 15100, 16600, 16700], 7400, false, k, { tomon: -1, size: S2 }),
     zanjir([7700, 7800, 9300, 9400, 12200, 12400, 15000, 15100, 16600, 16700], 14500, false, k, { tomon: -1, size: S2 }),
-    zanjir([7700, 7800, 9300, 9400, 15000, 15100, 16600, 16700], 19650, false, k, { tomon: 1, size: S2 }));
+    zanjir([7700, 7800, 9300, 9400, 15000, 15100, 16600, 16700], 20500, false, k, { tomon: 1, size: S2 }));
   // xizmat xonalari: ichki eni zanjiri (o'rta devor yonida)
-  q.push(zanjir([5950, 6250, 11950, 12150, 17950, 18150, 19400], 11950, true, k, { tomon: -1, size: S2 }),
-    zanjir([5950, 6250, 11950, 12150, 17950, 18150, 19400], 12650, true, k, { tomon: 1, size: S2 }));
+  q.push(zanjir([5950, 6250, 11950, 12150, 17950, 18150, ICHKI.x], 11950, true, k, { tomon: -1, size: S2 }),
+    zanjir([5950, 6250, 11950, 12150, 17950, 18150, ICHKI.x], 12650, true, k, { tomon: 1, size: S2 }));
   // xona nomlari
-  [['XZ2', 9100, 10650], ['XZ1', 9100, 13900], ['XZ3', 15050, 10650], ['XZ4', 15050, 13900]].forEach(([kod, x, y]) => {
+  [['XZ4', 9100, 10650], ['XZ1', 9100, 13900], ['XZ3', 15050, 10650], ['XZ2', 15050, 13900]].forEach(([kod, x, y]) => {
     const z = XONALAR.find(r => r.kod === kod);
     q.push(T(x, y, NOM[kod], 220 * k * 1.6, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`),
       T(x, y + 250, `ichki: ${son(z.x2 - z.x1)} × ${son(z.y2 - z.y1)} · ${xonaMaydoni(z).toFixed(1)} m²`, 150 * k * 1.6, 'text-anchor="middle" fill="#555"'));
   });
+  [['KL1', 22500, 8000], ['KL2', 22500, 16450]].forEach(([n, x, y]) => q.push(T(x, y, NOM[n], 150 * k * 1.6, `text-anchor="middle" fill="#7b1fa2" font-weight="700"`)));
   [['K1', 13300, 8800], ['K2', 13300, 16100]].forEach(([n, x, y]) => q.push(T(x, y, `${n} koridori · eni 1 500`, 150 * k * 1.6, 'text-anchor="middle" fill="#777" font-weight="700"')));
-  [['SR1', 9100, 7350], ['SR2', 15050, 7350], ['SR7', 9100, 17050], ['SR6', 15050, 17050], ['SR4', 19100, 12300]].forEach(([kod, x, y]) =>
+  [['SR1', 9100, 7350], ['SR2', 15050, 7350], ['SR7', 9100, 17050], ['SR6', 15050, 17050], ['SR4', 21000, 13100], ['SR3', 21000, 7350], ['SR5', 21000, 17050]].forEach(([kod, x, y]) =>
     q.push(T(x, y, NOM[kod], 150 * k * 1.6, 'text-anchor="middle" fill="#888" font-weight="700"')));
   q.push(T(5700, 12300, 'KW', 150 * k * 1.6, 'text-anchor="middle" fill="#888" font-weight="700"'));
   // shisha bo'laklari kodlari
@@ -229,16 +235,19 @@ function varaq2Svg() {
 // shisha devorning tipik yoyilmasi (eshik bilan)
 function yoyilma() {
   const W = 3300, Hh = BAL.shift, q = [], Y = z => Hh - z;
-  const d1 = 1200, d2 = d1 + 900;
+  const d1 = 1000, d2 = d1 + 1000;
   q.push(`<rect x="0" y="0" width="${W}" height="${Hh}" fill="#fff"/>`,
     `<rect x="0" y="${Y(Hh)}" width="${W}" height="${Hh - BAL.shisha}" fill="#fde3c4" stroke="${RANG.gkl}" stroke-width="12"/>`,
     `<rect x="0" y="${Y(BAL.shisha)}" width="${W}" height="${BAL.shisha}" fill="${RANG.shisha}" stroke="${RANG.shishaCh}" stroke-width="14"/>`,
     `<rect x="0" y="${Y(BAL.matGacha)}" width="${d1}" height="${BAL.matGacha - BAL.matDan}" fill="#dfe7ee" opacity=".9"/>`,
     `<rect x="${d2}" y="${Y(BAL.matGacha)}" width="${W - d2}" height="${BAL.matGacha - BAL.matDan}" fill="#dfe7ee" opacity=".9"/>`,
-    `<rect x="${d1}" y="${Y(BAL.eshik)}" width="900" height="${BAL.eshik}" fill="#e6f2fb" stroke="${RANG.shishaCh}" stroke-width="20"/>`,
-    `<rect x="${d1 + 60}" y="${Y(BAL.matGacha)}" width="780" height="${BAL.matGacha - BAL.matDan}" fill="#dfe7ee" opacity=".9"/>`,
+    `<rect x="${d1}" y="${Y(BAL.eshik)}" width="${d2 - d1}" height="${BAL.eshik}" fill="#e6f2fb" stroke="${RANG.shishaCh}" stroke-width="20"/>`,
+    `<rect x="${d1 + 50}" y="${Y(BAL.matGacha)}" width="${d2 - d1 - 100}" height="${BAL.matGacha - BAL.matDan}" fill="#dfe7ee" opacity=".9"/>`,
     `<line x1="${d1}" y1="${Y(BAL.eshik)}" x2="${d2}" y2="${Y(BAL.eshik)}" stroke="${RANG.shishaCh}" stroke-width="20"/>`,
-    `<rect x="${d2 - 140}" y="${Y(1100)}" width="40" height="300" fill="#333"/>`,
+    `<rect x="${d1 + 80}" y="${Y(1450)}" width="40" height="700" fill="#333"/>`,
+    `<rect x="${d2 - 30}" y="${Y(BAL.eshik - 10)}" width="${d2 - d1 + 60}" height="${BAL.eshik - 20}" fill="none" stroke="${RANG.shishaCh}" stroke-width="12" stroke-dasharray="60 40"/>`,
+    `<line x1="${d1 - 60}" y1="${Y(BAL.eshik + 40)}" x2="${2 * d2 - d1 + 60}" y2="${Y(BAL.eshik + 40)}" stroke="#7b1fa2" stroke-width="40"/>`,
+    `<line x1="${d1 + 300}" y1="${Y(300)}" x2="${d2 + 250}" y2="${Y(300)}" stroke="#7b1fa2" stroke-width="22"/><path d="M${d2 + 380},${Y(300)} L${d2 + 230},${Y(300) - 70} L${d2 + 230},${Y(300) + 70} z" fill="#7b1fa2"/>`,
     `<line x1="-200" y1="${Y(0)}" x2="${W + 200}" y2="${Y(0)}" stroke="#333" stroke-width="20"/>`);
   const z = [0, BAL.matDan, BAL.matGacha, BAL.eshik, BAL.shisha, Hh];
   q.push(zanjir(z.map(Y), W + 260, false, 1.4, { tomon: 1, yozuv: (a, b) => son(Math.abs(b - a)) }),
@@ -246,7 +255,9 @@ function yoyilma() {
   q.push(T(W / 2, Y(BAL.shisha + 380), 'GKL (shisha ustida)', 120, 'text-anchor="middle" fill="#a85a12"'),
     T(d1 / 2, Y(1300) + 40, 'matli plyonka', 105, 'text-anchor="middle" fill="#555"'),
     T(d1 + 450, Y(2300) + 40, 'shisha', 105, 'text-anchor="middle" fill="#2f5f88"'),
-    T(d1 + 450, Y(600), 'eshik', 120, 'text-anchor="middle" fill="#2f5f88" font-weight="700"'));
+    T(d1 + 500, Y(650), 'eshik 1 000', 120, 'text-anchor="middle" fill="#2f5f88" font-weight="700"'),
+    T(d2 + 500, Y(BAL.eshik + 170), 'rels (xona tomonda)', 100, 'text-anchor="middle" fill="#7b1fa2"'),
+    T(d2 + 500, Y(150), 'ochiq holati', 100, 'text-anchor="middle" fill="#2f5f88"'));
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-500 -700 ${W + 1500} ${Hh + 1000}" width="100%">${q.join('')}</svg>`;
 }
 
@@ -304,10 +315,10 @@ function html() {
     <ul>
       <li><b>GKL 100:</b> metall profil 75 mm (stoyka qadami 600), ikki tomonida 12.5 mm gipsokarton; ichida 50 mm mineral paxta (shovqin uchun, tavsiya); poldan shiftgacha ${son(H)} mm.</li>
       <li><b>Shisha devor:</b> poldan ${son(BAL.shisha)} mm gacha shisha (laminatlangan, kamida 2 × 6 mm yoki 10 mm toblangan), alyumin profilda; ${son(BAL.shisha)}–${son(H)} mm — GKL (shisha ustida). ${son(BAL.matDan)}–${son(BAL.matGacha)} mm da matli plyonka.</li>
-      <li><b>Eshiklar:</b> shisha, ${son(900)} × ${son(BAL.eshik)} mm, ustida ${son(BAL.shisha - BAL.eshik)} mm qo'zg'almas shisha; hammasi xona ichiga ochiladi. Jadvali — 2-varaqda.</li>
+      <li><b>Eshiklar (founder, 16.10):</b> shisha, ${son(1000)} × ${son(BAL.eshik)} mm, <b>yonga suriladigan</b> (Damas eshigi kabi): barg xona ichida, yuqori relsda devor bo'ylab suriladi, ochilganda yonidagi shisha oldida turadi; ustida ${son(BAL.shisha - BAL.eshik)} mm qo'zg'almas shisha. Kladovka eshiklari — ${son(KLADOVKA.eshik)} × ${son(BAL.eshik)}, ichkariga ochiladi. Jadvali — 2-varaqda.</li>
       <li><b>Bo'shliqlarni yopish</b> (eski eshik va o'tish joylari, 1-varaqdagi to'q sariq bo'laklar) — GKL, mavjud devor qalinligida (200–300 mm), ikki tomoni tekislanadi.</li>
     </ul>
-    <div class="ogoh"><b>Buyurtmachi qarorlari (14.10):</b> (1) xizmat xonalari zonasidagi <b>eski o'rta devor (C o'qi) buzilmaydi</b> — 2 × 2 xona: K2 tomonda XZ1 sotuv va XZ2 admin (yonma-yon, eshiklari o'rtada), K1 tomonda XZ4 call-markaz va XZ3 ustozlar; koridor tomoni shisha. (2) <b>Kirishdagi ZN2 zinasi bilan koworking orasidagi devor buziladi</b> — o'rniga zina tuynugi chetida metall panjara P1 (h ${son(PANJARA[0].bal)}, uzunligi ${son(PANJARA[0].x2 - PANJARA[0].x1)}).</div>
+    <div class="ogoh"><b>Buyurtmachi va founder (16.10):</b> K1 va K2 koridorlari 4-xona orqali uning o'rtasigacha (x ${son(KLADOVKA.x)}) davom etadi; oxirida ko'ndalang GKL devor va eshik — orqasi <b>kladovka</b> (KL1, KL2), ustida kanalli konditsioner. 3-, 4-, 5-xonaning koridor tomoni kladovkagacha shisha; 4-xona kichrayadi (5.75 × 5.6 m). Barcha 11 eshik — 1 m, suriladigan.<br><b>Buyurtmachi qarorlari (14.10):</b> (1) xizmat xonalari zonasidagi <b>eski o'rta devor (C o'qi) buzilmaydi</b> — 2 × 2 xona: K2 tomonda XZ1 sotuv va XZ2 admin (yonma-yon, eshiklari o'rtada), K1 tomonda XZ4 call-markaz va XZ3 ustozlar; koridor tomoni shisha. (2) <b>Kirishdagi ZN2 zinasi bilan koworking orasidagi devor buziladi</b> — o'rniga zina tuynugi chetida metall panjara P1 (h ${son(PANJARA[0].bal)}, uzunligi ${son(PANJARA[0].x2 - PANJARA[0].x1)}).</div>
     <h3>Ishni boshlashdan oldin joyida tekshiriladi</h3>
     <ul>
       <li>Barcha o'lchamlar mavjud chizma fotosidan olingan: ish boshlashdan oldin ustunlar (U1–U9) va mavjud devorlar yuzasi o'lchab chiqiladi; farq 30 mm dan katta bo'lsa — loyihachiga xabar beriladi.</li>
@@ -324,9 +335,9 @@ function html() {
   const v2 = `<section class="varaq"><div class="ram"><div class="yorliq">2-varaq · K1, K2 koridorlari va xizmat xonalari (XZ1–XZ4), 1:50</div>${varaq2Svg()}</div>
   <div class="ong">
     <h2>SHISHA DEVORLAR, ESHIKLAR VA GKL — JADVALLAR</h2>
-    <h3>Eshiklar (yangi, shisha) — ${ESH.length} ta</h3>
-    <table><tr><th>Kod</th><th>Xona</th><th>Joyi</th><th class="r">x, mm</th><th class="r">O'lchami</th><th>Ilgagi (koridordan)</th></tr>
-      ${ESH.map(e => `<tr><td><b>${e.id}</b></td><td>${NOM[e.kod] || e.kod}</td><td>${chiziqNomi({ ...e, y1: e.yuz === 7700 ? 7700 : e.yuz === 9400 ? 9300 : e.yuz === 15000 ? 15000 : e.yuz === 16700 ? 16600 : e.yuz })}</td><td class="r">${son(e.a)}–${son(e.b)}</td><td class="r">${son(e.en)} × ${son(BAL.eshik)}</td><td>${(e.yon > 0) === (e.ilgak === 'a') ? "o'ngda" : 'chapda'}</td></tr>`).join('')}</table>
+    <h3>Eshiklar (yangi) — ${ESH.length} ta: ${ESH.filter(e => e.surma).length} ta shisha suriladigan (1 m, barg xona ichida) va ${ESH.filter(e => e.kladovka).length} ta kladovka eshigi</h3>
+    <table><tr><th>Kod</th><th>Xona</th><th>Joyi</th><th class="r">x, mm</th><th class="r">O'lchami</th><th>Turi (koridordan qaraganda)</th></tr>
+      ${ESH.map(e => `<tr><td><b>${e.id}</b></td><td>${NOM[e.kod] || e.kod}</td><td>${e.kladovka ? `${e.kod === 'KL1' ? 'K1' : 'K2'} oxiri (x ${son(KLADOVKA.x)})` : chiziqNomi({ ...e, y1: e.yuz === 7700 ? 7700 : e.yuz === 9400 ? 9300 : e.yuz === 15000 ? 15000 : e.yuz === 16700 ? 16600 : e.yuz })}</td><td class="r">${son(e.a)}–${son(e.b)}</td><td class="r">${son(e.en)} × ${son(BAL.eshik)}</td><td>${e.surma ? `suriladi ${(e.park === 'b') === (e.yon < 0) ? "o'ngga" : 'chapga'}` : e.kladovka ? 'ochiladi, ichkariga' : ((e.yon > 0) === (e.ilgak === 'a') ? "ilgak o'ngda" : 'ilgak chapda')}</td></tr>`).join('')}</table>
     <h3>Shisha devorlar (S) — balandligi ${son(BAL.shisha)} mm</h3>
     <table><tr><th>Kod</th><th>Joyi</th><th class="r">x, mm</th><th class="r">Uzunligi</th><th class="r">m²</th></tr>
       ${glass.map(w => `<tr><td><b>${w.id}</b></td><td>${chiziqNomi(w)}</td><td class="r">${son(w.x1)}–${son(w.x2)}</td><td class="r">${son(uz(w))}</td><td class="r">${(uz(w) * BAL.shisha / 1e6).toFixed(2)}</td></tr>`).join('')}

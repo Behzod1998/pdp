@@ -2,6 +2,7 @@
 // rangli reja + koworking zalining ikki rejimi + havo aylanishi + xonalar maydonlari.
 import { LOYIHA, XONALAR, H, KW_TADBIR } from './model.mjs';
 import { tizimHisob, REK } from './hvac-tizim.mjs';
+import { ventHisob } from './vent-chizma.mjs';
 const TZ = tizimHisob();
 import { renderSvg, kwKorinish, XONA_NOMI } from './render-svg.mjs';
 import { korsatkichlar, xonaMaydoni, xizmatHavo, kwHavo, HAVO } from './tekshiruv.mjs';
@@ -42,6 +43,7 @@ header .ong { text-align: right; font-size: 7.5pt; color: #555; display: flex; f
 .katta { font-size: 13pt; font-weight: 700; color: #1f1f1f; margin-top: 1mm; }
 `;
 
+const VH = ventHisob();
 export function taqdimotHtml() {
   const kor = korsatkichlar();
   const x = kod => xonaMaydoni(XONALAR.find(r => r.kod === kod));
@@ -69,10 +71,10 @@ export function taqdimotHtml() {
         <div class="havo"><h2>Havo aylanishi</h2>
           <div>${kesimSvg(1.75)}</div>
           <ul>
-            <li><b>2 ta ${REK.brend} rekuperatori</b> (${REK.nominal[1]} m³/soat) koridorlar shiftida: R1 — ${TZ.guruh[0].xonalar.join(', ')} (${TZ.guruh[0].Q} m³/soat), R2 — ${TZ.guruh[1].xonalar.join(', ')} (${TZ.guruh[1].Q} m³/soat). Sinfga ${TZ.xona[0].oa} m³/soat (CO₂ ~${Math.round(TZ.xona[0].co2 / 10) * 10} ppm).</li>
-            <li><b>Split konditsionerlar:</b> sinflarga bittadan ${TZ.xona[0].split.btu / 1000}k (orqa yon devorda, oynaga yaqin; tashqi bloklar — tomda), xizmat xonalariga bittadan ${TZ.xona.find(x => x.tur === 'ofis').split.btu / 1000}k; CEO va koworkingda mavjud. 4-xona va xizmat xonalarida deraza yo'q — ventilyatsiya majburiy.</li>
-            <li>Koworking: mavjud konditsionerlar (${TZ.qoshimcha[0].mavjud.map(b => b / 1000 + 'k').join(' + ')}) koridorlarni ham sovutadi; tadbirda ~${TZ.qoshimcha[0].oa} m³/soat tashqi havo — R1, R2 ga kirmaydi.</li>
-            <li>Doska yon devorda, deraza o'quvchilarning chap tomonida (3-xonada — doska kirish tomonida, buyurtmachi qarori) — yorug'lik doska va proyektorga tushmaydi. Toza havo doska oldida beriladi, orqada so'riladi; CO₂ datchigi.</li>
+            <li><b>2 ta kanalli konditsioner</b> (KK1, KK2) koridorlar oxiridagi <b>kladovka shifti ustida</b> — kladovka shovqinni to'sadi. Havo koridor bo'ylab magistral bilan: sinfga 2 ta, xizmat xonasiga 1 ta diffuzor. KK1 — ${VH.guruh.K1.xonalar.join(', ')}; KK2 — ${VH.guruh.K2.xonalar.join(', ')}.</li>
+            <li><b>Tashqi havo 30%</b> — 3-xonaning ko'cha tomonidan vertikal kanal bilan bloklarga (har biriga ${Math.round(VH.guruh.K1.oa)} m³/soat). To'la sinfda CO₂ ~${Math.round(Math.min(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50}–${Math.round(Math.max(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50} ppm.</li>
+            <li><b>Vitechka</b> — alohida so'rish tarmog'i: fasadlar bo'ylab (deraza tomonda) va XZ xonalarida; VV1 ${VH.venQ} m³/soat.</li>
+            <li>Koworking: mavjud konditsionerlar (${TZ.qoshimcha[0].mavjud.map(b => b / 1000 + 'k').join(' + ')}). Doska yon devorda, deraza o'quvchilarning chap tomonida (3-xonada — doska kirish tomonida) — yorug'lik doska va proyektorga tushmaydi.</li>
           </ul></div>
       </div>
       <div class="jadval"><h2>Xonalar maydonlari</h2>
@@ -83,6 +85,7 @@ export function taqdimotHtml() {
           <tr><td>Koworking / Tadbirlar zali</td><td class="r">${x('KW').toFixed(1)} m²</td><td></td></tr>
           <tr><td>CEO xonasi (12-xona)</td><td class="r">${x('X12').toFixed(1)} m²</td><td></td></tr>
           <tr><td>Koridorlar, kirish zali</td><td class="r">${(x('K1') + x('K2') + x('ZL')).toFixed(1)} m²</td><td></td></tr>
+          <tr><td>Kladovkalar (ustida konditsioner)</td><td class="r">${(x('KL1') + x('KL2')).toFixed(1)} m²</td><td></td></tr>
           <tr><td>Zinapoyalar, ayollar WC, o'tish yo'lagi</td><td class="r">${zinaWc.toFixed(1)} m²</td><td></td></tr>
         </table>
         <p style="margin-top:2mm">Umumiy foydali maydon (hujjat):</p>

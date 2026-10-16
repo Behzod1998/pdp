@@ -2,6 +2,7 @@
 import {
   H, ICHKI, PARTA, STUL, STANDART, USTUNLAR, DERAZALAR, DEVORLAR, ESHIKLAR, ZINALAR, XONALAR,
   XIZMAT_JIHOZ, KW_KUNDALIK, KW_TADBIR, KW_SAHNA, sinflar, maydon, bolaklar, xizmatJihozlari, lokal, wcJihozlari,
+  surmaBarg, KLADOVKA,
 } from './model.mjs';
 
 // ---------- geometriya ----------
@@ -27,6 +28,12 @@ function kesmaKesadi(p, q, r) {
 
 // Eshik polotnosi aylanadigan chorak doira
 export function eshikSektori(e) {
+  // suriladigan eshik: barg yuradigan zona (yopiq + ochiq holat, xona tomonda 30 mm zaxira) — to'rtburchak
+  if (e.surma) {
+    const a = surmaBarg(e), b = surmaBarg(e, true);
+    const quti = { x1: Math.min(a.x1, b.x1), x2: Math.max(a.x2, b.x2), y1: Math.min(a.y1, b.y1) - (e.yon < 0 ? 30 : 0), y2: Math.max(a.y2, b.y2) + (e.yon > 0 ? 30 : 0) };
+    return { surma: true, quti, ilgak: { x: (quti.x1 + quti.x2) / 2, y: (quti.y1 + quti.y2) / 2 }, r: 0 };
+  }
   const r = e.en;
   if (e.devor === 'h') {
     const hx = e.ilgak === 'a' ? e.a : e.b;
@@ -40,6 +47,7 @@ export function eshikSektori(e) {
   return { ilgak: { x: e.yuz, y: hy }, r, quti };
 }
 const sektorKesadi = (s, rect) => {
+  if (s.surma) return kesishadi(s.quti, rect);
   const k = kesim(s.quti, rect);
   if (bosh(k)) return false;
   return nuqtaMasofa(s.ilgak, k) < s.r - 1;
@@ -216,7 +224,9 @@ export function tekshiruv() {
   for (let i = 0; i < sektorlar.length; i++)
     for (let k = i + 1; k < sektorlar.length; k++) {
       const A = sektorlar[i].s, B = sektorlar[k].s;
-      if (!bosh(kesim(A.quti, B.quti)) && Math.hypot(A.ilgak.x - B.ilgak.x, A.ilgak.y - B.ilgak.y) < A.r + B.r - 1 && sektorKesadi(A, B.quti) && sektorKesadi(B, A.quti))
+      const ustma = A.surma || B.surma ? (A.surma && B.surma ? !bosh(kesim(A.quti, B.quti)) : A.surma ? sektorKesadi(B, A.quti) : sektorKesadi(A, B.quti))
+        : !bosh(kesim(A.quti, B.quti)) && Math.hypot(A.ilgak.x - B.ilgak.x, A.ilgak.y - B.ilgak.y) < A.r + B.r - 1 && sektorKesadi(A, B.quti) && sektorKesadi(B, A.quti);
+      if (ustma)
         natija.eshik.push(`${sektorlar[i].e.kod} ↔ ${sektorlar[k].e.kod} eshiklari`);
     }
   return natija;
@@ -235,7 +245,7 @@ export function evakuatsiya() {
     const eshik = e.devor === 'h' ? { x: (e.a + e.b) / 2, y: e.yuz } : { x: e.yuz, y: (e.a + e.b) / 2 };
     const ichkari = Math.max(...x.j.stullar.map(s => L1({ x: (s.x1 + s.x2) / 2, y: (s.y1 + s.y2) / 2 }, eshik)));
     const ky = KORIDOR_Y[x.koridor];
-    const kP = { x: Math.min(eshik.x, 19000), y: ky }, tut = { x: kw.x, y: ky };
+    const kP = { x: Math.min(eshik.x, KLADOVKA.x - 300), y: ky }, tut = { x: kw.x, y: ky };
     const bosh = L1(eshik, kP) + L1(kP, tut);
     return { kod: k.kod, ichkari, gacha2: ichkari + bosh + L1(tut, zn2), gacha1: ichkari + bosh + L1(tut, su6) + L1(su6, zn1) };
   });

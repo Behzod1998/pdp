@@ -5,6 +5,7 @@ import {
   KW_KUNDALIK, KW_TADBIR, KW_SAHNA, AYOLLAR_WC, PANJARA, sinflar, bolaklar, lokal, PARTA,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
+import { surmaEshikSvg } from './eshik-svg.mjs';
 import { koridorElementlar, sahnaElementlar } from './reja-svg.mjs';
 
 let N = 0;
@@ -58,7 +59,7 @@ const DOSKA_BURISH = { yuqori: 0, past: 180, ong: 90, chap: -90 };
 // o'simliklar: 4-xona, ofis xonalari va koworkingda (yon devordagi doskali sinflarda joy tor)
 function osimliklar() {
   const r = [];
-  r.push([23550, 9750], [23500, 16200]);
+  r.push([23550, 9750], [23550, 14650]);
   r.push([8400, 12750], [15050, 12750], [12500, 11850], [11600, 9800]);   // XZ1, XZ2, XZ3, XZ4
   r.push([3900, 13950], [3700, 17650], [5650, 24050], KW_SAHNA.osimlik);
   return r;
@@ -81,6 +82,7 @@ export function renderSvg(o = {}) {
     if (['sinf', 'ofis', 'xizmat', 'koworking'].includes(x.tur)) bolaklar(x).forEach(b => q.push(rect(b, `fill="url(#${id}parket)"`)));
     if (x.tur === 'sanuzel') q.push(rect(x, `fill="url(#${id}wc)"`));
     if (x.tur === 'zina') q.push(rect(x, `fill="#d8d5cf"`));
+    if (x.tur === 'kladovka') q.push(rect(x, `fill="#e4e1db"`));
   });
 
   // ---- zinalar ----
@@ -167,6 +169,7 @@ export function renderSvg(o = {}) {
   // ---- eshiklar ----
   ESHIKLAR.forEach(e => {
     const s = eshikSektori(e);
+    if (e.surma) { q.push(surmaEshikSvg(e, { rang: '#5f93ba', fon: '#9cc9e6', k: 1.4 })); return; }
     let leaf, arcEnd, sweep;
     if (e.devor === 'h') {
       leaf = { x: s.ilgak.x, y: e.yuz + e.yon * e.en };
@@ -230,6 +233,9 @@ export function renderSvg(o = {}) {
     L.push(t(12600, 8680, 'Koridor · 1.50 m', 320, 'font-weight="700" fill="#3a3a3a"'));
     L.push(t(12600, 15980, 'Koridor · 1.50 m', 320, 'font-weight="700" fill="#3a3a3a"'));
     L.push(t(4800, 20050, 'Kirish zali', 300, 'font-weight="700" fill="#3a3a3a"'));
+    // kladovkalar (koridor oxirida; ustida kanalli konditsioner)
+    XONALAR.filter(x => x.tur === 'kladovka').forEach(x => L.push(t((x.x1 + x.x2) / 2 + 250, (x.y1 + x.y2) / 2 - 20, 'Kladovka', 260, 'font-weight="700" fill="#3a3a3a"'),
+      t((x.x1 + x.x2) / 2 + 250, (x.y1 + x.y2) / 2 + 280, `${xonaMaydoni(x).toFixed(1)} m² · ustida konditsioner`, 175, G)));
     L.push(t(2600, 20750, 'Zinapoya (kirish)', 250, B));
     L.push(`<line x1="3750" y1="19200" x2="4550" y2="19200" stroke="#c0392b" stroke-width="45"/><path d="M4450,19030 L4700,19200 L4450,19370 Z" fill="#c0392b"/>`);
     L.push(t(4150, 18900, 'KIRISH', 230, 'font-weight="700" fill="#c0392b"'));

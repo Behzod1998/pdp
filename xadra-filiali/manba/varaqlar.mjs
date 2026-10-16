@@ -114,7 +114,7 @@ function partaQoidasi() {
     doskadan 1-partagacha ${son(t.doska)} · oxirgi parta ${son(t.doska + (t.qatorlar - 1) * t.qadam + PARTA.chuq)} · sig'im ${n * PARTA.kishi * t.qatorlar}<br>
     <span class="qizil">ISTISNO: SR3 — doska va ustoz joyi kirish tomonida (buyurtmachi), deraza o'quvchilarning o'ng tomonida; SR4 — 4 + 4 + 2 parta, 20 o'rin (doska o'ng tashqi devorda)</span><br>
     <span style="color:#777">Beruniy standarti: parta ${STANDART.parta.eni} × ${STANDART.parta.chuq} (1 kishilik), 2 + 2 + 2 × ${STANDART.qatorlar} qator, qadam ${son(STANDART.qadam)}, doskadan ${son(STANDART.doska)}, oxirgi ${son(STANDART.oxirgi)}</span><br>
-    ustundan: oldi/orqa 500 · yon 0. Doska 3000 yon (kar) devorda, deraza o'quvchilarning chap tomonida (SR3 dan tashqari); eshiklar 900.<br>
+    ustundan: oldi/orqa 500 · yon 0. Doska 3000 yon (kar) devorda, deraza o'quvchilarning chap tomonida (SR3 dan tashqari); eshiklar 1 m, suriladigan (barg xona ichida).<br>
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100; sinflarning koridor tomoni — akustik shisha.<br>
     KW: o'ng tomonda ~1,6 m o'tish yo'lagi bo'sh (6-xona — ZN1 ga o'tish, K1, K2, kirish zali); sahna — XZ1/XZ2 devorida, podiumsiz; e'lon va e'tirof doskalari — koworkingning shimoliy devorida.<br>
     Ayollar WC: 2 kabina eng ichkarida (2, 3 — unitaz), oldida tambur (4, 5 — rakovina); ikki eshik orqali kiriladi.<br>
@@ -139,7 +139,7 @@ function belgilar(rejim) {
     sw(`background:${RANG.yangi}`, 'yangi devor (GKL 100 / bo\'shliqni yopish)'),
     sw(`background:#cfe6f7;border:.3mm solid ${RANG.yangi}`, 'yangi shisha devor (koridor tomoni)'),
     sw(`background:repeating-linear-gradient(45deg,#b9b4a8 0 .4mm,#fff .4mm 1.6mm)`, 'o\'zgarmaydigan qism'),
-    sw(`border:0;border-top:.5mm solid ${RANG.yangi}`, 'yangi eshik (900)'),
+    sw(`border:0;border-top:.5mm solid ${RANG.yangi}`, 'yangi eshik (1 000, suriladi)'),
     sw(`background:${RANG.devorT}`, 'tashqi devor'),
     sw(`background:${RANG.ustun};width:3.2mm`, 'ustun'),
   ];
@@ -192,7 +192,7 @@ function mavjudPanel() {
     <tr><td>Yangi devor, GKL 100</td><td class="r">${v(ish.yangiUz)} m · ≈ ${Math.round(ish.yangiUz * H / 1000)} m²</td></tr>
     <tr><td>Shisha devor (koridor tomoni)</td><td class="r">${v(ish.shishaUz)} m · ≈ ${Math.round(ish.shishaUz * H / 1000)} m²</td></tr>
     <tr><td>Buziladigan devor</td><td class="r">${v(ish.buzUz)} m</td></tr>
-    <tr><td>Yangi eshik, 900 × 2100</td><td class="r">${ish.yangiEshik} ta</td></tr>
+    <tr><td>Yangi eshik, 1 000 × 2 100 (suriladigan)</td><td class="r">${ish.yangiEshik} ta</td></tr>
   </table></div>
   <div><h3>IZOH</h3><p class="izoh">Fotodagi chizmada: «Xonalar ichki qismi loyiha hujjatlarisiz qayta ta'mirlangan». Devorlarni buzish va qurishdan oldin ijaraga beruvchining yozma roziligi olinadi. O'lchamlar fotodan olingan — ish boshlanishidan oldin joyida o'lchanadi.</p></div>`;
 }
@@ -201,7 +201,7 @@ function havoPanel() {
   return tizimPanel();
 }
 
-export function varaqlarHtml(faqat = [1, 2, 3, 4]) {
+export function varaqlarHtml(faqat = [1, 2]) {   // 3-, 4-varaq (rekuperator + split) 16.10 dan bekor — yangi tizim: vent-chizma.mjs
   const plan = rejim => rejaSvg({ rejim, vb: VB, olchamlar: true, olchamMm: true, annotatsiya: rejim === 'jihoz' });
   const varaq = (rejim, panel, nom, n) => `<section class="varaq"><div class="ramka">
       <div class="reja">${plan(rejim)}</div>

@@ -4,6 +4,7 @@ import {
   XIZMAT_JIHOZ, KW_KUNDALIK, KW_SAHNA, PANJARA, sinflar, PARTA, bolaklar, xizmatJihozlari, lokal, KORIDOR_LOGO, DOSKALAR, DOSKA_NOMI, wcJihozlari,
 } from './model.mjs';
 import { eshikSektori, korsatkichlar, xonaMaydoni } from './tekshiruv.mjs';
+import { surmaEshikSvg } from './eshik-svg.mjs';
 import { tizimQatlam, kdQatlam } from './hvac-tizim.mjs';
 
 export const RANG = {
@@ -78,7 +79,7 @@ export function rejaSvg(o = {}) {
   // ---- pol ----
   q.push(rect({ x1: 0, y1: 0, x2: ICHKI.x, y2: ICHKI.y }, `fill="${RANG.pol}"`));
   if (rejim !== 'mavjud') {
-    XONALAR.filter(x => x.tur === 'koridor').forEach(x => q.push(rect(x, `fill="${RANG.koridor}"`)));
+    XONALAR.filter(x => x.tur === 'koridor' || x.tur === 'kladovka').forEach(x => q.push(rect(x, `fill="${RANG.koridor}"`)));
     XONALAR.filter(x => x.tur === 'xizmat' || x.tur === 'koworking').forEach(x => q.push(rect(x, `fill="#f1eee7"`)));
     XONALAR.filter(x => x.qotgan && x.tur !== 'zina').forEach(x => q.push(rect(x, `fill="${RANG.qotgan}"`)));
   } else {
@@ -140,6 +141,7 @@ export function rejaSvg(o = {}) {
   ESHIKLAR.forEach(e => {
     const s = eshikSektori(e);
     const rang = rejim === 'mavjud' && e.holat === 'yangi' ? RANG.yangi : '#333';
+    if (e.surma) { q.push(surmaEshikSvg(e, { rang: rejim === 'mavjud' ? RANG.yangi : '#2f7fbf', k })); return; }
     let leaf, arcEnd, sweep;
     if (e.devor === 'h') {
       leaf = { x: s.ilgak.x, y: e.yuz + e.yon * e.en };
@@ -234,6 +236,9 @@ export function rejaSvg(o = {}) {
       } else if (x.kod === 'K1' || x.kod === 'K2') {
         q.push(matn(10600, cy + 120, x.kod, 360, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
         q.push(matn(11100, cy + 90, `Koridor 1500 · ${xonaMaydoni(x).toFixed(1)} m²`, 210, `text-anchor="start" fill="#555"`));
+      } else if (x.tur === 'kladovka') {
+        q.push(matn(cx + 200, cy - 20, x.kod, 300, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
+        if (!HAVOSIMON) q.push(matn(cx + 200, cy + 260 * k, `kladovka · ${xonaMaydoni(x).toFixed(1)} m²`, 180, `text-anchor="middle" fill="#666"`));
       } else if (x.kod === 'ZL') {
         q.push(matn(4800, 20500, 'ZL', 300, `text-anchor="middle" font-weight="700" fill="${RANG.matn}"`));
       } else if (x.kod === 'ZN1' || x.kod === 'ZN2') {

@@ -90,8 +90,12 @@ export const DERAZALAR = [
 // holat: tashqi | mavjud (saqlanadi) | yangi | buziladi
 const d = (x1, x2, y1, y2, holat, izoh = '') => ({ x1, x2, y1, y2, holat, izoh });
 const sh = (x1, x2, y1, y2) => ({ ...d(x1, x2, y1, y2, 'yangi', 'shisha devor'), shisha: true });
-// koridor oxiridagi GKL devor — markazida yorituvchi PDP Academy logotipi (koridor boshidan ko'rinadi)
-const lg = (x1, x2, y1, y2, koridor) => ({ ...d(x1, x2, y1, y2, 'yangi'), logo: koridor });
+// Koridor oxiri (buyurtmachi va founder, 16.10): K1 va K2 4-xona orqali uning o'rtasigacha davom etadi; u yerda koridor
+// ko'ndalang GKL devor bilan yopiladi, orqasi — kladovka (ombor). Kanalli konditsioner kladovka shifti ustida, devorga taqalib
+// turadi (kladovka uni shovqindan ajratadi): havoni koridor bo'ylab to'g'ri kanal bilan beradi, tashqi havo (30%) — kladovka
+// orqasidagi tashqi devordan. 3-, 4-, 5-xonaning koridor tomoni kladovkagacha shisha.
+export const KLADOVKA = { x: 21000, t: 100, eshik: 800 };   // ko'ndalang devor yuzi (koridor tomoni), qalinligi, eshik eni
+const KX = KLADOVKA.x;
 
 const tashqi = [
   d(-DEVOR.chap, ICHKI.x + DEVOR.ong, -DEVOR.yuqori, 0, 'tashqi'),
@@ -142,22 +146,26 @@ const ichki = [
   // Sinflarning koridor tomonidagi devorlari — shisha; eshik yonidagi ustunchalar (kesaklar) va
   // mavjud devor uchlari kar qoladi.
   // K1 shimoliy devori — eshiklar bilan (1, 2-xona eshigi doska tomonda, 3-xonaniki orqada)
-  sh(6250, 10850, 7700, 7800), d(11750, 12150, 7700, 7800, 'yangi'), sh(12150, 16850, 7700, 7800),
-  d(17750, 18300, 7700, 7800, 'yangi'), d(19200, ICHKI.x, 7700, 7800, 'yangi'),
-  lg(19300, 19400, 7800, 9300, 'K1'),
+  sh(6250, 10750, 7700, 7800), d(11750, 12150, 7700, 7800, 'yangi'), sh(12150, 16750, 7700, 7800),
+  d(17750, 18300, 7700, 7800, 'yangi'), sh(19300, KX, 7700, 7800), d(KX, ICHKI.x, 7700, 7800, 'yangi', 'kladovka'),
   // K1 janubiy devori: XZ4 (call-markaz) va XZ3 (ustozlar) oldi — shisha, eshiklari bilan (XZ4 eshigi o'rtada);
   // 3-o'qdagi mavjud devor uchi va 4-xonaning devorlari GKL
-  sh(6250, 8650, 9300, 9400), sh(9550, 11950, 9300, 9400), d(11950, 12150, 9300, 9400, 'yangi'),
-  sh(12150, 12300, 9300, 9400), sh(13200, 17950, 9300, 9400), d(17950, 18150, 9300, 9400, 'yangi'),
-  d(18150, 19300, 9300, 9400, 'yangi'), d(19300, 19400, 9300, 9400, 'yangi'),
+  sh(6250, 8600, 9300, 9400), sh(9600, 11950, 9300, 9400), d(11950, 12150, 9300, 9400, 'yangi'),
+  sh(12150, 12300, 9300, 9400), sh(13300, 17950, 9300, 9400), d(17950, 18150, 9300, 9400, 'yangi'),
+  sh(18150, KX, 9300, 9400), d(KX, ICHKI.x, 9300, 9400, 'yangi', 'kladovka'),
   // K2 shimoliy devori: XZ1 (offline sotuv) va XZ2 (admin) oldi — shisha, eshiklari o'rtada (buyurtmachi, 14.10)
-  sh(6250, 8650, 15000, 15100), sh(9550, 11950, 15000, 15100), d(11950, 12150, 15000, 15100, 'yangi'),
-  sh(12150, 14600, 15000, 15100), sh(15500, 17950, 15000, 15100), d(17950, 18250, 15000, 15100, 'yangi'),
-  // 4-xona: eshik K2 shimoliy devorida (orqa tomonda, shisha); K2 uchidagi devor GKL, logotip bilan
-  d(19150, 19400, 15000, 15100, 'yangi'), lg(19300, 19400, 15100, 16600, 'K2'),
+  sh(6250, 8600, 15000, 15100), sh(9600, 11950, 15000, 15100), d(11950, 12150, 15000, 15100, 'yangi'),
+  sh(12150, 14550, 15000, 15100), sh(15550, 17950, 15000, 15100), d(17950, 18250, 15000, 15100, 'yangi'),
+  // 4-xona: eshik K2 shimoliy devorida (orqa tomonda); devori kladovkagacha shisha
+  sh(19250, KX, 15000, 15100), d(KX, ICHKI.x, 15000, 15100, 'yangi', 'kladovka'),
   // K2 janubiy devori (5–7-xonalar) — eshiklar bilan
-  d(6150, 6350, 16600, 16700, 'yangi'), sh(7250, 11950, 16600, 16700), d(11950, 12350, 16600, 16700, 'yangi'),
-  sh(13250, 17950, 16600, 16700), d(17950, 18300, 16600, 16700, 'yangi'), d(19200, ICHKI.x, 16600, 16700, 'yangi'),
+  d(6150, 6350, 16600, 16700, 'yangi'), sh(7350, 11950, 16600, 16700), d(11950, 12350, 16600, 16700, 'yangi'),
+  sh(13350, 17950, 16600, 16700), d(17950, 18300, 16600, 16700, 'yangi'), sh(19300, KX, 16600, 16700), d(KX, ICHKI.x, 16600, 16700, 'yangi', 'kladovka'),
+  // kladovkalar: koridor oxiridagi ko'ndalang devor, o'rtasida eshik (logoli variantda — yashirin, devor bilan bir xil qoplama)
+  ...[[7800, 9300], [15100, 16600]].flatMap(([y1, y2]) => {
+    const m = (y1 + y2) / 2, h = KLADOVKA.eshik / 2;
+    return [d(KX, KX + KLADOVKA.t, y1, m - h, 'yangi', 'kladovka'), d(KX, KX + KLADOVKA.t, m + h, y2, 'yangi', 'kladovka')];
+  }),
 ];
 
 export const DEVORLAR = [...tashqi, ...qotgan, ...ichki];
@@ -175,9 +183,12 @@ export const PANJARA = [
 // och fon uchun), ikki yonida 250 mm mox polosalari va yashil LED; shiftdan devorga egilib tushadigan yog'och reykali
 // kanopi (~2.4 m); koridor shiftida ko'ndalang chiziqli chiroqlar va chetlarida yashil LED — 3D (blender2.py, KOR_OXIR).
 // en — logotip eni, bal — balandligi, z — markazi poldan, mm.
-export const KORIDOR_LOGO = DEVORLAR.filter(w => w.logo).map(w => ({
-  koridor: w.logo, x: w.x1, y1: w.y1, y2: w.y2, en: 1200, bal: 352, z: 1650, panel: { en: 1500, z1: 0, z2: H },
+// 16.10: koridor oxiri endi kladovkaning ko'ndalang devori (x = KLADOVKA.x). Buyurtmachi: ikki variant — logoli (marmar
+// panel, mox, reykalar; kladovka eshigi yashirin, panel bilan bir xil) va logosiz (oddiy oq devor, oddiy eshik).
+export const KORIDOR_LOGO = [['K1', 7800, 9300], ['K2', 15100, 16600]].map(([koridor, y1, y2]) => ({
+  koridor, x: KX, y1, y2, en: 1200, bal: 352, z: 1650, panel: { en: 1500, z1: 0, z2: H },
 }));
+export const KORIDOR_OXIRI_VARIANT = ['logoli', 'logosiz'];
 // E'lonlar doskasi va e'tirof doskasi (faxriylar, oy o'quvchisi nomzodlari). Buyurtmachi (14.10): xizmat xonalarining
 // oldi shisha — koridorlarda kar devor qolmadi, doskalar koworkingning shimoliy (mavjud) devoriga ko'chirildi:
 // K1 koridoriga kirishda va koworkingdan ko'rinadi. y — devor yuzi, yon — xona qaysi tomonda (−1: yuqorida, +1: pastda); z1..z2 — balandlik.
@@ -192,19 +203,31 @@ export const DOSKA_NOMI = { elon: "E'lonlar", etirof: "E'tirof doskasi" };
 // yuz — eshik polotnosi ochiladigan tomondagi devor yuzasi koordinatasi; yon: +1/-1 ochilish yo'nalishi.
 // ilgak: 'a' | 'b' — qaysi uchida ilgak. Yangi eshiklarning hammasi shisha (buyurtmachi).
 const e = (kod, devor, a, b, yuz, yon, ilgak, holat = 'yangi') => ({ kod, devor, a, b, yuz, yon, ilgak, holat, en: b - a, shisha: holat === 'yangi' });
+// Founder (16.10): koridor eshiklari 1 m, yonga suriladigan (Damas eshigi kabi) — barg xona ichida, devor bo'ylab
+// suriladi (park: 'a' — x kichik tomonga, 'b' — katta tomonga); ilgak yo'q. yuz — xona tomonidagi devor yuzi, yon — xona tomoni.
+const se = (kod, a, yuz, yon, park) => ({ ...e(kod, 'h', a, a + 1000, yuz, yon, park), surma: true, park });
+export const SURMA = { barg: 40, oraliq: 15, ustma: 30 };   // barg qalinligi, devordan oraliq, ochiq o'rin chetiga kirishi, mm
+// suriladigan barg (rejada): yopiq yoki ochiq holat — to'rtburchak
+export const surmaBarg = (e, ochiq = false) => {
+  const s = e.park === 'a' ? -1 : 1, d = ochiq ? s * e.en : 0;
+  const y1 = e.yuz + e.yon * SURMA.oraliq, y2 = e.yuz + e.yon * (SURMA.oraliq + SURMA.barg);
+  return { x1: e.a - SURMA.ustma + d, x2: e.b + SURMA.ustma + d, y1: Math.min(y1, y2), y2: Math.max(y1, y2) };
+};
 export const ESHIKLAR = [
-  e('SR1', 'h', 10850, 11750, 7700, -1, 'b'),
-  e('SR2', 'h', 16850, 17750, 7700, -1, 'b'),
-  e('SR3', 'h', 18300, 19200, 7700, -1, 'a'),
-  e('SR4', 'h', 18250, 19150, 15000, -1, 'a'),
-  e('SR5', 'h', 18300, 19200, 16700, +1, 'a'),
-  e('SR6', 'h', 12350, 13250, 16700, +1, 'a'),
-  e('SR7', 'h', 6350, 7250, 16700, +1, 'a'),
+  se('SR1', 10750, 7700, -1, 'a'),
+  se('SR2', 16750, 7700, -1, 'a'),
+  se('SR3', 18300, 7700, -1, 'b'),
+  se('SR4', 18250, 15000, -1, 'b'),
+  se('SR5', 18300, 16700, +1, 'b'),
+  se('SR6', 12350, 16700, +1, 'b'),
+  se('SR7', 6350, 16700, +1, 'b'),
   // XZ1 (sotuv), XZ2 (admin) — K2 tomonda, old tomonining o'rtasida (buyurtmachi, 14.10); XZ3 — joyida; XZ4 (call-markaz) — K1 tomonda, o'rtada
-  e('XZ1', 'h', 8650, 9550, 15000, -1, 'a'),
-  e('XZ2', 'h', 14600, 15500, 15000, -1, 'a'),
-  e('XZ3', 'h', 12300, 13200, 9400, +1, 'a'),
-  e('XZ4', 'h', 8650, 9550, 9400, +1, 'a'),
+  se('XZ1', 8600, 15000, -1, 'b'),
+  se('XZ2', 14550, 15000, -1, 'b'),
+  se('XZ3', 12300, 9400, +1, 'b'),
+  se('XZ4', 8600, 9400, +1, 'b'),
+  // kladovka eshiklari (koridor oxirida, 800, kladovka ichiga ochiladi; logoli variantda yashirin)
+  ...[['KL1', 8150], ['KL2', 15450]].map(([kod, a]) => ({ ...e(kod, 'v', a, a + KLADOVKA.eshik, KX + KLADOVKA.t, +1, 'a'), shisha: false, kladovka: true })),
   e('X12', 'h', 4550, 5450, 21250, -1, 'b', 'mavjud'),
   e('SU6', 'h', 4450, 5150, 6500, +1, 'a', 'mavjud'),
   e('ZN1', 'v', 5300, 6100, 3100, +1, 'b', 'mavjud'),
@@ -235,16 +258,14 @@ const YON_TOR = { bloklar: [1, 1, 1, 1], yolak: 600, doska: 1850, qadam: 1300, q
 export const XONALAR = [
   { kod: 'SR1', nomi: 'Study Room 1', tur: 'sinf', x1: 6250, y1: 0, x2: 11950, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR1', eskiRaqam: '8', koridor: 'K1', sinf: YON_TOR },
   { kod: 'SR2', nomi: 'Study Room 2', tur: 'sinf', x1: 12150, y1: 0, x2: 17950, y2: 7700, doska: 'ong', deraza: 'yuqori', eshik: 'SR2', eskiRaqam: '9', koridor: 'K1', sinf: YON_TOR },
-  // 3-xona eshigi faqat K1 uchida (x < 19300) bo'lishi mumkin. Buyurtmachi (09.10): doska va ustoz joyi kirish tomonida —
+  // 3-xona eshigi K1 da (koridor 16.10 dan 4-xona o'rtasigacha davom etadi). Buyurtmachi (09.10): doska va ustoz joyi kirish tomonida —
   // chap (2-xona bilan umumiy) devorda; eshik doska oldidagi bo'sh zonaga ochiladi, 4 + 4 + 4 parta sig'adi.
   // Deraza bu xonada o'quvchilarning o'ng tomonida qoladi.
   { kod: 'SR3', nomi: 'Study Room 3', tur: 'sinf', x1: 18150, y1: 0, x2: ICHKI.x, y2: 7700, doska: 'chap', deraza: 'yuqori', eshik: 'SR3', eskiRaqam: '10', koridor: 'K1', sinf: YON_TOR },
-  // 4-xona: doska o'ng asosiy (tashqi) devorda. 1–2-qatorlar butun uzunlik bo'ylab (4 parta),
-  // 3-qator faqat keng qismda (2 parta) — L shaklining tor uchlari 4.5 m chuqur.
-  { kod: 'SR4', nomi: 'Study Room 4', tur: 'sinf', x1: 18150, y1: 7800, x2: ICHKI.x, y2: 16600, doska: 'ong', eshik: 'SR4', eskiRaqam: '10 va 15 (o\'rta qism)', koridor: 'K2',
-    bolaklar: [{ x1: 19400, x2: ICHKI.x, y1: 7800, y2: 9400 }, { x1: 18150, x2: ICHKI.x, y1: 9400, y2: 15000 }, { x1: 19400, x2: ICHKI.x, y1: 15000, y2: 16600 }],
-    kontur: [[19400, 7800], [ICHKI.x, 7800], [ICHKI.x, 16600], [19400, 16600], [19400, 15000], [18150, 15000], [18150, 9400], [19400, 9400]],
-    sinf: { ...YON_TOR, sxema: [[1, 1, 1, 1], [1, 1, 1, 1], [0, 1, 1, 0]] } },
+  // 4-xona (16.10): koridorlar uning orqali davom etgani uchun kichraydi — to'rtburchak 5.75 × 5.6 m. Doska o'ng asosiy (tashqi)
+  // devorda; 5.6 m devor bo'ylab 3 ta ikki kishilik parta (oralarida 60 sm yo'lak), 3 qator — 18 o'rin.
+  { kod: 'SR4', nomi: 'Study Room 4', tur: 'sinf', x1: 18150, y1: 9400, x2: ICHKI.x, y2: 15000, doska: 'ong', eshik: 'SR4', eskiRaqam: '10 va 15 (o\'rta qism)', koridor: 'K2',
+    sinf: { ...YON_TOR, bloklar: [1, 1, 1] } },
   { kod: 'SR5', nomi: 'Study Room 5', tur: 'sinf', x1: 18150, y1: 16700, x2: ICHKI.x, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR5', eskiRaqam: '15', koridor: 'K2', sinf: YON_TOR },
   { kod: 'SR6', nomi: 'Study Room 6', tur: 'sinf', x1: 12150, y1: 16700, x2: 17950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR6', eskiRaqam: '14', koridor: 'K2', sinf: YON_TOR },
   { kod: 'SR7', nomi: 'Study Room 7', tur: 'sinf', x1: 6150, y1: 16700, x2: 11950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR7', eskiRaqam: '13', koridor: 'K2', sinf: YON_TOR },
@@ -255,8 +276,10 @@ export const XONALAR = [
   { kod: 'XZ4', nomi: 'Call-markaz va online sotuv', qisqa: 'call-markaz', odam: 6, tur: 'xizmat', x1: 6250, y1: 9400, x2: 11950, y2: 12200, eshik: 'XZ4', eskiRaqam: '8' },
   { kod: 'KW', nomi: 'Koworking / Tadbirlar zali', tur: 'koworking', x1: 0, y1: 6500, x2: 5950, y2: 18350, eskiRaqam: '7, 11' },
   { kod: 'X12', nomi: 'CEO xonasi', qisqa: 'CEO', odam: 5, tur: 'ofis', x1: 0, y1: 21450, x2: 5950, y2: ICHKI.y, eshik: 'X12', eskiRaqam: '12', qotgan: true },
-  { kod: 'K1', nomi: 'Koridor 1500', tur: 'koridor', x1: 5950, y1: 7800, x2: 19300, y2: 9300 },
-  { kod: 'K2', nomi: 'Koridor 1500', tur: 'koridor', x1: 5950, y1: 15100, x2: 19300, y2: 16600 },
+  { kod: 'K1', nomi: 'Koridor 1500', tur: 'koridor', x1: 5950, y1: 7800, x2: KX, y2: 9300 },
+  { kod: 'K2', nomi: 'Koridor 1500', tur: 'koridor', x1: 5950, y1: 15100, x2: KX, y2: 16600 },
+  { kod: 'KL1', nomi: 'Kladovka (K1 oxiri; ustida konditsioner KK1)', qisqa: 'kladovka', tur: 'kladovka', x1: KX + KLADOVKA.t, y1: 7800, x2: ICHKI.x, y2: 9300, eshik: 'KL1' },
+  { kod: 'KL2', nomi: 'Kladovka (K2 oxiri; ustida konditsioner KK2)', qisqa: 'kladovka', tur: 'kladovka', x1: KX + KLADOVKA.t, y1: 15100, x2: ICHKI.x, y2: 16600, eshik: 'KL2' },
   { kod: 'ZL', nomi: 'Kirish zali', tur: 'koridor', x1: 3650, y1: 18350, x2: 5950, y2: 21250 },
   { kod: 'ZN1', nomi: 'Zina 1 (zaxira)', tur: 'zina', x1: 0, y1: 0, x2: 3000, y2: 6300, qotgan: true, chizmaMaydon: 18.79 },
   { kod: 'ZN2', nomi: 'Zina 2 (asosiy)', tur: 'zina', x1: 0, y1: 18450, x2: 3650, y2: 21250, qotgan: true },
