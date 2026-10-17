@@ -69,6 +69,7 @@ export function renderSvg(o = {}) {
   const id = `t${++N}`;
   const vb = o.vb || { x1: -900, y1: -1700, x2: 26000, y2: 25300 };
   const kwRejim = o.kwRejim || 'kundalik';
+  const jihoz = o.jihoz !== false;     // false — mebelsiz (stol, stul, divan, shkaf, o'simlik) bo'sh xonalar rejasi
   const k = o.k || 1;
   const q = [defs(id)];
   const rect = (r, a) => `<rect x="${f(r.x1)}" y="${f(r.y1)}" width="${f(r.x2 - r.x1)}" height="${f(r.y2 - r.y1)}" ${a}/>`;
@@ -109,14 +110,14 @@ export function renderSvg(o = {}) {
     for (let t = (gor ? r.x1 : r.y1) + 600; t < (gor ? r.x2 : r.y2); t += 600)
       j.push(gor ? `<line x1="${t}" y1="${r.y1}" x2="${t}" y2="${r.y2}" stroke="#9c7649" stroke-width="7"/>` : `<line x1="${r.x1}" y1="${t}" x2="${r.x2}" y2="${t}" stroke="#9c7649" stroke-width="7"/>`);
   };
-  sinf.forEach(x => {
+  if (jihoz) sinf.forEach(x => {
     const orqa = DOSKA_BURISH[x.doska];   // o'quvchi doskaga qaraydi, o'qituvchi — o'quvchilarga
     x.j.partalar.forEach(p => j.push(use('parta', ...markaz(p), orqa)));
     x.j.stullar.forEach(p => j.push(use('stul', ...markaz(p), orqa)));
     j.push(use('ustozStol', ...markaz(x.j.ustozStoli), orqa + 180));
     j.push(use('ofisStul', ...markaz(x.j.ustozStuli), orqa + 180));
   });
-  XIZMAT_JIHOZ.forEach(z => {
+  if (jihoz) XIZMAT_JIHOZ.forEach(z => {
     z.stollar.forEach(st => {
       j.push(rect(st, `fill="url(#${id}yogT)" stroke="#5f4630" stroke-width="8"`));
       const [cx, cy] = markaz(st);
@@ -134,7 +135,7 @@ export function renderSvg(o = {}) {
     z.divanlar.forEach(r => j.push(rect(r, `rx="100" fill="#7d858f"`), rect({ ...r, x1: r.x2 - 160 }, `rx="70" fill="#626a74"`)));
   });
   // koworking / tadbirlar zali
-  if (kwRejim === 'kundalik') {
+  if (!jihoz) { /* mebelsiz */ } else if (kwRejim === 'kundalik') {
     const kw = KW_KUNDALIK;
     kw.stollar.forEach(r => j.push(rect(r, `rx="60" fill="url(#${id}yogT)" stroke="#5f4630" stroke-width="10"`)));
     kw.dumaloq.forEach(d => j.push(`<circle cx="${d.cx}" cy="${d.cy}" r="${d.r}" fill="url(#${id}yog)" stroke="#a88155" stroke-width="10"/>`));
@@ -163,7 +164,7 @@ export function renderSvg(o = {}) {
   // koworking sahnasi (XZ1 devori): ekran va logotip shu yerda (ikkala rejimda)
   q.push(sahnaElementlar(k, '', { yozuv: false }));
   // tadbir rejimida koworkingdagi o'rtadagi o'simlik olinadi (stullar orasidagi yo'lakda qoladi)
-  const osim = osimliklar().filter(([a, b]) => !(kwRejim === 'tadbir' && a === 3900 && b === 13950));
+  const osim = jihoz ? osimliklar().filter(([a, b]) => !(kwRejim === 'tadbir' && a === 3900 && b === 13950)) : [];
   q.push(`<g filter="url(#${id}soya)">${osim.map(([a, b]) => use('osimlik', a, b)).join('')}</g>`);
 
   // ---- eshiklar ----
@@ -206,7 +207,32 @@ export function renderSvg(o = {}) {
   const t = (x, y, s, size, a = '') => `<text x="${f(x)}" y="${f(y)}" font-size="${size * k}" stroke-width="${size * k * 0.28}" text-anchor="middle" ${a}>${s}</text>`;
   const B = 'font-weight="700" fill="#262626"', R = 'fill="#262626"', G = 'fill="#4b4b4b"';
   const L = [];
-  if (o.yozuv !== false) {
+  const olch = x => `${((x.x2 - x.x1) / 1000).toFixed(2)} × ${((x.y2 - x.y1) / 1000).toFixed(2)} m`;
+  if (o.yozuv !== false && !jihoz) {
+    // mebelsiz reja: nomi, ichki o'lchami va maydoni — xona markazida
+    const kor = Object.fromEntries(korsatkichlar().map(z => [z.kod, z]));
+    sinf.forEach(x => {
+      const cx = (x.x1 + x.x2) / 2, cy = (x.y1 + x.y2) / 2;
+      L.push(t(cx, cy - 250, XONA_NOMI[x.kod], 520, B), t(cx, cy + 200, olch(x), 300, R), t(cx, cy + 560, `${kor[x.kod].A.toFixed(1)} m²`, 300, R));
+    });
+    XONALAR.filter(x => x.tur === 'xizmat').forEach(x => {
+      const cx = (x.x1 + x.x2) / 2, cy = (x.y1 + x.y2) / 2;
+      const nom = { XZ1: 'Offline sotuv', XZ2: 'Admin', XZ3: 'Ustozlar xonasi', XZ4: 'Call-markaz' }[x.kod];
+      L.push(t(cx, cy - 120, nom, 330, B), t(cx, cy + 250, `${olch(x)} · ${xonaMaydoni(x).toFixed(1)} m²`, 230, R));
+    });
+    const kwx = XONALAR.find(x => x.kod === 'KW'), x12 = XONALAR.find(x => x.kod === 'X12');
+    L.push(t(2975, 11900, 'Koworking /', 380, B), t(2975, 12350, 'Tadbirlar zali', 380, B), t(2975, 12800, `${olch(kwx)} · ${xonaMaydoni(kwx).toFixed(1)} m²`, 260, R));
+    L.push(t(2975, 22700, 'CEO xonasi', 380, B), t(2975, 23150, `${olch(x12)} · ${xonaMaydoni(x12).toFixed(1)} m²`, 260, R));
+    L.push(t(1500, 5150, 'Zinapoya', 380, B), t(1500, 5650, '18.79 m²', 330, R));
+    L.push(t(4500, 2560, 'Ayollar WC', 250, B), t(4500, 2860, '2 kabina · tambur', 200, R));
+    L.push(t(4500, 4900, "O'tish yo'lagi", 250, B), t(4500, 5200, '3-qavatga (ZN1)', 210, R));
+    L.push(t(12600, 8680, 'Koridor · 1.50 m', 320, 'font-weight="700" fill="#3a3a3a"'), t(12600, 15980, 'Koridor · 1.50 m', 320, 'font-weight="700" fill="#3a3a3a"'));
+    L.push(t(4800, 20050, 'Kirish zali', 300, 'font-weight="700" fill="#3a3a3a"'), t(2600, 20750, 'Zinapoya (kirish)', 250, B));
+    XONALAR.filter(x => x.tur === 'kladovka').forEach(x => L.push(t((x.x1 + x.x2) / 2 + 250, (x.y1 + x.y2) / 2 - 20, 'Kladovka', 260, 'font-weight="700" fill="#3a3a3a"'),
+      t((x.x1 + x.x2) / 2 + 250, (x.y1 + x.y2) / 2 + 280, `${olch(x)} · ${xonaMaydoni(x).toFixed(1)} m²`, 175, G)));
+    L.push(`<line x1="3750" y1="19200" x2="4550" y2="19200" stroke="#c0392b" stroke-width="45"/><path d="M4450,19030 L4700,19200 L4450,19370 Z" fill="#c0392b"/>`);
+    L.push(t(4150, 18900, 'KIRISH', 230, 'font-weight="700" fill="#c0392b"'));
+  } else if (o.yozuv !== false) {
     const kor = Object.fromEntries(korsatkichlar().map(z => [z.kod, z]));
     sinf.forEach(x => {
       const K = kor[x.kod];
