@@ -175,6 +175,9 @@ function varaq1Svg() {
     zanjir([16600, 18250, 18650, 21250, 21450], 6450, false, k, Zo),
     zanjir([6500, 7400, 7800, 9300, 10000, 12100], 6550, false, k, Zo),
     zanjir([9400, 10300, 12100], 12450, false, k, Zo), zanjir([9400, 10400, 12100], 18450, false, k, Zo));
+  // 4-xona doska devori (17.10): U6 ustuni bilan tekis GKL qoplama 100
+  q.push(zanjir([18150, 18250], 13050, true, k, { tomon: -1, size: 1.9 }),
+    T(18400, 12950, "GKL qoplama 100 — doska devori, U6 bilan tekis", 150, 'fill="#9a5a00" font-weight="700"'));
   // zina panjarasi: uzunligi va yozuv
   PANJARA.forEach(p => q.push(zanjir([p.x1, p.x2], p.y - 380, true, k, { tomon: -1, size: 1.9 }),
     T((p.x1 + p.x2) / 2, p.y + 420, `${p.kod}: zina panjarasi, h ${son(p.bal)}`, 170, 'text-anchor="middle" font-weight="700" fill="#2b2f36"')));
@@ -317,6 +320,7 @@ function html() {
       <li><b>Shisha devor:</b> poldan ${son(BAL.shisha)} mm gacha shisha (laminatlangan, kamida 2 × 6 mm yoki 10 mm toblangan), alyumin profilda; ${son(BAL.shisha)}–${son(H)} mm — GKL (shisha ustida). ${son(BAL.matDan)}–${son(BAL.matGacha)} mm da matli plyonka.</li>
       <li><b>Eshiklar (founder, 16.10):</b> shisha, ${son(1000)} × ${son(BAL.eshik)} mm, <b>yonga suriladigan</b> (Damas eshigi kabi): barg xona ichida, yuqori relsda devor bo'ylab suriladi, ochilganda yonidagi shisha oldida turadi; ustida ${son(BAL.shisha - BAL.eshik)} mm qo'zg'almas shisha. Kladovka eshiklari — ${son(KLADOVKA.eshik)} × ${son(BAL.eshik)}, ichkariga ochiladi. Jadvali — 2-varaqda.</li>
       <li><b>Bo'shliqlarni yopish</b> (eski eshik va o'tish joylari, 1-varaqdagi to'q sariq bo'laklar) — GKL, mavjud devor qalinligida (200–300 mm), ikki tomoni tekislanadi.</li>
+      <li><b>4-xona doska devori (17.10):</b> g'arbiy mavjud devorga GKL qoplama 100 mm (profil 75 + 12.5 mm ikki qatlam), U6 ustuni yuzi bilan tekis — interaktiv doska va bambuk panel shu yuzaga; doska eshik tomonida.</li>
     </ul>
     <div class="ogoh"><b>Buyurtmachi va founder (16.10):</b> K1 va K2 koridorlari 4-xona orqali uning o'rtasigacha (x ${son(KLADOVKA.x)}) davom etadi; oxirida ko'ndalang GKL devor va eshik — orqasi <b>kladovka</b> (KL1, KL2), ustida kanalli konditsioner. 3-, 4-, 5-xonaning koridor tomoni kladovkagacha shisha; 4-xona kichrayadi (5.75 × 5.6 m). Barcha 11 eshik — 1 m, suriladigan.<br><b>Buyurtmachi qarorlari (14.10):</b> (1) xizmat xonalari zonasidagi <b>eski o'rta devor (C o'qi) buzilmaydi</b> — 2 × 2 xona: K2 tomonda XZ1 sotuv va XZ2 admin (yonma-yon, eshiklari o'rtada), K1 tomonda XZ4 call-markaz va XZ3 ustozlar; koridor tomoni shisha. (2) <b>Kirishdagi ZN2 zinasi bilan koworking orasidagi devor buziladi</b> — o'rniga zina tuynugi chetida metall panjara P1 (h ${son(PANJARA[0].bal)}, uzunligi ${son(PANJARA[0].x2 - PANJARA[0].x1)}).</div>
     <h3>Ishni boshlashdan oldin joyida tekshiriladi</h3>
