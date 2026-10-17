@@ -9,6 +9,7 @@ import { createRequire } from 'node:module';
 import { varaqlarHtml } from './varaqlar.mjs';
 import { izohHtml } from './izoh.mjs';
 import { taqdimotHtml, boshRejaHtml } from './taqdimot.mjs';
+import { rangsizRejaHtml } from './rangsiz-reja.mjs';
 import { tekshiruv } from './tekshiruv.mjs';
 import { LOYIHA } from './model.mjs';
 import { qavat3Html, tekshiruv3 } from './qavat3.mjs';
@@ -100,6 +101,11 @@ await tq.setContent(boshRejaHtml(), { waitUntil: 'load' });
 const bsNom = `Xadra_2-qavat_reja_mebelsiz_${LOYIHA.versiya}`;
 await tq.pdf({ path: join(CHIQISH, `${bsNom}.pdf`), width: '297mm', height: '420mm', printBackground: true, preferCSSPageSize: true });
 await (await tq.$('section.varaq')).screenshot({ path: join(CHIQISH, `${bsNom}.png`) });
+// 4b. Rangsiz (oq-qora) reja — xonalarga bo'linishi, mebelsiz
+await tq.setContent(rangsizRejaHtml(), { waitUntil: 'load' });
+const rsNom = `Xadra_2-qavat_reja_rangsiz_${LOYIHA.versiya}`;
+await tq.pdf({ path: join(CHIQISH, `${rsNom}.pdf`), width: '297mm', height: '420mm', printBackground: true, preferCSSPageSize: true });
+await (await tq.$('section.varaq')).screenshot({ path: join(CHIQISH, `${rsNom}.png`) });
 await tq.close();
 
 // 5. 3-qavat rejasi (A3 landshaft) — PDF va PNG
