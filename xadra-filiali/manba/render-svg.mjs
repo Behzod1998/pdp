@@ -59,7 +59,7 @@ const DOSKA_BURISH = { yuqori: 0, past: 180, ong: 90, chap: -90 };
 // o'simliklar: 4-xona, ofis xonalari va koworkingda (yon devordagi doskali sinflarda joy tor)
 function osimliklar() {
   const r = [];
-  r.push([23550, 9750], [23550, 14650]);
+  r.push([19700, 14650]);   // 4-xona: eshik yonidagi bo'sh burchak (17.10)
   r.push([8400, 12750], [15050, 12750], [12500, 11850], [11600, 9800]);   // XZ1, XZ2, XZ3, XZ4
   r.push([3900, 13950], [3700, 17650], [5650, 24050], KW_SAHNA.osimlik);
   return r;
@@ -158,7 +158,7 @@ export function renderSvg(o = {}) {
   // doskalar va ekran
   sinf.forEach(x => {
     const L = lokal(x), dl = L.T(x.j.doska);
-    q.push(rect(L.R(dl.u1, dl.u2, 0, 90), `fill="#fdfdfd" stroke="#8d949c" stroke-width="12"`));
+    q.push(rect(L.R(dl.u1, dl.u2, dl.v1, dl.v1 + 90), `fill="#fdfdfd" stroke="#8d949c" stroke-width="12"`));
   });
   // koworking sahnasi (XZ1 devori): ekran va logotip shu yerda (ikkala rejimda)
   q.push(sahnaElementlar(k, '', { yozuv: false }));
@@ -211,7 +211,7 @@ export function renderSvg(o = {}) {
     sinf.forEach(x => {
       const K = kor[x.kod];
       // yozuv doska oldidagi bo'sh zonada (doska va 1-qator orasida), o'qituvchi stoli bilan eshik oralig'ida
-      const p = lokal(x).G(x.j.W / 2, x.j.s.doska / 2);
+      const p = lokal(x).G(x.j.W / 2, (x.doskaOfset || 0) + x.j.s.doska / 2);
       L.push(t(p.x, p.y - 300 * k, XONA_NOMI[x.kod], 440, B));
       L.push(t(p.x, p.y + 100 * k, `${K.A.toFixed(1)} m²`, 300, R));
       L.push(t(p.x, p.y + 450 * k, `${K.orin} o'rin`, 300, R));

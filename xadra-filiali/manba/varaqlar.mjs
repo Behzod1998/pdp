@@ -112,7 +112,7 @@ function partaQoidasi() {
     qatorda ${n} parta (${n * PARTA.kishi} o'rin) · yo'lak ${t.yolak} · deraza tomonda devorgacha ${t.oynaChekka}<br>
     ${t.qatorlar} qator · qadam ${son(t.qadam)} (parta ${PARTA.chuq} + stul va o'tish ${t.qadam - PARTA.chuq})<br>
     doskadan 1-partagacha ${son(t.doska)} · oxirgi parta ${son(t.doska + (t.qatorlar - 1) * t.qadam + PARTA.chuq)} · sig'im ${n * PARTA.kishi * t.qatorlar}<br>
-    <span class="qizil">ISTISNO: SR3 — doska va ustoz joyi kirish tomonida (buyurtmachi), deraza o'quvchilarning o'ng tomonida; SR4 — 4 + 4 + 2 parta, 20 o'rin (doska o'ng tashqi devorda)</span><br>
+    <span class="qizil">ISTISNO: SR3 — doska va ustoz joyi kirish tomonida (buyurtmachi), deraza o'quvchilarning o'ng tomonida; SR4 — 3 × 3 parta, 18 o'rin, doska eshik tomonida (g'arbiy devor, U6 bilan tekis GKL qoplama 100), doskadan 1-partagacha 1 800</span><br>
     <span style="color:#777">Beruniy standarti: parta ${STANDART.parta.eni} × ${STANDART.parta.chuq} (1 kishilik), 2 + 2 + 2 × ${STANDART.qatorlar} qator, qadam ${son(STANDART.qadam)}, doskadan ${son(STANDART.doska)}, oxirgi ${son(STANDART.oxirgi)}</span><br>
     ustundan: oldi/orqa 500 · yon 0. Doska 3000 yon (kar) devorda, deraza o'quvchilarning chap tomonida (SR3 dan tashqari); eshiklar 1 m, suriladigan (barg xona ichida).<br>
     K1, K2 koridorlari 1500. Yangi devorlar — GKL 100; sinflarning koridor tomoni — akustik shisha.<br>

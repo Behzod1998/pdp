@@ -92,8 +92,8 @@ const d = (x1, x2, y1, y2, holat, izoh = '') => ({ x1, x2, y1, y2, holat, izoh }
 const sh = (x1, x2, y1, y2) => ({ ...d(x1, x2, y1, y2, 'yangi', 'shisha devor'), shisha: true });
 // Koridor oxiri (buyurtmachi va founder, 16.10): K1 va K2 4-xona orqali uning o'rtasigacha davom etadi; u yerda koridor
 // ko'ndalang GKL devor bilan yopiladi, orqasi — kladovka (ombor). Kanalli konditsioner kladovka shifti ustida, devorga taqalib
-// turadi (kladovka uni shovqindan ajratadi): havoni koridor bo'ylab to'g'ri kanal bilan beradi, tashqi havo (30%) — kladovka
-// orqasidagi tashqi devordan. 3-, 4-, 5-xonaning koridor tomoni kladovkagacha shisha.
+// turadi (kladovka uni shovqindan ajratadi): havoni koridor bo'ylab to'g'ri kanal bilan beradi, tashqi havo (30%) — 3-xonaning
+// ko'cha tomonidan (vent-chizma.mjs). 3-, 4-, 5-xonaning koridor tomoni kladovkagacha shisha.
 export const KLADOVKA = { x: 21000, t: 100, eshik: 800 };   // ko'ndalang devor yuzi (koridor tomoni), qalinligi, eshik eni
 const KX = KLADOVKA.x;
 
@@ -153,6 +153,8 @@ const ichki = [
   sh(6250, 8600, 9300, 9400), sh(9600, 11950, 9300, 9400), d(11950, 12150, 9300, 9400, 'yangi'),
   sh(12150, 12300, 9300, 9400), sh(13300, 17950, 9300, 9400), d(17950, 18150, 9300, 9400, 'yangi'),
   sh(18150, KX, 9300, 9400), d(KX, ICHKI.x, 9300, 9400, 'yangi', 'kladovka'),
+  // 4-xona doska devori (17.10): U6 ustuni bilan tekis GKL qoplama, 100 mm (ustun ikki tomonida)
+  d(18150, 18250, 9400, 12100, 'yangi', 'doska devori qoplamasi'), d(18150, 18250, 12500, 15000, 'yangi', 'doska devori qoplamasi'),
   // K2 shimoliy devori: XZ1 (offline sotuv) va XZ2 (admin) oldi — shisha, eshiklari o'rtada (buyurtmachi, 14.10)
   sh(6250, 8600, 15000, 15100), sh(9600, 11950, 15000, 15100), d(11950, 12150, 15000, 15100, 'yangi'),
   sh(12150, 14550, 15000, 15100), sh(15550, 17950, 15000, 15100), d(17950, 18250, 15000, 15100, 'yangi'),
@@ -264,8 +266,10 @@ export const XONALAR = [
   { kod: 'SR3', nomi: 'Study Room 3', tur: 'sinf', x1: 18150, y1: 0, x2: ICHKI.x, y2: 7700, doska: 'chap', deraza: 'yuqori', eshik: 'SR3', eskiRaqam: '10', koridor: 'K1', sinf: YON_TOR },
   // 4-xona (16.10): koridorlar uning orqali davom etgani uchun kichraydi — to'rtburchak 5.75 × 5.6 m. Doska o'ng asosiy (tashqi)
   // devorda; 5.6 m devor bo'ylab 3 ta ikki kishilik parta (oralarida 60 sm yo'lak), 3 qator — 18 o'rin.
-  { kod: 'SR4', nomi: 'Study Room 4', tur: 'sinf', x1: 18150, y1: 9400, x2: ICHKI.x, y2: 15000, doska: 'ong', eshik: 'SR4', eskiRaqam: '10 va 15 (o\'rta qism)', koridor: 'K2',
-    sinf: { ...YON_TOR, bloklar: [1, 1, 1] } },
+  // 4-xona (17.10): doska eshik tomonida — g'arbiy devorda; U6 ustuni devordan 100 mm chiqadi, shuning uchun doska devori
+  // ustun bilan tekis GKL qoplanadi (doskaOfset); doska → 1-parta 1.8 m (orqa bo'sh zona saqlanishi uchun)
+  { kod: 'SR4', nomi: 'Study Room 4', tur: 'sinf', x1: 18150, y1: 9400, x2: ICHKI.x, y2: 15000, doska: 'chap', doskaOfset: 100, eshik: 'SR4', eskiRaqam: '10 va 15 (o\'rta qism)', koridor: 'K2',
+    sinf: { ...YON_TOR, bloklar: [1, 1, 1], doska: 1800 } },
   { kod: 'SR5', nomi: 'Study Room 5', tur: 'sinf', x1: 18150, y1: 16700, x2: ICHKI.x, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR5', eskiRaqam: '15', koridor: 'K2', sinf: YON_TOR },
   { kod: 'SR6', nomi: 'Study Room 6', tur: 'sinf', x1: 12150, y1: 16700, x2: 17950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR6', eskiRaqam: '14', koridor: 'K2', sinf: YON_TOR },
   { kod: 'SR7', nomi: 'Study Room 7', tur: 'sinf', x1: 6150, y1: 16700, x2: 11950, y2: ICHKI.y, doska: 'chap', deraza: 'past', eshik: 'SR7', eskiRaqam: '13', koridor: 'K2', sinf: YON_TOR },
@@ -346,6 +350,7 @@ export function lokal(x) {
 function joylash(xona) {
   const s = { ...STANDART, doskaEni: 3000, ...(xona.sinf || {}) };
   const { W, D, R: L, U } = lokal(xona);
+  const o = xona.doskaOfset || 0;   // doska devori qoplamasi qalinligi (doska va jihozlar shuncha suriladi)
   const blokEni = s.bloklar.reduce((t, n) => t + n * PARTA.eni, 0) + (s.bloklar.length - 1) * s.yolak;
   let u0 = (W - blokEni) / 2;
   // derazali xonada deraza tomondagi chekka belgilangan (radiator uchun), qolgani qarama-qarshi tomonga
@@ -358,7 +363,7 @@ function joylash(xona) {
   const sxema = s.sxema || Array.from({ length: s.qatorlar }, () => s.bloklar);
   s.qatorlar = sxema.length;
   sxema.forEach((qator, q) => {
-    const v = s.doska + q * s.qadam;
+    const v = o + s.doska + q * s.qadam;
     let u = u0;
     s.bloklar.forEach((n, bi) => {
       for (let i = 0; i < n; i++) {
@@ -376,13 +381,13 @@ function joylash(xona) {
     });
   });
   const dc = W / 2;
-  const doska = { ...L(dc - s.doskaEni / 2, dc + s.doskaEni / 2, 0, 60) };
+  const doska = { ...L(dc - s.doskaEni / 2, dc + s.doskaEni / 2, o, o + 60) };
   // o'qituvchi stoli — doska oldida, eshikdan uzoq chetda
   const esh = ESHIKLAR.find(x => x.kod === xona.eshik);
   const em = esh.devor === 'h' ? U((esh.a + esh.b) / 2, esh.yuz) : U(esh.yuz, (esh.a + esh.b) / 2);
   const tu = em.u < W / 2 ? W - 150 - 1200 : 150;
-  const ustozStoli = L(tu, tu + 1200, 700, 1300);
-  const ustozStuli = L(tu + 375, tu + 825, 220, 670);
+  const ustozStoli = L(tu, tu + 1200, o + 700, o + 1300);
+  const ustozStuli = L(tu + 375, tu + 825, o + 220, o + 670);
   return { s, W, D, blokEni, u0, orinEni, partalar, stullar, doska, ustozStoli, ustozStuli };
 }
 

@@ -214,8 +214,9 @@ export function tekshiruv() {
     });
     // 5. Doska kar devorda: doska orqasidagi devor bo'lagi (lokal v = 0 chizig'i) to'liq devor bilan qoplangan
     const qopla = (r, shart) => r.map(L.T).filter(shart).reduce((t, w) => t + Math.max(0, Math.min(w.u2, dl.u2) - Math.max(w.u1, dl.u1)), 0);
-    const qoplangan = qopla(devorlar.filter(w => !w.shisha), w => Math.abs(w.v2) < 1);
-    const ustunQism = qopla(ustunlar, u => u.v1 < 0 && u.v2 >= 0);
+    const o = x.doskaOfset || 0;
+    const qoplangan = qopla(devorlar.filter(w => !w.shisha), w => Math.abs(w.v2 - o) < 1);
+    const ustunQism = qopla(ustunlar, u => u.v1 < o && u.v2 >= o);
     if (qoplangan + ustunQism < dl.u2 - dl.u1 - 1) natija.doskaDevor.push(`${x.kod}: doska ortida bo'shliq`);
     // 4. Eshik doskaga tegmasligi
     sektorlar.forEach(({ e, s }) => sektorKesadi(s, d) && natija.eshik.push(`${e.kod} eshigi ↔ ${x.kod} doskasi`));

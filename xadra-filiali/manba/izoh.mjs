@@ -129,14 +129,13 @@ function xonaMatni(k, ev) {
   let tavsiya = '';
   const shishaTavsiya = k.shisha ? `Koridor tomonidagi shisha — laminatlangan akustik, 1.0–1.6 m balandlikda matli polosa bilan. ` : '';
   if (x.kod === 'SR4') {
-    q.push(`Doska <b>o'ng asosiy (tashqi) devorda</b> — mustahkam devor, doska va proyektor qavsi uchun qulay; deraza yo'q — ekranga yorug'lik tushmaydi.`);
-    q.push(`Eshik <b>orqa tomonda</b> (K2 koridoridan) — kechikkan o'quvchi darsni buzmaydi.`);
+    q.push(`Doska <b>eshik tomonida</b> (buyurtmachi, 17.10) — g'arbiy mavjud devorda (ustozlar va admin xonalari bilan umumiy); U6 ustuni devordan 10 sm chiqqani uchun doska devori ustun bilan tekis <b>GKL qoplanadi (100 mm)</b> — doska tekis devorda turadi.`);
+    q.push(`Eshik doska tomonda (K2 koridoridan) — o'quvchi sinf oldidan kiradi, o'qituvchi stoli eshikdan uzoq (shimoliy) chetda; deraza yo'q — ekranga yorug'lik tushmaydi.`);
     q.push(`1 kishiga <b>${k.kishiga.toFixed(2)} m²</b> — qavatdagi eng keng sinf.`);
     q.push(k.shisha ? `Koridor tomonidagi devorlar shisha (${mm(k.shisha)} m) — derazasiz xona yopiq tuyulmaydi.`
       : `Barcha devorlari GKL (buyurtmachi qarori), koridorga faqat shisha eshik chiqadi — dars paytida koridordan chalg'imaydi; koridor oxiridagi devorlarda yorituvchi logotip.`);
-    if (ustunlar.length) q.push(`${ustunMatn} ustuni orqa devorda, guruhlar orasidagi yo'lak ro'parasida — doskani to'smaydi.`);
     n.push(`<b>Derazasiz</b>: tabiiy yorug'lik va shamollatish yo'q — sovuq havo va tashqi havo (30%) KK1 kanalli konditsioneridan, so'rish — vitechka; yoritish kunduzgi spektrda (4000 K).`);
-    n.push(`O'ng devor qo'shni bino bilan umumiy.`);
+    n.push(`Orqa (sharqiy) devor tashqi, qo'shni bino bilan umumiy.`);
     n.push(`<b>Kichraydi (16.10):</b> K1 va K2 koridorlari 4-xona orqali kladovkagacha davom etadi — xona to'rtburchak ${mm(x.x2 - x.x1)} × ${mm(x.y2 - x.y1)} m; 5.6 m doska devori bo'ylab 3 ta ikki kishilik parta sig'adi: 3 qator × 3 parta — ${k.orin} o'rin (avval 24).`);
     n.push(`Doska → 1-parta ${sm(k.doska)} sm, stul orqasidan keyingi partagacha ${sm(k.stulOrqasi)} sm, chetki old o'rindan qarash burchagi ${b1(k.burchak)}° (Beruniy: ${sm(STANDART.doska)} sm, 36 sm, 39.8°) — Beruniy mezoni bo'yicha "Qoniqarli"; orqa bo'sh zona ${sm(k.orqaZona)} sm.`);
     tavsiya = `${shishaTavsiya}Devorlar va shift och rangda, yoritish ≥ 500 lk. CO₂ datchigi majburiy.`;
@@ -176,7 +175,7 @@ function xonaBeti(k, i, ev) {
     ? `to'liq oynali fasad ${d.map(z => mm(z.uz)).join(' + ')} m (${d[0].yon}, ${d[0].tomon}), oyna ${d[0].tokcha ? `${b1(d[0].tokcha / 1000)}–${b1(d[0].tepa / 1000)} m` : 'poldan shiftgacha'}; steklopaket + reklama plyonkasi`
     : `${d.map(z => mm(z.uz)).join(' + ')} m, ${d[0].devor} devorda (${d[0].tomon}) — taxminiy`;
   const ustun = k.ustunlar.filter(u => u.partagacha < 1000);
-  const ustunMatn = ustun.length ? `${ustun.map(u => u.kod + (u.holat === 'taxminiy' ? '*' : '')).join(', ')} devordan 10 sm chiqadi; eng yaqin partagacha ${sm(Math.min(...ustun.map(u => u.partagacha)))} sm (${x.kod === 'SR4' ? 'orqa devorda, yo\'lak ro\'parasida' : 'yon tomonda'})` : 'yo\'q';
+  const ustunMatn = ustun.length ? `${ustun.map(u => u.kod + (u.holat === 'taxminiy' ? '*' : '')).join(', ')} devordan 10 sm chiqadi; eng yaqin partagacha ${sm(Math.min(...ustun.map(u => u.partagacha)))} sm (${x.kod === 'SR4' ? 'doska devorida — GKL qoplama ichida, ustun bilan tekis' : 'yon tomonda'})` : 'yo\'q';
   const esh = `${x.koridor} koridori devorida, ${k.eshikOldda ? 'old tomonda (doska yonida)' : 'orqa tomonda'}, 1 m, suriladigan (barg xona ichida)`;
   const std = STANDART;
   const tekis = new Set(k.partaQator).size === 1;

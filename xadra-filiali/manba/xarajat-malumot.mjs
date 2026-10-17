@@ -27,11 +27,10 @@ const out = DEVORLAR.filter(w => w.holat === 'yangi').map(w => ({
   uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), yuz: yuzlar(w),
 }));
 const esh = ESHIKLAR.filter(e => e.holat === 'yangi').map(e => ({ kod: e.kod, en: e.en, shisha: !!e.shisha }));
-// bambuk panel: sinfning doska devori va orqa devori (4-xonada orqa devor — L shaklining keng qismi, 5.6 m)
+// bambuk panel: sinfning doska devori va orqa devori
 const sinflar = XONALAR.filter(x => x.tur === 'sinf').map(x => {
   const W = lokal(x).W;
-  const orqa = x.kod === 'SR4' ? 15000 - 9400 : W;
-  return { kod: x.kod, doskaDevor: W, orqaDevor: orqa, koridor: x.koridor };
+  return { kod: x.kod, doskaDevor: W, orqaDevor: W, koridor: x.koridor };
 });
 // bambuk panel ofis xonalarida va CEO xonasida — sinflardagi kabi ikkita devor (14.10: XZ xonalari 2 × 2):
 // sotuv va admin (K2 tomonda, yonma-yon) — ikkala kalta yon devor (o'rta devor — logotipli brend devor); ustozlar va

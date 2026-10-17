@@ -144,11 +144,9 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
     q = Q()
     for s in D['sinflar']:
         t = DOSKA_TOMON[s['doska']]
-        if s['kod'] == 'SR4':     # L shakli: doska — o'ng tashqi devor, orqa — keng qismning chap devori
-            qoplama_xona(q, {'x1': 18150, 'x2': I['x'], 'y1': 7800, 'y2': 16600}, 'x2', M['bambuk_x'], M['bambuk_y'], h)
-            qoplama_xona(q, {'x1': 18150, 'x2': I['x'], 'y1': 9400, 'y2': 15000}, 'x1', M['bambuk_x'], M['bambuk_y'], h)
-            continue
-        qoplama_xona(q, s, t, M['bambuk_x'], M['bambuk_y'], h)
+        o = s['doskaOfset']        # 4-xona: doska devori GKL qoplama bilan U6 ustuniga tekislangan
+        sd = {**s, t: s[t] + (o if t in ('x1', 'y1') else -o)}
+        qoplama_xona(q, sd, t, M['bambuk_x'], M['bambuk_y'], h)
         qoplama_xona(q, s, QARSHI[t], M['bambuk_x'], M['bambuk_y'], h)
     # 14.10: XZ xonalari 2 × 2 — sotuv va admin: ikkala kalta devor (o'rta devor — brend devor); ustozlar va call-markaz: o'rta va g'arbiy devor
     for kod, tt in (('XZ1', ('x1', 'x2')), ('XZ2', ('x1', 'x2')), ('XZ3', ('y2', 'x1')), ('XZ4', ('y2', 'x1'))):

@@ -125,8 +125,8 @@ sinflar().forEach(x => {
   j.stullar.forEach(p => stul(p, SUYANCHIQ[x.doska]));
   parta(j.ustozStoli, M.ustoz);
   stul(j.ustozStuli, TESKARI[SUYANCHIQ[x.doska]]);
-  rQuti(L.R(dl.u1, dl.u2, 0, 40), 0.88, 2.12, M.ramka);
-  rQuti(L.R(dl.u1 + 30, dl.u2 - 30, 0, 50), 0.91, 2.09, M.doska);
+  rQuti(L.R(dl.u1, dl.u2, dl.v1, dl.v1 + 40), 0.88, 2.12, M.ramka);
+  rQuti(L.R(dl.u1 + 30, dl.u2 - 30, dl.v1, dl.v1 + 50), 0.91, 2.09, M.doska);
 });
 const YON_S = { n: 'top', s: 'bottom', w: 'left', e: 'right' };
 XIZMAT_JIHOZ.forEach(z => {
