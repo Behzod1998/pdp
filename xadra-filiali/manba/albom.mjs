@@ -389,8 +389,11 @@ const fsh = await pdfQil(brauzer, shV, join(CH, `Xadra_2-qavat_shisha_devorlar_t
 
 const BOLIMLAR = [
   ['1-qavat — reja (resepshn, turniketlar, logotiplar)', `Xadra_1-qavat_reja_${V}.pdf`],
+  ['1-qavat — rangsiz reja (mebelsiz, 1:50)', `Xadra_1-qavat_reja_rangsiz_${V}.pdf`],
   ["1-qavat — 3D ko'rinishlar", f1],
   ['2-qavat — taqdimot rejasi', `Xadra_2-qavat_taqdimot_reja_${V}.pdf`],
+  ["2-qavat — mebelsiz reja (xonalar o'lchami va maydoni)", `Xadra_2-qavat_reja_mebelsiz_${V}.pdf`],
+  ["2-qavat — rangsiz reja: xonalarga bo'linishi (mebelsiz)", `Xadra_2-qavat_reja_rangsiz_${V}.pdf`],
   ["2-qavat — chizmalar: mavjud holat va o'zgarishlar, jihozlash", `PDP_Academy_-_Chizma_-_Xadra_filiali_2-qavat_${V}.pdf`],
   ["2-qavat — ish chizmasi ustalar uchun: devorlar, shisha va eshiklar (o'lchamli)", `Xadra_2-qavat_ish_chizmasi_${V}.pdf`],
   ["2-qavat — konditsioner (kanalli, kladovka ustida) va vitechka: kanallar rejasi (o'lchamli)", `Xadra_2-qavat_vitechka_konditsioner_${V}.pdf`],
@@ -398,6 +401,7 @@ const BOLIMLAR = [
   ["2-qavat — koridor shisha devorlari: founder tasdig'i uchun (A — profilli, B — tik profilsiz; eshik; mat plyonkada logo)", fsh],
   ['2-qavat — xonalar izohi (A4)', `Xadra_2-qavat_xonalar_izoh_${V}.pdf`],
   ['3-qavat — reja', `Xadra_3-qavat_reja_${V}.pdf`],
+  ['3-qavat — rangsiz reja (mebelsiz, 1:50)', `Xadra_3-qavat_reja_rangsiz_${V}.pdf`],
   ["3-qavat — 3D ko'rinishlar", `Xadra_3-qavat_3D_${V}.pdf`],
   ['Xarajatlar — yakuniy', fx],
   ["Xarajatlar fazalar bo'yicha — sanalar va pul oqimi", ff],
