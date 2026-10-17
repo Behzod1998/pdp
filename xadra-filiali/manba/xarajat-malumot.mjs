@@ -1,0 +1,55 @@
+// Xarajatlar jadvali uchun ma'lumot: har bir yangi devorning qaysi xonaga qaragan yuzlari va uzunligi,
+// yangi eshiklar, sinflar, ofis xonalari va CEO xonasidagi bambuk panel devorlari. Natija JSON — xarajatlar.py o'qiydi.
+import { DEVORLAR, XONALAR, ESHIKLAR, PANJARA, bolaklar, lokal } from './model.mjs';
+import { ventHisob } from './vent-chizma.mjs';
+const xonalar = XONALAR.flatMap(x => bolaklar(x).map(b => ({ kod: x.kod, ...b })));
+const ustma = (a1, a2, b1, b2) => Math.max(0, Math.min(a2, b2) - Math.max(a1, b1));
+const yuzlar = w => {
+  const gor = w.x2 - w.x1 > w.y2 - w.y1;
+  const r = [];
+  for (const x of xonalar) {
+    let l = 0, tomon = '';
+    if (gor) {
+      if (x.y2 === w.y1) { l = ustma(w.x1, w.x2, x.x1, x.x2); tomon = 'yuqori'; }
+      if (x.y1 === w.y2) { l = ustma(w.x1, w.x2, x.x1, x.x2); tomon = 'past'; }
+    } else {
+      if (x.x2 === w.x1) { l = ustma(w.y1, w.y2, x.y1, x.y2); tomon = 'chap'; }
+      if (x.x1 === w.x2) { l = ustma(w.y1, w.y2, x.y1, x.y2); tomon = 'ong'; }
+    }
+    // a1..a2 — yuzning devor bo'ylab oralig'i (qarshi tomondagi xonani topish uchun)
+    const [a1, a2] = gor ? [Math.max(w.x1, x.x1), Math.min(w.x2, x.x2)] : [Math.max(w.y1, x.y1), Math.min(w.y2, x.y2)];
+    if (l > 0) r.push({ kod: x.kod, l, tomon, a1, a2 });
+  }
+  return r;
+};
+const out = DEVORLAR.filter(w => w.holat === 'yangi').map(w => ({
+  x1: w.x1, x2: w.x2, y1: w.y1, y2: w.y2, shisha: !!w.shisha, izoh: w.izoh, logo: w.logo || null,
+  uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), yuz: yuzlar(w),
+}));
+const esh = ESHIKLAR.filter(e => e.holat === 'yangi').map(e => ({ kod: e.kod, en: e.en, shisha: !!e.shisha, surma: !!e.surma, kladovka: !!e.kladovka }));
+// bambuk panel: sinfning doska devori va orqa devori
+const sinflar = XONALAR.filter(x => x.tur === 'sinf').map(x => {
+  const W = lokal(x).W;
+  return { kod: x.kod, doskaDevor: W, orqaDevor: W, koridor: x.koridor };
+});
+// bambuk panel ofis xonalarida va CEO xonasida — sinflardagi kabi ikkita devor (14.10: XZ xonalari 2 × 2):
+// sotuv va admin (K2 tomonda, yonma-yon) — ikkala kalta yon devor (o'rta devor — logotipli brend devor); ustozlar va
+// call-markaz (K1 tomonda) — o'rta devor va g'arbiy yon devor. CEO xonasida ikkita ichki kar devor (derazali tashqi devorlarga qilinmaydi), eshik o'rni ayiriladi.
+const xona = kod => XONALAR.find(r => r.kod === kod);
+const chuq = kod => xona(kod).y2 - xona(kod).y1, en = kod => xona(kod).x2 - xona(kod).x1;
+const ofislar = [
+  { kod: 'XZ1', devorlar: [{ nom: "Koworking (sahna) bilan orasidagi devor", uz: chuq('XZ1') }, { nom: "Admin (XZ2) bilan orasidagi devor", uz: chuq('XZ1') }] },
+  { kod: 'XZ2', devorlar: [{ nom: "Offline sotuv (XZ1) bilan orasidagi devor", uz: chuq('XZ2') }, { nom: "4-xona bilan orasidagi devor", uz: chuq('XZ2') }] },
+  { kod: 'XZ3', devorlar: [{ nom: "Eski o'rta devor (admin bilan orasida)", uz: en('XZ3') }, { nom: "Call-markaz (XZ4) bilan orasidagi devor", uz: chuq('XZ3') }] },
+  { kod: 'XZ4', devorlar: [{ nom: "Eski o'rta devor (sotuv bilan orasida)", uz: en('XZ4') }, { nom: "Koworking (sahna) bilan orasidagi devor", uz: chuq('XZ4') }] },
+  { kod: 'X12', devorlar: [
+    { nom: "Zinapoya va kirish zali bilan orasidagi devor (eshikli)", uz: en('X12'), eshik: true },
+    { nom: "7-xona bilan orasidagi devor", uz: chuq('X12') }] },
+];
+// buziladigan devorlar (uzunligi va izohi)
+const buziladi = DEVORLAR.filter(w => w.holat === 'buziladi').map(w => ({ uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), izoh: w.izoh }));
+// 16.10: kanalli konditsioner va vitechka (vent-chizma.mjs): kanallar uzunligi (+10% burilish va ulanishlar), diffuzor va panjaralar soni
+const VH = ventHisob();
+const vent = { dif: VH.D.length, sor: VH.P.length, berish: Math.round(VH.uz.K), toza: Math.round(VH.uz.T), vitechka: Math.round(VH.uz.V) };
+console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi, panjara: PANJARA.map(p => ({ uz: (p.x2 - p.x1) / 1000, izoh: p.izoh })),
+  kanalUz: Math.round(VH.uz.jami * 1.1), kanalChizma: Math.round(VH.uz.jami), vent }, null, 0));
