@@ -10,6 +10,7 @@ import { varaqlarHtml } from './varaqlar.mjs';
 import { izohHtml } from './izoh.mjs';
 import { taqdimotHtml, boshRejaHtml } from './taqdimot.mjs';
 import { rangsizRejaHtml } from './rangsiz-reja.mjs';
+import { rangsiz1Html, rangsiz3Html } from './rangsiz-13.mjs';
 import { tekshiruv } from './tekshiruv.mjs';
 import { LOYIHA } from './model.mjs';
 import { qavat3Html, tekshiruv3 } from './qavat3.mjs';
@@ -107,6 +108,14 @@ const rsNom = `Xadra_2-qavat_reja_rangsiz_${LOYIHA.versiya}`;
 await tq.pdf({ path: join(CHIQISH, `${rsNom}.pdf`), width: '297mm', height: '420mm', printBackground: true, preferCSSPageSize: true });
 await (await tq.$('section.varaq')).screenshot({ path: join(CHIQISH, `${rsNom}.png`) });
 await tq.close();
+// 4c. 1- va 3-qavat — rangsiz, mebelsiz (A3 landshaft, 1:50)
+for (const [nomi, html] of [['Xadra_1-qavat_reja_rangsiz', rangsiz1Html()], ['Xadra_3-qavat_reja_rangsiz', rangsiz3Html()]]) {
+  const p = await brauzer.newPage({ viewport: { width: 1587, height: 1123 }, deviceScaleFactor: 2.5 });
+  await p.setContent(html, { waitUntil: 'load' });
+  await p.pdf({ path: join(CHIQISH, `${nomi}_${LOYIHA.versiya}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
+  await (await p.$('section.varaq')).screenshot({ path: join(CHIQISH, `${nomi}_${LOYIHA.versiya}.png`) });
+  await p.close();
+}
 
 // 5. 3-qavat rejasi (A3 landshaft) — PDF va PNG
 const q3 = await brauzer.newPage({ viewport: { width: 1587, height: 1123 }, deviceScaleFactor: 2.5 });
