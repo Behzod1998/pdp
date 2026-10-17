@@ -1,7 +1,7 @@
 // Xarajatlar jadvali uchun ma'lumot: har bir yangi devorning qaysi xonaga qaragan yuzlari va uzunligi,
 // yangi eshiklar, sinflar, ofis xonalari va CEO xonasidagi bambuk panel devorlari. Natija JSON — xarajatlar.py o'qiydi.
 import { DEVORLAR, XONALAR, ESHIKLAR, PANJARA, bolaklar, lokal } from './model.mjs';
-import { tizimHisob } from './hvac-tizim.mjs';
+import { ventHisob } from './vent-chizma.mjs';
 const xonalar = XONALAR.flatMap(x => bolaklar(x).map(b => ({ kod: x.kod, ...b })));
 const ustma = (a1, a2, b1, b2) => Math.max(0, Math.min(a2, b2) - Math.max(a1, b1));
 const yuzlar = w => {
@@ -26,7 +26,7 @@ const out = DEVORLAR.filter(w => w.holat === 'yangi').map(w => ({
   x1: w.x1, x2: w.x2, y1: w.y1, y2: w.y2, shisha: !!w.shisha, izoh: w.izoh, logo: w.logo || null,
   uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), yuz: yuzlar(w),
 }));
-const esh = ESHIKLAR.filter(e => e.holat === 'yangi').map(e => ({ kod: e.kod, en: e.en, shisha: !!e.shisha }));
+const esh = ESHIKLAR.filter(e => e.holat === 'yangi').map(e => ({ kod: e.kod, en: e.en, shisha: !!e.shisha, surma: !!e.surma, kladovka: !!e.kladovka }));
 // bambuk panel: sinfning doska devori va orqa devori
 const sinflar = XONALAR.filter(x => x.tur === 'sinf').map(x => {
   const W = lokal(x).W;
@@ -48,6 +48,8 @@ const ofislar = [
 ];
 // buziladigan devorlar (uzunligi va izohi)
 const buziladi = DEVORLAR.filter(w => w.holat === 'buziladi').map(w => ({ uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), izoh: w.izoh }));
-// HVAC: havo kanallari uzunligi (chizmadagi taklif yo'nalish + 10%), m
-const T = tizimHisob();
-console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi, panjara: PANJARA.map(p => ({ uz: (p.x2 - p.x1) / 1000, izoh: p.izoh })), kanalUz: T.kanalUz, kanalChizma: Math.round(T.kanalChizma / 1000) }, null, 0));
+// 16.10: kanalli konditsioner va vitechka (vent-chizma.mjs): kanallar uzunligi (+10% burilish va ulanishlar), diffuzor va panjaralar soni
+const VH = ventHisob();
+const vent = { dif: VH.D.length, sor: VH.P.length, berish: Math.round(VH.uz.K), toza: Math.round(VH.uz.T), vitechka: Math.round(VH.uz.V) };
+console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi, panjara: PANJARA.map(p => ({ uz: (p.x2 - p.x1) / 1000, izoh: p.izoh })),
+  kanalUz: Math.round(VH.uz.jami * 1.1), kanalChizma: Math.round(VH.uz.jami), vent }, null, 0));

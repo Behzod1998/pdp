@@ -3,15 +3,19 @@
 #   node blender2-malumot.mjs > 2qavat.json
 #   python blender2.py 2qavat.json ../chizma/3d [--tez] [--blend] [--faqat umumiy,k1,k2,logo,sotuv,admin,sinf,kw] [--variant B]
 #   --variant B — koridor shisha devorlari tik profilsiz (faqat atrofida profil, oynalar yonma-yon tutashadi); fayllar «_B» bilan
+#   --logosiz — koridor oxiri (kladovka devori) oddiy: oq devor, oddiy eshik, reykasiz; fayllar «_logosiz» bilan.
+#     Standart — logoli: marmar panel, mox, reykali kanopi; kladovka eshigi yashirin (barg marmar bilan qoplangan).
 import json, math, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import blender_umumiy as bu
 from blender_umumiy import Q, P, M, H, KESIM, ESH_H, SHISHA_H
 
 A = bu.argv()
+LOGOLI = '--logosiz' not in sys.argv      # koridor oxiri varianti (16.10: buyurtmachi — ikki variant)
 D = json.load(open(A['json']))
 bu.boshla()
 I = D['ichki']; DV = D['devor']
+KX = D['logo'][0]['x']            # koridor oxiri — kladovkaning ko'ndalang devori (16.10)
 X = {x['kod']: x for x in D['xonalar']}
 mk = lambda r: ((r['x1'] + r['x2']) / 2, (r['y1'] + r['y2']) / 2)
 # koridor oxiri: mox polosasi eni, reykalar (shiftda uzunligi, egilish radiusi, devorda pastki chegarasi), mm
@@ -46,10 +50,10 @@ def devor_bolaklar(h):
             out.append((w['x1'], w['x2'], w['y1'], w['y2'], SHISHA_H, h))     # shisha ustida GKL
             continue
         out += bu.devor_kesimlari(w, DER, h)
-    for e in ESH:     # eshik ustidagi devor (yangi eshik ustida 2.5 m gacha shisha)
+    for e in ESH:     # eshik ustidagi devor (yangi shisha eshik ustida 2.5 m gacha shisha; kladovka eshigi — oddiy)
         t1, t2 = e['qalinlik']
         rect = (t1, t2, e['a'], e['b']) if e['devor'] == 'v' else (e['a'], e['b'], t1, t2)
-        out.append((*rect, SHISHA_H if e['holat'] == 'yangi' else ESH_H, h))
+        out.append((*rect, SHISHA_H if e['holat'] == 'yangi' and e.get('shisha') else ESH_H, h))
     return out, shisha
 
 for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
@@ -111,11 +115,20 @@ for w in SHISHA:
         if p2 - p1 < PLY['devor'] + 200: continue
         bu.logo_panel((p1 + p2) / 2, c, 0 if t > 0 else 180, PLY['devor'], PLY['z'], PLY['versiya'], kuch=0.0, halqa=0, nom=f'plyonka_logo_{n_ply}', ofset=8)
         n_ply += 1
+# suriladigan eshiklar (founder, 16.10 — Damas eshigi kabi): 1 m, barg xona tomonida devor bo'ylab suriladi (rejadagi
+# surmaBarg bilan bir xil: devordan 15 mm oraliq, barg 40 mm, ochiq o'rin chetlariga 30 mm kiradi). OCHIQ — ko'rinishlarda
+# suriladigan mexanizm ko'rinishi uchun yarim ochiq qoldirilgan eshiklar (ulush).
+SURMA = {'barg': 40, 'oraliq': 15, 'ustma': 30}
+OCHIQ = {'SR6': 0.5}
+def surma_barg(e):
+    s_ = -1 if e['park'] == 'a' else 1
+    d = s_ * e['en'] * OCHIQ.get(e['kod'], 0)
+    ya, yb = sorted((e['yuz'] + e['yon'] * SURMA['oraliq'], e['yuz'] + e['yon'] * (SURMA['oraliq'] + SURMA['barg'])))
+    return e['a'] - SURMA['ustma'] + d, e['b'] + SURMA['ustma'] + d, ya, yb, s_
 for e in ESH:
-    if e['holat'] != 'yangi' or not e.get('shisha') or e['devor'] != 'h': continue
-    yb = e['yuz'] - e['yon'] * 20; t = -e['yon']          # yopiq barg markazi; koridor — ochilishga qarshi tomonda
-    if not any(y1 - 200 <= yb <= y2 + 200 for y1, y2 in KOR_Y): continue   # faqat koridor devorlaridagi eshiklar
-    bu.logo_panel((e['a'] + e['b']) / 2, yb, 0 if t > 0 else 180, PLY['eshik'], PLY['z'], PLY['versiya'], kuch=0.0, halqa=0, nom=f"plyonka_logo_{e['kod']}", ofset=8)
+    if e['holat'] != 'yangi' or not e.get('surma'): continue
+    x1, x2, ya, yb, _ = surma_barg(e); t = -e['yon']          # koridor — barg turgan tomonga qarshi
+    bu.logo_panel((x1 + x2) / 2, (ya + yb) / 2, 0 if t > 0 else 180, PLY['eshik'], PLY['z'], PLY['versiya'], kuch=0.0, halqa=0, nom=f"plyonka_logo_{e['kod']}", ofset=8)
     n_ply += 1
 print('plyonka logolari:', n_ply)
 
@@ -125,9 +138,40 @@ q = Q()
 for d in DER: bu.deraza(q, {**d, 'ichki': ICH[d['devor']]})
 q.obj('derazalar', 'asos')
 
-# eshiklar (yangilari shisha, ustida 2.5 m gacha shisha)
+# eshiklar: koridordagi 11 ta — suriladigan shisha (ustida 2.5 m gacha shisha); kladovka eshigi — logoli variantda yashirin
+# (koridor oxiri qoplamasida chizilgan), logosizda oddiy eshik; qolganlari mavjud eshiklar
+def surma_eshik(e):
+    x1, x2, ya, yb, s_ = surma_barg(e)
+    yc, yn, al = (ya + yb) / 2, e['yon'], M['alyuminiy']
+    yo = yb if yn > 0 else ya                      # bargning xona tomonidagi yuzi
+    yk = ya if yn > 0 else yb                      # koridor tomonidagi yuzi
+    q = Q()
+    z1, z2 = 10, ESH_H + 40                         # barg o'rin tepasini 40 mm yopadi
+    q.box(x1, x1 + 50, ya, yb, z1, z2, al); q.box(x2 - 50, x2, ya, yb, z1, z2, al)
+    q.box(x1, x2, ya, yb, z1, z1 + 100, al); q.box(x1, x2, ya, yb, z2 - 50, z2, al)
+    for za, zb, gm in ((z1 + 100, 1000, M['oyna']), (1000, 1600, M['xira']), (1600, z2 - 50, M['oyna'])):
+        q.box(x1 + 50, x2 - 50, yc - 5, yc + 5, za, zb, gm)
+    xh = x2 - 110 if s_ < 0 else x1 + 110          # dasta — bargning ochiq o'ringa kiradigan chetida
+    q.cyl((xh, yo + yn * 55, 750), (xh, yo + yn * 55, 1450), 14, M['xrom'])
+    for z in (800, 1400): q.cyl((xh, yo, z), (xh, yo + yn * 55, z), 8, M['xrom'])
+    q.box(xh - 15, xh + 15, *sorted((yk, yk - yn * 4)), 900, 1300, M['xrom'])      # koridor tomonda — botiq tutqich
+    # yuqori relsi va qopqog'i (yopiq va ochiq holatni qamraydi)
+    ra = min(e['a'] - 30, e['a'] - 30 + s_ * e['en']); rb = max(e['b'] + 30, e['b'] + 30 + s_ * e['en'])
+    q.box(ra, rb, *sorted((e['yuz'], e['yuz'] + yn * (SURMA['oraliq'] + SURMA['barg'] + 25))), z2, z2 + 100, al)
+    q.obj(f"eshik_{e['kod']}", 'asos')
+    # o'rin romi (devor qalinligi bo'ylab) va ustidagi shisha — 2.5 m gacha
+    t1, t2 = e['qalinlik']; q = Q()
+    Rr = lambda a, b, za, zb, m: q.box(a, b, t1, t2, za, zb, m)
+    Rr(e['a'], e['a'] + 40, 0, SHISHA_H, al); Rr(e['b'] - 40, e['b'], 0, SHISHA_H, al)
+    Rr(e['a'], e['b'], ESH_H - 40, ESH_H, al); Rr(e['a'], e['b'], SHISHA_H - 40, SHISHA_H, al)
+    q.box(e['a'] + 40, e['b'] - 40, (t1 + t2) / 2 - 5, (t1 + t2) / 2 + 5, ESH_H, SHISHA_H - 40, M['oyna'])
+    q.obj(f"eshik_romi_{e['kod']}", 'asos')
+
 for e in ESH:
-    bu.eshik(e, 0, ustki_shisha=e['holat'] == 'yangi')
+    if e.get('surma'): surma_eshik(e)
+    elif e.get('kladovka'):
+        if not LOGOLI: bu.eshik(e, 0)
+    else: bu.eshik(e, 0, ustki_shisha=e['holat'] == 'yangi')
 
 # ---------------- bambuk panel (poldan shiftgacha) ----------------
 def qoplama_xona(q, x, tomon, m_x, m_y, h, teshik=()):
@@ -156,8 +200,10 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
     qoplama_xona(q, x12, 'y1', M['bambuk_x'], M['bambuk_y'], h, [(e12['a'], e12['b'], 0, ESH_H)])
     qoplama_xona(q, x12, 'x2', M['bambuk_x'], M['bambuk_y'], h)
     # koridor oxiri (buyurtmachi, 15.10 — Jahon School namunasi uslubida): markazda marmar ko'rinishli panel (logotip ostida),
-    # ikki yonida yashil o'simlik (mox) polosalari va ular orasida yashil LED; tepasida shiftdan egilib tushadigan reykalar
-    for l in D['logo']:
+    # ikki yonida yashil o'simlik (mox) polosalari va ular orasida yashil LED; tepasida shiftdan egilib tushadigan reykalar.
+    # 16.10: bu kladovkaning ko'ndalang devori — kladovka eshigi (800) yashirin: bargi marmar bilan qoplangan, atrofida 3 mm tirqish.
+    # Logosiz variantda devor oddiy (oq bo'yoq), eshik oddiy.
+    for l in (D['logo'] if LOGOLI else []):
         fx, y1, y2 = l['x'], l['y1'], l['y2']
         zt = min(h, KOR_OXIR['reykaPast'])
         q.box(fx - 25, fx, y1 + KOR_OXIR['mox'], y2 - KOR_OXIR['mox'], 0, zt, M['marmar'])
@@ -166,6 +212,9 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
         for ya in (y1 + KOR_OXIR['mox'], y2 - KOR_OXIR['mox'] - 14):
             q.box(fx - 50, fx - 20, ya, ya + 14, 60, zt - 40, M['led_yashil'])
         if h > zt: q.box(fx - 12, fx, y1, y2, zt, h, M['grafit'])
+        ke = next(e for e in ESH if e.get('kladovka') and y1 <= e['a'] <= y2)     # yashirin eshik tirqishlari
+        for ya in (ke['a'], ke['b'] - 3): q.box(fx - 26, fx - 24, ya, ya + 3, 0, ESH_H, M['korpus'])
+        q.box(fx - 26, fx - 24, ke['a'], ke['b'], ESH_H - 3, ESH_H, M['korpus'])
     # koworking sahnasi (XZ1 devori): GKL karkas, markazda grafit panel, yonlarida qora asos ustida yog'och reykalar
     sd = SAHNA['devor']; fx = sd['x1']
     q.box(fx, sd['x2'], sd['y1'], sd['y2'], 0, h, M['devor'], top=M['qopqoq'] if k == 'kesim' else None)
@@ -181,9 +230,9 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
     q.obj(f'qoplama_{k}', k)
 
 # ---------------- koridor: logotip, doskalar ----------------
-for i, l in enumerate(D['logo']):
-    ym = (l['y1'] + l['y2']) / 2
-    bu.logo_panel(l['x'] - 25, ym, 90, 900, 1700, 'primary-on-light', kuch=0.6, halqa=0.35, nom=f"logo_{l['koridor']}", ofset=30)
+for i, l in enumerate(D['logo'] if LOGOLI else []):
+    ym = (l['y1'] + l['y2']) / 2       # logotip yashirin eshik bargida (eni barg chegarasidan chiqmaydi)
+    bu.logo_panel(l['x'] - 25, ym, 90, l['en'], l['z'], 'primary-on-light', kuch=0.6, halqa=0.35, nom=f"logo_{l['koridor']}", ofset=30)
     bu.spot(l['x'] - 900, ym, H - 120, 45, (l['x'] - 25, ym, 1500), 60, f"logo_spot_{l['koridor']}")
 # koridor oxiri: shiftdan devorga egilib tushadigan yog'och reykalar (kanopi) — profil yo'l bo'ylab cho'ziladi
 def lenta(q, yol, yc, w, d, m):
@@ -201,7 +250,7 @@ def lenta(q, yol, yc, w, d, m):
     for r in (halq[0], halq[-1]):
         f = q.bm.faces.new(r); f.material_index = mi
 q = Q()
-for l in D['logo']:
+for l in (D['logo'] if LOGOLI else []):
     fx, y1, y2 = l['x'], l['y1'], l['y2']
     w, d, qd = KOR_OXIR['reyka']; R = KOR_OXIR['R']; zc = H - 10 - d / 2; xa = fx - 12 - d / 2 - R
     yol = [(fx - KOR_OXIR['kanopi'], zc), (xa, zc)]
@@ -371,65 +420,6 @@ for x, y, b in D['sanuzel']['rakovina']:     # b: 90 — devor sharqda, −90 �
     q.box(*((w - 440, w) if b > 0 else (w, w + 440)), y - 260, y + 260, 700, 850, M['keramika'], bevel=45, seg=4)
 q.obj('sanuzel_jihoz', 'asos')
 
-# ---------------- split konditsionerlar: ichki blok devorda (2.75 m), tashqi blok fasadda deraza ostida ----------------
-KDZ = D['kdZ']
-ROT = {'yuqori': 0, 'past': 180, 'chap': -90, 'ong': 90}     # lokal v — devordan xona ichiga
-for u in D['kd']:
-    b, (en, bal, chq) = u['b'], u['ichki']
-    cx, cy = (b['x1'] + b['x2']) / 2, (b['y1'] + b['y2']) / 2
-    joy = {'yuqori': (cx, b['y1']), 'past': (cx, b['y2']), 'chap': (b['x1'], cy), 'ong': (b['x2'], cy)}[u['devor']]
-    z, q = KDZ['ichki'], Q()
-    q.box(-en / 2, en / 2, 0, chq, z, z + bal, M['kond'], bevel=45, seg=4)
-    q.box(-en / 2 + 60, en / 2 - 60, chq * 0.35, chq - 30, z - 3, z + 4, M['korpus'])          # pastdagi havo chiqish teshigi
-    q.box(-en / 2 + 75, en / 2 - 75, chq - 45, chq + 12, z - 30, z - 12, M['kond'], bevel=6)           # jalyuzi (pastga ochilgan)
-    q.box(-en / 2 + 50, en / 2 - 50, chq - 1, chq + 1.5, z + 62, z + 68, M['alyuminiy_och'])           # old panel chizig'i
-    q.box(en / 2 - 250, en / 2 - 120, chq - 1, chq + 2, z + bal - 115, z + bal - 85, M['ekran_qora'])  # displey
-    q.box(en / 2 - 150, en / 2 - 136, chq + 1, chq + 3, z + bal - 106, z + bal - 94, M['brend_yashil_nur'])
-    q.box(en / 2 - 230, en / 2 - 130, 0, 70, z + bal - 20, H, M['kond'])                               # trassa qutisi (devorda, shiftgacha)
-    q.obj(f"kd_ichki_{u['kod']}", 'toliq', (*joy, 0), ROT[u['devor']])     # umumiy (kesilgan) ko'rinishda yashiriladi
-# tashqi bloklar — tomda (2-qavat tomi: shift plitasi ustida), tayanch ramada; trassa tomga gusak orqali chiqadi
-TOM = H + 200
-q = Q()
-for u in D['kd']:
-    t, b = u['tb'], u['b']
-    tw, th, td = u['tashqi'][0], u['tashqi'][1], u['tashqi'][2]
-    gor = (t['x2'] - t['x1']) >= (t['y2'] - t['y1'])
-    z1, z2 = TOM + 400, TOM + 400 + th
-    q.box(t['x1'], t['x2'], t['y1'], t['y2'], z1, z2, M['kond'], bevel=15, seg=2)
-    for s_ in (0.12, 0.88):                                                                    # tayanch rama
-        if gor: q.box(t['x1'] + (t['x2'] - t['x1']) * s_ - 25, t['x1'] + (t['x2'] - t['x1']) * s_ + 25, t['y1'] - 120, t['y2'] + 120, TOM, z1, M['qora_metall'])
-        else: q.box(t['x1'] - 120, t['x2'] + 120, t['y1'] + (t['y2'] - t['y1']) * s_ - 25, t['y1'] + (t['y2'] - t['y1']) * s_ + 25, TOM, z1, M['qora_metall'])
-    L_ = (t['x2'] - t['x1']) if gor else (t['y2'] - t['y1'])
-    g0 = (t['x1'] if gor else t['y1']) + 0.42 * L_
-    zc, r = (z1 + z2) / 2, 0.36 * th
-    yuz = t['y2'] if gor else t['x2']                                                          # ventilyator tomoni
-    a_, b_ = ((g0, yuz, zc), (g0, yuz + 10, zc)) if gor else ((yuz, g0, zc), (yuz + 10, g0, zc))
-    q.cyl(a_, b_, r, M['korpus'], 40)
-    for k_ in range(-3, 4):
-        zz = zc + k_ * r / 3.6
-        if gor: q.box(g0 - r * 0.97, g0 + r * 0.97, yuz + 10, yuz + 16, zz - 6, zz + 6, M['alyuminiy_och'])
-        else: q.box(yuz + 10, yuz + 16, g0 - r * 0.97, g0 + r * 0.97, zz - 6, zz + 6, M['alyuminiy_och'])
-    # gusak va izolyatsiyali trassa tom ustida: devor yonidan (blok ortidan) TB gacha
-    cx, cy = (b['x1'] + b['x2']) / 2, (b['y1'] + b['y2']) / 2
-    px, py = {'chap': (b['x1'] + 120, cy), 'ong': (b['x2'] - 120, cy), 'yuqori': (cx, b['y1'] + 120), 'past': (cx, b['y2'] - 120)}[u['devor']]
-    tcx, tcy = (t['x1'] + t['x2']) / 2, (t['y1'] + t['y2']) / 2
-    q.cyl((px, py, TOM), (px, py, TOM + 450), 70, M['kond'], 20)
-    yol = [(px, py), (px, tcy), (tcx, tcy)] if u['devor'] in ('chap', 'ong') else [(px, py), (tcx, py), (tcx, tcy)]
-    for (xa, ya), (xb, yb) in zip(yol, yol[1:]):
-        if abs(xa - xb) + abs(ya - yb) > 1: q.cyl((xa, ya, TOM + 450), (xb, yb, TOM + 450), 32, M['korpus'], 12)
-q.obj('kd_tashqi', 'tepa')
-# fasad ko'rinishi uchun pastki qavat (oddiy hajm, derazalar shu o'qlarda) — faqat «kd_fasad» kamerasida yoqiladi
-bu.K['kd_pastki'] = bu.kol('kd_pastki'); bu.kor_yashir('kd_pastki', True)
-q = Q()
-q.box(-DV['chap'], I['x'] + DV['ong'], -DV['yuqori'], I['y'] + DV['past'], -6300, -250, M['devor'])
-for d in DER:
-    if d['devor'] not in ('yuqori', 'past'): continue
-    yf, sy = (-DV['yuqori'], -1) if d['devor'] == 'yuqori' else (I['y'] + DV['past'], 1)
-    for z0 in (-3750, -7500):
-        q.box(d['x1'], d['x2'], *sorted((yf - 1, yf + sy * 25)), z0 + 900, z0 + 2600, M['ramka'])
-        q.box(d['x1'] + 60, d['x2'] - 60, *sorted((yf + sy * 20, yf + sy * 30)), z0 + 960, z0 + 2540, M['ekran_qora'])
-q.obj('kd_pastki', 'kd_pastki')
-
 # ---------------- zinalar ----------------
 q = Q()
 n, rz = 11, 1750 / 11
@@ -460,7 +450,7 @@ q.obj('perila', 'asos')
 
 # ---------------- shift, chiroqlar, diffuzorlar ----------------
 q = Q(); q.box(-DV['chap'], I['x'] + DV['ong'], -DV['yuqori'], I['y'] + DV['past'], H, H + 200, M['shift']); q.obj('shift', 'tepa')
-LED, DIF = [], []
+LED = []
 for s in D['sinflar']:
     for b in s['bolaklar']:
         if (b['x2'] - b['x1']) < 3000 or (b['y2'] - b['y1']) < 3000:     # 4-xonaning tor uchlari
@@ -471,28 +461,57 @@ for s in D['sinflar']:
         for i in range(na):
             for j in range(nb):
                 LED.append((b['x1'] + (b['x2'] - b['x1']) * (2 * i + 1) / (2 * na), b['y1'] + (b['y2'] - b['y1']) * (2 * j + 1) / (2 * nb), 600, 600))
-        DIF += [(b['x1'] + (b['x2'] - b['x1']) * 0.5, b['y1'] + (b['y2'] - b['y1']) * f) for f in (0.25, 0.75)] if not gor else \
-               [(b['x1'] + (b['x2'] - b['x1']) * f, b['y1'] + (b['y2'] - b['y1']) * 0.5) for f in (0.25, 0.75)]
 for kod in ('XZ1', 'XZ2', 'XZ3', 'XZ4'):     # 5.7–5.8 × 2.6–2.8 m: chiroqlar xona bo'ylab
     x = X[kod]; LED += [(x['x1'] + (x['x2'] - x['x1']) * f, (x['y1'] + x['y2']) / 2, 600, 600) for f in (0.22, 0.5, 0.78)]
-    DIF.append((x['x1'] + (x['x2'] - x['x1']) * 0.36, (x['y1'] + x['y2']) / 2))
 x12 = X['X12']; LED += [(1500, 22900, 600, 600), (4400, 22900, 600, 600)]
 LED += [(x, y, 600, 600) for x in (1150, 3000, 4800) for y in (8000, 11500, 15000)] + [(1500, 17200, 600, 600), (3300, 17200, 600, 600)]
 LED += [(4800, 19800, 600, 600), (4500, 2800, 400, 400), (4500, 5100, 400, 400)]
+# kanalli konditsioner diffuzorlari (berish, kvadrat panel) va vitechka so'rish panjaralari (dumaloq) — vent-chizma.mjs joylari.
+# Chiroq paneli diffuzor yoki panjaraga tegsa, eng yaqin bo'sh joyga suriladi (xona bo'lagi ichida qoladi).
+DIF = [(*d['p'], d['panel']) for d in D['vent_dif']]
+SOR = [(*v['p'], v['d']) for v in D['vent_sor']]
+TOSIQ = [(x - p / 2 - 100, x + p / 2 + 100, y - p / 2 - 100, y + p / 2 + 100) for x, y, p in DIF] + \
+        [(x - d / 2 - 150, x + d / 2 + 150, y - d / 2 - 150, y + d / 2 + 150) for x, y, d in SOR]
+XB = [b for x in D['xonalar'] for b in x['bolaklar']]
+def bosh_joy(x, y, w, d):
+    tegadi = lambda cx, cy: any(cx - w / 2 < r[1] and r[0] < cx + w / 2 and cy - d / 2 < r[3] and r[2] < cy + d / 2 for r in TOSIQ)
+    if not tegadi(x, y): return x, y
+    bol = next((b for b in XB if b['x1'] <= x <= b['x2'] and b['y1'] <= y <= b['y2']), None)
+    for k in range(1, 16):
+        for dx, dy in ((k * 100, 0), (-k * 100, 0), (0, k * 100), (0, -k * 100)):
+            cx, cy = x + dx, y + dy
+            if bol and not (bol['x1'] + w / 2 + 150 <= cx <= bol['x2'] - w / 2 - 150 and bol['y1'] + d / 2 + 150 <= cy <= bol['y2'] - d / 2 - 150): continue
+            if not tegadi(cx, cy): return cx, cy
+    return x, y
+LED = [(*bosh_joy(x, y, w, d), w, d) for x, y, w, d in LED]
 YASHIL = []
 for kod in ('K1', 'K2'):   # koridor (15.10): ko'ndalang chiziqli chiroqlar har 1.2 m da, ikki chetida yashil LED; oxirida reykali kanopi
-    kr = X[kod]; yc = (kr['y1'] + kr['y2']) / 2; xk = kr['x2'] - KOR_OXIR['kanopi']
+    kr = X[kod]; yc = (kr['y1'] + kr['y2']) / 2
+    xk = kr['x2'] - KOR_OXIR['kanopi'] if LOGOLI else kr['x2'] - 300     # logosiz: kanopi yo'q, chiroqlar oxirigacha
     LED += [(x, yc, 50, 1150) for x in range(6700, int(xk) - 300, 1200)]
-    LED += [(xk + 1000, yc + dy, 1900, 26) for dy in (-160, 0, 160)]      # kanopi: reykalar orasidagi chiziqli LED
+    if LOGOLI: LED += [(xk + 1000, yc + dy, 1900, 26) for dy in (-160, 0, 160)]      # kanopi: reykalar orasidagi chiziqli LED
     YASHIL += [(6000, xk, kr['y1'] + 15, kr['y1'] + 40), (6000, xk, kr['y2'] - 40, kr['y2'] - 15)]
 bu.led_panellar(LED, 'led')
 q = Q()
 for x1_, x2_, ya, yb in YASHIL: q.box(x1_, x2_, ya, yb, H - 40, H - 10, M['led_yashil'])
 q.obj('koridor_yashil_led', 'tepa')
 q = Q()
-for x, y in DIF:
-    q.box(x - 300, x + 300, y - 300, y + 300, H - 10, H, M['alyuminiy_och'])
-    for k in range(1, 6): q.box(x - 270, x + 270, y - 300 + k * 100 - 8, y - 300 + k * 100 + 8, H - 12, H - 10, M['korpus'])
+for x, y, p in DIF:      # 4 tomonga taqsimlovchi shift diffuzori: konsentrik kvadratlar
+    r = p / 2
+    q.box(x - r, x + r, y - r, y + r, H - 10, H, M['alyuminiy_och'])
+    for k in range(1, 4):
+        a = r - k * r / 4
+        for x1_, x2_, y1_, y2_ in ((x - a, x + a, y - a, y - a + 10), (x - a, x + a, y + a - 10, y + a), (x - a, x - a + 10, y - a, y + a), (x + a - 10, x + a, y - a, y + a)):
+            q.box(x1_, x2_, y1_, y2_, H - 13, H - 10, M['korpus'])
+    q.box(x - r / 5, x + r / 5, y - r / 5, y + r / 5, H - 14, H - 10, M['alyuminiy_och'])
+for x, y, d in SOR:      # dumaloq so'rish panjarasi (klapanli), Ø200
+    q.cyl((x, y, H - 10), (x, y, H), d / 2 + 30, M['alyuminiy_och'], 32)
+    q.cyl((x, y, H - 13), (x, y, H - 10), d / 2 - 10, M['korpus'], 32)
+    q.cyl((x, y, H - 16), (x, y, H - 13), d / 5, M['alyuminiy_och'], 24)
+for kod in ('K1', 'K2'):   # qaytish havosi: koridor oxirida shiftdagi panjara 600 × 300 (logoli variantda reykalar ortida)
+    kr = X[kod]; yc = (kr['y1'] + kr['y2']) / 2; xg = kr['x2'] - 450
+    q.box(xg - 150, xg + 150, yc - 300, yc + 300, H - 10, H, M['alyuminiy_och'])
+    for k in range(1, 12): q.box(xg - 130, xg + 130, yc - 300 + k * 50 - 6, yc - 300 + k * 50 + 6, H - 12, H - 10, M['korpus'])
 q.obj('diffuzorlar', 'tepa')
 
 # ---------------- tashqi muhit ----------------
@@ -504,9 +523,9 @@ kam = bu.kamera
 K1y = (X['K1']['y1'] + X['K1']['y2']) / 2; K2y = (X['K2']['y1'] + X['K2']['y2']) / 2
 KOR = {
     'umumiy': dict(cam=kam('kamera_umumiy', (-6500, 41000, 36000), (12300, 11800, -500), 35), res=(2400, 1700), ichki=False, quyosh=(125, 55, 3.2)),
-    'k1': dict(cam=kam('kamera_K1', (6150, K1y + 150, 1600), (19300, K1y - 60, 1450), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
-    'k2': dict(cam=kam('kamera_K2', (6150, K2y - 150, 1600), (19300, K2y + 60, 1450), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
-    'logo': dict(cam=kam('kamera_logo', (15300, K2y + 380, 1600), (19300, K2y - 120, 1750), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'k1': dict(cam=kam('kamera_K1', (6150, K1y + 150, 1600), (KX, K1y - 60, 1450), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'k2': dict(cam=kam('kamera_K2', (6150, K2y - 150, 1600), (KX, K2y + 60, 1450), 24), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'logo': dict(cam=kam('kamera_logo', (KX - 3900, K2y + 420, 1600), (KX, K2y - 100, 1650), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'doskalar': dict(cam=kam('kamera_doskalar', (5300, 10600, 1600), (2100, 6500, 1350), 22), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'sotuv': dict(cam=kam('kamera_sotuv', (11250, 14850, 1650), (7300, 12500, 1250), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'admin': dict(cam=kam('kamera_admin', (12650, 14850, 1650), (16900, 12450, 1250), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
@@ -515,8 +534,9 @@ KOR = {
     'sahna': dict(cam=kam('kamera_sahna', (300, 14300, 1650), (5850, 12100, 1550), 19), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
     'tomoshabin': dict(cam=kam('kamera_tomoshabin', (250, 12200, 1650), (5850, 12200, 1650), 24), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0),
                        korsat=('kw_tadbir',), yashir=('kw_kundalik',)),
-    'kd_fasad': dict(cam=kam('kamera_kd_fasad', (2500, 40500, 11500), (14500, 21500, 1800), 30), res=(1920, 1080), ichki=True, quyosh=(200, 40, 3.0),
-                     korsat=('kd_pastki',)),
+    # 17.10: 4-xona (doska eshik tomonida, g'arbiy devorda) va suriladigan eshik xona ichidan (6-xona, yarim ochiq)
+    'sr4': dict(cam=kam('kamera_SR4', (23700, 13950, 1650), (18250, 11700, 1250), 17), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
+    'eshik_ichki': dict(cam=kam('kamera_eshik_ichki', (15900, 20300, 1600), (12900, 16700, 1150), 20), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'kirish': dict(cam=kam('kamera_kirish', (5300, 15900, 1650), (1700, 19700, 450), 19), res=(1920, 1080), ichki=True, quyosh=(165, 30, 3.0)),
     # koridor shisha devorlari — founder tasdig'i uchun (15.10): qiya ko'rinishlar, eshik yaqindan, tepadan
     'k1_chap': dict(cam=kam('kamera_K1_chap', (7300, 9100, 1600), (12600, 7750, 1300), 20), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
@@ -527,19 +547,18 @@ KOR = {
     'k2_eshik': dict(cam=kam('kamera_K2_eshik', (12050, 15150, 1500), (12800, 16650, 1150), 20), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
     'tepa1': dict(cam=kam('kamera_tepa1', (800, 12200, 9500), (13500, 12200, 0), 26), res=(1920, 1200), ichki=False, quyosh=(125, 55, 3.2)),
     'tepa2': dict(cam=kam('kamera_tepa2', (25200, 12200, 9500), (11500, 12200, 0), 26), res=(1920, 1200), ichki=False, quyosh=(125, 55, 3.2)),
-    'konditsioner': dict(cam=kam('kamera_konditsioner', (12750, 17500, 1550), (17300, 23400, 2000), 18), res=(1920, 1080), ichki=True, quyosh=(80, 35, 3.0)),
 }
 FAYL = {'umumiy': '1-umumiy', 'k1': '2-koridor-K1', 'k2': '3-koridor-K2', 'logo': '4-koridor-logotip', 'doskalar': '5-koridor-doskalar',
         'sotuv': '6-sotuv-xonasi', 'admin': '7-admin-xonasi', 'sinf': '8-sinf-doska', 'kw': '9-koworking', 'sahna': '10-koworking-sahna',
-        'tomoshabin': '11-sahna-tomoshabin', 'konditsioner': '12-konditsioner', 'kd_fasad': '13-konditsioner-fasad', 'kirish': '14-kirish-zina',
+        'tomoshabin': '11-sahna-tomoshabin', 'sr4': '12-4-xona-doska', 'eshik_ichki': '13-suriladigan-eshik-ichkaridan', 'kirish': '14-kirish-zina',
         'k1_chap': '15-K1-chap-devor', 'k1_ong': '16-K1-ong-devor', 'k1_eshik': '17-K1-eshik', 'k2_chap': '18-K2-chap-devor',
         'k2_ong': '19-K2-ong-devor', 'k2_eshik': '20-K2-eshik', 'tepa1': '21-koridorlar-tepadan-1', 'tepa2': '22-koridorlar-tepadan-2'}
 bu.render_sozla(A['tez'])
 os.makedirs(A['chiq'], exist_ok=True)
-BELGI = {k: (*mk(X[k]), 0) for k in ('SR1', 'SR2', 'SR3', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2', 'XZ3', 'XZ4', 'KW', 'X12')}
-BELGI['SR4'] = (21600, 12200, 0); BELGI['K1'] = (9000, 8550, 0); BELGI['K2'] = (14000, 15850, 0)
+BELGI = {k: (*mk(X[k]), 0) for k in ('SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2', 'XZ3', 'XZ4', 'KW', 'X12')}
+BELGI['K1'] = (9000, 8550, 0); BELGI['K2'] = (14000, 15850, 0)
 BELGI['ZN1'] = (1500, 3000, 0); BELGI['ZL'] = (4800, 19800, 0)
 bu.belgilar(KOR['umumiy']['cam'], KOR['umumiy']['res'], BELGI, os.path.join(A['chiq'], 'umumiy-belgilar-2.json'))
-bu.renderla(KOR, A['chiq'], 'Xadra_2-qavat_3D' + ('_B' if VARIANT == 'B' else ''), FAYL, A['tez'], A['faqat'], namuna=(48, 40))
-if VARIANT == 'B': sys.exit(0)      # B — faqat renderlar; asosiy .blend A variant bilan qoladi
+bu.renderla(KOR, A['chiq'], 'Xadra_2-qavat_3D' + ('_B' if VARIANT == 'B' else '') + ('' if LOGOLI else '_logosiz'), FAYL, A['tez'], A['faqat'], namuna=(48, 40))
+if VARIANT == 'B' or not LOGOLI: sys.exit(0)      # B va logosiz — faqat renderlar; asosiy .blend A, logoli variant bilan qoladi
 bu.saqla(A['chiq'], 'Xadra_2-qavat.blend', KOR['k1']['cam'], tez=A['tez'], blend=A['blend'])

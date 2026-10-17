@@ -24,7 +24,8 @@ XONALAR = [
     ('SR5', "5-xona"), ('SR6', "6-xona"), ('SR7', "7-xona"),
     ('XZ1', "Offline sotuv (XZ1)"), ('XZ2', "Admin (XZ2)"), ('XZ3', "Ustozlar xonasi (XZ3)"), ('XZ4', "Call-markaz (XZ4)"),
     ('X12', "CEO xonasi (12-xona)"),
-    ('K1', "K1 koridori"), ('K2', "K2 koridori"), ('KW', "Koworking zali"), ('ZL', "Kirish zali"),
+    ('K1', "K1 koridori"), ('K2', "K2 koridori"), ('KL1', "Kladovka (K1 oxiri)"), ('KL2', "Kladovka (K2 oxiri)"),
+    ('KW', "Koworking zali"), ('ZL', "Kirish zali"),
     ('ZINA', "Zinapoya"), ('BQ', "Butun qavat (umumiy ishlar)"), ('YQ', "3-qavat 5-xona — o'quv xonasi (24 o'rin)"),
     ('HJ', "Hojatxonalar (3-qavat erkaklar, 2-qavat ayollar)"),
 ]
@@ -32,7 +33,7 @@ NOM = dict(XONALAR)
 BOLIM = [("1-qavat: kirish zali", ['Q1']),
          ("2-qavat: o'quv xonalari", ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7']),
          ("2-qavat: ofis xonalari", ['XZ1', 'XZ2', 'XZ3', 'XZ4', 'X12']),
-         ("2-qavat: umumiy joylar", ['K1', 'K2', 'KW', 'ZL', 'ZINA', 'BQ']),
+         ("2-qavat: umumiy joylar", ['K1', 'K2', 'KL1', 'KL2', 'KW', 'ZL', 'ZINA', 'BQ']),
          ("3-qavat va hojatxonalar", ['YQ', 'HJ'])]
 KORIDOR = {'XZ1': 'K2', 'XZ2': 'K2', 'XZ3': 'K1', 'XZ4': 'K1'}   # 14.10: XZ1, XZ2 — K2 tomonda (yonma-yon); XZ3, XZ4 — K1 tomonda
 UMUMIY = {'K1', 'K2', 'KW', 'ZL'}
@@ -87,12 +88,22 @@ NARX_QATORLAR = [
     ('aksessuar', "Quvur aksessuarlari (fitinglar)", 5000, "so'm/dona", "Buyurtmachi"),
     ('aksessuarSoni', "Quvur aksessuarlari soni", 100, "dona", "Buyurtmachi: jami 500 000 so'm"),
     ('kanal', "Kanalizatsiya quvuri (40 m) va otvodlar", 4000000, "so'm/komplekt", "Buyurtmachi: jami summa"),
-    ('rekuperator', "Rekuperator Welkin, 3 000 m³/soat", 28000000, "so'm/dona", "Buyurtmachi (12.10): bittasining narxi deb olindi"),
-    ('rekuperatorSoni', "Rekuperatorlar soni", 2, "dona", "Sxema: R1 (K1 shiftida), R2 (K2 shiftida)"),
+    # 16.10: rekuperatorlar va splitlar o'rniga — koridor oxiridagi kladovka shifti ustida 2 ta kanalli konditsioner (30% tashqi havo)
+    ('kk', "Kanalli konditsioner 96 000 BTU (ichki kanalli blok, tashqi blok, tashqi havo aralashtirish kamerasi)", 5000, "$/dona",
+     "TAXMIN — chizmada 96 000 BTU deb olingan; issiq kunda yetmaydi (~130 000 BTU kerak, vent-chizma 2-varaq) — model tanlangach almashtiring"),
+    ('kkSoni', "Kanalli konditsionerlar soni", 2, "dona", "KK1 (K1 oxiri), KK2 (K2 oxiri) — kladovka shifti ustida, tashqi devor yonida"),
     ('kanalM', "Havo kanali (vozduxovod), 1 m", 300000, "so'm/m", "Buyurtmachi (12.10)"),
-    ('kanalUz', "Havo kanallari uzunligi", d['kanalUz'], "m", f"HVAC sxemasidan: {d['kanalChizma']} m (taklif yo'nalish) + 10% burilish va ulanishlar"),
-    ('split24', "Split konditsioner 24 000 BTU", 1120, "$/dona", "Buyurtmachi (12.10): SR1–SR7 ga bittadan"),
-    ('split12', "Split konditsioner 12 000 BTU", 380, "$/dona", "Buyurtmachi (12.10): XZ1–XZ4 ga bittadan"),
+    ('kanalUz', "Havo kanallari uzunligi", d['kanalUz'], "m",
+     f"Kanallar rejasidan: {d['kanalChizma']} m (berish ~{d['vent']['berish']}, tashqi havo ~{d['vent']['toza']}, vitechka ~{d['vent']['vitechka']}) + 10% burilish va ulanishlar"),
+    ('diffuzor', "Shift diffuzori 4 tomonga (600 × 600 / 450 × 450), adapter kamerasi va rostlash klapani bilan", 60, "$/dona", "TAXMIN"),
+    ('difSoni', "Diffuzorlar soni", d['vent']['dif'], "dona", "Kanallar rejasidan: sinflarga 2 tadan, xizmat xonalariga 1 tadan"),
+    ('sorPanjara', "So'rish panjarasi Ø200 (vitechka), klapan bilan", 15, "$/dona", "TAXMIN"),
+    ('sorSoni', "So'rish panjaralari soni", d['vent']['sor'], "dona", "Kanallar rejasidan"),
+    ('qPanjara', "Qaytish (2 × 600 × 300, koridor shiftida) va tashqi havo panjaralari, tomdagi chiqish soyaboni", 400, "$/komplekt", "TAXMIN"),
+    ('vv', "Vitechka ventilyatori VV1 — kanalli, 3 000 m³/soat (~400 Pa), shovqin so'ndirgich bilan", 900, "$/dona", "TAXMIN"),
+    # 16.10: koridor eshiklari 1 m, yonga suriladigan (founder); koridor oxirida kladovka eshiklari
+    ('surmaMex', "Suriladigan eshik mexanizmi: yuqori rels va qopqog'i (~2.1 m), roliklar, soft-close, pastki yo'naltirgich, tutqichlar", 150, "$/dona", "TAXMIN — founder (16.10): eshiklar 1 m, Damas eshigi kabi yonga suriladi"),
+    ('eshKL', "Kladovka eshigi 800 × 2100 — yashirin (ko'rinmas korobka, bargi koridor oxiri paneli bilan bir xil qoplanadi, bosib ochiladi)", 350, "$/dona", "TAXMIN — logoli variant; logosiz variantda oddiy eshik ~$150"),
     ('kond3', "Konditsioner — 3-qavat o'quv xonasi", 1000, "$/dona", "Buyurtmachi"),
     # Taxminiy narxlar (buyurtmachi: «narxi va qanday mebel bo'lishi noma'lum — taxminan narx qo'yib berasan»)
     ('stolOfis', "Ofis stoli 140 × 70 (LDSP, tumba bilan)", 220, "$/dona", "TAXMIN — Toshkent bozori; mebelchi narxi bilan almashtiring"),
@@ -128,9 +139,10 @@ NARX_QATORLAR = [
     ('H', "Devor balandligi (poldan shiftgacha)", 3.5, "m", "Buyurtmachi: bino balandligi 3.5 m"),
     ('Hsh', "Shisha qism balandligi", 2.5, "m", "Buyurtmachi"),
     ('Hust', "Shisha ustidagi GKL", '=C{H}-C{Hsh}', "m", "Hisob: devor balandligi − shisha"),
-    ('Hesh', "Eshik balandligi", 2.1, "m", "Taxmin: standart eshik 900 × 2100"),
+    ('Hesh', "Eshik balandligi", 2.1, "m", "Eshik 1000 × 2100"),
     ('HeUst', "Eshik ustidagi GKL", '=C{H}-C{Hesh}', "m", "Hisob: devor balandligi − eshik"),
-    ('eshEn', "Eshik eni", 0.9, "m", "Chizmadan"),
+    ('eshEn', "Eshik eni — koridor eshiklari", 1.0, "m", "Founder (16.10): 1 m, suriladigan"),
+    ('eshEnM', "Eshik eni — CEO xonasi va 3-qavat o'quv xonasi", 0.9, "m", "Chizmadan (mavjud eshiklar)"),
     ('Hb', "Bambuk panel balandligi", '=C{H}', "m", "Taxmin: poldan shiftgacha. Pastroq bo'lsa, shu katakka raqam yozing"),
     ('HbYQ', "Bambuk panel balandligi — yuqori qavat o'quv xonasi", 2.5, "m", "Buyurtmachi"),
 ]
@@ -179,29 +191,34 @@ for w in d['devorlar']:
             joy = f"{nomlar(boshqa)} bilan orasidagi devor" + (" — mavjud devordagi bo'shliqni yopish" if w['izoh'] else '')
         qosh(f['kod'], 'Gips karton (GKL)', joy, f['l'] / 1000, 'H', narx='gkl')
 
-# Yangi eshiklar shisha: eshik (2.1 m) va ustidagi shisha (0.4 m) — shisha devor bilan bir chiziqda 2.5 m gacha;
-# ustida, shisha devordagi kabi, 1 m GKL ikki tomondan.
+# Yangi eshiklar shisha, 1 m, suriladigan: eshik (2.1 m) va ustidagi shisha (0.4 m) — shisha devor bilan bir chiziqda 2.5 m gacha;
+# ustida, shisha devordagi kabi, 1 m GKL ikki tomondan; har biriga suriladigan mexanizm. Kladovka eshiklari — alohida.
 for e in d['eshiklar']:
+    if e['kladovka']:
+        qosh(e['kod'], 'Eshiklar', "Kladovka eshigi 800 × 2100 (koridor oxirida; logoli variantda yashirin)", miqdor=1, birlik='dona', narx='eshKL')
+        continue
     kor = KORIDOR.get(e['kod']) or next(s['koridor'] for s in d['sinflar'] if s['kod'] == e['kod'])
+    if e['surma']:
+        qosh(e['kod'], 'Eshiklar', "Suriladigan eshik mexanizmi (rels, roliklar, soft-close, tutqichlar)", miqdor=1, birlik='dona', narx='surmaMex')
     qosh(e['kod'], 'Shisha devor', f"Shisha eshik va ustidagi shisha ({NOM[kor]} tomoni)", 'eshEn', 'Hsh', narx='shisha')
     qosh(e['kod'], 'Gips karton (GKL)', f"Eshik ustidagi GKL ({NOM[kor]} bilan orasida)", 'eshEn', 'Hust', narx='gkl')
     qosh(kor, 'Gips karton (GKL)', f"Eshik ustidagi GKL ({NOM[e['kod']]} eshigi)", 'eshEn', 'Hust', narx='gkl')
 
 for s in d['sinflar']:
     qosh(s['kod'], 'Bambuk panel', "Doska devori", s['doskaDevor'] / 1000, 'Hb', narx='bambuk')
-    qosh(s['kod'], 'Bambuk panel', "Orqa devor" + (" (L shaklining keng qismi)" if s['kod'] == 'SR4' else ''), s['orqaDevor'] / 1000, 'Hb', narx='bambuk')
+    qosh(s['kod'], 'Bambuk panel', "Orqa devor", s['orqaDevor'] / 1000, 'Hb', narx='bambuk')
     qosh(s['kod'], 'Interaktiv doska', "Doska devoriga", miqdor=1, birlik='dona', narx='doska')
 for o in d['ofislar']:
     for dv in o['devorlar']:
         qosh(o['kod'], 'Bambuk panel', dv['nom'], dv['uz'] / 1000, 'Hb', narx='bambuk')
         if dv.get('eshik'):
-            qosh(o['kod'], 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEn', 'Hesh', narx='bambuk', manfiy=True)
+            qosh(o['kod'], 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEnM', 'Hesh', narx='bambuk', manfiy=True)
 # Yuqori qavatdagi o'quv xonasi (buyurtmachi bergan chizma: 5.45 × 8.60 m, 46.87 m²) — 3 devorga 2.5 m balandlikda:
 # doska devori va unga qarama-qarshi devor (5.45 m), eshikli uzun devor (8.60 m); derazali uzun devorga qilinmaydi.
 qosh('YQ', 'Bambuk panel', "Doska devori (eni)", 5.45, 'HbYQ', narx='bambuk')
 qosh('YQ', 'Bambuk panel', "Orqa devor (eni)", 5.45, 'HbYQ', narx='bambuk')
 qosh('YQ', 'Bambuk panel', "Uzun devor (eshikli)", 8.60, 'HbYQ', narx='bambuk')
-qosh('YQ', 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEn', 'Hesh', narx='bambuk', manfiy=True)
+qosh('YQ', 'Bambuk panel', "Eshik o'rni (ayiriladi)", 'eshEnM', 'Hesh', narx='bambuk', manfiy=True)
 qosh('YQ', 'Interaktiv doska', "Shimoliy devorga (eshikdan kirganda chapda)", miqdor=1, birlik='dona', narx='doska')
 # Hojatxonalar: santexnika ikkala qavat uchun jami (buyurtmachi bergan sonlar), kafel — faqat erkaklar hojatxonasi
 for kalit, nom in [('chashagen', "Chashagen — 3 ta erkaklar (3-qavat)"),
@@ -243,13 +260,14 @@ for w in d['buziladi']:
     joy = f"{w['izoh']} o'rnidagi bo'lak" if 'koridori' in w['izoh'] else w['izoh']
     qosh('BQ', 'Buzish ishlari', f"Devorni buzish — {joy}", w['uz'] / 1000, 'H', narx=('som', 'buzish'))
 qosh('BQ', 'Buzish ishlari', "Qurilish chiqindisini olib chiqish (jami)", miqdor=1, birlik='komplekt', narx=('som', 'chiqindi'))
-# Konditsioner va ventilyatsiya (buyurtmachi summalari, o'rnatish bilan)
-qosh('BQ', 'Konditsioner va ventilyatsiya', "Rekuperator Welkin 3 000 m³/soat (R1 — K1, R2 — K2 koridori shiftida)", miqdor='rekuperatorSoni', birlik='dona', narx=('som', 'rekuperator'))
-qosh('BQ', 'Konditsioner va ventilyatsiya', "Havo kanallari (vozduxovod) — HVAC sxemasi bo'yicha", miqdor='kanalUz', birlik='m', narx=('som', 'kanalM'))
-for kod in ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7']:
-    qosh(kod, 'Konditsioner va ventilyatsiya', "Split konditsioner 24 000 BTU", miqdor=1, birlik='dona', narx='split24')
-for kod in ['XZ1', 'XZ2', 'XZ3', 'XZ4']:
-    qosh(kod, 'Konditsioner va ventilyatsiya', "Split konditsioner 12 000 BTU", miqdor=1, birlik='dona', narx='split12')
+# Konditsioner va ventilyatsiya (16.10): 2 ta kanalli konditsioner kladovka shifti ustida (KK1 — K1, KK2 — K2), havo koridor
+# bo'ylab magistral kanal bilan xonalarga; 30% tashqi havo 3-xonaning ko'cha tomonidan; vitechka — alohida so'rish tarmog'i
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Kanalli konditsioner KK1, KK2 (kladovka shifti ustida, tashqi devor yonida)", miqdor='kkSoni', birlik='dona', narx='kk')
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Havo kanallari (vozduxovod) — berish, tashqi havo va vitechka (kanallar rejasi bo'yicha)", miqdor='kanalUz', birlik='m', narx=('som', 'kanalM'))
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Shift diffuzorlari (sinflarga 2 tadan, xizmat xonalariga 1 tadan)", miqdor='difSoni', birlik='dona', narx='diffuzor')
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Vitechka so'rish panjaralari Ø200", miqdor='sorSoni', birlik='dona', narx='sorPanjara')
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Qaytish va tashqi havo panjaralari, chiqish soyaboni", miqdor=1, birlik='komplekt', narx='qPanjara')
+qosh('BQ', 'Konditsioner va ventilyatsiya', "Vitechka ventilyatori VV1 (3 000 m³/soat)", miqdor=1, birlik='dona', narx='vv')
 qosh('YQ', 'Konditsioner va ventilyatsiya', "Konditsioner (o'quv xonasi)", miqdor=1, birlik='dona', narx='kond3')
 
 # Sotuv (XZ1) va admin (XZ2) xonalari: mebel va interyer — taxminiy (jihozlar soni chizmadagi kabi)
@@ -296,7 +314,7 @@ for kalit, nom, birlik in [('sahnaDevor', "Sahna devori: GKL karkas va grafit pa
 
 TURLAR = ['Shisha devor', 'Gips karton (GKL)', 'Bambuk panel', 'Interaktiv doska', 'Perila', 'Yoritish', 'Kamera tizimi', 'Logotip',
           'Matli plyonka', "Yong'in xavfsizligi", 'Buzish ishlari', 'Santexnika', 'Kafel', 'Konditsioner va ventilyatsiya',
-          'Mebel va interyer', "E'lon va e'tirof doskalari"]
+          'Mebel va interyer', "E'lon va e'tirof doskalari", 'Eshiklar']
 JUFT = TURLAR[:5]    # «Xonalar bo'yicha» varag'ida miqdor va summa ustunlari bilan
 YAKKA = TURLAR[5:]   # faqat summa ustuni bilan
 for k in qatorlar:
@@ -362,7 +380,7 @@ izohlar = [
     "Hisoblash qoidalari",
     "• Gips karton (GKL) devor: uzunlik × balandlik. Devorning har bir tomoni o'zi qaragan xonaga yoziladi (xona tomoni — xonaga, koridor tomoni — koridorga).",
     "• Shisha devor: shisha qism (2.5 m) xonaga yoziladi; ustidagi GKL (1 m) ikki tomonlama — xona va koridor tomoni alohida.",
-    "• Eshiklar shisha: eshik (2.1 m) va ustidagi shisha (0.4 m) — 2.5 m gacha shisha narxida; ustida 1 m GKL ikki tomondan. Eshik furniturasi (ilgak, qulf, tutqich, dovodchik) kirmagan.",
+    "• Koridor eshiklari (11 ta) shisha, 1 m, yonga suriladigan (founder, 16.10; barg xona ichida): eshik (2.1 m) va ustidagi shisha (0.4 m) — 2.5 m gacha shisha narxida; ustida 1 m GKL ikki tomondan; mexanizm (rels, roliklar, soft-close, tutqichlar) — «Eshiklar». Kladovka eshiklari (2 ta, 800 × 2100) — «Eshiklar», kladovka qatorlarida. Qulflar kirmagan.",
     "• Bambuk panel, poldan shiftgacha: o'quv xonalarida doska devori va orqa devor (interaktiv doska orqasi ayirilmagan); ofis xonalarida ikkala uzun yon devor; CEO xonasida ikkita ichki kar devor, eshik o'rni ayiriladi. Derazali tashqi va shisha devorlarga qilinmaydi.",
     "• Yuqori qavat o'quv xonasi (5.45 × 8.60 m, buyurtmachi chizmasi): bambuk panel 3 devorga, 2.5 m balandlikda — doska devori, orqa devor va eshikli uzun devor (eshik o'rni ayiriladi); derazali uzun devorga qilinmaydi.",
     "• Interaktiv doska: 7 ta shu qavat sinflariga va 1 ta yuqori qavatdagi o'quv xonasiga — jami 8 ta.",
@@ -370,14 +388,14 @@ izohlar = [
     "• Uzunliklar chizma v1.2 dan (mavjud holat chizmasining fotosi asosida) — ish boshlanishidan oldin joyida o'lchanadi.",
     "• Yoritish: koridorlar (K1, K2) va koworking zaliga 336 $ dan, o'quv xonalari (7), ofis xonalari (4) va CEO xonasiga 168 $ dan. Kirish zali, WC va yuqori qavat xonasi kiritilmagan.",
     "• Videokuzatuv: 16 ta kamera (40 $) va o'rnatish (21 $ dan), NVR, kabellar jami; logotiplar jami — «Butun qavat» qatorida.",
-    "• So'mdagi narxlar (matli plyonka, yong'in xavfsizligi, devor buzish va chiqindi, rekuperator va havo kanallari, santexnika) «Dollar kursi» katagi bo'yicha (11 900 so'm/$) $ ga o'tkaziladi.",
+    "• So'mdagi narxlar (matli plyonka, yong'in xavfsizligi, devor buzish va chiqindi, havo kanallari, santexnika) «Dollar kursi» katagi bo'yicha (11 900 so'm/$) $ ga o'tkaziladi.",
     "• Devor buzish: chizmadagi buziladigan devorlar uzunligi × devor balandligi (3.5 m) × 50 000 so'm/m².",
     "• Kutilmagan xarajatlar: umumiy summadan 10% — «Xonalar bo'yicha» varag'ining oxirida.",
     "• 3-qavat: 5-xona — o'quv xonasi (24 o'rin, bambuk panel va interaktiv doska); 2-xona — erkaklar hojatxonasi. Santexnika soni ikkala hojatxona uchun jami (2-qavatdagisi — ayollar: 2 kabina, unitazli, eng ichkarida; oldida rakovinali tambur — 6-xona 3-qavatga o'tish yo'lagi bo'lgani uchun ikki eshik orqali kiriladi); kafel faqat erkaklar hojatxonasi uchun (devor 58 m², pol 16 m²).",
-    "• Ventilyatsiya va konditsionerlash (buyurtmachi, 12.10): 2 ta Welkin rekuperatori (28 mln so'm dan) va havo kanallari (HVAC sxemasidagi uzunlik × 300 000 so'm/m) — «Butun qavat» qatorida; split konditsionerlar: SR1–SR7 ga bittadan 24 000 BTU ($1 120), XZ1–XZ4 ga bittadan 12 000 BTU ($380) — xonalar qatorida; CEO xonasi va koworkingda konditsioner mavjud (koworkingdagisi koridorlarni ham sovutadi); 3-qavat o'quv xonasiga 1 ta konditsioner. Sinflarning ko'cha tomoni to'liq oynali (buyurtmachi, 12.10) — tashqi bloklar tomda, trassa ~5–13 m. Kirmagan: montaj (narxga kirmagan bo'lsa), diffuzor va panjaralar, shovqin so'ndirgichlar, kanal izolyatsiyasi, freon trassalari, tomdagi tayanch ramalar, drenaj nasoslari (kerak bo'lsa).",
+    "• Konditsioner va ventilyatsiya (16.10, kanallar rejasi — Xadra_2-qavat_vitechka_konditsioner): 2 ta kanalli konditsioner (KK1, KK2) koridor oxiridagi kladovka shifti ustida, tashqi devor yonida — havo koridor bo'ylab magistral kanal bilan sinflarga (2 tadan) va xizmat xonalariga (1 tadan) diffuzorlar orqali; 30% tashqi havo 3-xonaning ko'cha tomonidan; vitechka — alohida so'rish tarmog'i (18 panjara, VV1 3 000 m³/soat). Konditsioner, diffuzor, panjara va ventilyator narxlari TAXMIN. 96 000 BTU issiq kunda yetmaydi (har blokka ~130 000 BTU kerak) — model tanlangach narx almashtiriladi. Avvalgi taklif (2 ta rekuperator va 11 ta split) bekor qilindi. CEO xonasi va koworkingda konditsioner mavjud; 3-qavat o'quv xonasiga 1 ta konditsioner. Kirmagan: montaj (narxga kirmagan bo'lsa), kanal izolyatsiyasi, freon trassalari, tashqi blok tayanch ramasi, drenaj nasoslari (kerak bo'lsa), CO₂ datchiklari.",
     "• Santexnika: 4 ta kabina, issiq va sovuq suv quvurlari (40 m dan), 100 ta aksessuar, kanalizatsiya quvuri va otvodlar — «Hojatxonalar» qatorida.",
-    "• 2-qavat koridorlari: 4-xonaning koridor oxiridagi devorlari GKL (avval shisha edi), markazida yorituvchi logotip; 15.10 dan — Jahon School namunasi uslubida: marmar ko'rinishli panel, mox polosalari, egilgan yog'och reykali kanopi, shift chetlarida yashil LED (taxmin, K1 va K2 qatorlarida); e'lonlar va e'tirof doskalari — koworking qatorida.",
-    "• TAXMINIY narxlar (to'q sariq fon): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, koworking sahnasi (karkas devor, reyka, logotip, trek yoritish, ovoz, pol, minbar), 1-qavat resepshn stoykasi, mehmonlar mebeli va logotiplari — Toshkent bozori bo'yicha dastlabki baho; mebelchi va reklama ustasi narxi bilan almashtiring. «Yakuniy» varag'ida taxminiy qism alohida ko'rsatilgan.",
+    "• 2-qavat koridorlari (16.10): K1 va K2 4-xona orqali kladovkagacha davom etadi; koridor oxiri — kladovkaning ko'ndalang GKL devori. Logoli variant hisoblangan (Jahon School namunasi uslubida): marmar ko'rinishli panel, mox polosalari, egilgan yog'och reykali kanopi, shift chetlarida yashil LED (taxmin, K1 va K2 qatorlarida); kladovka eshigi yashirin. Logosiz variantda marmar, mox va kanopi kirmaydi (2 × $1 350 = $2 700 kam), kladovka eshigi oddiy (~$150). E'lonlar va e'tirof doskalari — koworking qatorida.",
+    "• TAXMINIY narxlar (to'q sariq fon): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, koworking sahnasi (karkas devor, reyka, logotip, trek yoritish, ovoz, pol, minbar), 1-qavat resepshn stoykasi, mehmonlar mebeli va logotiplari, kanalli konditsionerlar, diffuzor va panjaralar, vitechka ventilyatori, suriladigan eshik mexanizmlari va kladovka eshiklari — Toshkent bozori bo'yicha dastlabki baho; mebelchi va reklama ustasi narxi bilan almashtiring. «Yakuniy» varag'ida taxminiy qism alohida ko'rsatilgan.",
     "• Kirmagan: o'quv xonalari, ustozlar xonasi, call-markaz, CEO va koworking mebeli — mavjud; pol (kafel) va internet — mavjud; turniketlar (2 ta) — mavjud (o'rnatish, to'siq va evakuatsiya darvozasi alohida aniqlanadi); eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
     "Ranglar: ko'k — qo'lda kiritilgan qiymat; yashil — boshqa varaqdan olingan; qora — formula; sariq fon — o'zgartirish mumkin bo'lgan kataklar.",
 ]
@@ -476,7 +494,9 @@ ws['A2'].font = f_kichik
 UST = ['Xona', 'Shisha (devor va eshik), m²', 'Shisha (devor va eshik), $', 'Gips karton (GKL), m²', 'Gips karton (GKL), $',
        'Bambuk panel, m²', 'Bambuk panel, $', 'Interaktiv doska, dona', 'Interaktiv doska, $', 'Perila, m', 'Perila, $',
        'Yoritish, $', 'Kamera tizimi, $', 'Logotip, $', 'Matli plyonka, $', "Yong'in xavfsizligi, $", 'Buzish ishlari, $',
-       'Santexnika, $', 'Kafel, $', 'Konditsioner va ventilyatsiya, $', 'Mebel va interyer (taxmin), $', "E'lon va e'tirof doskalari (taxmin), $", 'Jami, $']
+       'Santexnika, $', 'Kafel, $', 'Konditsioner va ventilyatsiya, $', 'Mebel va interyer (taxmin), $', "E'lon va e'tirof doskalari (taxmin), $",
+       'Eshiklar: mexanizm, kladovka (taxmin), $', 'Jami, $']
+assert len(UST) == 2 + 2 * len(JUFT) + len(YAKKA), "UST ustunlari TURLAR bilan mos emas"
 NC = len(UST)                      # ustunlar soni
 JAMI_UST = get_column_letter(NC)   # «Jami, $» ustuni
 for i, h in enumerate(UST, 1):
@@ -598,9 +618,10 @@ r += 1
 UY = r
 qator(r, ['', 'UMUMIY JAMI', f"=C{JY}+C{JY + 1}", f"=C{r}*{KURS}", ''], [None, None, USD, SOM, None], Font(name=SHRIFT, size=11, bold=True), PatternFill('solid', fgColor='D9E1F2'))
 r += 1
-taxmin_f = (f'=SUMIFS({rng("J")},{rng("C")},"Mebel va interyer")+SUMIFS({rng("J")},{rng("C")},"E\'lon va e\'tirof doskalari")'
-            f'+SUMIFS({rng("J")},{rng("B")},"{NOM["Q1"]}",{rng("C")},"Logotip")')
-qator(r, ['', "shundan taxminiy narxlar (mebel, interyer, koworking sahnasi, koridor oxiri dekori, doskalar, 1-qavat logotiplari) — kutilmagan xarajatsiz", taxmin_f, f"=C{r}*{KURS}", ''], [None, None, USD, SOM, None], f_kichik)
+# taxminiy qism — manbasi «TAXMIN» bo'lgan barcha narx kalitlari bo'yicha (Hisob varag'ining K ustuni — narx kaliti)
+TAXMIN_K = [k for k, _n, _v, _b, manba in NARX_QATORLAR if str(manba).startswith('TAXMIN')]
+taxmin_f = '=' + '+'.join(f'SUMIFS({rng("J")},{rng("K")},"{k}")' for k in TAXMIN_K)
+qator(r, ['', "shundan taxminiy narxlar (mebel, interyer, koworking sahnasi, koridor oxiri dekori, doskalar, 1-qavat logotiplari, kanalli konditsionerlar, diffuzor va panjaralar, eshik mexanizmlari) — kutilmagan xarajatsiz", taxmin_f, f"=C{r}*{KURS}", ''], [None, None, USD, SOM, None], f_kichik)
 wy.cell(row=r, column=3).fill = fill_taxmin
 r += 2
 wy.cell(row=r, column=1, value="2. Qavat va bo'limlar bo'yicha").font = f_qalin
@@ -627,22 +648,22 @@ for col, w in zip('ABCDE', [5, 46, 16, 20, 9]):
 
 # ---------- 5. Fazalar: ishlar ketma-ketligi, sanalar va pul oqimi ----------
 # Har bir narx kaliti bo'yicha summa fazalarga ulush bilan taqsimlanadi (ko'k — o'zgartirish mumkin): uzoq tayyorlanadigan
-# buyurtmalarga avans (mebel, logotip, rekuperator, shisha), qoldig'i yetkazib berish / o'rnatishda. Sanalar — boshlanish
+# buyurtmalarga avans (mebel, logotip, kanalli konditsioner, shisha), qoldig'i yetkazib berish / o'rnatishda. Sanalar — boshlanish
 # sanasidan, ish kunlari bo'yicha (dushanba–shanba, bayramlar chiqarib tashlanadi).
 import datetime as dt
 from openpyxl.formatting.rule import FormulaRule
 FAZALAR = [
     ('F0', "Tayyorgarlik va buyurtmalar", 6,
      "Ijaraga beruvchining yozma roziligi (devor buzish, tomga tashqi bloklar); joyida o'lchov (oynalar, ustunlar, tom); pudratchilar bilan shartnomalar; "
-     "uzoq tayyorlanadigan buyurtmalar — rekuperatorlar, mebel va resepshn, logotiplar (avans)"),
+     "uzoq tayyorlanadigan buyurtmalar — kanalli konditsionerlar, mebel va resepshn, logotiplar (avans)"),
     ('F1', "Buzish ishlari", 4, "Eski devorlarni buzish, qurilish chiqindisini olib chiqish; pol, oyna va eshiklarni himoyalash"),
     ('F2', "Qora ishlar va muhandislik tarmoqlari", 12,
-     "GKL karkaslar va birinchi tomoni; elektr (yoritish, split liniyalari, kamera va yong'in signalizatsiyasi kabellari); santexnika quvurlari va nuqtalari; "
-     "rekuperatorlar, havo kanallari, freon trassalari va drenaj — shift yopilishidan oldin; tomdagi tayanch ramalar"),
+     "GKL karkaslar va birinchi tomoni; elektr (yoritish, konditsioner liniyalari, kamera va yong'in signalizatsiyasi kabellari); santexnika quvurlari va nuqtalari; "
+     "kanalli konditsionerlar (kladovka shifti ustida), vitechka ventilyatori, havo kanallari, freon trassalari va drenaj — shift yopilishidan oldin; tashqi blok tayanch ramalari"),
     ('F3', "Pardoz ishlari", 10,
-     "GKL ikkinchi tomoni, shpaklyovka, bo'yoq; hojatxona kafeli; bambuk panellar; sahna poli; shisha devorlar o'lchovi va buyurtmasi (avans); splitlar xaridi"),
+     "GKL ikkinchi tomoni, shpaklyovka, bo'yoq; hojatxona kafeli; bambuk panellar; sahna poli; shisha devorlar o'lchovi va buyurtmasi (avans)"),
     ('F4', "O'rnatish ishlari", 10,
-     "Shisha devor va eshiklar, perila, yoritish, split ichki va tomdagi tashqi bloklari, santexnika jihozlari va kabinalar, kameralar va NVR, "
+     "Shisha devor va suriladigan eshiklar, kladovka eshiklari, perila, yoritish, diffuzor va panjaralar, santexnika jihozlari va kabinalar, kameralar va NVR, "
      "yong'in signalizatsiyasi asboblari, interaktiv doskalar, matli plyonka, sahna yoritishi va ekran"),
     ('F5', "Mebel, brending va ishga tushirish", 6,
      "Mebel va resepshn (qoldiq), logotiplar, e'lon va e'tirof doskalari, sahna reykalari, ovoz, minbar; HVAC sozlash va sinov, "
@@ -654,9 +675,10 @@ TAQSIMOT = {
     'buzish': ul(F1=1), 'chiqindi': ul(F1=1),
     'gkl': ul(F2=.5, F3=.5), 'sahnaDevor': ul(F2=.5, F3=.5),
     'issiqQuvur': ul(F2=1), 'sovuqQuvur': ul(F2=1), 'aksessuar': ul(F2=1), 'kanal': ul(F2=1), 'tochka': ul(F2=.5, F4=.5),
-    'rekuperator': ul(F0=.5, F2=.5), 'kanalM': ul(F2=1), 'kabel': ul(F2=1), 'yongin': ul(F2=.4, F4=.6),
+    'kk': ul(F0=.5, F2=.5), 'vv': ul(F2=1), 'kanalM': ul(F2=1), 'kabel': ul(F2=1), 'yongin': ul(F2=.4, F4=.6),
     'kafel': ul(F3=1), 'kafelUsta': ul(F3=1), 'bambuk': ul(F3=1), 'sahnaPol': ul(F3=1),
-    'shisha': ul(F3=.5, F4=.5), 'split24': ul(F3=1), 'split12': ul(F3=1), 'kond3': ul(F3=1),
+    'shisha': ul(F3=.5, F4=.5), 'kond3': ul(F3=1),
+    'diffuzor': ul(F4=1), 'sorPanjara': ul(F4=1), 'qPanjara': ul(F4=1), 'surmaMex': ul(F4=1), 'eshKL': ul(F4=1),
     'doska': ul(F4=1), 'perila': ul(F4=1), 'yorXona': ul(F4=1), 'yorKatta': ul(F4=1),
     'chashagen': ul(F4=1), 'unitaz': ul(F4=1), 'rakovina': ul(F4=1), 'mustahab': ul(F4=1), 'taxoratSm': ul(F4=1), 'rakovinaSm': ul(F4=1), 'kabina': ul(F4=1),
     'kamera': ul(F4=1), 'kameraOrn': ul(F4=1), 'nvr': ul(F4=1), 'plyonka': ul(F4=1), 'sahnaYor': ul(F4=1), 'sahnaEkran': ul(F4=1),
@@ -827,8 +849,8 @@ for i, (fk, *_r) in enumerate(FAZALAR):
     c = wf.cell(row=fq[fk], column=7, value=f"={get_column_letter(6 + NF + i)}{T3J}"); c.font, c.border, c.number_format = f_yashil, chegara, USD0
 r += 2
 for t in ["Izoh:",
-          "• Avanslar (F0): mebel, resepshn va logotiplarga 50% (tayyorlash 3–4 hafta); rekuperatorlarga 50% — qoldig'i yetkazib berilganda (F2).",
-          "• Shisha devorlar: o'lchov GKL karkasdan keyin (F3) — avans 50%, qoldig'i o'rnatishda (F4). Splitlar F3 da xarid qilinadi, F4 da o'rnatiladi; freon trassalari F2 da (shiftdan oldin).",
+          "• Avanslar (F0): mebel, resepshn va logotiplarga 50% (tayyorlash 3–4 hafta); kanalli konditsionerlarga 50% — qoldig'i yetkazib berilganda (F2).",
+          "• Shisha devorlar: o'lchov GKL karkasdan keyin (F3) — avans 50%, qoldig'i o'rnatishda (F4). Kanalli konditsionerlar, kanallar va freon trassalari F2 da (shiftdan oldin); diffuzor va panjaralar F4 da.",
           "• Montaj, osma shift, pol, elektr kabellari va bo'yoq narxlari jadvalda yo'q (buyurtmachi bermagan) — kelishilgach shu fazalarga qo'shiladi.",
           "• Fazalar ketma-ket olingan; ustalar soni yetarli bo'lsa F2 va F3 qisman parallel ketishi mumkin — shunda «Ish kuni» ni kamaytiring."]:
     wf.cell(row=r, column=1, value=t).font = f_kichik; r += 1

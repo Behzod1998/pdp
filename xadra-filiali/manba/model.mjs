@@ -187,8 +187,10 @@ export const PANJARA = [
 // en — logotip eni, bal — balandligi, z — markazi poldan, mm.
 // 16.10: koridor oxiri endi kladovkaning ko'ndalang devori (x = KLADOVKA.x). Buyurtmachi: ikki variant — logoli (marmar
 // panel, mox, reykalar; kladovka eshigi yashirin, panel bilan bir xil) va logosiz (oddiy oq devor, oddiy eshik).
+// Logoli variantda kladovka eshigi (800) — yashirin, bargi marmar panel bilan bir xil qoplangan (dastasiz, bosib ochiladi);
+// logotip shu barg markazida, eni 0.7 m — barg chegarasidan chiqmaydi.
 export const KORIDOR_LOGO = [['K1', 7800, 9300], ['K2', 15100, 16600]].map(([koridor, y1, y2]) => ({
-  koridor, x: KX, y1, y2, en: 1200, bal: 352, z: 1650, panel: { en: 1500, z1: 0, z2: H },
+  koridor, x: KX, y1, y2, en: 700, bal: 205, z: 1650, panel: { en: 1500, z1: 0, z2: H },
 }));
 export const KORIDOR_OXIRI_VARIANT = ['logoli', 'logosiz'];
 // E'lonlar doskasi va e'tirof doskasi (faxriylar, oy o'quvchisi nomzodlari). Buyurtmachi (14.10): xizmat xonalarining

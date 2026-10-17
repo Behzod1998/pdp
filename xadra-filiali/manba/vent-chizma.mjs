@@ -322,8 +322,12 @@ function konditsionerSvg(h) {
       R(kq, `fill="${RG.tozaF}" stroke="#26313d" stroke-width="30" stroke-dasharray="80 40"`),
       T((b.x1 + b.x2) / 2, cy + 80, h.guruh[k].blok, 230, 'text-anchor="middle" font-weight="700" fill="#26313d"'),
       T((b.x1 + b.x2) / 2, k === 'K1' ? b.y2 + 330 : b.y1 - 160, 'kladovka shifti ustida', 150, 'text-anchor="middle" fill="#26313d"'));
-    // qaytish panjarasi — kladovka eshigi ustida (koridor tomonda)
-    q.push(R({ x1: KX - 120, x2: KX, y1: cy - 450, y2: cy - 100 }, `fill="none" stroke="#26313d" stroke-width="20" stroke-dasharray="50 30"`));
+    // qaytish panjarasi (17.10) — koridor shiftida, kladovka devori yonida, 600 × 300 (logoli variantda reykalar ortida);
+    // havo shift ustidagi bo'shliq orqali ko'ndalang devordan blokning qaytish kamerasiga o'tadi
+    const kc = k === 'K1' ? 8550 : 15850, gp = { x1: KX - 600, x2: KX - 300, y1: kc - 300, y2: kc + 300 };
+    q.push(R(gp, `fill="#fff" stroke="#26313d" stroke-width="20"`),
+      ...[1, 2, 3, 4, 5].map(i => `<line x1="${gp.x1 + 40}" x2="${gp.x2 - 40}" y1="${gp.y1 + i * 100}" y2="${gp.y1 + i * 100}" stroke="#26313d" stroke-width="12"/>`),
+      T(gp.x1 - 70, kc + 55, 'QP', 150, 'text-anchor="end" fill="#26313d" font-weight="700"'));
   });
   h.D.forEach(d => {
     q.push(diffSvg(d.p, d.panel / 2));
@@ -432,7 +436,7 @@ export function ventHtml() {
     <table><tr><th>Kod</th><th>Xona</th><th class="r">x</th><th class="r">y</th><th class="r">m³/soat</th><th class="r">Panel</th><th class="r">Patrubok</th></tr>
       ${h.D.map(d => `<tr><td><b>${d.kod}</b></td><td>${NOM[d.xona]}</td><td class="r">${son(d.p[0])}</td><td class="r">${son(d.p[1])}</td><td class="r">${son(d.Q)}</td><td class="r">${d.panel}×${d.panel}</td><td class="r">${d.boyin.a}×${d.boyin.b}</td></tr>`).join('')}</table>
     ${bolakJadval([...h.kLin, ...h.tLin], 'Magistral')}
-    <p class="kichik">Kanallar jami: berish ~${Math.round(h.uz.K)} m (patrubokli), tashqi havo ~${Math.round(h.uz.T)} m, vitechka ~${Math.round(h.uz.V)} m — hammasi ~${Math.round(h.uz.jami)} m (narx: ${son(NARX.kanalM)} so'm/m). Qaytish havosi: koridordan kladovka eshigi ustidagi panjara (600 × 300) orqali blokning qaytish kamerasiga.</p>
+    <p class="kichik">Kanallar jami: berish ~${Math.round(h.uz.K)} m (patrubokli), tashqi havo ~${Math.round(h.uz.T)} m, vitechka ~${Math.round(h.uz.V)} m — hammasi ~${Math.round(h.uz.jami)} m (narx: ${son(NARX.kanalM)} so'm/m). Qaytish havosi (QP): koridor shiftidagi panjara 600 × 300, kladovka devori yonida (logoli variantda reykalar ortida) — shift ustidagi bo'shliq orqali blokning qaytish kamerasiga.</p>
     <div class="ogoh"><b>Diqqat:</b> (1) 2 × 96k yetmaydi — har blokka ~${Math.round(Math.max(...kG.map(g => g.jami)))} kW (~${Math.round(Math.max(...kG.map(g => g.jami)) * 3.412 / 10) * 10}k BTU) kerak; 96k issiqda ~${n1(blokIssiq)} kW beradi. (2) 30% tashqi havoda to'la sinfda CO₂ ~${son(co2Min)}–${son(co2Max)} ppm (me'yor ≤ 1 000–1 200): darsdan keyin shamollatish yoki tashqi havoni ~45–50% ga oshirish (blok shunga mos tanlansa) tavsiya.</div>
     ${shtamp('Konditsioner (kanalli) va tashqi havo', 2)}
   </div></section>`;

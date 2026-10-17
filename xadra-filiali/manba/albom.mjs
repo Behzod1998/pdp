@@ -88,17 +88,17 @@ async function q2Varaqlar(x) {
   const a = `<section class="varaq">${bosh("2-qavat — 3D ko'rinishlar (Blender): umumiy va koridorlar", `Rejalar: Xadra_2-qavat_taqdimot_reja_${V}.pdf`)}
   <div class="ikki"><div>
     ${fig(await rasm('Xadra_2-qavat_3D_1-umumiy.jpg'), `<b>Umumiy ko'rinish</b> — shiftsiz, devorlar 2.7 m da kesilgan. 7 sinf (${tekshiruv().orinlar} o'rin), sotuv, admin, ustozlar, call-markaz, koworking va CEO xonasi; ayollar WC — 2 kabina tambur ortida.`, yorliqlar(b, nom))}
-    <div class="matn"><p><b>Koridorlar yorug' va zamonaviy</b> (15.10, Jahon School namunasi uslubida): shiftda har 1.2 m da ko'ndalang chiziqli chiroqlar, chetlarida yashil LED; och pol va devorlar, sinflarning shisha devorlari (1.0–1.6 m da matli polosa). Ikkala koridor oxirida — marmar ko'rinishli panelda yoritilgan PDP Academy logotipi, ikki yonida mox polosalari va yashil LED, tepasida shiftdan devorga egilib tushadigan yog'och reykalar — koridor boshidan to'g'ri ko'rinadi. 4-xonaning barcha devorlari GKL, faqat eshigi shisha. Xizmat xonalarining old tomoni ham shisha (14.10) — e'lonlar va e'tirof doskalari koworkingning shimoliy devorida.</p></div>
+    <div class="matn"><p><b>Koridorlar yorug' va zamonaviy</b> (15.10, Jahon School namunasi uslubida): shiftda har 1.2 m da ko'ndalang chiziqli chiroqlar, chetlarida yashil LED; och pol va devorlar, sinflarning shisha devorlari (1.0–1.6 m da matli polosa). <b>16.10:</b> K1 va K2 4-xona orqali kladovkagacha davom etadi; koridor oxiri — kladovkaning ko'ndalang devori (logoli variantda marmar panelda logotip, mox, egilgan reykalar; kladovka eshigi yashirin). Koridor eshiklari 1 m, yonga suriladigan — barg xona ichida. Xizmat xonalarining old tomoni ham shisha — e'lonlar va e'tirof doskalari koworkingning shimoliy devorida.</p></div>
   </div><div>
-    ${fig(await rasm('Xadra_2-qavat_3D_2-koridor-K1.jpg'), "<b>K1 koridori</b> — koworkingdan: chapda 1–3-xona, o'ngda call-markaz (XZ4) va ustozlar (XZ3) xonalarining shisha old tomoni, oxirida logotip.")}
-    ${fig(await rasm('Xadra_2-qavat_3D_3-koridor-K2.jpg'), "<b>K2 koridori</b> — chapda sotuv (XZ1) va admin (XZ2) — shisha, yonma-yon; o'ngda 5–7-xona, oxirida logotip.")}
-    ${fig(await rasm('Xadra_2-qavat_3D_4-koridor-logotip.jpg'), "<b>K2 oxiri:</b> marmar panelda logotip, mox polosalari, egilgan yog'och reykalar va LED.")}
+    ${fig(await rasm('Xadra_2-qavat_3D_2-koridor-K1.jpg'), "<b>K1 koridori</b> — koworkingdan: chapda 1–3-xona, o'ngda call-markaz (XZ4) va ustozlar (XZ3) xonalarining shisha old tomoni, oxirida kladovka devori va logotip.")}
+    ${fig(await rasm('Xadra_2-qavat_3D_3-koridor-K2.jpg'), "<b>K2 koridori</b> — chapda sotuv (XZ1), admin (XZ2) va 4-xona — shisha; o'ngda 7–5-xona, oxirida kladovka devori va logotip.")}
+    ${fig(await rasm('Xadra_2-qavat_3D_4-koridor-logotip.jpg'), "<b>K2 oxiri (logoli):</b> marmar panelda logotip — kladovkaning yashirin eshigi bargida, mox polosalari, egilgan yog'och reykalar va LED.")}
   </div></div></section>`;
   const r = [
     ['Xadra_2-qavat_3D_5-koridor-doskalar.jpg', "<b>E'lonlar va e'tirof doskasi</b> (faxriylar, oy o'quvchisi nomzodlari) — koworkingning shimoliy devorida, K1 ga kirishda."],
     ['Xadra_2-qavat_3D_6-sotuv-xonasi.jpg', "<b>Offline sotuv (XZ1, K2 tomoni):</b> 2 konsultant, mijoz stullari, shkaf; eski o'rta devorda brend devor (logotip), yon devorlarda bambuk panel; old tomoni shisha, eshik o'rtada."],
     ['Xadra_2-qavat_3D_7-admin-xonasi.jpg', "<b>Admin (XZ2, K2 tomoni — sotuv yonida):</b> 2 ish o'rni eshikka qaragan, shkaf, o'rta devorda logotip, bambuk panel; old tomoni shisha, eshik o'rtada."],
-    ['Xadra_2-qavat_3D_8-sinf-doska.jpg', "<b>2-xona → doska:</b> interaktiv doska yon devorda, bambuk panel; chapda oynali fasad, o'ngda koridor tomondagi shisha devor."],
+    ['Xadra_2-qavat_3D_8-sinf-doska.jpg', "<b>2-xona → doska:</b> interaktiv doska yon devorda, bambuk panel; chapda oynali fasad, o'ngda koridor tomondagi shisha devor; shiftda diffuzor va so'rish panjarasi."],
     ['Xadra_2-qavat_3D_9-koworking.jpg', "<b>Koworking</b> — kundalik rejim, kirish zalidan; o'ngda sahna devori."],
     ['Xadra_2-qavat_3D_14-kirish-zina.jpg', "<b>Kirish qismi:</b> ZN2 zinasi koworkingga ochiq — devor o'rniga metall panjara (h 1.1 m)."],
   ];
@@ -124,7 +124,29 @@ async function q2Varaqlar(x) {
     <figure style="border:.3mm solid #ddd;border-radius:1.2mm;overflow:hidden">${kwKorinish('tadbir')}</figure>
     <figcaption><b>Tadbirlar rejimi:</b> ${KW_TADBIR.stullar.length} o'rin (4 qator × 17, ikki yo'lak), stullar sahnaga qaragan (rejada sahna yuqorida); sahna oldi va o'tish yo'lagi bo'sh.</figcaption>
   </div></div></section>`;
-  return a + b2 + b3;
+  // 16.10 o'zgarishlari: koridor oxiri ikki variantda, suriladigan eshiklar, 4-xona
+  const fw = (src, izoh) => `<div>${fig(src, izoh)}</div>`;
+  const c = `<section class="varaq">${bosh("2-qavat — 16.10 o'zgarishlari: koridor oxiri (logoli / logosiz), suriladigan eshiklar, 4-xona", `Rejalar: Xadra_2-qavat_taqdimot_reja_${V}.pdf · kanallar: Xadra_2-qavat_vitechka_konditsioner_${V}.pdf`)}
+  <style>${SHISHA_CSS} .yg{display:grid;grid-template-columns:repeat(3,1fr);gap:2mm 4mm;margin-top:2mm} .yg figure img{height:76mm;object-fit:cover;width:100%}</style>
+  <div class="yg">
+    ${fw(await rasm('Xadra_2-qavat_3D_4-koridor-logotip.jpg'), "<b>Logoli:</b> marmar panel, logotip (0.7 m) kladovkaning yashirin eshigi bargida — dastasiz, bosib ochiladi; ikki yonida mox va yashil LED, tepasida egilgan reykalar.")}
+    ${fw(await rasm('Xadra_2-qavat_3D_logosiz_4-koridor-logotip.jpg'), "<b>Logosiz:</b> oddiy oq devor va oddiy kladovka eshigi; chiroqlar koridor oxirigacha.")}
+    ${fw(await rasm('Xadra_2-qavat_3D_logosiz_2-koridor-K1.jpg'), "<b>K1, logosiz</b> — koworkingdan to'g'ri (logolisi — oldingi betda).")}
+    ${fw(await rasm('Xadra_2-qavat_3D_12-4-xona-doska.jpg'), "<b>4-xona:</b> doska eshik tomonida — g'arbiy devorda (U6 ustuni bilan tekis GKL qoplama); 3 × 3 parta, 18 o'rin; shiftda 2 ta diffuzor.")}
+    ${fw(await rasm('Xadra_2-qavat_3D_13-suriladigan-eshik-ichkaridan.jpg'), "<b>Suriladigan eshik, xona ichidan</b> (6-xona, yarim ochiq): barg devor bo'ylab suriladi, tepada qopqoqli rels.")}
+    ${fw(await rasm('Xadra_2-qavat_3D_20-K2-eshik.jpg'), "<b>Shu eshik koridordan:</b> o'rinda faqat alyumin rom va ustidagi shisha — barg xona tomonda.")}
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 110mm;gap:5mm;margin-top:2mm" class="matn">
+    <div><p><b>Koridor oxiri.</b> K1 va K2 4-xona orqali uning o'rtasigacha (x = 21.0 m) davom etadi; oxirida kladovkaning ko'ndalang GKL devori, o'rtasida 800 mm eshik. Kanalli konditsioner (KK1, KK2) kladovka shifti ustida, tashqi devor yonida — kladovka uning shovqinini to'sadi, pastki qismi ombor. Havo koridor bo'ylab magistral kanal bilan xonalarga, 30% tashqi havo — 3-xonaning ko'cha tomonidan; qaytish havosi koridor shiftidagi panjaradan (logoli variantda reykalar ortida).</p>
+      <p><b>Narx farqi:</b> logosiz variantda marmar, mox va reykali kanopi kirmaydi (2 koridor — ~$2,700 kam), kladovka eshiklari oddiy (2 ta — ~$400 kam).</p></div>
+    <div><p><b>Eshiklar (founder taklifi):</b> 11 ta koridor eshigi 1 m, yonga suriladigan (Damas eshigi kabi) — barg xona ichida, devor bo'ylab suriladi: koridorga ochilmaydi, evakuatsiya yo'lini to'smaydi, eshik oldidagi o'rinlar saqlanadi. Shisha, alyumin romda, 1.0–1.6 m da mat plyonka va logo; soft-close.</p>
+      <p><b>4-xona</b> kichraydi: 5.75 × 5.60 m, 18 o'rin (qavatda jami ${tekshiruv().orinlar}). Sinflarda devordagi split bloklar yo'q — shiftda diffuzorlar (koridor tomonda) va vitechka panjaralari (deraza tomonda).</p></div>
+    <div class="tasdiq"><h3>Founder tanlovi</h3>
+      <div class="q"><b>Koridor oxiri</b><span class="kv"></span>logoli <span class="kv"></span>logosiz</div>
+      <div class="q"><b>Suriladigan eshik 1 m</b><span class="kv"></span>Ma'qul <span class="kv"></span>O'zgartirish: __________</div>
+      <div class="q" style="margin-top:2.5mm">Imzo: ____________________ &nbsp; Sana: ____________</div></div>
+  </div></section>`;
+  return a + c + b2 + b3;
 }
 
 // ---------- xarajatlar xulosasi ----------
@@ -140,7 +162,7 @@ function xulosaVaraq(x) {
         ${qator({ nom: 'JAMI', ...x.JAMI }, 'jami')}
         ${qator({ nom: x.zaxira.nom, ...x.zaxira })}
         ${qator({ nom: 'UMUMIY JAMI', ...x['UMUMIY JAMI'] }, 'katta')}
-        ${qator({ nom: "shundan taxminiy narxlar (mebel, interyer, doskalar, 1-qavat logotiplari)", ...x.taxmin }, 'taxmin')}
+        ${qator({ nom: "shundan taxminiy narxlar (mebel, interyer, doskalar, 1-qavat logotiplari, kanalli konditsionerlar, diffuzorlar, eshik mexanizmlari)", ...x.taxmin }, 'taxmin')}
       </table>
       <table style="margin-top:4mm"><tr><th>Qavat / bo'lim</th><th class="r">$</th><th class="r">so'm</th><th class="r">ulush</th></tr>
         ${x.bolimlar.map(t => qator(t)).join('')}</table>
@@ -151,8 +173,8 @@ function xulosaVaraq(x) {
       </table>
       <div class="matn" style="margin-top:3mm">
         <p>Dollar kursi: ${x.kurs.toLocaleString('en-US')} so'm/$. Kutilmagan xarajatlar — umumiy summadan 10%.</p>
-        <p><b>Taxminiy narxlar</b> (sariq): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, 1-qavat resepshni, mehmonlar mebeli va logotiplari — buyurtmachi «narxi noma'lum» degan qismlar; mebelchi va reklama ustasi narxi bilan almashtiriladi (Excel, «Narxlar» varag'i).</p>
-        <p>Tekshirib qo'ying: sovuq suv quvuri «12 0000» — 12 000 so'm/m deb olindi; 2-qavat HVAC: rekuperator 28 mln so'm — 1 dona narxi deb olindi (2 ta = 56 mln); split va rekuperator narxiga o'rnatish kiradimi — aniqlanadi. Turniketlar (2 ta) — mavjud; to'siq va evakuatsiya darvozasi kirmagan.</p>
+        <p><b>Taxminiy narxlar</b> (sariq): sotuv va admin xonalari mebeli va interyeri, koridor doskalari va koridor oxiri dekori, 1-qavat resepshni, mehmonlar mebeli va logotiplari; 16.10 dan — kanalli konditsionerlar (2 × $5,000), diffuzor va panjaralar, vitechka ventilyatori, suriladigan eshik mexanizmlari va kladovka eshiklari. Usta va yetkazib beruvchi narxi bilan almashtiriladi (Excel, «Narxlar» varag'i).</p>
+        <p>Tekshirib qo'ying: sovuq suv quvuri «12 0000» — 12 000 so'm/m deb olindi; 2-qavat konditsioneri: 96 000 BTU deb olingan, issiq kunda yetmaydi (har blokka ~130 000 BTU kerak) — model tanlangach narx o'zgaradi; avvalgi rekuperator va split taklifi bekor. Koridor oxiri logoli variantda hisoblangan (logosiz — ~$3,100 kam). Turniketlar (2 ta) — mavjud; to'siq va evakuatsiya darvozasi kirmagan.</p>
       </div>
     </div>
   </div></section>`;
@@ -192,9 +214,10 @@ function fazaGantt(F) {
   return `<svg viewBox="0 0 ${W} ${top + F.length * qH + 6}" width="100%" font-family="Liberation Sans, Arial">${q.join('')}</svg>`;
 }
 // avans bilan buyurtma qilinadiganlar (qolgan bo'linishlar — ish hajmi bo'yicha)
-const AVANS = /^(stolOfis|kreslo|mijozStul|divan|shkaf|stolcha|resepshn|resepshnPanel|logo|logoDevor1|logoStol1|sahnaLogo|rekuperator|shisha)$/;
-const guruh = t => /^rekuperator$/.test(t.kalit) ? 'Rekuperatorlar' : t.kalit === 'kanalM' ? 'Havo kanallari'
-  : /^(split24|split12|kond3)$/.test(t.kalit) ? 'Split konditsionerlar' : /^(sahna|minbar)/.test(t.kalit) && t.kalit !== 'sahnaLogo' ? 'Koworking sahnasi'
+const AVANS = /^(stolOfis|kreslo|mijozStul|divan|shkaf|stolcha|resepshn|resepshnPanel|logo|logoDevor1|logoStol1|sahnaLogo|kk|shisha|korReyka)$/;
+const guruh = t => t.kalit === 'kk' ? 'Kanalli konditsionerlar' : t.kalit === 'kanalM' ? 'Havo kanallari'
+  : /^(diffuzor|sorPanjara|qPanjara|vv)$/.test(t.kalit) ? 'Diffuzor, panjaralar, ventilyator' : t.kalit === 'kond3' ? 'Konditsioner (3-qavat)'
+  : /^(sahna|minbar)/.test(t.kalit) && t.kalit !== 'sahnaLogo' ? 'Koworking sahnasi'
   : /^(resepshn|resepshnPanel)$/.test(t.kalit) ? 'Resepshn (1-qavat)' : t.tur;
 function fazaVaraq(x) {
   const F = x.fazalar, n = F.length;
@@ -229,8 +252,8 @@ function fazaVaraq(x) {
         ${x.oylar.filter(o => o.usd > 0.5).map(o => `<tr><td>${OYLAR[+o.oy.slice(0, 2) - 1]} ${o.oy.slice(3)}</td><td class="r"><b>${usd(o.usd)}</b></td><td class="r">${som(o.som)}</td></tr>`).join('')}
         <tr class="jami"><td>Jami</td><td class="r">${usd(jami)}</td><td class="r">${som(jami * x.kurs)}</td></tr></table>
       <div class="matn" style="margin-top:3mm">
-        <p><b>Qanday bo'lingan.</b> Har bir xarajat qatori ish qachon bajarilsa yoki pul qachon to'lansa — o'sha fazaga yozilgan. Uzoq tayyorlanadiganlarga avans: mebel, resepshn va logotiplar — 50% F0 da, qoldig'i yetkazilganda (F5); rekuperatorlar — 50% F0 da, 50% F2 da; shisha devorlar — o'lchovdan keyin 50% (F3), qoldig'i o'rnatishda (F4). Splitlar F3 da xarid qilinadi, F4 da o'rnatiladi.</p>
-        <p><b>Ketma-ketlik nega shunday:</b> tarmoqlar (havo kanallari, freon trassalari, kabellar, quvurlar) shift va devorlar yopilishidan oldin — F2; shisha devor o'lchovi GKL karkasdan keyin; mebel va logotiplar — chang ishlar tugagach.</p>
+        <p><b>Qanday bo'lingan.</b> Har bir xarajat qatori ish qachon bajarilsa yoki pul qachon to'lansa — o'sha fazaga yozilgan. Uzoq tayyorlanadiganlarga avans: mebel, resepshn va logotiplar — 50% F0 da, qoldig'i yetkazilganda (F5); kanalli konditsionerlar — 50% F0 da, 50% F2 da (shift yopilishidan oldin o'rnatiladi); shisha devorlar — o'lchovdan keyin 50% (F3), qoldig'i o'rnatishda (F4). Diffuzor, panjaralar va eshik mexanizmlari — F4.</p>
+        <p><b>Ketma-ketlik nega shunday:</b> tarmoqlar (konditsioner bloklari, havo kanallari, freon trassalari, kabellar, quvurlar) shift va devorlar yopilishidan oldin — F2; shisha devor o'lchovi GKL karkasdan keyin; mebel va logotiplar — chang ishlar tugagach.</p>
         <p><b>Oylik summa</b> — faza summasi uning kalendar kunlariga teng bo'lingan; avanslar faza boshida to'lanadi.</p>
         <p><b>Sanalar taxminiy:</b> boshlanish sanasi Excelda bitta katakda — o'zgartirilsa, hammasi qayta hisoblanadi. Ish haftasi dushanba–shanba, 8 dekabr bayram.</p>
         <p><b>Jadvalda yo'q</b> (narxi berilmagan): montaj ishlari (agar narxga kirmagan bo'lsa), elektr kabellari va shit, osma shift, pol, bo'yoq — narxi kelishilgach shu fazalarga qo'shiladi.</p>
@@ -293,29 +316,29 @@ const VAR = {
 };
 const tasdiqQuti = (kichik = false) => `<div class="tasdiq"><h3>Founder tasdig'i</h3>
   <div class="q"><b>1. Shisha devorlar</b><span class="kv"></span>A — profilli <span class="kv"></span>B — tik profilsiz</div>
-  <div class="q"><b>2. Eshik eni</b><span class="kv x"></span>90 sm (rasmlarda) <span class="kv"></span>120 sm</div>
+  <div class="q"><b>2. Eshik</b><span class="kv x"></span>1 m, suriladigan (founder, 16.10) <span class="kv"></span>boshqa: ________</div>
   <div class="q"><b>3. Mat plyonka va logo</b><span class="kv"></span>Ma'qul <span class="kv"></span>O'zgartirish: ______________</div>
   <div class="q" style="margin-top:2.5mm">Imzo: ____________________ &nbsp;&nbsp; Sana: ____________</div>
-  ${kichik ? '' : `<p class="izohcha" style="margin-top:1.5mm">Shisha devorning ikkala varianti rasmlarda ko'rsatilgan (A va B). Eshik — rasmlarda 90 sm; «120 sm» tanlansa, ko'rinishlar shu bilan qayta tayyorlanadi.</p>`}</div>`;
+  ${kichik ? '' : `<p class="izohcha" style="margin-top:1.5mm">Shisha devorning ikkala varianti rasmlarda ko'rsatilgan (A va B). Eshik — 1 m, yonga suriladigan (founder taklifi, 16.10), rasmlarda shunday.</p>`}</div>`;
 const spek = v => `<ul class="spek">
   <li>${VAR[v].shisha}</li>
-  <li><b>Eshik:</b> shisha, 900 × 2100 mm, alyumin romda, ustida 400 mm qo'zg'almas shisha; tik quvur tutqich; hammasi xona ichiga ochiladi.</li>
+  <li><b>Eshik:</b> shisha, 1000 × 2100 mm, alyumin romda, yonga suriladigan (Damas eshigi kabi): barg xona ichida devor bo'ylab suriladi, tepada qopqoqli rels, soft-close; ustida 400 mm qo'zg'almas shisha; xona tomonda tik quvur tutqich, koridor tomonda botiq tutqich.</li>
   <li><b>Mat plyonka:</b> poldan 1.0–1.6 m, koridor tomonda, devor va eshiklarda uzluksiz.</li>
-  <li><b>Logo plyonkada:</b> yangi PDP Academy logosi, bir rangli to'q kulrang, plyonkaga bosma (koridordan to'g'ri o'qiladi, xona ichidan — teskari); har oynada eni ${PLY.devor} mm, har eshikda ${PLY.eshik} mm; markazi poldan ${(PLY.z / 1000).toFixed(1)} m. Jami 38 ta (27 oyna + 11 eshik).</li></ul>`;
+  <li><b>Logo plyonkada:</b> yangi PDP Academy logosi, bir rangli to'q kulrang, plyonkaga bosma (koridordan to'g'ri o'qiladi, xona ichidan — teskari); har oynada eni ${PLY.devor} mm, har eshikda ${PLY.eshik} mm; markazi poldan ${(PLY.z / 1000).toFixed(1)} m. Jami 43 ta (32 oyna + 11 eshik).</li></ul>`;
 async function shishaVaraqlar() {
   const K = {
     K1: { nom: 'K1', toliq: '2-koridor-K1', chap: '15-K1-chap-devor', ong: '16-K1-ong-devor', eshik: '17-K1-eshik',
-      t: "<b>K1 — koworkingdan to'g'ri.</b> Chapda 1–3-xona, o'ngda XZ4 call-markaz va XZ3 ustozlar; oxirida logotip devori.",
+      t: "<b>K1 — koworkingdan to'g'ri.</b> Chapda 1–3-xona, o'ngda XZ4 call-markaz va XZ3 ustozlar; oxirida kladovka devori (logoli).",
       c: "<b>Chap devor</b> (1- va 2-xona) — qiya ko'rinish.", o: "<b>O'ng devor</b> (XZ4 call-markaz, XZ3 ustozlar) — qiya ko'rinish.",
-      e: "<b>2-xona eshigi yaqindan</b> — 90 sm, ustida qo'zg'almas shisha." },
+      e: "<b>2-xona eshigi yaqindan</b> — 1 m, suriladigan (yopiq; barg xona tomonda), ustida qo'zg'almas shisha." },
     K2: { nom: 'K2', toliq: '3-koridor-K2', chap: '18-K2-chap-devor', ong: '19-K2-ong-devor', eshik: '20-K2-eshik',
-      t: "<b>K2 — koworkingdan to'g'ri.</b> Chapda XZ1 sotuv va XZ2 admin, o'ngda 7–5-xona; oxirida logotip devori.",
+      t: "<b>K2 — koworkingdan to'g'ri.</b> Chapda XZ1 sotuv va XZ2 admin, o'ngda 7–5-xona; oxirida kladovka devori (logoli).",
       c: "<b>Chap devor</b> (XZ1 sotuv, XZ2 admin) — qiya ko'rinish.", o: "<b>O'ng devor</b> (7- va 6-xona) — qiya ko'rinish.",
-      e: "<b>6-xona eshigi yaqindan</b> — 90 sm, ustida qo'zg'almas shisha." },
+      e: "<b>6-xona eshigi yaqindan</b> — 1 m, suriladigan, yarim ochiq: barg xona ichida devor bo'ylab suriladi." },
   };
   const r = (v, f) => rasm(`${VAR[v].pref}${f}.jpg`);
   const fw = (src, izoh, cls = '') => `<div class="${cls}">${fig(src, izoh)}</div>`;   // rasm va izohi — bitta grid katagida
-  const bet = async (k, v) => `<section class="varaq">${bosh(`Koridor shisha devorlari — ${k.nom} · ${VAR[v].nom}`, `${VAR[v].qisqa}; eshik 90 sm; mat plyonkada logo`)}
+  const bet = async (k, v) => `<section class="varaq">${bosh(`Koridor shisha devorlari — ${k.nom} · ${VAR[v].nom}`, `${VAR[v].qisqa}; eshik 1 m, suriladigan; mat plyonkada logo`)}
     <div class="sh-yuqori">${fw(await r(v, k.toliq), k.t, 'sh-katta')}<div class="sh-ong">${fw(await r(v, k.chap), k.c)}${fw(await r(v, k.ong), k.o)}</div></div>
     <div class="sh-past">${fw(await r(v, k.eshik), k.e)}<div style="display:grid;grid-template-columns:1fr 122mm;gap:4mm">${spek(v)}${tasdiqQuti(true)}</div></div></section>`;
   const tepa = async v => `<section class="varaq">${bosh(`Koridor shisha devorlari — tepadan · ${VAR[v].nom}`, 'Shift olib tashlangan, devorlar 2.7 m da kesilgan')}
@@ -323,7 +346,7 @@ async function shishaVaraqlar() {
       ${fw(await r(v, '22-koridorlar-tepadan-2'), "<b>Sharqdan (4-xona tomondan):</b> o'ngda K1, chapda K2; o'rtada XZ1–XZ4 xizmat xonalari.")}</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-top:3mm">${spek(v)}${tasdiqQuti()}</div></section>`;
   // birinchi bet — A va B yonma-yon
-  const sol = `<section class="varaq">${bosh("Koridor shisha devorlari — A va B variant (founder tasdig'i uchun)", 'Ikkala variantda: eshik 90 sm, mat plyonkada logo')}
+  const sol = `<section class="varaq">${bosh("Koridor shisha devorlari — A va B variant (founder tasdig'i uchun)", 'Ikkala variantda: eshik 1 m, suriladigan; mat plyonkada logo')}
     <div class="sh-sol"><div class="sh-sar">A — profilli: ${VAR.A.qisqa}</div><div class="sh-sar">B — tik profilsiz: ${VAR.B.qisqa}</div>
       ${fw(await r('A', K.K1.toliq), "<b>A · K1 to'g'ridan.</b>")}${fw(await r('B', K.K1.toliq), "<b>B · K1 to'g'ridan.</b>")}
       ${fw(await r('A', K.K1.chap), "<b>A · K1 chap devor</b> (1- va 2-xona).")}${fw(await r('B', K.K1.chap), "<b>B · K1 chap devor</b> (1- va 2-xona).")}</div>

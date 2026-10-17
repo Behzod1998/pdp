@@ -279,7 +279,7 @@ function havoBeti(kor, n) {
     <div style="margin:1mm auto 2mm;width:76%">${kesimSvg(1.1)}</div>
     <ul>
       <li><b>Quvvat:</b> har blokka eng issiq paytda ~${Math.round(Math.max(G.K1.jami, G.K2.jami))} kW (~${Math.round(Math.max(G.K1.jami, G.K2.jami) * 3.412 / 10) * 10}k BTU) kerak; eskizdagi 96k issiqda ~${b1(issiq)} kW beradi — <b>yetmaydi</b>, blok tanlashda hisobga olinsin.</li>
-      <li><b>Havo taqsimoti:</b> diffuzorlar koridor devoridan ~1.5 m ichkarida (sinflarda), so'rish panjaralari deraza tomonda — havo xonani kesib o'tadi. Qaytish havosi koridor orqali kladovka eshigi ustidagi panjaradan blokka.</li>
+      <li><b>Havo taqsimoti:</b> diffuzorlar koridor devoridan ~1.5 m ichkarida (sinflarda), so'rish panjaralari deraza tomonda — havo xonani kesib o'tadi. Qaytish havosi koridor orqali — koridor oxiridagi shift panjarasidan (600 × 300) blokka.</li>
       <li><b>Tashqi havo 30%</b> bilan to'la sinfda CO₂ ~${Math.round(Math.min(...XN.map(x => x.co2)) / 50) * 50}–${Math.round(Math.max(...XN.map(x => x.co2)) / 50) * 50} ppm — tanaffusda shamollatish; imkon bo'lsa 45–50% ga oshirish.</li>
       <li><b>Koworking:</b> konditsionerlari mavjud (${T.qoshimcha[0].mavjud.map(b => b / 1000 + 'k').join(' + ')}), koridorlarni ham qisman sovutadi; sinflarga ta'siri kichik.</li>
       <li><b>Vitechka chiqishi</b> tashqi havo olish panjarasiga yaqin (3-xona fasadida) — chiqishni tomga chiqarish tavsiya. <b>V-1</b> — sanuzel chiqarishi alohida (mavjud shaxta).</li>
