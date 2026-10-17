@@ -134,7 +134,7 @@ function xonaMatni(k, ev) {
     q.push(`1 kishiga <b>${k.kishiga.toFixed(2)} m²</b> — qavatdagi eng keng sinf.`);
     q.push(k.shisha ? `Koridor tomonidagi devorlar shisha (${mm(k.shisha)} m) — derazasiz xona yopiq tuyulmaydi.`
       : `Barcha devorlari GKL (buyurtmachi qarori), koridorga faqat shisha eshik chiqadi — dars paytida koridordan chalg'imaydi; koridor oxiridagi devorlarda yorituvchi logotip.`);
-    n.push(`<b>Derazasiz</b>: tabiiy yorug'lik va shamollatish yo'q — sovuq havo va tashqi havo (30%) KK1 kanalli konditsioneridan, so'rish — vitechka; yoritish kunduzgi spektrda (4000 K).`);
+    n.push(`<b>Derazasiz</b>: tabiiy yorug'lik va shamollatish yo'q — sovuq havo va tashqi havo (30%) ikkala kanalli konditsionerdan — KK1 dan (K1 tomondan) va KK2 dan (K2 tomondan) bittadan diffuzor, so'rish — vitechka; yoritish kunduzgi spektrda (4000 K).`);
     n.push(`Orqa (sharqiy) devor tashqi, qo'shni bino bilan umumiy.`);
     n.push(`<b>Kichraydi (16.10):</b> K1 va K2 koridorlari 4-xona orqali kladovkagacha davom etadi — xona to'rtburchak ${mm(x.x2 - x.x1)} × ${mm(x.y2 - x.y1)} m; 5.6 m doska devori bo'ylab 3 ta ikki kishilik parta sig'adi: 3 qator × 3 parta — ${k.orin} o'rin (avval 24).`);
     n.push(`Doska → 1-parta ${sm(k.doska)} sm, stul orqasidan keyingi partagacha ${sm(k.stulOrqasi)} sm, chetki old o'rindan qarash burchagi ${b1(k.burchak)}° (Beruniy: ${sm(STANDART.doska)} sm, 36 sm, 39.8°) — Beruniy mezoni bo'yicha "Qoniqarli"; orqa bo'sh zona ${sm(k.orqaZona)} sm.`);
@@ -199,8 +199,8 @@ function xonaBeti(k, i, ev) {
     r('Ustun', ustunMatn, '—'),
     r('Eshik', esh, '—'),
     r('Koridor tomoni', k.shisha ? `shisha devor ${mm(k.shisha)} m` : 'faqat eshik (koridor uchi)', '—'),
-    r('Tashqi havo', `${Math.round(vx.toza)} m³/soat (30%, ${vh.guruh[vx.kor].blok}) · CO₂ to'la sinfda ~${Math.round(vx.co2 / 50) * 50} ppm`, '—', vx.co2 > 1200),
-    r('Sovutish', `${b1(tz.q[0])}–${b1(tz.q[1])} kVt → kanalli ${vh.guruh[vx.kor].blok}, ${vh.D.filter(d => d.xona === k.kod).length} diffuzor, ${vx.Q} m³/soat`, '—'),
+    r('Tashqi havo', `${Math.round(vx.toza)} m³/soat (30%, ${vx.blok}) · CO₂ to'la sinfda ~${Math.round(vx.co2 / 50) * 50} ppm`, '—', vx.co2 > 1200),
+    r('Sovutish', `${b1(tz.q[0])}–${b1(tz.q[1])} kVt → kanalli ${vx.blok}, ${vh.D.filter(d => d.xona === k.kod).length} diffuzor, ${vx.Q} m³/soat`, '—'),
     r('Evakuatsiya (eng uzoq o\'rindan ZN2 gacha)', `~${Math.round(ev.gacha2 / 1000)} m`, '—'),
   ];
   const { q, n, tavsiya } = xonaMatni(k, ev);
@@ -266,7 +266,7 @@ export function kesimSvg(m = 1) {
 function havoBeti(kor, n) {
   const T = tizimHisob(), V = ventHisob(), G = V.guruh;
   const XN = ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'XZ1', 'XZ2', 'XZ3', 'XZ4'].map(k => ({ ...V.xona[k], A: T.xona.find(z => z.kod === k).A }));
-  const q = x => `<tr><td><b>${x.kod}</b></td><td>${x.odam}</td><td>${b1(x.A)}</td><td>${G[x.kor].blok}</td><td>${x.Q}</td><td>${Math.round(x.toza)}</td><td>${x.sor}</td><td>${Math.round(x.co2 / 10) * 10}</td><td>${b1(x.yuk[0])}–${b1(x.yuk[1])}</td></tr>`;
+  const q = x => `<tr><td><b>${x.kod}</b></td><td>${x.odam}</td><td>${b1(x.A)}</td><td>${x.blok}</td><td>${x.Q}</td><td>${Math.round(x.toza)}</td><td>${x.sor}</td><td>${Math.round(x.co2 / 10) * 10}</td><td>${b1(x.yuk[0])}–${b1(x.yuk[1])}</td></tr>`;
   const issiq = VC.blokKw * VC.issiq;
   return bet(n, `
     <h2 style="margin-top:0">Ventilyatsiya va konditsionerlash (16.10)</h2>

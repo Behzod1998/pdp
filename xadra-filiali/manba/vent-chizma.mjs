@@ -99,11 +99,14 @@ export function ventHisob() {
   const yuk = Object.fromEntries(T0.xona.map(x => [x.kod, x.q.map(v => v - x.oaQoldiq)]));   // xona yuki (tashqi havosiz), kW
 
   // ===== KONDITSIONER: diffuzorlar va havo taqsimoti =====
-  // KK1 — K1 bo'ylab: 1-, 2-, 3-, 4-xona, XZ4, XZ3; KK2 — K2 bo'ylab: 7-, 6-, 5-xona, XZ1, XZ2
+  // KK1 — K1 bo'ylab: 1-, 2-, 3-xona, XZ4, XZ3; KK2 — K2 bo'ylab: 7-, 6-, 5-xona, XZ1, XZ2.
+  // 4-xona (buyurtmachi, 17.10): ikkala blokdan bittadan diffuzor — D (shimoliy) KK1 dan K1 tomondan, D (janubiy) KK2 dan K2 tomondan;
+  // har guruhda 4-xonaning yarmi (yuki va odami) hisoblanadi.
   const GR = {
     K1: { blok: 'KK1', xonalar: ['SR1', 'SR2', 'SR3', 'SR4', 'XZ3', 'XZ4'] },
-    K2: { blok: 'KK2', xonalar: ['SR5', 'SR6', 'SR7', 'XZ1', 'XZ2'] },
+    K2: { blok: 'KK2', xonalar: ['SR5', 'SR6', 'SR7', 'SR4', 'XZ1', 'XZ2'] },
   };
+  const UL = k => (k === 'SR4' ? 0.5 : 1);
   const yS = { K1: X.SR1.y2 - VC.diffSinf, K2: X.SR7.y1 + VC.diffSinf };       // sinf diffuzorlari qatori
   const yX = { K1: X.XZ4.y1 + VC.diffXZ, K2: X.XZ1.y2 - VC.diffXZ };            // XZ diffuzorlari
   const uch = (kod) => { const r = X[kod], W = r.x2 - r.x1; return [r.x1 + W / 3, r.x1 + 2 * W / 3].map(v => Math.round(v / 50) * 50); };
@@ -114,7 +117,7 @@ export function ventHisob() {
   const DJ = {
     SR1: uch('SR1').map(x => tik(x, yS.K1, 'K1')), SR2: uch('SR2').map(x => tik(x, yS.K1, 'K1')),
     SR3: [tik(19650, yS.K1, 'K1'), L3('K1', 7000, yS.K1)],
-    SR4: [tik(20900, 10900, 'K1'), [20900, 13700, [[20900, 10900], [20900, 13700]]]],   // ikkinchisi birinchisining davomi
+    SR4: { K1: [tik(20900, 10900, 'K1')], K2: [tik(20900, 13700, 'K2')] },   // har biri o'z koridori magistralidan
     XZ4: [tik(10750, yX.K1, 'K1')], XZ3: [tik(15500, yX.K1, 'K1')],
     SR7: uch('SR7').map(x => tik(x, yS.K2, 'K2')), SR6: uch('SR6').map(x => tik(x, yS.K2, 'K2')),
     SR5: [tik(19650, yS.K2, 'K2'), L3('K2', 17400, yS.K2)],
@@ -123,34 +126,34 @@ export function ventHisob() {
   const D = [], guruh = {}, xona = {};
   for (const [kor, g] of Object.entries(GR)) {
     // havo xonalarga yuk ulushi va odam ulushidan kattasi bo'yicha (odam ko'p, yuk kam xonada ham toza havo yetishi uchun)
-    const yukU = g.xonalar.map(k => yuk[k][1]), sy = yukU.reduce((a, b) => a + b, 0);
-    const odamU = g.xonalar.map(k => X0[k].odam), so = odamU.reduce((a, b) => a + b, 0);
+    const yukU = g.xonalar.map(k => yuk[k][1] * UL(k)), sy = yukU.reduce((a, b) => a + b, 0);
+    const odamU = g.xonalar.map(k => X0[k].odam * UL(k)), so = odamU.reduce((a, b) => a + b, 0);
     const w = g.xonalar.map((k, i) => Math.max(yukU[i] / sy, odamU[i] / so)), sw = w.reduce((a, b) => a + b, 0);
     g.xonalar.forEach((k, i) => {
-      const Q = Math.round(VC.blokQ * w[i] / sw / 10) * 10, toza = Q * VC.tozaUlush, odam = X0[k].odam;
-      xona[k] = { kod: k, kor, Q, toza, sor: Math.round(toza * VC.sorUlush / 10) * 10, odam, co2: F.co2Tashqi + odam * F.co2Kishi / toza * 1e6, yuk: yuk[k] };
-      DJ[k].forEach(j => D.push({ xona: k, kor, p: [j[0], j[1]], yol: j[2], Q: Q / DJ[k].length }));
+      const Q = Math.round(VC.blokQ * w[i] / sw / 10) * 10, dj = Array.isArray(DJ[k]) ? DJ[k] : DJ[k][kor];
+      const avval = xona[k];          // 4-xona: ikkinchi blokdan kelgan havo birinchisiga qo'shiladi
+      const Qj = Q + (avval?.Q || 0), toza = Qj * VC.tozaUlush, odam = X0[k].odam;
+      xona[k] = { kod: k, kor, blok: avval ? `${avval.blok} + ${g.blok}` : g.blok, Q: Qj, toza, sor: Math.round(toza * VC.sorUlush / 10) * 10, odam,
+        co2: F.co2Tashqi + odam * F.co2Kishi / toza * 1e6, yuk: yuk[k] };
+      dj.forEach(j => D.push({ xona: k, kor, p: [j[0], j[1]], yol: j[2], Q: Q / dj.length }));
     });
     const toza = VC.blokQ * VC.tozaUlush, xonaYuk = sy, oaYuk = toza * F.kwPerKm3;
     guruh[kor] = { ...g, kor, Q: VC.blokQ, oa: toza, ulush: VC.tozaUlush, xonaYuk, oaYuk, jami: xonaYuk + oaYuk,
-      yuk0: g.xonalar.reduce((t, k) => t + yuk[k][0], 0) };
+      yuk0: g.xonalar.reduce((t, k) => t + yuk[k][0] * UL(k), 0) };
   }
   const DT = ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'XZ4', 'XZ3', 'XZ1', 'XZ2'];
   D.sort((a, b) => DT.indexOf(a.xona) - DT.indexOf(b.xona) || a.p[1] - b.p[1] || a.p[0] - b.p[0]);
   D.forEach((d, i) => {
     d.kod = `D${i + 1}`;
     d.ulanish = d.yol[0];
-    // patrubokdan o'tadigan havo: 4-xonaning birinchi diffuzori ikkinchisiga ham havo o'tkazadi
-    const yolQ = d.xona === 'SR4' && d.p[1] === 10900 ? 2 * d.Q : d.Q;
-    d.panel = d.Q >= 500 ? 600 : 450; d.boyin = kesim(yolQ, 3.5);
+    d.panel = d.Q >= 500 ? 600 : 450; d.boyin = kesim(d.Q, 3.5);
     d.tarmoqL = uzun(d.yol);
   });
   const kLin = [];
   for (const kor of ['K1', 'K2']) {
     const g = D.filter(d => d.kor === kor && d.ulanish[1] === M[kor]);
     const xg = Math.min(...g.map(d => d.ulanish[0]));
-    // 4-xonaning ikkinchi diffuzori havosini birinchisining ulanishiga qo'shamiz
-    const voq = D.filter(d => d.kor === kor).map(d => ({ p: d.ulanish[1] === M[kor] ? d.ulanish : [20900, M.K1], Q: d.Q }));
+    const voq = D.filter(d => d.kor === kor).map(d => ({ p: d.ulanish, Q: d.Q }));
     kLin.push(liniya(`${kor}g`, [[xg, M[kor]], [VC.blok[kor].x1, M[kor]]], voq));
   }
   // tashqi havo (30%): 3-xona fasadidan vertikal kanal, koridorlar bo'ylab bloklarning qaytish kamerasiga
@@ -196,12 +199,13 @@ export function ventHisob() {
     { p: [VC.xT, M.K1], izoh: "K1: tashqi havo vertikal kanali × berish magistrali" },
     { p: [20750, VC.tozaY.K1], izoh: "K1: 3-xonaga tarmoq × tashqi havo kanali (KK1 ga)" },
     { p: [VC.xM, M.K2], izoh: "K2: so'rish magistrali × berish magistrali" },
+    { p: [20900, VC.tozaY.K2], izoh: "K2: 4-xonaga tarmoq (KK2 dan, D8) × tashqi havo kanali (KK2 ga)" },
   ].map((k, i) => ({ ...k, n: i + 1 }));
 
   // uzunliklar, m
   const sumL = lins => lins.reduce((t, l) => t + l.L, 0) / 1000;
   const uzV = sumL(vLin) + (VC.ven.y1 + 300) / 1000;
-  const uzK = sumL(kLin) + D.filter(d => !(d.xona === 'SR4' && d.p[1] === 13700)).reduce((t, d) => t + d.tarmoqL, 0) / 1000 + 2.8;
+  const uzK = sumL(kLin) + D.reduce((t, d) => t + d.tarmoqL, 0) / 1000 + 2.8;
   const uzT = sumL(tLin);
   return { P, vLin, vQ, venQ, chiqish, D, kLin, tLin, guruh, xona, KES, uz: { V: uzV, K: uzK, T: uzT, jami: uzV + uzK + uzT } };
 }
@@ -425,13 +429,13 @@ export function ventHtml() {
       <div><i class="d" style="border-radius:50%;border:.5mm solid #6a1b9a"></i>①–${['', '①', '②', '③', '④', '⑤', '⑥', '⑦'][h.KES.length]} kesishuvlar</div></div>
     <h3>Ichki bloklar — kladovka (KL1, KL2) shifti ustida, devorga taqalgan (96 000 BTU deb olindi)</h3>
     <table><tr><th>Blok</th><th>Xonalar</th><th class="r">Havo</th><th class="r">Tashqi havo</th></tr>
-      ${kG.map(g => `<tr><td><b>${g.blok}</b></td><td>${g.xonalar.map(k => NOM[k].replace('-xona', '')).join(', ')}</td><td class="r">${son(g.Q)}</td><td class="r">${son(g.oa)} (${Math.round(g.ulush * 100)}%)</td></tr>`).join('')}</table>
+      ${kG.map(g => `<tr><td><b>${g.blok}</b></td><td>${g.xonalar.map(k => NOM[k].replace('-xona', '') + (k === 'SR4' ? ' (1 diffuzor)' : '')).join(', ')}</td><td class="r">${son(g.Q)}</td><td class="r">${son(g.oa)} (${Math.round(g.ulush * 100)}%)</td></tr>`).join('')}</table>
     <h3>Quvvat tekshiruvi (kW, eng issiq payt)</h3>
     <table><tr><th>Blok</th><th class="r">Xonalar</th><th class="r">+ tashqi havo 30%</th><th class="r">Jami</th><th>96k (${n1(blokIssiq)} kW issiqda)</th></tr>
       ${kG.map(g => `<tr><td><b>${g.blok}</b></td><td class="r">${n1(g.yuk0)}–${n1(g.xonaYuk)}</td><td class="r">${n1(g.oaYuk)}</td><td class="r"><b>${n1(g.jami)}</b></td><td>${holat(g.jami, blokIssiq)}</td></tr>`).join('')}</table>
     <h3>Xonalar: havo, tashqi havo, so'rish, CO₂</h3>
     <table><tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo</th><th class="r">Tashqi (30%)</th><th class="r">So'rish</th><th class="r">CO₂, ppm</th></tr>
-      ${XN.map(x => `<tr><td>${NOM[x.kod]} (${G[x.kor].blok})</td><td class="r">${x.odam}</td><td class="r">${son(x.Q)}</td><td class="r">${son(x.toza)}</td><td class="r">${son(x.sor)}</td><td class="r">${son(Math.round(x.co2 / 10) * 10)}</td></tr>`).join('')}</table>
+      ${XN.map(x => `<tr><td>${NOM[x.kod]} (${x.blok})</td><td class="r">${x.odam}</td><td class="r">${son(x.Q)}</td><td class="r">${son(x.toza)}</td><td class="r">${son(x.sor)}</td><td class="r">${son(Math.round(x.co2 / 10) * 10)}</td></tr>`).join('')}</table>
     <h3>Diffuzorlar — ${h.D.length} ta</h3>
     <table><tr><th>Kod</th><th>Xona</th><th class="r">x</th><th class="r">y</th><th class="r">m³/soat</th><th class="r">Panel</th><th class="r">Patrubok</th></tr>
       ${h.D.map(d => `<tr><td><b>${d.kod}</b></td><td>${NOM[d.xona]}</td><td class="r">${son(d.p[0])}</td><td class="r">${son(d.p[1])}</td><td class="r">${son(d.Q)}</td><td class="r">${d.panel}×${d.panel}</td><td class="r">${d.boyin.a}×${d.boyin.b}</td></tr>`).join('')}</table>
