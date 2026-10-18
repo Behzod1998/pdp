@@ -137,6 +137,7 @@ XIZMAT_JIHOZ.forEach(z => {
     g.position.set(m(d.cx), 0.73, m(d.cy)); sahna.add(g);
   });
   z.shkaflar.forEach(r => rQuti(r, 0, 1.9, M.parta));
+  (z.tarmoqShkaf || []).forEach(r => rQuti(r, 0, r.bal / 1000, mat('#2b3036')));
   z.divanlar.forEach(r => { rQuti(r, 0, 0.45, mat('#8a919b')); rQuti({ ...r, x1: r.x2 - 160 }, 0.45, 0.85, mat('#8a919b')); });
 });
 const kw = KW_KUNDALIK;

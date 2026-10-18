@@ -297,6 +297,7 @@ for z in D['xizmat']:
             mx, my = {'past': (cx, st['y2'] - 170), 'yuqori': (cx, st['y1'] + 170), 'chap': (st['x1'] + 170, cy), 'ong': (st['x2'] - 170, cy)}[st['monitor']]
             bu.monitor(q, mx, my, MON_ROT[st['monitor']])
     for sh in z['shkaflar']: bu.shkaf(q, sh, M['parta'], 2000)
+    for sh in z.get('tarmoqShkaf', []): bu.shkaf(q, sh, M['qora_metall'], sh['bal'])   # NVR / router / switch shkafi
     for dv in z['divanlar']: bu.divan(q, dv, 'x2')
     for dm in z['dumaloq']: bu.dumaloq_stol(q, dm['cx'], dm['cy'], dm['r'])
     q.obj(f"{z['kod']}_mebel", 'asos')

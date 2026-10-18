@@ -23,6 +23,9 @@ export const DEVOR3 = [
   r(5750, 6100, 300, 1450), r(5750, 6100, 2350, 4400), r(5750, 6100, 5300, 12000),
   // hojatxona va o'quv xonasi orasidagi devor
   r(6100, 11550, 3150, 3400),
+  // yangi GKL devor (buyurtmachi, 18.10): zinadan chiqqan odamga hojatxona (tahoratxona) eshigi ochiq qolsa ham ichi ko'rinmasin —
+  // koridorda tashqi devordan hojatxona va o'quv xonasi orasidagi devor chizig'igacha; orqasida hojatxona eshigi oldida 1.05 m tambur
+  r(4600, 4700, 300, 3150, { yangi: true, izoh: "koridordagi to'siq devor (GKL)" }),
 ];
 // hojatxona kabinalari: 4 ta, har biri 1.00 × 1.10 m; yupqa to'siqlar (40 mm), eshigi 650 mm
 export const KABINA = { x0: 7550, en: 1000, chuq: 1100, soni: 4, eshik: 650 };
@@ -204,7 +207,7 @@ function chiz(id, o = {}) {
   });
 
   // devorlar va derazalar
-  q.push(`<g filter="url(#${id}dsoya)">${DEVOR3.map(d => rect(d, `fill="${d.tashqi ? '#2b2d31' : '#34373c'}"`)).join('')}</g>`);
+  q.push(`<g filter="url(#${id}dsoya)">${DEVOR3.map(d => rect(d, `fill="${d.tashqi ? '#2b2d31' : d.yangi ? '#c98a3e' : '#34373c'}"`)).join('')}</g>`);
   KABINA_DEVOR.forEach(d => q.push(rect(d, 'fill="#8b939c"')));
   DERAZA3.forEach(d => {
     q.push(rect(d, 'fill="#cfe4f2" stroke="#f7fbfd" stroke-width="14"'));
@@ -225,7 +228,7 @@ export function q3Svg(o = {}) {
   const k = sinf3Korsatkich();
   const L = [
     t(1600, 5300, 'Zinapoya', 300, B), t(1600, 5650, '(2-qavatdan)', 230, G),
-    t(4350, 2900, '1 · Koridor', 320, B), t(4350, 3250, '17.35 m²', 260, R),
+    t(4350, 4000, '1 · Koridor', 320, B), t(4350, 4350, '17.35 m²', 260, R), t(5220, 1100, 'tambur', 200, G),
     t(9300, 2250, '2 · Erkaklar hojatxonasi', 300, B), t(9300, 2580, '15.53 m² · 4 kabina', 220, R),
     t(2300, 7450, '3 · Qozonxona', 300, B), t(2300, 7800, '15.81 m² · ishlatilmaydi', 220, G),
     t(3000, 10500, '4 · Yopiq xona', 300, B), t(3000, 10850, '15.26 m² · bino egasiniki', 220, G),
@@ -249,7 +252,7 @@ export function q3Svg(o = {}) {
   };
   if (o.olcham !== false) {
     zX(-850, [0, BINO3.L], true, true);
-    zX(-400, [300, 2900, 3000, 5750, 6100, 11550]);
+    zX(-400, [300, 2900, 3000, 4600, 4700, 5750, 6100, 11550]);
     zY(-450, [0, 6150, BINO3.B]);
     zY(12300, [300, 3150, 3400, 12000], false);
     zY(12650, [0, BINO3.B], false, true);

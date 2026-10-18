@@ -49,7 +49,7 @@ export function taqdimotHtml() {
   const x = kod => xonaMaydoni(XONALAR.find(r => r.kod === kod));
   const kw = kwHavo();
   const sinfQ = kor.map(k => `<tr><td>${XONA_NOMI[k.kod]}</td><td class="r">${k.A.toFixed(1)} m²</td><td class="r">${k.orin} o'rin</td></tr>`).join('');
-  const orinX = { XZ1: 2, XZ2: 2, XZ3: 9, XZ4: 6 };
+  const orinX = { XZ1: 2, XZ2: 2, XZ3: 9, XZ4: 5 };
   const xizmatQ = xizmatHavo().map(z => `<tr><td>${z.nomi}</td><td class="r">${z.A.toFixed(1)} m²</td><td class="r">${orinX[z.kod]} o'rin</td></tr>`).join('');
   const jamiA = kor.reduce((s, k) => s + k.A, 0), jamiO = kor.reduce((s, k) => s + k.orin, 0);
   const zinaWc = x('ZN1') + x('ZN2') + ['2', '3', '4', '5', '6'].reduce((s, k) => s + x(k), 0);

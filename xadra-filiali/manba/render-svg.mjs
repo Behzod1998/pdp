@@ -60,7 +60,7 @@ const DOSKA_BURISH = { yuqori: 0, past: 180, ong: 90, chap: -90 };
 function osimliklar() {
   const r = [];
   r.push([19700, 14650]);   // 4-xona: eshik yonidagi bo'sh burchak (17.10)
-  r.push([8400, 12750], [15050, 12750], [12500, 11850], [11600, 9800]);   // XZ1, XZ2, XZ3, XZ4
+  r.push([9380, 12700], [15050, 12750], [12500, 11850], [11600, 9800]);   // XZ1 (stollar orasida, 18.10), XZ2, XZ3, XZ4
   r.push([3900, 13950], [3700, 17650], [5650, 24050], KW_SAHNA.osimlik);
   return r;
 }
@@ -132,6 +132,10 @@ export function renderSvg(o = {}) {
     z.dumaloq.forEach(d => j.push(`<circle cx="${d.cx}" cy="${d.cy}" r="${d.r}" fill="url(#${id}yog)" stroke="#a88155" stroke-width="10"/>`));
     z.stullar.forEach(p => j.push(use(p.ofis ? 'ofisStul' : 'stul', ...markaz(p), BURISH[p.yon])));
     z.shkaflar.forEach(shkaf);
+    // tarmoq shkafi (NVR, router, switch) — metall, old eshigi shishali
+    (z.tarmoqShkaf || []).forEach(r => j.push(rect(r, `fill="#2b3036" stroke="#111" stroke-width="10"`),
+      rect({ x1: r.x1 + 60, x2: r.x2 - 60, y1: r.y1 + 60, y2: r.y1 + 140 }, `fill="#6f7d8c"`),
+      `<text x="${(r.x1 + r.x2) / 2}" y="${(r.y1 + r.y2) / 2 + 60}" font-size="150" font-family="Arial" font-weight="700" fill="#fff" text-anchor="middle">NVR</text>`));
     z.divanlar.forEach(r => j.push(rect(r, `rx="100" fill="#7d858f"`), rect({ ...r, x1: r.x2 - 160 }, `rx="70" fill="#626a74"`)));
   });
   // koworking / tadbirlar zali
@@ -244,10 +248,10 @@ export function renderSvg(o = {}) {
     });
     XONALAR.filter(x => x.tur === 'xizmat').forEach(x => {
       const cx = (x.x1 + x.x2) / 2 - 150;
-      if (x.kod === 'XZ1') L.push(t(9100, 13350, 'Offline sotuv', 280, B), t(9100, 13650, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 210, R));
+      if (x.kod === 'XZ1') L.push(t(9380, 14450, 'Offline sotuv', 280, B), t(9380, 14750, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 210, R));
       else if (x.kod === 'XZ2') L.push(t(15050, 13350, 'Admin', 340, B), t(15050, 13660, `${xonaMaydoni(x).toFixed(1)} m² · 2 o'rin`, 210, R));
       else if (x.kod === 'XZ3') L.push(t(13000, 10950, 'Ustozlar', 290, B), t(13000, 11270, 'xonasi', 290, B), t(13000, 11580, `${xonaMaydoni(x).toFixed(1)} m² · 9 o'rin`, 200, R));
-      else L.push(t(10300, 10500, 'Call-markaz', 290, B), t(10300, 10810, `online sotuv · ${xonaMaydoni(x).toFixed(1)} m² · 6`, 200, R));
+      else L.push(t(10300, 10500, 'Call-markaz', 290, B), t(10300, 10810, `online sotuv · ${xonaMaydoni(x).toFixed(1)} m² · ${x.odam} o'rin`, 200, R));
     });
     const kwx = XONALAR.find(x => x.kod === 'KW');
     L.push(t(2975, 9460, 'Koworking / Tadbirlar zali', 330, B), t(2975, 9820, `${xonaMaydoni(kwx).toFixed(1)} m²`, 300, R));

@@ -230,6 +230,9 @@ for kalit, nom in [('chashagen', "Chashagen — 3 ta erkaklar (3-qavat)"),
     qosh('HJ', 'Santexnika', nom, miqdor=f'{kalit}Soni', birlik='dona', narx=('som', kalit))
 qosh('HJ', 'Santexnika', "Santexnika nuqtalari — usta ishi (suv va kanalizatsiya)", miqdor='tochkaSoni', birlik='nuqta', narx=('som', 'tochka'))
 qosh('HJ', 'Santexnika', "Hojatxona kabinalari (erkaklar, 3-qavat)", miqdor='kabinaSoni', birlik='dona', narx=('som', 'kabina'))
+# 18.10: 3-qavat koridorida to'siq devor — zinadan chiqqan odamga hojatxona (tahoratxona) eshigi ko'rinmasin (GKL 100, ikki tomoni)
+for tomon in ("koridor tomoni", "tambur tomoni"):
+    qosh('HJ', 'Gips karton (GKL)', f"3-qavat koridoridagi to'siq devor — {tomon}", 2.85, 'H', narx='gkl')
 qosh('HJ', 'Santexnika', "Issiq suv quvuri", miqdor='issiqUz', birlik='m', narx=('som', 'issiqQuvur'))
 qosh('HJ', 'Santexnika', "Sovuq suv quvuri", miqdor='sovuqUz', birlik='m', narx=('som', 'sovuqQuvur'))
 qosh('HJ', 'Santexnika', "Quvur aksessuarlari (fitinglar)", miqdor='aksessuarSoni', birlik='dona', narx=('som', 'aksessuar'))

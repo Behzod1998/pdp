@@ -173,6 +173,7 @@ export function rejaSvg(o = {}) {
     ADM_JIHOZ.stul.forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));
     XIZMAT_JIHOZ.forEach(z => {
       [...z.stollar, ...z.shkaflar].forEach(p => q.push(rect(p, `fill="${RANG.ustoz}" stroke="#8a6a3c" stroke-width="${8 * k}"`)));
+      (z.tarmoqShkaf || []).forEach(p => q.push(rect(p, `fill="#3a4048" stroke="#111" stroke-width="${8 * k}"`)));
       z.dumaloq.forEach(d => q.push(`<circle cx="${d.cx}" cy="${d.cy}" r="${d.r}" fill="${RANG.parta}" stroke="${RANG.partaCh}" stroke-width="${8 * k}"/>`));
       z.divanlar.forEach(p => q.push(rect(p, `rx="100" fill="#c9ccd2" stroke="#8a8f99" stroke-width="${8 * k}"`)));
       z.stullar.forEach(p => q.push(rect(p, `fill="${RANG.stul}" stroke="${RANG.stulCh}" stroke-width="${8 * k}"`)));

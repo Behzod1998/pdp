@@ -13,7 +13,9 @@ const L = (x1, y1, x2, y2, a) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y
 const T = (x, y, s, size, a = '') => `<text x="${x}" y="${y}" font-size="${size}" text-anchor="middle" fill="${Q}" font-family="Liberation Sans, Arial, sans-serif" paint-order="stroke" stroke="#fff" stroke-width="${size * 0.25}" stroke-linejoin="round" ${a}>${s}</text>`;
 const m2 = (a, b) => `${(a / 1000).toFixed(2)} × ${(b / 1000).toFixed(2)} m`;
 const DEFS = `<defs><pattern id="sh" width="160" height="160" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-  <line x1="0" y1="0" x2="0" y2="160" stroke="#888" stroke-width="10"/></pattern></defs>`;
+  <line x1="0" y1="0" x2="0" y2="160" stroke="#888" stroke-width="10"/></pattern>
+  <pattern id="gkl" width="120" height="120" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+  <line x1="0" y1="0" x2="0" y2="120" stroke="#000" stroke-width="16"/></pattern></defs>`;
 
 // oddiy (ilgakli) eshik: barg chizig'i va punktir yoy
 function eshik(e, w = 12) {
@@ -116,7 +118,7 @@ export function rangsiz3Svg() {
   const d = sinf3().doska;
   q.push(R({ ...d, y2: d.y1 + 80 }, `fill="#fff" stroke="${Q}" stroke-width="10"`));
   ESHIK3.forEach(e => q.push(eshik(e, e.kabina ? 8 : 12)));
-  DEVOR3.forEach(w => q.push(R(w, `fill="${Q}"`)));
+  DEVOR3.forEach(w => q.push(w.yangi ? R(w, `fill="#fff" stroke="${Q}" stroke-width="10"`) + R(w, 'fill="url(#gkl)"') : R(w, `fill="${Q}"`)));
   KABINA_DEVOR.forEach(w => q.push(R(w, `fill="${Q}"`)));
   DERAZA3.forEach(w => {
     const m = (w.x1 + w.x2) / 2;
@@ -126,14 +128,14 @@ export function rangsiz3Svg() {
   const X = kod => XONA3.find(x => x.kod === kod);
   const w = x => m2(x.x2 - x.x1, x.y2 - x.y1);
   q.push(T(1650, 5250, 'Zinapoya', 260, 'font-weight="700"'), T(1650, 5560, '(2-qavatdan)', 190),
-    T(4350, 2900, '1 · Koridor', 280, 'font-weight="700"'), T(4350, 3220, `${X('1').A.toFixed(2)} m²`, 210),
+    T(4350, 4000, '1 · Koridor', 280, 'font-weight="700"'), T(4350, 4320, `${X('1').A.toFixed(2)} m²`, 210), T(5220, 1100, 'tambur', 180),
     T(9300, 2150, '2 · Erkaklar hojatxonasi', 260, 'font-weight="700"'), T(9300, 2450, `${w(X('2'))} · ${X('2').A.toFixed(2)} m²`, 190),
     T(2300, 7500, '3 · Qozonxona', 260, 'font-weight="700"'), T(2300, 7800, `${w(X('3'))} · ${X('3').A.toFixed(2)} m²`, 190),
     T(3000, 10600, '4 · Yopiq xona', 260, 'font-weight="700"'), T(3000, 10900, `${w(X('4'))} · ${X('4').A.toFixed(2)} m²`, 190),
     T(8825, 7600, "5 · O'quv xonasi", 340, 'font-weight="700"'), T(8825, 7980, `${w(X('5'))} · ${X('5').A.toFixed(2)} m²`, 240));
   const Zc = { rang: Q, size: 1.75 };
   q.push(zanjir([0, BINO3.L], -1000, true, 1, { ...Zc, tomon: -1 }),
-    zanjir([300, 2900, 3000, 5750, 6100, 7550, 11550], -450, true, 1, { ...Zc, size: 1.4, tomon: -1 }),
+    zanjir([300, 2900, 3000, 4600, 4700, 5750, 6100, 7550, 11550], -450, true, 1, { ...Zc, size: 1.4, tomon: -1 }),
     zanjir([0, 300, 4300, 4400, 5750, 6100, 11550, BINO3.L], 12550, true, 1, { ...Zc, size: 1.4, tomon: 1 }),
     zanjir([0, BINO3.B], -1050, false, 1, { ...Zc, tomon: -1 }),
     zanjir([300, 6050, 6150, 9050, 9250, 12000], -500, false, 1, { ...Zc, size: 1.4, tomon: -1 }),
