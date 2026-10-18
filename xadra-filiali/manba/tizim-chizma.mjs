@@ -362,7 +362,7 @@ export function tizimHisob() {
       ichki += yol[i].ul.L + 3000;
     });
     const L = ((B.L - st) * KOEF + st + ichki * KOEF + 1500) / 1000;
-    guruh.push({ kod, tur: 'r', nom, xonalar, qism, yol, B, L, P, kabel: 'VVGng-LS 3×2.5', avt: 'C16, 30 mA (difavtomat)', soni: qism.reduce((t, z) => t + z.n.filter(r => r.tur === 'r').length, 0), doska: qism.reduce((t, z) => t + z.n.filter(r => r.tur === 'd').length, 0) });
+    guruh.push({ kod, tur: 'r', nom, xonalar, qism, yol, B, L, P, ichki: ichki / 1000, kabel: 'VVGng-LS 3×2.5', avt: 'C16, 30 mA (difavtomat)', soni: qism.reduce((t, z) => t + z.n.filter(r => r.tur === 'r').length, 0), doska: qism.reduce((t, z) => t + z.n.filter(r => r.tur === 'd').length, 0) });
   };
   ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7'].forEach((k, i) => rGr(`R${i + 1}`, [k], `${k.slice(2)}-xona`, 2.0));
   rGr('R8', ['XZ4'], 'call-markaz (+ tarmoq shkafi)', 2.0); rGr('R9', ['XZ3'], 'ustozlar', 1.5);
@@ -385,7 +385,7 @@ export function tizimHisob() {
     });
     const W = qism.reduce((t, z) => t + z.ch.reduce((s, l) => s + l.W, 0), 0) + (xonalar.includes('K1') ? 2 * 290 : 0);
     const L = (B.L * KOEF + ichki * KOEF + 1500) / 1000;
-    guruh.push({ kod, tur: 'y', nom, xonalar, qism, yol, B, L, P: W / 1000, kabel: 'VVGng-LS 3×1.5', avt: 'C10', soni: qism.reduce((t, z) => t + z.ch.length, 0), vykl: qism.filter(z => z.v).length });
+    guruh.push({ kod, tur: 'y', nom, xonalar, qism, yol, B, L, P: W / 1000, ichki: ichki / 1000, kabel: 'VVGng-LS 3×1.5', avt: 'C10', soni: qism.reduce((t, z) => t + z.ch.length, 0), vykl: qism.filter(z => z.v).length });
   };
   ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7'].forEach((k, i) => yGr(`Y${i + 1}`, [k], `${k.slice(2)}-xona`));
   yGr('Y8', ['XZ4', 'XZ3', 'XZ1', 'XZ2'], 'xizmat xonalari (XZ1–XZ4)');
@@ -831,6 +831,24 @@ function sxemaShit(h) {
     q.push(T(x + 60, ty, `${s} — ${nom}`, 150, `fill="#26313d" transform="rotate(90 ${x + 60} ${ty})" text-anchor="start"`));
   });
   return q.join('');
+}
+
+// xarajatlar uchun yig'ma (xarajat-malumot.mjs → xarajatlar.py): soni va kabel uzunliklari, m
+export function tizimXulosa() {
+  const h = tizimHisob(), m = v => Math.round(v);
+  const segL = t => Object.values(t).flat().reduce((s, g) => s + d1(g[0], g[1]), 0) / 1000;
+  const kab = k => h.guruh.filter(g => g.kabel === k).reduce((t, g) => t + g.L, 0);
+  const vv = h.kuch.find(k => k.kod === 'VV1').L, k54 = h.kuch.filter(k => k.kabel.includes('5×4')).reduce((t, k) => t + k.L, 0);
+  const rG = h.guruh.filter(g => g.tur === 'r'), yG = h.guruh.filter(g => g.tur === 'y');
+  return {
+    kamera: h.kam.length, kameraM: m(jamiM(h.kam)), rj: h.rj.length, ap: h.ap.length,
+    netM: m(h.rj.reduce((t, d) => t + 2 * d.L, 0) + h.ap.reduce((t, d) => t + d.L, 0)), ltM: m(segL(LT)),
+    datchik: h.shl.reduce((t, s) => t + s.qurilmalar.length, 0), ipr: h.ipr.qurilmalar.length, sirena: h.sir.qurilmalar.length,
+    tablo: h.tab.qurilmalar.length, avariya: AVARIYA.length, yonM1: m(h.shl.reduce((t, s) => t + s.L, 0) + h.ipr.L), yonM2: m(h.sir.L + h.tab.L),
+    rozetka: rG.reduce((t, g) => t + g.soni, 0), doskaR: rG.reduce((t, g) => t + g.doska, 0), vykl: VYKL.length, chiroq: h.LED.length,
+    k25: m(kab('VVGng-LS 3×2.5')), k15: m(kab('VVGng-LS 3×1.5') + vv), k54: m(k54), gofra: m(h.guruh.reduce((t, g) => t + g.ichki, 0)), elM: m(segL(EL)),
+    difavt: rG.length, avt1: yG.length + 1 + 2, avt3: 2, P: +([...h.guruh.map(g => g.P), ...h.kuch.map(k => k.P)].reduce((a, b) => a + b, 0)).toFixed(1),
+  };
 }
 
 // ===================== chiqish =====================

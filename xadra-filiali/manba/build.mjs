@@ -141,7 +141,7 @@ await q1.close();
 execFileSync(process.execPath, [join(BU, 'ish-chizma.mjs')], { stdio: 'inherit' });
 // 2d. Vitechka va kanalli konditsioner — buyurtmachi eskizi bo'yicha (15.10)
 execFileSync(process.execPath, [join(BU, 'vent-chizma.mjs')], { stdio: 'inherit' });
-// 2e) past tokli va elektr tizimlari (18.10): kamera, internet/Wi-Fi, yong'in signalizatsiyasi, elektr — alohida PDF lar
+// 2e. Past tokli va elektr tizimlari (18.10): kamera, internet/Wi-Fi, yong'in signalizatsiyasi, elektr — alohida PDF lar
 execFileSync(process.execPath, [join(BU, 'tizim-chizma.mjs')], { stdio: 'inherit' });
 await brauzer.close();
 server.close();

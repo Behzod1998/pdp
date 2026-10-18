@@ -50,15 +50,58 @@ NARX_QATORLAR = [
     ('yorKatta', "Yoritish — koridor va koworking (har biriga)", 336, "$/joy", "Buyurtmachi: K1, K2 koridorlari va koworking zali"),
     ('yorXona', "Yoritish — xona (har biriga)", 168, "$/xona", "Buyurtmachi: 7 ta o'quv xonasi, 4 ta ofis xonasi va CEO xonasi"),
     ('kamera', "Videokamera", 40, "$/dona", "Buyurtmachi"),
-    ('kameraSoni', "Videokameralar soni", 16, "dona", "Buyurtmachi"),
+    ('kameraSoni', "Videokameralar soni", d['tizim']['kamera'], "dona", "Buyurtmachi (18.10): joylari belgilandi — 2-qavat 20, 3-qavat 3, 1-qavat 1 (Xadra_tizim_kamera)"),
     ('kameraOrn', "Kamera o'rnatish (har biri)", 21, "$/dona", "Buyurtmachi"),
-    ('nvr', "NVR (videoregistrator)", 840, "$/dona", "Buyurtmachi"),
-    ('kabel', "Kamera kabellari (jami)", 303, "$/komplekt", "Buyurtmachi: jami summa"),
+    ('nvr', "NVR (videoregistrator)", 840, "$/dona", "Buyurtmachi; 24 kamera uchun 32 kanalli NVR kerak — narxi 16 kanalliki bo'lsa, almashtiring"),
+    ('kabel', "Kamera kabellari (jami, 16 kamera uchun)", 303, "$/komplekt", "Buyurtmachi: jami summa"),
+    ('kabelUlush', "Kamera kabellari — kamera soniga mutanosib", '=C{kameraSoni}/16', "komplekt",
+     f"Hisob: buyurtmachi summasi 16 kamera uchun; chizma bo'yicha Cat6 ~{d['tizim']['kameraM']} m (24 kamera)"),
+    # 18.10: past tokli va elektr tizimlari (tizim-chizma.mjs) — narxlar TAXMIN (Toshkent bozori), miqdorlar chizmadan
+    ('poeSw', "PoE switch 24 port (kameralar uchun, ≥ 370 W)", 280, "$/dona", "TAXMIN — Toshkent bozori"),
+    ('shkaf18', "Tarmoq shkafi 18U, pol, 600 × 600 (PDU, polka, organayzer bilan) — NVR, router, switch", 220, "$/dona", "TAXMIN"),
+    ('ups', "UPS 1.5 kVA (tarmoq shkafi uchun)", 180, "$/dona", "TAXMIN"),
+    ('router', "Router (2 WAN, ≥ 1 Gbit/s)", 200, "$/dona", "TAXMIN"),
+    ('sw48', "Switch 48 port, gigabit (8 tasi PoE+ — Wi-Fi uchun)", 350, "$/dona", "TAXMIN"),
+    ('patch', "Patch-panel 24 port Cat6 (patch-kordlar bilan)", 60, "$/dona", "TAXMIN"),
+    ('patchSoni', "Patch-panellar soni", 3, "dona", "Internet 2 (32 + 6 port), kamera 1"),
+    ('rj45', "RJ-45 rozetka, 2 portli, Cat6 (podrozetnik va ramka bilan)", 120000, "so'm/dona", "TAXMIN — Toshkent bozori"),
+    ('rj45Soni', "RJ-45 rozetkalar soni (poldan 30 sm)", d['tizim']['rj'], "dona", "Buyurtmachi (18.10): 2-qavat 14, 3-qavat 1, 1-qavat 1"),
+    ('ap', "Wi-Fi nuqtasi — shiftga, PoE, Wi-Fi 6", 130, "$/dona", "TAXMIN"),
+    ('apSoni', "Wi-Fi nuqtalari soni", d['tizim']['ap'], "dona", "Buyurtmachi (18.10): 2-qavat 5, 3-qavat 1"),
+    ('cat6', "Cat6 U/UTP LSZH kabeli", 6000, "so'm/m", "TAXMIN — Toshkent (305 m quti ~1.8 mln so'm)"),
+    ('cat6Uz', "Cat6 uzunligi — internet va Wi-Fi", d['tizim']['netM'], "m", "Tizim chizmasidan: har portga alohida kabel; burilish, tushish va zaxira kiritilgan"),
+    ('netMontaj', "Internet montaji (kabel tortish, rozetka, patch-panelga ulash, test)", 60000, "so'm/port", "TAXMIN"),
+    ('netPort', "Internet portlari soni", 2 * d['tizim']['rj'] + d['tizim']['ap'], "port", "RJ-45 × 2 + Wi-Fi"),
+    ('lotok', "Kabel lotogi 100 × 50, perforatsiyali, qopqoqli (shift ostida, osmalar bilan)", 55000, "so'm/m", "TAXMIN"),
+    ('ltUz', "Past tokli lotok uzunligi", d['tizim']['ltM'], "m", "Tizim chizmasidan (2-qavat koridorlari, koworking, 3- va 1-qavat)"),
+    ('elUz', "Kuch lotogi uzunligi", d['tizim']['elM'], "m", "Tizim chizmasidan (koridorlar, koworking)"),
+    ('k25', "Kabel VVGng-LS 3×2.5 (rozetkalar)", 15000, "so'm/m", "TAXMIN — Toshkent"),
+    ('k25Uz', "VVGng-LS 3×2.5 uzunligi", d['tizim']['k25'], "m", "Elektr chizmasidan (guruhlar R1–R13, zaxira bilan)"),
+    ('k15', "Kabel VVGng-LS 3×1.5 (yoritish, VV1)", 10000, "so'm/m", "TAXMIN"),
+    ('k15Uz', "VVGng-LS 3×1.5 uzunligi", d['tizim']['k15'], "m", "Elektr chizmasidan (Y1–Y10, VV1)"),
+    ('k54', "Kabel VVGng-LS 5×4 (KK1, KK2 — tashqi bloklarga)", 45000, "so'm/m", "TAXMIN"),
+    ('k54Uz', "VVGng-LS 5×4 uzunligi", d['tizim']['k54'], "m", "Elektr chizmasidan (kladovkadan tomga stoyak bilan)"),
+    ('gofra', "Gofra quvur Ø20 (devorda, xona ichida)", 1500, "so'm/m", "TAXMIN"),
+    ('gofraUz', "Gofra quvur uzunligi", d['tizim']['gofra'], "m", "Elektr chizmasidan (xona ichidagi qism)"),
+    ('rozetka', "Rozetka 2P+E (podrozetnik bilan), shu jumladan doska rozetkasi 1.6 m", 45000, "so'm/dona", "TAXMIN"),
+    ('rozSoni', "Rozetkalar soni", d['tizim']['rozetka'] + d['tizim']['doskaR'], "dona", f"Buyurtmachi (18.10): {d['tizim']['rozetka']} oddiy (2-qavat 78, 1-qavat 2) + {d['tizim']['doskaR']} doska (1.6 m)"),
+    ('vykl', "Vyklyuchatel (podrozetnik bilan)", 40000, "so'm/dona", "TAXMIN"),
+    ('vyklSoni', "Vyklyuchatellar soni", d['tizim']['vykl'], "dona", "Buyurtmachi (18.10): 7 sinf, 4 xizmat xonasi, K1, K2"),
+    ('difavt', "Difavtomat C16, 30 mA (har sinf rozetkasiga alohida)", 220000, "so'm/dona", "TAXMIN"),
+    ('difSoniE', "Difavtomatlar soni", d['tizim']['difavt'], "dona", "Rozetka guruhlari R1–R13"),
+    ('avt1', "Avtomat 1P C10/C16", 45000, "so'm/dona", "TAXMIN"),
+    ('avt1Soni', "1P avtomatlar soni", d['tizim']['avt1'], "dona", "Yoritish Y1–Y10, VV1, zaxira 2"),
+    ('avt3', "Avtomat 3P C25 (KK1, KK2)", 180000, "so'm/dona", "TAXMIN"),
+    ('shitQuti', "Qo'shimcha shit qutisi 36 modul (mavjud shitda joy bo'lmasa)", 450000, "so'm/dona", "TAXMIN — joyida aniqlanadi"),
+    ('elMontaj', "Elektr montaji (nuqta: rozetka, vyklyuchatel, chiroq, kuch liniyasi; shtroba, gofra)", 50000, "so'm/nuqta", "TAXMIN — Toshkent"),
+    ('elNuqta', "Elektr nuqtalari soni", d['tizim']['rozetka'] + d['tizim']['doskaR'] + d['tizim']['vykl'] + d['tizim']['chiroq'] + 3, "nuqta",
+     f"Rozetka {d['tizim']['rozetka'] + d['tizim']['doskaR']}, vyklyuchatel {d['tizim']['vykl']}, chiroq {d['tizim']['chiroq']}, kuch liniyasi 3"),
     ('logo', "Logotiplar — 2-qavat (jami)", 2500, "$/komplekt", "Buyurtmachi: jami summa. Koridor oxiridagi 2 ta yorituvchi logotip shu summaga kirgan deb olindi — alohida bo'lsa, qo'shing"),
     ('kurs', "Dollar kursi", 11900, "so'm/$", "Buyurtmachi; so'mdagi narxlar shu kurs bo'yicha $ ga o'tadi"),
     ('plyonka', "Matli plyonka (shisha devorga)", 800000, "so'm/dona", "Buyurtmachi"),
     ('plyonkaSoni', "Matli plyonka soni", 8, "dona", "Buyurtmachi"),
-    ('yongin', "Yong'in xavfsizligi (signalizatsiya, o't o'chirgich, belgilar, avariya chiroqlari)", 18000000, "so'm/komplekt", "Buyurtmachi: jami summa"),
+    ('yongin', "Yong'in xavfsizligi (signalizatsiya, o't o'chirgich, belgilar, avariya chiroqlari)", 18000000, "so'm/komplekt",
+     f"Buyurtmachi: jami summa. Chizma (18.10): {d['tizim']['datchik']} datchik, {d['tizim']['ipr']} IPR, {d['tizim']['sirena']} sirena, {d['tizim']['tablo']} tablo, {d['tizim']['avariya']} avariya chirog'i, PPK; kabel ~{d['tizim']['yonM1'] + d['tizim']['yonM2']} m"),
     ('buzish', "Devor buzish", 50000, "so'm/m²", "Buyurtmachi"),
     ('chiqindi', "Qurilish chiqindisini olib chiqish", 1200000, "so'm/komplekt", "Buyurtmachi: jami summa"),
     ('chashagen', "Chashagen", 700000, "so'm/dona", "Buyurtmachi"),
@@ -254,7 +297,31 @@ for kod in ['K1', 'K2', 'KW']:
 qosh('BQ', 'Kamera tizimi', "Videokamera", miqdor='kameraSoni', birlik='dona', narx='kamera')
 qosh('BQ', 'Kamera tizimi', "Kamera o'rnatish", miqdor='kameraSoni', birlik='dona', narx='kameraOrn')
 qosh('BQ', 'Kamera tizimi', "NVR (videoregistrator)", miqdor=1, birlik='dona', narx='nvr')
-qosh('BQ', 'Kamera tizimi', "Kabellar (jami)", miqdor=1, birlik='komplekt', narx='kabel')
+qosh('BQ', 'Kamera tizimi', "Kabellar (Cat6, har kameraga alohida)", miqdor='kabelUlush', birlik='komplekt', narx='kabel')
+qosh('BQ', 'Kamera tizimi', "PoE switch 24 port", miqdor=1, birlik='dona', narx='poeSw')
+qosh('BQ', 'Kamera tizimi', "Tarmoq shkafi 18U (XZ4) — kamera va internet uchun umumiy", miqdor=1, birlik='dona', narx='shkaf18')
+qosh('BQ', 'Kamera tizimi', "UPS 1.5 kVA (shkaf)", miqdor=1, birlik='dona', narx='ups')
+# 18.10: internet va Wi-Fi, elektr — tizim chizmalari bo'yicha (Xadra_tizim_internet, Xadra_tizim_elektr)
+qosh('BQ', 'Internet va Wi-Fi', "RJ-45 rozetka, 2 portli", miqdor='rj45Soni', birlik='dona', narx=('som', 'rj45'))
+qosh('BQ', 'Internet va Wi-Fi', "Wi-Fi nuqtasi (shift, PoE)", miqdor='apSoni', birlik='dona', narx='ap')
+qosh('BQ', 'Internet va Wi-Fi', "Router", miqdor=1, birlik='dona', narx='router')
+qosh('BQ', 'Internet va Wi-Fi', "Switch 48 port (8 PoE+)", miqdor=1, birlik='dona', narx='sw48')
+qosh('BQ', 'Internet va Wi-Fi', "Patch-panellar (internet 2, kamera 1)", miqdor='patchSoni', birlik='dona', narx='patch')
+qosh('BQ', 'Internet va Wi-Fi', "Cat6 kabeli — internet va Wi-Fi", miqdor='cat6Uz', birlik='m', narx=('som', 'cat6'))
+qosh('BQ', 'Internet va Wi-Fi', "Past tokli lotok (kamera, internet, yong'in)", miqdor='ltUz', birlik='m', narx=('som', 'lotok'))
+qosh('BQ', 'Internet va Wi-Fi', "Internet montaji", miqdor='netPort', birlik='port', narx=('som', 'netMontaj'))
+qosh('BQ', 'Elektr', "Kabel VVGng-LS 3×2.5 (rozetkalar)", miqdor='k25Uz', birlik='m', narx=('som', 'k25'))
+qosh('BQ', 'Elektr', "Kabel VVGng-LS 3×1.5 (yoritish, VV1)", miqdor='k15Uz', birlik='m', narx=('som', 'k15'))
+qosh('BQ', 'Elektr', "Kabel VVGng-LS 5×4 (KK1, KK2)", miqdor='k54Uz', birlik='m', narx=('som', 'k54'))
+qosh('BQ', 'Elektr', "Kuch lotogi (shift ostida)", miqdor='elUz', birlik='m', narx=('som', 'lotok'))
+qosh('BQ', 'Elektr', "Gofra quvur Ø20", miqdor='gofraUz', birlik='m', narx=('som', 'gofra'))
+qosh('BQ', 'Elektr', "Rozetkalar (shu jumladan doska rozetkasi 1.6 m)", miqdor='rozSoni', birlik='dona', narx=('som', 'rozetka'))
+qosh('BQ', 'Elektr', "Vyklyuchatellar", miqdor='vyklSoni', birlik='dona', narx=('som', 'vykl'))
+qosh('BQ', 'Elektr', "Difavtomatlar C16, 30 mA (rozetka guruhlari)", miqdor='difSoniE', birlik='dona', narx=('som', 'difavt'))
+qosh('BQ', 'Elektr', "Avtomatlar 1P (yoritish, VV1, zaxira)", miqdor='avt1Soni', birlik='dona', narx=('som', 'avt1'))
+qosh('BQ', 'Elektr', "Avtomatlar 3P C25 (KK1, KK2)", miqdor=2, birlik='dona', narx=('som', 'avt3'))
+qosh('BQ', 'Elektr', "Qo'shimcha shit qutisi 36 modul (kerak bo'lsa)", miqdor=1, birlik='dona', narx=('som', 'shitQuti'))
+qosh('BQ', 'Elektr', "Elektr montaji (nuqta bo'yicha)", miqdor='elNuqta', birlik='nuqta', narx=('som', 'elMontaj'))
 qosh('BQ', 'Logotip', "Logotiplar — 2-qavat, jami (koridor oxiridagi 2 ta yorituvchi logotip bilan)", miqdor=1, birlik='komplekt', narx='logo')
 # So'mdagi ishlar (narx $ = so'm ÷ kurs)
 qosh('BQ', 'Matli plyonka', "Shisha devorlarga matli plyonka", miqdor='plyonkaSoni', birlik='dona', narx=('som', 'plyonka'))
@@ -320,7 +387,7 @@ for kalit, nom, birlik in [('sahnaDevor', "Sahna devori: GKL karkas va grafit pa
 
 TURLAR = ['Shisha devor', 'Gips karton (GKL)', 'Bambuk panel', 'Interaktiv doska', 'Perila', 'Yoritish', 'Kamera tizimi', 'Logotip',
           'Matli plyonka', "Yong'in xavfsizligi", 'Buzish ishlari', 'Santexnika', 'Kafel', 'Konditsioner va ventilyatsiya',
-          'Mebel va interyer', "E'lon va e'tirof doskalari", 'Eshiklar']
+          'Mebel va interyer', "E'lon va e'tirof doskalari", 'Eshiklar', 'Internet va Wi-Fi', 'Elektr']
 JUFT = TURLAR[:5]    # «Xonalar bo'yicha» varag'ida miqdor va summa ustunlari bilan
 YAKKA = TURLAR[5:]   # faqat summa ustuni bilan
 for k in qatorlar:
@@ -393,7 +460,8 @@ izohlar = [
     "• Perila: buyurtmachi bergan uzunlik (24 m), «Zinapoya» qatorida.",
     "• Uzunliklar chizma v1.2 dan (mavjud holat chizmasining fotosi asosida) — ish boshlanishidan oldin joyida o'lchanadi.",
     "• Yoritish: koridorlar (K1, K2) va koworking zaliga 336 $ dan, o'quv xonalari (7), ofis xonalari (4) va CEO xonasiga 168 $ dan. Kirish zali, WC va yuqori qavat xonasi kiritilmagan.",
-    "• Videokuzatuv: 16 ta kamera (40 $) va o'rnatish (21 $ dan), NVR, kabellar jami; logotiplar jami — «Butun qavat» qatorida.",
+    "• Videokuzatuv (18.10, Xadra_tizim_kamera): 24 ta kamera (40 $) va o'rnatish (21 $ dan), NVR, kabellar (buyurtmachi summasi kamera soniga mutanosib), PoE switch, tarmoq shkafi va UPS (TAXMIN); logotiplar jami — «Butun qavat» qatorida.",
+    "• Internet va Wi-Fi (18.10, Xadra_tizim_internet): 16 ta 2 portli RJ-45, 6 ta Wi-Fi nuqtasi, router, switch, patch-panellar, Cat6 va lotok — chizmadagi miqdor, Toshkent taxminiy narxi. Elektr (Xadra_tizim_elektr): kabellar (3×2.5, 3×1.5, 5×4), lotok, gofra, rozetka, vyklyuchatel, avtomatlar, montaj — xuddi shunday; chiroqlar — buyurtmachi narxi («Yoritish»). Yong'in — buyurtmachi summasi (miqdorlar chizmada).",
     "• So'mdagi narxlar (matli plyonka, yong'in xavfsizligi, devor buzish va chiqindi, havo kanallari, santexnika) «Dollar kursi» katagi bo'yicha (11 900 so'm/$) $ ga o'tkaziladi.",
     "• Devor buzish: chizmadagi buziladigan devorlar uzunligi × devor balandligi (3.5 m) × 50 000 so'm/m².",
     "• Kutilmagan xarajatlar: umumiy summadan 10% — «Xonalar bo'yicha» varag'ining oxirida.",
@@ -402,7 +470,7 @@ izohlar = [
     "• Santexnika: 4 ta kabina, issiq va sovuq suv quvurlari (40 m dan), 100 ta aksessuar, kanalizatsiya quvuri va otvodlar — «Hojatxonalar» qatorida.",
     "• 2-qavat koridorlari (16.10): K1 va K2 4-xona orqali kladovkagacha davom etadi; koridor oxiri — kladovkaning ko'ndalang GKL devori. Logoli variant hisoblangan (Jahon School namunasi uslubida): marmar ko'rinishli panel, mox polosalari, egilgan yog'och reykali kanopi, shift chetlarida yashil LED (taxmin, K1 va K2 qatorlarida); kladovka eshigi yashirin. Logosiz variantda marmar, mox va kanopi kirmaydi (2 × $1 350 = $2 700 kam), kladovka eshigi oddiy (~$150). E'lonlar va e'tirof doskalari — koworking qatorida.",
     "• TAXMINIY narxlar (to'q sariq fon): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, koworking sahnasi (karkas devor, reyka, logotip, trek yoritish, ovoz, pol, minbar), 1-qavat resepshn stoykasi, mehmonlar mebeli va logotiplari, kanalli konditsionerlar, diffuzor va panjaralar, vitechka ventilyatori, suriladigan eshik mexanizmlari va kladovka eshiklari — Toshkent bozori bo'yicha dastlabki baho; mebelchi va reklama ustasi narxi bilan almashtiring. «Yakuniy» varag'ida taxminiy qism alohida ko'rsatilgan.",
-    "• Kirmagan: o'quv xonalari, ustozlar xonasi, call-markaz, CEO va koworking mebeli — mavjud; pol (kafel) va internet — mavjud; turniketlar (2 ta) — mavjud (o'rnatish, to'siq va evakuatsiya darvozasi alohida aniqlanadi); eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
+    "• Kirmagan: o'quv xonalari, ustozlar xonasi, call-markaz, CEO va koworking mebeli — mavjud; pol (kafel) va internet provayderi (optika kirishi) — mavjud; turniketlar (2 ta) — mavjud (o'rnatish, to'siq va evakuatsiya darvozasi alohida aniqlanadi); eshik furniturasi; shift va bo'yoq; ish haqi (agar narxga kirmagan bo'lsa).",
     "Ranglar: ko'k — qo'lda kiritilgan qiymat; yashil — boshqa varaqdan olingan; qora — formula; sariq fon — o'zgartirish mumkin bo'lgan kataklar.",
 ]
 for i, t in enumerate(izohlar):
@@ -501,7 +569,7 @@ UST = ['Xona', 'Shisha (devor va eshik), m²', 'Shisha (devor va eshik), $', 'Gi
        'Bambuk panel, m²', 'Bambuk panel, $', 'Interaktiv doska, dona', 'Interaktiv doska, $', 'Perila, m', 'Perila, $',
        'Yoritish, $', 'Kamera tizimi, $', 'Logotip, $', 'Matli plyonka, $', "Yong'in xavfsizligi, $", 'Buzish ishlari, $',
        'Santexnika, $', 'Kafel, $', 'Konditsioner va ventilyatsiya, $', 'Mebel va interyer (taxmin), $', "E'lon va e'tirof doskalari (taxmin), $",
-       'Eshiklar: mexanizm, kladovka (taxmin), $', 'Jami, $']
+       'Eshiklar: mexanizm, kladovka (taxmin), $', 'Internet va Wi-Fi (taxmin), $', 'Elektr (taxmin), $', 'Jami, $']
 assert len(UST) == 2 + 2 * len(JUFT) + len(YAKKA), "UST ustunlari TURLAR bilan mos emas"
 NC = len(UST)                      # ustunlar soni
 JAMI_UST = get_column_letter(NC)   # «Jami, $» ustuni
@@ -682,6 +750,10 @@ TAQSIMOT = {
     'gkl': ul(F2=.5, F3=.5), 'sahnaDevor': ul(F2=.5, F3=.5),
     'issiqQuvur': ul(F2=1), 'sovuqQuvur': ul(F2=1), 'aksessuar': ul(F2=1), 'kanal': ul(F2=1), 'tochka': ul(F2=.5, F4=.5),
     'kk': ul(F0=.5, F2=.5), 'vv': ul(F2=1), 'kanalM': ul(F2=1), 'kabel': ul(F2=1), 'yongin': ul(F2=.4, F4=.6),
+    'cat6': ul(F2=1), 'lotok': ul(F2=1), 'k25': ul(F2=1), 'k15': ul(F2=1), 'k54': ul(F2=1), 'gofra': ul(F2=1), 'shitQuti': ul(F2=1),
+    'netMontaj': ul(F2=.5, F4=.5), 'elMontaj': ul(F2=.6, F4=.4),
+    'poeSw': ul(F4=1), 'shkaf18': ul(F4=1), 'ups': ul(F4=1), 'router': ul(F4=1), 'sw48': ul(F4=1), 'patch': ul(F4=1), 'rj45': ul(F4=1), 'ap': ul(F4=1),
+    'rozetka': ul(F4=1), 'vykl': ul(F4=1), 'difavt': ul(F4=1), 'avt1': ul(F4=1), 'avt3': ul(F4=1),
     'kafel': ul(F3=1), 'kafelUsta': ul(F3=1), 'bambuk': ul(F3=1), 'sahnaPol': ul(F3=1),
     'shisha': ul(F3=.5, F4=.5), 'kond3': ul(F3=1),
     'diffuzor': ul(F4=1), 'sorPanjara': ul(F4=1), 'qPanjara': ul(F4=1), 'surmaMex': ul(F4=1), 'eshKL': ul(F4=1),
