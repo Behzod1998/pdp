@@ -72,7 +72,7 @@ export function taqdimotHtml() {
           <div>${kesimSvg(1.75)}</div>
           <ul>
             <li><b>2 ta kanalli konditsioner</b> (KK1, KK2) koridorlar oxiridagi <b>kladovka shifti ustida</b> — kladovka shovqinni to'sadi. Havo koridor bo'ylab magistral bilan: sinfga 2 ta, xizmat xonasiga 1 ta diffuzor. KK1 — ${VH.guruh.K1.xonalar.join(', ')}; KK2 — ${VH.guruh.K2.xonalar.join(', ')} (SR4 — ikkala blokdan bittadan diffuzor).</li>
-            <li><b>Tashqi havo 30%</b> — 3-xonaning ko'cha tomonidan vertikal kanal bilan bloklarga (har biriga ${Math.round(VH.guruh.K1.oa)} m³/soat). To'la sinfda CO₂ ~${Math.round(Math.min(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50}–${Math.round(Math.max(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50} ppm.</li>
+            <li><b>Tashqi havo 30%</b> — 3-xonaning ko'cha tomonidan, sharqiy devor bo'ylab (3- va 4-xonada GKL qutida) bloklarning orqasiga (har biriga ${Math.round(VH.guruh.K1.oa)} m³/soat). To'la sinfda CO₂ ~${Math.round(Math.min(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50}–${Math.round(Math.max(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50} ppm.</li>
             <li><b>Vitechka</b> — alohida so'rish tarmog'i: fasadlar bo'ylab (deraza tomonda) va XZ xonalarida; VV1 ${VH.venQ} m³/soat.</li>
             <li>Koworking: mavjud konditsionerlar (${TZ.qoshimcha[0].mavjud.map(b => b / 1000 + 'k').join(' + ')}). Doska yon devorda, deraza o'quvchilarning chap tomonida (3-xonada — doska kirish tomonida) — yorug'lik doska va proyektorga tushmaydi.</li>
           </ul></div>

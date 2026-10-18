@@ -1,7 +1,7 @@
 // Xarajatlar jadvali uchun ma'lumot: har bir yangi devorning qaysi xonaga qaragan yuzlari va uzunligi,
 // yangi eshiklar, sinflar, ofis xonalari va CEO xonasidagi bambuk panel devorlari. Natija JSON — xarajatlar.py o'qiydi.
 import { DEVORLAR, XONALAR, ESHIKLAR, PANJARA, bolaklar, lokal } from './model.mjs';
-import { ventHisob } from './vent-chizma.mjs';
+import { ventHisob, GKL_QUTI } from './vent-chizma.mjs';
 const xonalar = XONALAR.flatMap(x => bolaklar(x).map(b => ({ kod: x.kod, ...b })));
 const ustma = (a1, a2, b1, b2) => Math.max(0, Math.min(a2, b2) - Math.max(a1, b1));
 const yuzlar = w => {
@@ -52,4 +52,6 @@ const buziladi = DEVORLAR.filter(w => w.holat === 'buziladi').map(w => ({ uz: Ma
 const VH = ventHisob();
 const vent = { dif: VH.D.length, sor: VH.P.length, berish: Math.round(VH.uz.K), toza: Math.round(VH.uz.T), vitechka: Math.round(VH.uz.V) };
 console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi, panjara: PANJARA.map(p => ({ uz: (p.x2 - p.x1) / 1000, izoh: p.izoh })),
-  kanalUz: Math.round(VH.uz.jami * 1.1), kanalChizma: Math.round(VH.uz.jami), vent }, null, 0));
+  kanalUz: Math.round(VH.uz.jami * 1.1), kanalChizma: Math.round(VH.uz.jami), vent,
+  // 18.10: tashqi havo kanali GKL qutisi — uzunlik va yoyilma eni (pastki + yon tomoni), m
+  gklQuti: GKL_QUTI.map(g => ({ kod: g.kod, uz: (g.y2 - g.y1) / 1000, yoyma: Math.round((g.x2 - g.x1 + g.chuq) / 25) * 25 / 1000 })) }, null, 0));
