@@ -26,7 +26,7 @@ console.log(JSON.stringify({
   sinflar: sinflar().map(x => ({ kod: x.kod, doska: x.doska, doskaOfset: x.doskaOfset || 0, x1: x.x1, x2: x.x2, y1: x.y1, y2: x.y2, bolaklar: bolaklar(x),
     partalar: x.j.partalar, stullar: x.j.stullar, doskaR: x.j.doska, ustozStoli: x.j.ustozStoli, ustozStuli: x.j.ustozStuli })),
   xizmat: XIZMAT_JIHOZ, kw: KW_KUNDALIK, logo: KORIDOR_LOGO, doskalar: DOSKALAR, sahna: KW_SAHNA, kw_tadbir: KW_TADBIR.stullar,
-  osimlik: [[19700, 14650], [8400, 12750], [15050, 12750], [12500, 11850], [11600, 9800], [3900, 13950], [3700, 17650], [5650, 24050]],
+  osimlik: [[19700, 14650], [9380, 12700], [15050, 12750], [12500, 11850], [11600, 9800], [3900, 13950], [3700, 17650], [5650, 24050]],
   sanuzel: { unitaz: AYOLLAR_WC.unitaz, rakovina: AYOLLAR_WC.rakovina },
   // 16.10: kanalli konditsioner (KK1, KK2 — kladovka shifti ustida, ko'rinmaydi): xonalarda shift diffuzorlari (berish)
   // va vitechka so'rish panjaralari (dumaloq) — vent-chizma.mjs bilan bir xil joylarda

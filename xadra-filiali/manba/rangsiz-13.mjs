@@ -187,6 +187,7 @@ export function rangsiz3Html() {
       <tr class="j"><td>Foydali maydon (hujjat)</td><td></td><td class="r">${BINO3.foydali} m²</td></tr></table>
     <div class="izoh"><h2>Izoh</h2><ul>
       <li>Devorlar — qora; 3 va 4-xona o'zgarmaydi (xira shtrix).</li>
+      <li>Koridorda yangi GKL devor (shtrix, 100 mm, 2.85 m) — zinadan chiqqan odamga hojatxona (tahoratxona) eshigi ochiq qolsa ham ichi ko'rinmaydi; eshik oldida 1.05 m tambur (18.10).</li>
       <li>2-xona: ${KABINA.soni} ta kabina (${KABINA.en / 1000} × ${KABINA.chuq / 1000} m, eshigi ${KABINA.eshik}), 1-sida unitaz, qolganlarida chashagen, har birida mustahab; kirganda chapda 2 ta rakovina; janubiy devor bo'ylab taxorat joyi (3 jo'mrak), eshik yonida trap.</li>
       <li>5-xona: doska shimoliy devorda (oq to'rtburchak) — eshikdan kirganda chapda; derazalar o'ng tomonda.</li>
       <li>Derazalar joyi taxminiy; o'lchamlar chizma fotosidan — joyida o'lchanadi.</li></ul></div>`);
