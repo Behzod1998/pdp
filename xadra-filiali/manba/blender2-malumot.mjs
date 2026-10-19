@@ -30,7 +30,7 @@ console.log(JSON.stringify({
   sanuzel: { unitaz: AYOLLAR_WC.unitaz, rakovina: AYOLLAR_WC.rakovina },
   // 16.10: kanalli konditsioner (KK1, KK2 — kladovka shifti ustida, ko'rinmaydi): xonalarda shift diffuzorlari (berish)
   // va vitechka so'rish panjaralari (dumaloq) — vent-chizma.mjs bilan bir xil joylarda
-  vent_dif: VH.D.map(d => ({ kod: d.kod, xona: d.xona, p: d.p, panel: d.panel })),
+  vent_dif: [...VH.D.map(d => ({ kod: d.kod, xona: d.xona, p: d.p, panel: d.panel })), { kod: 'TD', xona: 'SR6', p: VH.td.p, panel: VH.td.panel }],
   vent_sor: VH.P.map(v => ({ kod: v.kod, xona: v.xona, p: v.p, d: v.d })),
   panjara: PANJARA,
 }));

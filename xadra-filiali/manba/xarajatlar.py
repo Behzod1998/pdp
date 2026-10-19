@@ -134,7 +134,7 @@ NARX_QATORLAR = [
     # 16.10: rekuperatorlar va splitlar o'rniga — koridor oxiridagi kladovka shifti ustida 2 ta kanalli konditsioner (30% tashqi havo)
     ('kk', "Kanalli konditsioner 96 000 BTU (ichki kanalli blok, tashqi blok, tashqi havo aralashtirish kamerasi)", 5000, "$/dona",
      "TAXMIN — chizmada 96 000 BTU deb olingan; issiq kunda yetmaydi (~130 000 BTU kerak, vent-chizma 2-varaq) — model tanlangach almashtiring"),
-    ('kkSoni', "Kanalli konditsionerlar soni", 2, "dona", "KK1 (K1 oxiri), KK2 (K2 oxiri) — kladovka shifti ustida; orqasida tashqi havo kanali (sharqiy devor bo'ylab)"),
+    ('kkSoni', "Kanalli konditsionerlar soni", 2, "dona", "KK1 (K1 oxiri), KK2 (K2 oxiri) — kladovka shifti ustida, tashqi devor yonida"),
     ('kanalM', "Havo kanali (vozduxovod), 1 m", 300000, "so'm/m", "Buyurtmachi (12.10)"),
     ('kanalUz', "Havo kanallari uzunligi", d['kanalUz'], "m",
      f"Kanallar rejasidan: {d['kanalChizma']} m (berish ~{d['vent']['berish']}, tashqi havo ~{d['vent']['toza']}, vitechka ~{d['vent']['vitechka']}) + 10% burilish va ulanishlar"),
@@ -143,7 +143,9 @@ NARX_QATORLAR = [
     ('sorPanjara', "So'rish panjarasi Ø200 (vitechka), klapan bilan", 15, "$/dona", "TAXMIN"),
     ('sorSoni', "So'rish panjaralari soni", d['vent']['sor'], "dona", "Kanallar rejasidan"),
     ('qPanjara', "Qaytish (2 × 600 × 300, koridor shiftida) va tashqi havo panjaralari, tomdagi chiqish soyaboni", 400, "$/komplekt", "TAXMIN"),
-    ('vv', "Vitechka ventilyatori VV1 — kanalli, 3 000 m³/soat (~400 Pa), shovqin so'ndirgich bilan", 900, "$/dona", "TAXMIN"),
+    ('vv', f"Vitechka ventilyatori VV1 — kanalli, {d['vent']['venQ']:,} m³/soat (~400 Pa), shovqin so'ndirgich bilan".replace(',', ' '), 900, "$/dona", "TAXMIN"),
+    # 19.10: tashqi havo markaziy kanalining oxiri — 6-xonaga to'g'ridan toza havo
+    ('tdKomplekt', f"6-xonaga toza havo: VP1 kichik kanalli ventilyator ({d['vent']['tdQ']} m³/soat), TD diffuzori, rostlash klapani, filtr", 250, "$/komplekt", "TAXMIN"),
     # 16.10: koridor eshiklari 1 m, yonga suriladigan (founder); koridor oxirida kladovka eshiklari
     ('surmaMex', "Suriladigan eshik mexanizmi: yuqori rels va qopqog'i (~2.1 m), roliklar, soft-close, pastki yo'naltirgich, tutqichlar", 150, "$/dona", "TAXMIN — founder (16.10): eshiklar 1 m, Damas eshigi kabi yonga suriladi"),
     ('eshKL', "Kladovka eshigi 800 × 2100 — yashirin (ko'rinmas korobka, bargi koridor oxiri paneli bilan bir xil qoplanadi, bosib ochiladi)", 350, "$/dona", "TAXMIN — logoli variant; logosiz variantda oddiy eshik ~$150"),
@@ -331,16 +333,17 @@ for w in d['buziladi']:
     qosh('BQ', 'Buzish ishlari', f"Devorni buzish — {joy}", w['uz'] / 1000, 'H', narx=('som', 'buzish'))
 qosh('BQ', 'Buzish ishlari', "Qurilish chiqindisini olib chiqish (jami)", miqdor=1, birlik='komplekt', narx=('som', 'chiqindi'))
 # Konditsioner va ventilyatsiya (16.10): 2 ta kanalli konditsioner kladovka shifti ustida (KK1 — K1, KK2 — K2), havo koridor
-# bo'ylab magistral kanal bilan xonalarga; 30% tashqi havo 3-xonaning ko'cha tomonidan; vitechka — alohida so'rish tarmog'i
+# bo'ylab magistral kanal bilan xonalarga; 30% tashqi havo 2-xonaning ko'cha tomonidan (19.10); vitechka — alohida so'rish tarmog'i
 qosh('BQ', 'Konditsioner va ventilyatsiya', "Kanalli konditsioner KK1, KK2 (kladovka shifti ustida, tashqi devor yonida)", miqdor='kkSoni', birlik='dona', narx='kk')
 qosh('BQ', 'Konditsioner va ventilyatsiya', "Havo kanallari (vozduxovod) — berish, tashqi havo va vitechka (kanallar rejasi bo'yicha)", miqdor='kanalUz', birlik='m', narx=('som', 'kanalM'))
-# 18.10: tashqi havo kanali sharqiy devor bo'ylab — 3- va 4-xonada shift ostida GKL qutida (pastki va yon tomoni)
+# 19.10: markaziy tashqi havo kanali (2-xona, XZ3, XZ2, 6-xona markazi) — xonalarda shift ostida GKL qutida (pastki va ikki yon tomoni)
 for g in d['gklQuti']:
-    qosh(g['kod'], 'Gips karton (GKL)', f"Tashqi havo kanali qutisi — sharqiy devor bo'ylab, shift ostida (yoyilmasi {g['yoyma']} m)", g['uz'], miqdor=round(g['uz'] * g['yoyma'], 2), narx='gkl')
+    qosh(g['kod'], 'Gips karton (GKL)', f"Tashqi havo kanali qutisi — xona markazidan, shift ostida (yoyilmasi {g['yoyma']} m)", g['uz'], miqdor=round(g['uz'] * g['yoyma'], 2), narx='gkl')
 qosh('BQ', 'Konditsioner va ventilyatsiya', "Shift diffuzorlari (sinflarga 2 tadan, xizmat xonalariga 1 tadan)", miqdor='difSoni', birlik='dona', narx='diffuzor')
 qosh('BQ', 'Konditsioner va ventilyatsiya', "Vitechka so'rish panjaralari Ø200", miqdor='sorSoni', birlik='dona', narx='sorPanjara')
 qosh('BQ', 'Konditsioner va ventilyatsiya', "Qaytish va tashqi havo panjaralari, chiqish soyaboni", miqdor=1, birlik='komplekt', narx='qPanjara')
-qosh('BQ', 'Konditsioner va ventilyatsiya', "Vitechka ventilyatori VV1 (3 000 m³/soat)", miqdor=1, birlik='dona', narx='vv')
+qosh('BQ', 'Konditsioner va ventilyatsiya', f"Vitechka ventilyatori VV1 ({d['vent']['venQ']:,} m³/soat)".replace(',', ' '), miqdor=1, birlik='dona', narx='vv')
+qosh('BQ', 'Konditsioner va ventilyatsiya', "6-xonaga toza havo: VP1 ventilyatori, TD diffuzori, klapan", miqdor=1, birlik='komplekt', narx='tdKomplekt')
 qosh('YQ', 'Konditsioner va ventilyatsiya', "Konditsioner (o'quv xonasi)", miqdor=1, birlik='dona', narx='kond3')
 
 # Sotuv (XZ1) va admin (XZ2) xonalari: mebel va interyer — taxminiy (jihozlar soni chizmadagi kabi)
@@ -466,7 +469,7 @@ izohlar = [
     "• Devor buzish: chizmadagi buziladigan devorlar uzunligi × devor balandligi (3.5 m) × 50 000 so'm/m².",
     "• Kutilmagan xarajatlar: umumiy summadan 10% — «Xonalar bo'yicha» varag'ining oxirida.",
     "• 3-qavat: 5-xona — o'quv xonasi (24 o'rin, bambuk panel va interaktiv doska); 2-xona — erkaklar hojatxonasi. Santexnika soni ikkala hojatxona uchun jami (2-qavatdagisi — ayollar: 2 kabina, unitazli, eng ichkarida; oldida rakovinali tambur — 6-xona 3-qavatga o'tish yo'lagi bo'lgani uchun ikki eshik orqali kiriladi); kafel faqat erkaklar hojatxonasi uchun (devor 58 m², pol 16 m²).",
-    "• Konditsioner va ventilyatsiya (16.10, kanallar rejasi — Xadra_2-qavat_vitechka_konditsioner): 2 ta kanalli konditsioner (KK1, KK2) koridor oxiridagi kladovka shifti ustida, tashqi devor yonida — havo koridor bo'ylab magistral kanal bilan sinflarga (2 tadan) va xizmat xonalariga (1 tadan) diffuzorlar orqali; 30% tashqi havo 3-xonaning ko'cha tomonidan, sharqiy devor bo'ylab bloklarning orqasiga (3- va 4-xonada GKL qutida, 18.10); vitechka — alohida so'rish tarmog'i (18 panjara, VV1 3 000 m³/soat). Konditsioner, diffuzor, panjara va ventilyator narxlari TAXMIN. 96 000 BTU issiq kunda yetmaydi (har blokka ~130 000 BTU kerak) — model tanlangach narx almashtiriladi. Avvalgi taklif (2 ta rekuperator va 11 ta split) bekor qilindi. CEO xonasi va koworkingda konditsioner mavjud; 3-qavat o'quv xonasiga 1 ta konditsioner. Kirmagan: montaj (narxga kirmagan bo'lsa), kanal izolyatsiyasi, freon trassalari, tashqi blok tayanch ramasi, drenaj nasoslari (kerak bo'lsa), CO₂ datchiklari.",
+    "• Konditsioner va ventilyatsiya (16.10, kanallar rejasi — Xadra_2-qavat_vitechka_konditsioner): 2 ta kanalli konditsioner (KK1, KK2) koridor oxiridagi kladovka shifti ustida, tashqi devor yonida — havo koridor bo'ylab magistral kanal bilan sinflarga (2 tadan) va xizmat xonalariga (1 tadan) diffuzorlar orqali; 30% tashqi havo 2-xonaning ko'cha tomonidan — 2-xona, ustozlar, admin va 6-xona markazidan o'tadigan kanal bilan, K1 va K2 da bloklarga, oxirida 6-xonaga to'g'ridan 300 m³/soat (TD, VP1 ventilyatori; xonalarda GKL qutida, 19.10); vitechka — alohida so'rish tarmog'i (18 panjara, VV1). Konditsioner, diffuzor, panjara va ventilyator narxlari TAXMIN. 96 000 BTU issiq kunda yetmaydi (har blokka ~130 000 BTU kerak) — model tanlangach narx almashtiriladi. Avvalgi taklif (2 ta rekuperator va 11 ta split) bekor qilindi. CEO xonasi va koworkingda konditsioner mavjud; 3-qavat o'quv xonasiga 1 ta konditsioner. Kirmagan: montaj (narxga kirmagan bo'lsa), kanal izolyatsiyasi, freon trassalari, tashqi blok tayanch ramasi, drenaj nasoslari (kerak bo'lsa), CO₂ datchiklari.",
     "• Santexnika: 4 ta kabina, issiq va sovuq suv quvurlari (40 m dan), 100 ta aksessuar, kanalizatsiya quvuri va otvodlar — «Hojatxonalar» qatorida.",
     "• 2-qavat koridorlari (16.10): K1 va K2 4-xona orqali kladovkagacha davom etadi; koridor oxiri — kladovkaning ko'ndalang GKL devori. Logoli variant hisoblangan (Jahon School namunasi uslubida): marmar ko'rinishli panel, mox polosalari, egilgan yog'och reykali kanopi, shift chetlarida yashil LED (taxmin, K1 va K2 qatorlarida); kladovka eshigi yashirin. Logosiz variantda marmar, mox va kanopi kirmaydi (2 × $1 350 = $2 700 kam), kladovka eshigi oddiy (~$150). E'lonlar va e'tirof doskalari — koworking qatorida.",
     "• TAXMINIY narxlar (to'q sariq fon): sotuv va admin xonalari mebeli va interyeri, koridor doskalari, koworking sahnasi (karkas devor, reyka, logotip, trek yoritish, ovoz, pol, minbar), 1-qavat resepshn stoykasi, mehmonlar mebeli va logotiplari, kanalli konditsionerlar, diffuzor va panjaralar, vitechka ventilyatori, suriladigan eshik mexanizmlari va kladovka eshiklari — Toshkent bozori bo'yicha dastlabki baho; mebelchi va reklama ustasi narxi bilan almashtiring. «Yakuniy» varag'ida taxminiy qism alohida ko'rsatilgan.",
@@ -749,7 +752,7 @@ TAQSIMOT = {
     'buzish': ul(F1=1), 'chiqindi': ul(F1=1),
     'gkl': ul(F2=.5, F3=.5), 'sahnaDevor': ul(F2=.5, F3=.5),
     'issiqQuvur': ul(F2=1), 'sovuqQuvur': ul(F2=1), 'aksessuar': ul(F2=1), 'kanal': ul(F2=1), 'tochka': ul(F2=.5, F4=.5),
-    'kk': ul(F0=.5, F2=.5), 'vv': ul(F2=1), 'kanalM': ul(F2=1), 'kabel': ul(F2=1), 'yongin': ul(F2=.4, F4=.6),
+    'kk': ul(F0=.5, F2=.5), 'vv': ul(F2=1), 'tdKomplekt': ul(F2=.5, F4=.5), 'kanalM': ul(F2=1), 'kabel': ul(F2=1), 'yongin': ul(F2=.4, F4=.6),
     'cat6': ul(F2=1), 'lotok': ul(F2=1), 'k25': ul(F2=1), 'k15': ul(F2=1), 'k54': ul(F2=1), 'gofra': ul(F2=1), 'shitQuti': ul(F2=1),
     'netMontaj': ul(F2=.5, F4=.5), 'elMontaj': ul(F2=.6, F4=.4),
     'poeSw': ul(F4=1), 'shkaf18': ul(F4=1), 'ups': ul(F4=1), 'router': ul(F4=1), 'sw48': ul(F4=1), 'patch': ul(F4=1), 'rj45': ul(F4=1), 'ap': ul(F4=1),

@@ -72,7 +72,7 @@ export function taqdimotHtml() {
           <div>${kesimSvg(1.75)}</div>
           <ul>
             <li><b>2 ta kanalli konditsioner</b> (KK1, KK2) koridorlar oxiridagi <b>kladovka shifti ustida</b> — kladovka shovqinni to'sadi. Havo koridor bo'ylab magistral bilan: sinfga 2 ta, xizmat xonasiga 1 ta diffuzor. KK1 — ${VH.guruh.K1.xonalar.join(', ')}; KK2 — ${VH.guruh.K2.xonalar.join(', ')} (SR4 — ikkala blokdan bittadan diffuzor).</li>
-            <li><b>Tashqi havo 30%</b> — 3-xonaning ko'cha tomonidan, sharqiy devor bo'ylab (3- va 4-xonada GKL qutida) bloklarning orqasiga (har biriga ${Math.round(VH.guruh.K1.oa)} m³/soat). To'la sinfda CO₂ ~${Math.round(Math.min(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50}–${Math.round(Math.max(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50} ppm.</li>
+            <li><b>Tashqi havo 30%</b> — 2-xonaning ko'cha tomonidan, 2-xona, ustozlar, admin va 6-xona markazidan o'tadigan kanal bilan K1, K2 da bloklarga (6-xonaga qo'shimcha to'g'ridan 300 m³/soat) (har biriga ${Math.round(VH.guruh.K1.oa)} m³/soat). To'la sinfda CO₂ ~${Math.round(Math.min(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50}–${Math.round(Math.max(...Object.values(VH.xona).map(x => x.co2)) / 50) * 50} ppm.</li>
             <li><b>Vitechka</b> — alohida so'rish tarmog'i: fasadlar bo'ylab (deraza tomonda) va XZ xonalarida; VV1 ${VH.venQ} m³/soat.</li>
             <li>Koworking: mavjud konditsionerlar (${TZ.qoshimcha[0].mavjud.map(b => b / 1000 + 'k').join(' + ')}). Doska yon devorda, deraza o'quvchilarning chap tomonida (3-xonada — doska kirish tomonida) — yorug'lik doska va proyektorga tushmaydi.</li>
           </ul></div>
@@ -134,7 +134,7 @@ export function boshRejaHtml() {
         <li>Koridor tomonidagi devorlar — shisha (2.5 m gacha, ustida GKL), 1.0–1.6 m da mat plyonka.</li>
         <li>Eshiklar — 11 ta, 1 m, yonga suriladigan (barg xona ichida); kladovka eshiklari — 800 mm.</li>
         <li>Doskalar (oq chiziq) — yon devorda; 4-xonada eshik tomonida, devor U6 ustuni bilan tekis GKL qoplanadi (100 mm).</li>
-        <li>Kladovka ustida — kanalli konditsioner (KK1, KK2); tashqi havo 30% — 3-xonaning ko'cha tomonidan.</li>
+        <li>Kladovka ustida — kanalli konditsioner (KK1, KK2); tashqi havo 30% — 2-xonaning ko'cha tomonidan, markaziy kanal bilan.</li>
         <li>Jihozlangan variant — Xadra_2-qavat_taqdimot_reja_${LOYIHA.versiya}.</li></ul></div>
     </div>
   </section></body></html>`;
