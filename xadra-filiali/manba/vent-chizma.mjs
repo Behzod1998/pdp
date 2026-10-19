@@ -29,33 +29,29 @@ const X = Object.fromEntries(XONALAR.map(x => [x.kod, x]));
 const KX = KLADOVKA.x;
 export const VC = {
   yF: 1000,                 // fasad bo'ylab so'rish kanali o'qi — fasad ichki yuzidan
-  xM: 18850,                // so'rish magistrali o'qi (eskizda ~19 200)
-  // tashqi havo kanali (buyurtmachi, 19.10): 2-xona ko'cha tomonidan (oyna ustidan), 2-xona, ustozlar (XZ3), admin (XZ2) va
-  // 6-xona markazidan o'tadigan to'g'ri chiziq; K1 va K2 da undan koridor bo'ylab KK1, KK2 ning qaytish kamerasiga tarmoq,
-  // oxiri — 6-xona markazida TD diffuzori (to'g'ridan toza havo, VP1 kichik ventilyatori bilan); xonalarda GKL qutida
-  xT: 15050,                // markaziy kanal o'qi — 2-xona, XZ3, XZ2, 6-xona markazi
-  tY: { K1: 8025, K2: 15330 },            // koridordagi tarmoqlar o'qi — koridorning shimoliy chetida, magistraldan alohida
-  td: [15050, 20550], tdQ: 300,           // 6-xona markazi — TD diffuzori va unga beriladigan toza havo, m³/soat
-  vp: { x1: 14880, x2: 15220, y1: 15420, y2: 15680 },   // VP1 — 6-xona tarmog'idagi kichik kanalli ventilyator (K2 shiftida)
+  // vitechka magistrali (buyurtmachi, 19.10): 2-xona, ustozlar (XZ3), admin (XZ2) va 6-xona markazidan; VV1 va chiqish — 2-xona
+  // fasadida; yon xonalardan fasadlar bo'ylab va o'rta devor yonidagi tarmoqlar magistralga oldingidek keladi
+  xM: 15000,                // so'rish magistrali o'qi — 2-xona, XZ3, XZ2, 6-xona markazi (XZ3 diffuzoridan chetroq, −50)
+  // tashqi havo kanali (buyurtmachi, 18.10): 3-xona ko'cha tomonidan (sharqiy burchak, oyna ustidan), sharqiy (tashqi) devor
+  // bo'ylab — konditsioner bilan devor orasidan — KK1 ning orqasiga, so'ng 4-xona orqali KK2 ning orqasiga; 3- va 4-xonada GKL qutida
+  xT: ICHKI.x - 350,        // kanal o'qi; eni 600 (3-xona, kladovka) / 500 (4-xona), devordan 50
   yXZ: { K1: 11700, K2: 12900 },          // XZ xonalaridagi so'rish kanallari — o'rta devor yuzidan 500
   diffSinf: 1500, diffXZ: 1200,           // diffuzor markazi koridor devoridan
-  // kanalli bloklar — kladovka shifti ustida, iloji boricha tashqi devorga yaqin (buyurtmachi, 16.10): orqasidagi qaytish
-  // kamerasi (tashqi havo shu yerga) tashqi devordan 50 mm; chiqishi g'arbga — magistral kladovka shifti ustidan koridorga
-  blok: { K1: { x1: ICHKI.x - 1800, x2: ICHKI.x - 400, y1: 8250, y2: 9150 }, K2: { x1: ICHKI.x - 1800, x2: ICHKI.x - 400, y1: 15550, y2: 16450 } },
-  qaytish: { K1: { x1: ICHKI.x - 400, x2: ICHKI.x - 50, y1: 8250, y2: 9150 }, K2: { x1: ICHKI.x - 400, x2: ICHKI.x - 50, y1: 15550, y2: 16450 } },
+  // kanalli bloklar — kladovka shifti ustida, tashqi devorga yaqin (buyurtmachi, 16.10): orqasidagi qaytish (aralashtirish)
+  // kamerasiga tashqi havo kanali yon tomondan ulanadi; chiqishi g'arbga — magistral kladovka shifti ustidan koridorga
+  blok: { K1: { x1: ICHKI.x - 2400, x2: ICHKI.x - 1000, y1: 8250, y2: 9150 }, K2: { x1: ICHKI.x - 2400, x2: ICHKI.x - 1000, y1: 15550, y2: 16450 } },
+  qaytish: { K1: { x1: ICHKI.x - 1000, x2: ICHKI.x - 650, y1: 8250, y2: 9150 }, K2: { x1: ICHKI.x - 1000, x2: ICHKI.x - 650, y1: 15550, y2: 16450 } },
   magY: { K1: 8700, K2: 16000 },          // berish magistrali o'qi (koridorda)
-  ven: { x1: 18400, x2: 19300, y1: 150, y2: 750 },   // VV1 — so'rish ventilyatori (kanalli)
+  ven: { x1: 14550, x2: 15450, y1: 150, y2: 750 },   // VV1 — so'rish ventilyatori (kanalli), 2-xona fasadi yonida
   blokQ: 5000,              // 96k kanalli blokning nominal havo sarfi, m³/soat (taxminiy — tanlangan model pasportidan)
   tozaUlush: 0.30,          // buyurtmachi: konditsioner tashqaridan 30% toza havo oladi
   sorUlush: 0.90,           // vitechka — kelayotgan tashqi havoning 90% i (xonalar biroz ortiqcha bosimda)
   blokBtu: 96000, blokKw: 28.1, issiq: 0.87,
 };
 const yP = ICHKI.y - VC.yF;     // sharqiy fasad bo'ylab so'rish kanali
-// markaziy tashqi havo kanali xonalarda GKL qutida (shift ostida, ikki yon va pastki tomoni): kanal eni a + 2 × 75, balandligi chuq
-export const GKL_QUTI = [{ kod: 'SR2', y1: 0, y2: 7700, a: 600, chuq: 450 }, { kod: 'XZ3', y1: 9400, y2: 12200, a: 500, chuq: 350 },
-  { kod: 'XZ2', y1: 12400, y2: 15000, a: 500, chuq: 350 }, { kod: 'SR6', y1: 16700, y2: VC.td[1] + 300, a: 200, chuq: 250 }]
-  .map(q => ({ ...q, x1: VC.xT - q.a / 2 - 75, x2: VC.xT + q.a / 2 + 75, yon: 2 }));
-const doira = n => String.fromCharCode(0x2460 + n - 1);     // ①, ②, …
+// tashqi havo kanali 3- va 4-xonada GKL qutida: kanal eni a, quti devordan kanal chetidan 75 mm gacha, balandligi ~400 mm
+export const GKL_QUTI = [{ kod: 'SR3', y1: 0, y2: 7700, a: 600 }, { kod: 'SR4', y1: 9400, y2: 15000, a: 500 }]
+  .map(q => ({ ...q, x1: VC.xT - q.a / 2 - 75, x2: ICHKI.x, chuq: 400 }));
 
 // ---------- yordamchilar ----------
 const d2 = (a, b) => Math.hypot(b[0] - a[0], b[1] - a[1]);
@@ -90,15 +86,14 @@ const kesim = (Q, v) => { const [a, b] = KESIM.find(([a, b]) => Q / 3600 / (a * 
 const vMax = Q => (Q > 2000 ? 5.0 : 4.0);
 // liniya: uzoq uchidan manbagacha (so'rishda — ventilyatorga, berishda — blokka); voqealar — panjara/diffuzor ulanishi va
 // boshqa liniyaning qo'shilishi. Har bo'lakdagi havo — undan oldingi (uzoq tomondagi) voqealar yig'indisi.
-function liniya(id, pts, voqealar, sabit = null) {     // sabit — [a, b]: kesim berilgan (tor joyda)
+function liniya(id, pts, voqealar) {
   const L = uzun(pts);
   const ev = voqealar.map(v => ({ ...v, s: masofa(pts, v.p) })).sort((a, b) => a.s - b.s);
   const kes = [...new Set([0, ...ev.map(e => Math.round(e.s)).filter(s => s > 1 && s < L - 1), Math.round(L)])].sort((a, b) => a - b);
   const bolak = [];
   for (let i = 0; i < kes.length - 1; i++) {
     const Q = ev.filter(e => e.s <= kes[i] + 1).reduce((t, e) => t + e.Q, 0);
-    const k = sabit ? { a: sabit[0], b: sabit[1], v: Q / 3600 / (sabit[0] * sabit[1] / 1e6) } : kesim(Q, vMax(Q));
-    bolak.push({ id, pts: qism(pts, kes[i], kes[i + 1]), Q, L: kes[i + 1] - kes[i], ...k });
+    bolak.push({ id, pts: qism(pts, kes[i], kes[i + 1]), Q, L: kes[i + 1] - kes[i], ...kesim(Q, vMax(Q)) });
   }
   return { id, pts, L, Q: ev.reduce((t, e) => t + e.Q, 0), bolak };
 }
@@ -129,7 +124,7 @@ export function ventHisob() {
     SR1: uch('SR1').map(x => tik(x, yS.K1, 'K1')), SR2: uch('SR2').map(x => tik(x, yS.K1, 'K1')),
     SR3: [tik(19650, yS.K1, 'K1'), L3('K1', 7000, yS.K1)],
     SR4: { K1: [tik(20900, 10900, 'K1')], K2: [tik(20900, 13700, 'K2')] },   // har biri o'z koridori magistralidan
-    XZ4: [tik(10750, yX.K1, 'K1')], XZ3: [tik(16100, yX.K1, 'K1')],      // XZ3: markaziy toza havo kanalidan chetroqda
+    XZ4: [tik(10750, yX.K1, 'K1')], XZ3: [tik(15500, yX.K1, 'K1')],
     SR7: uch('SR7').map(x => tik(x, yS.K2, 'K2')), SR6: uch('SR6').map(x => tik(x, yS.K2, 'K2')),
     SR5: [tik(19650, yS.K2, 'K2'), L3('K2', 17400, yS.K2)],
     XZ1: [tik(10750, yX.K2, 'K2')], XZ2: [tik(16300, yX.K2, 'K2')],
@@ -152,8 +147,6 @@ export function ventHisob() {
     guruh[kor] = { ...g, kor, Q: VC.blokQ, oa: toza, ulush: VC.tozaUlush, xonaYuk, oaYuk, jami: xonaYuk + oaYuk,
       yuk0: g.xonalar.reduce((t, k) => t + yuk[k][0] * UL(k), 0) };
   }
-  // 6-xona: KK2 dan kelgan 30% ga qo'shimcha — markaziy kanal oxiridagi TD diffuzoridan to'g'ridan toza havo (19.10)
-  { const x = xona.SR6; x.td = VC.tdQ; x.toza += VC.tdQ; x.sor = Math.round(x.toza * VC.sorUlush / 10) * 10; x.co2 = F.co2Tashqi + x.odam * F.co2Kishi / x.toza * 1e6; }
   const DT = ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'XZ4', 'XZ3', 'XZ1', 'XZ2'];
   D.sort((a, b) => DT.indexOf(a.xona) - DT.indexOf(b.xona) || a.p[1] - b.p[1] || a.p[0] - b.p[0]);
   D.forEach((d, i) => {
@@ -169,13 +162,13 @@ export function ventHisob() {
     const voq = D.filter(d => d.kor === kor).map(d => ({ p: d.ulanish, Q: d.Q }));
     kLin.push(liniya(`${kor}g`, [[xg, M[kor]], [VC.blok[kor].x1, M[kor]]], voq));
   }
-  // tashqi havo (30%): 2-xona fasadidan markaziy kanal (TM) 6-xona markazigacha; K1 va K2 da koridor bo'ylab bloklarning qaytish
-  // kamerasiga tarmoqlar (T1, T2 — tor joyda 400 × 250); oxirida 6-xonaga TD
-  const qk = k => [(VC.qaytish[k].x1 + VC.qaytish[k].x2) / 2, VC.qaytish[k].y1];
-  const tarmoq = (id, k) => liniya(id, [qk(k), [qk(k)[0], VC.tY[k]], [VC.xT, VC.tY[k]]], [{ p: qk(k), Q: guruh[k].oa }], [400, 250]);
-  const tM = liniya('TM', [VC.td, [VC.xT, -300]],
-    [{ p: VC.td, Q: VC.tdQ }, { p: [VC.xT, VC.tY.K2], Q: guruh.K2.oa }, { p: [VC.xT, VC.tY.K1], Q: guruh.K1.oa }]);
-  const tLin = [tM, tarmoq('T1', 'K1'), tarmoq('T2', 'K2')];
+  // tashqi havo (30%): 3-xona fasadidan sharqiy devor bo'ylab; KK1 qaytish kamerasiga yon tomondan tarmoq (T1),
+  // magistral (TV) 4-xona orqali KK2 qaytish kamerasigacha
+  const qk = k => [VC.qaytish[k].x2, (VC.qaytish[k].y1 + VC.qaytish[k].y2) / 2];
+  const t1 = liniya('T1', [qk('K1'), [VC.xT, qk('K1')[1]]], [{ p: qk('K1'), Q: guruh.K1.oa }]);
+  const tV = liniya('TV', [qk('K2'), [VC.xT, qk('K2')[1]], [VC.xT, -300]],
+    [{ p: qk('K2'), Q: guruh.K2.oa }, { p: [VC.xT, qk('K1')[1]], Q: guruh.K1.oa }]);
+  const tLin = [t1, tV];
 
   // ===== VITECHKA: so'rish panjaralari — havo: xonaga kelayotgan tashqi havoning 90% i =====
   const chorak = (kod, y) => { const r = X[kod], W = r.x2 - r.x1; return [[r.x1 + W / 4, y], [r.x1 + 3 * W / 4, y]]; };
@@ -183,41 +176,36 @@ export function ventHisob() {
   const qosh = (k, joylar) => joylar.forEach((p, i) => P.push({ xona: k, p, Q: Math.round(xona[k].sor / joylar.length / 5) * 5, n: i }));
   qosh('SR1', chorak('SR1', VC.yF)); qosh('SR2', chorak('SR2', VC.yF));
   qosh('SR3', [[20600, VC.yF], [22800, VC.yF]]);
-  qosh('SR4', [[VC.xM, 10800], [VC.xM, 13600]]);
-  qosh('SR5', [[VC.xM, 19000], [VC.xM, 21700]]);
+  qosh('SR4', [[19650, VC.yXZ.K1], [22500, VC.yXZ.K1]]);      // XZ3 dagi tarmoq davomida (19.10)
+  qosh('SR5', [[20600, yP], [22800, yP]]);                   // fasad bo'ylab — 3-xonadagidek
   qosh('SR6', chorak('SR6', yP)); qosh('SR7', chorak('SR7', yP));
   const xzX = kod => (X[kod].x1 + X[kod].x2) / 2;
-  // XZ3, XZ2 panjaralari markazdan sharqqa — markaziy toza havo kanali ostiga tushmasin (19.10)
-  qosh('XZ4', [[xzX('XZ4'), VC.yXZ.K1]]); qosh('XZ3', [[16700, VC.yXZ.K1]]);
-  qosh('XZ1', [[xzX('XZ1'), VC.yXZ.K2]]); qosh('XZ2', [[16700, VC.yXZ.K2]]);
+  qosh('XZ4', [[xzX('XZ4'), VC.yXZ.K1]]); qosh('XZ3', [[VC.xM, VC.yXZ.K1]]);      // XZ3, XZ2 — magistral ustida
+  qosh('XZ1', [[xzX('XZ1'), VC.yXZ.K2]]); qosh('XZ2', [[VC.xM, VC.yXZ.K2]]);
   P.forEach(p => { p.d = p.Q <= 350 ? 200 : p.Q <= 550 ? 250 : 315; p.v = p.Q / 3600 / (Math.PI * (p.d / 2000) ** 2); });
   const TART = ['SR1', 'SR2', 'SR3', 'SR4', 'SR5', 'SR6', 'SR7', 'XZ4', 'XZ3', 'XZ1', 'XZ2'];
   P.sort((a, b) => TART.indexOf(a.xona) - TART.indexOf(b.xona) || (a.xona === 'SR6' || a.xona === 'SR7' ? b.p[0] - a.p[0] : a.p[0] - b.p[0] || a.p[1] - b.p[1]));
   P.forEach((p, i) => { p.kod = `V${i + 1}`; });
   const pv = k => P.filter(p => p.xona === k).map(p => ({ p: p.p, Q: p.Q }));
-  const VT = liniya('VT', [[P.find(p => p.xona === 'SR1').p[0], VC.yF], [VC.xM, VC.yF]], [...pv('SR1'), ...pv('SR2')]);
-  const VS3 = liniya('VS3', [[22800, VC.yF], [VC.xM, VC.yF]], pv('SR3'));
-  const VP = liniya('VP', [[P.filter(p => p.xona === 'SR7').at(-1).p[0], yP], [VC.xM, yP]], [...pv('SR7'), ...pv('SR6')]);
-  const VX1 = liniya('VX1', [[xzX('XZ4'), VC.yXZ.K1], [VC.xM, VC.yXZ.K1]], [...pv('XZ4'), ...pv('XZ3')]);
-  const VX2 = liniya('VX2', [[xzX('XZ1'), VC.yXZ.K2], [VC.xM, VC.yXZ.K2]], [...pv('XZ1'), ...pv('XZ2')]);
+  // magistral markazda: har tomondan fasad bo'ylab va o'rta devor yonidan tarmoqlar keladi (2-xona va 6-xona panjaralari — ikki tomonga)
+  const g = (k, x) => pv(k).filter(p => (x < 0 ? p.p[0] < VC.xM : p.p[0] > VC.xM));
+  const VT = liniya('VT', [[P.find(p => p.xona === 'SR1').p[0], VC.yF], [VC.xM, VC.yF]], [...pv('SR1'), ...g('SR2', -1)]);
+  const VS = liniya('VS', [[22800, VC.yF], [VC.xM, VC.yF]], [...pv('SR3'), ...g('SR2', 1)]);
+  const VP = liniya('VP', [[P.filter(p => p.xona === 'SR7').at(-1).p[0], yP], [VC.xM, yP]], [...pv('SR7'), ...g('SR6', -1)]);
+  const VP2 = liniya('VP2', [[22800, yP], [VC.xM, yP]], [...pv('SR5'), ...g('SR6', 1)]);
+  const VX1 = liniya('VX1', [[xzX('XZ4'), VC.yXZ.K1], [VC.xM, VC.yXZ.K1]], pv('XZ4'));
+  const VX3 = liniya('VX3', [[22500, VC.yXZ.K1], [VC.xM, VC.yXZ.K1]], pv('SR4'));
+  const VX2 = liniya('VX2', [[xzX('XZ1'), VC.yXZ.K2], [VC.xM, VC.yXZ.K2]], pv('XZ1'));
   const VM = liniya('VM', [[VC.xM, yP], [VC.xM, VC.yF], [VC.xM, VC.ven.y2]], [
-    { p: [VC.xM, yP], Q: VP.Q }, ...pv('SR5'), ...pv('SR4'), { p: [VC.xM, VC.yXZ.K2], Q: VX2.Q }, { p: [VC.xM, VC.yXZ.K1], Q: VX1.Q },
-    { p: [VC.xM, VC.yF], Q: VT.Q + VS3.Q }]);
-  const vLin = [VT, VS3, VP, VX1, VX2, VM];
+    { p: [VC.xM, yP], Q: VP.Q + VP2.Q }, ...pv('XZ2'), { p: [VC.xM, VC.yXZ.K2], Q: VX2.Q }, ...pv('XZ3'), { p: [VC.xM, VC.yXZ.K1], Q: VX1.Q + VX3.Q },
+    { p: [VC.xM, VC.yF], Q: VT.Q + VS.Q }]);
+  const vLin = [VT, VS, VP, VP2, VX1, VX3, VX2, VM];
   const vQ = VM.Q, venQ = Math.ceil(vQ * 1.07 / 500) * 500;
   const chiqish = kesim(vQ, 5.0);
 
   // kesishuvlar (bir sathda o'tib bo'lmaydi — biri ikkinchisining ostidan)
-  const xT = VC.xT, tY = VC.tY;
   const KES = [
-    { p: [xT, VC.yF], izoh: "2-xona: so'rish kanali (fasad bo'ylab) × markaziy toza havo kanali" },
-    { p: [xT, M.K1], izoh: "K1: markaziy toza havo kanali × berish magistrali" },
-    ...D.filter(d => d.kor === 'K1' && d.ulanish[0] > xT && d.yol.some(p => p[1] < tY.K1)).map(d => ({ p: [d.ulanish[0], tY.K1], izoh: `K1: ${d.kod} ga tarmoq × toza havo tarmog'i T1` })),
     { p: [VC.xM, M.K1], izoh: "K1: so'rish magistrali × berish magistrali" },
-    { p: [xT, VC.yXZ.K1], izoh: "XZ3: so'rish kanali × markaziy toza havo kanali" },
-    { p: [xT, VC.yXZ.K2], izoh: "XZ2: so'rish kanali × markaziy toza havo kanali" },
-    ...D.filter(d => d.kor === 'K2' && d.ulanish[0] > xT && d.yol.some(p => p[1] < tY.K2)).map(d => ({ p: [d.ulanish[0], tY.K2], izoh: `K2: ${d.kod} ga tarmoq × toza havo tarmog'i T2` })),
-    { p: [xT, M.K2], izoh: "K2: markaziy toza havo kanali × berish magistrali" },
     { p: [VC.xM, M.K2], izoh: "K2: so'rish magistrali × berish magistrali" },
   ].map((k, i) => ({ ...k, n: i + 1 }));
 
@@ -226,8 +214,7 @@ export function ventHisob() {
   const uzV = sumL(vLin) + (VC.ven.y1 + 300) / 1000;
   const uzK = sumL(kLin) + D.reduce((t, d) => t + d.tarmoqL, 0) / 1000 + 2.8;
   const uzT = sumL(tLin);
-  const td = { p: VC.td, Q: VC.tdQ, panel: 450, boyin: kesim(VC.tdQ, 3.0) };
-  return { P, vLin, vQ, venQ, chiqish, D, td, kLin, tLin, guruh, xona, KES, uz: { V: uzV, K: uzK, T: uzT, jami: uzV + uzK + uzT } };
+  return { P, vLin, vQ, venQ, chiqish, D, kLin, tLin, guruh, xona, KES, uz: { V: uzV, K: uzK, T: uzT, jami: uzV + uzK + uzT } };
 }
 
 // ---------- chizish ----------
@@ -245,12 +232,12 @@ function kanallar(lins, rang, fon, qoshimcha = []) {
   return tash.join('') + ich.join('');
 }
 // bo'lak yozuvi: kesim va havo sarfi — eng uzun bo'laklarda
-function bolakYozuv(lins, rang, { min = 1800, yon = 1, istisno = [], joy = {}, ofset = 150, qoch = null } = {}) {
+function bolakYozuv(lins, rang, { min = 1800, yon = 1, istisno = [], joy = {} } = {}) {
   const q = [];
   lins.forEach(l => {
     if (joy[l.id]) {   // qo'lda berilgan joylar: [x, y, burilgan, tanlov] — tanlov 'min' bo'lsa eng kichik, aks holda eng katta bo'lak
       joy[l.id].forEach(([x, y, r, t]) => {
-        const tar = [...l.bolak].sort((a, c) => a.Q - c.Q), b = t === 'min' ? tar[0] : t === 'orta' ? tar[Math.floor(tar.length / 2)] : tar.at(-1);
+        const b = l.bolak.reduce((a, c) => ((t === 'min' ? c.Q < a.Q : c.Q > a.Q) ? c : a));
         q.push(T(x, y, `${b.a}×${b.b} · ${son(b.Q)}`, 175, `text-anchor="middle" fill="${rang}" font-weight="700"${r ? ` transform="rotate(-90 ${x} ${y})"` : ''}`));
       });
       return;
@@ -261,8 +248,7 @@ function bolakYozuv(lins, rang, { min = 1800, yon = 1, istisno = [], joy = {}, o
       for (let i = 0; i < b.pts.length - 1; i++) { const L = d2(b.pts[i], b.pts[i + 1]); if (L > bl) { bl = L; best = [b.pts[i], b.pts[i + 1]]; } }
       if (bl < min) return;
       const [p1, p2] = best, mx = (p1[0] + p2[0]) / 2, my = (p1[1] + p2[1]) / 2, gor = Math.abs(p2[0] - p1[0]) > Math.abs(p2[1] - p1[1]);
-      if (qoch !== null && gor && Math.abs(mx - qoch) < 600) return;     // boshqa kanal ustiga tushadigan yozuv — jadvalda bor
-      const s = `${b.a}×${b.b} · ${son(b.Q)}`, o = b.a / 2 + ofset, vx = mx + yon * o + (yon > 0 ? 150 : 0);
+      const s = `${b.a}×${b.b} · ${son(b.Q)}`, o = b.a / 2 + 150, vx = mx + yon * o + (yon > 0 ? 150 : 0);
       if (gor) q.push(T(mx, my + yon * o + (yon > 0 ? 150 : 0), s, 175, `text-anchor="middle" fill="${rang}" font-weight="700"`));
       else q.push(T(vx, my, s, 175, `text-anchor="middle" fill="${rang}" font-weight="700" transform="rotate(-90 ${vx} ${my})"`));
     });
@@ -288,7 +274,7 @@ const blokSvg = (r, nom, rang = RG.ber) => R(r, `fill="#e9eef5" stroke="#26313d"
 const kesBelgi = (k, rang = '#6a1b9a') => `<circle cx="${k.p[0]}" cy="${k.p[1]}" r="170" fill="#fff" stroke="${rang}" stroke-width="26"/>` +
   T(k.p[0], k.p[1] + 62, k.n, 170, `text-anchor="middle" font-weight="700" fill="${rang}"`);
 // xona nomlari — kanallardan bo'sh joyda (asos() dagi markaziy yozuvlar o'rniga)
-const XYOZ = { SR1: [9100, 3500], SR2: [13300, 3500], SR3: [22100, 3500], SR4: [22600, 11300], SR5: [21300, 20500], SR6: [13300, 21900], SR7: [9050, 20800],
+const XYOZ = { SR1: [9100, 3500], SR2: [13300, 3500], SR3: [22100, 3500], SR4: [21800, 12900], SR5: [21300, 20500], SR6: [13300, 20800], SR7: [9050, 20800],
   XZ4: [8100, 10050], XZ3: [13900, 10050], XZ1: [8000, 14250], XZ2: [13700, 14250], KW: [2975, 13100], X12: [2975, 22900], ZL: [4800, 19800] };
 const xonaNomlari = () => Object.entries(XYOZ).map(([k, [x, y]]) => T(x, y, NOM[k], 230, `text-anchor="middle" font-weight="700" fill="#5d6873"`)).join('');
 const VB = { x1: -2900, y1: -2700, x2: 26700, y2: 26500 };
@@ -297,7 +283,7 @@ const svgOch = q => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${VB.x1} $
 // boshqa tizim — xira (muvofiqlashtirish uchun)
 function xiraKonditsioner(h) {
   const q = [kanallar([...h.kLin, ...h.tLin], RG.xira, RG.xiraF, h.D.map(d => [d.yol, d.boyin.a]))];
-  [...h.D, h.td].forEach(d => q.push(diffSvg(d.p, d.panel / 2, RG.xira, '#fff')));
+  h.D.forEach(d => q.push(diffSvg(d.p, d.panel / 2, RG.xira, '#fff')));
   ['K1', 'K2'].forEach(k => q.push(R(VC.blok[k], `fill="#fff" stroke="${RG.xira}" stroke-width="30"`), R(VC.qaytish[k], `fill="#fff" stroke="${RG.xira}" stroke-width="30"`)));
   return q.join('');
 }
@@ -313,24 +299,24 @@ function vitechkaSvg(h) {
   const q = [asos(VB, 1, { xonaYozuv: false }), oqBelgi(VB, 1), xonaNomlari(), xiraKonditsioner(h)];
   q.push(kanallar(h.vLin, RG.so, RG.soF, [[[[VC.xM, VC.ven.y1], [VC.xM, -300]], h.chiqish.a]]));
   q.push(venSvg(VC.ven, RG.so, 'VV1'));
-  q.push(strelka([VC.xM, -300], [VC.xM, -1500], RG.so, 60), T(VC.xM - 250, -1650, 'chiqish (eskizda — fasaddan)', 175, `text-anchor="end" fill="${RG.so}" font-weight="700"`));
+  q.push(strelka([VC.xM, -300], [VC.xM, -1500], RG.so, 60), T(VC.xM - 250, -1650, 'chiqish — 2-xona fasadidan (oyna ustidan) yoki tomga', 175, `text-anchor="end" fill="${RG.so}" font-weight="700"`));
   h.P.forEach(p => {
     q.push(panjaraSvg(p.p));
     const pastda = p.p[1] === VC.yF || p.p[1] === VC.yXZ.K2, chapda = p.p[0] === VC.xM;
-    if (chapda) q.push(T(p.p[0] - 300, p.p[1] + 65, `${p.kod} · ${son(p.Q)}`, 175, `text-anchor="end" fill="${RG.so}" font-weight="700"`));
+    if (chapda) q.push(T(p.p[0] - 300, p.p[1] - 250, `${p.kod} · ${son(p.Q)}`, 175, `text-anchor="end" fill="${RG.so}" font-weight="700"`));   // magistral ustidagi panjara — tarmoqdan yuqorida
     else q.push(T(p.p[0], p.p[1] + (pastda ? 480 : -300), `${p.kod} · ${son(p.Q)}`, 175, `text-anchor="middle" fill="${RG.so}" font-weight="700"`));
   });
-  q.push(bolakYozuv(h.vLin, RG.so, { min: 2000, yon: 1, istisno: ['VX1'] }), bolakYozuv(h.vLin.filter(l => l.id === 'VX1'), RG.so, { min: 2000, yon: -1 }));
+  q.push(bolakYozuv(h.vLin, RG.so, { min: 2000, yon: 1, istisno: ['VX1', 'VX3'] }), bolakYozuv(h.vLin.filter(l => l.id === 'VX1' || l.id === 'VX3'), RG.so, { min: 2000, yon: -1 }));
   // o'lcham zanjirlari
   const Z = { size: 1.9 }, P = h.P;
   const xs = k => P.filter(p => p.xona === k).map(p => p.p[0]);
-  q.push(zanjir([6250, ...xs('SR1'), 11950, 12150, ...xs('SR2'), 17950, 18150, VC.xM, ...xs('SR3'), ICHKI.x], 2300, true, 1, { ...Z, tomon: -1 }));
-  q.push(zanjir([6150, ...xs('SR7'), 11950, 12150, ...xs('SR6'), 17950, 18150, VC.xM, ICHKI.x], 22200, true, 1, { ...Z, tomon: 1 }));
+  q.push(zanjir([6250, ...xs('SR1'), 11950, 12150, ...xs('SR2'), VC.xM, 17950, 18150, ...xs('SR3'), ICHKI.x], 2300, true, 1, { ...Z, tomon: -1 }));
+  q.push(zanjir([6150, ...xs('SR7'), 11950, 12150, ...xs('SR6'), VC.xM, 17950, 18150, ...xs('SR5'), ICHKI.x], 22200, true, 1, { ...Z, tomon: 1 }));
   q.push(zanjir([0, VC.yF], 6750, false, 1, Z), zanjir([yP, ICHKI.y], 6750, false, 1, Z));
   q.push(zanjir([9400, VC.yXZ.K1, 12200, 12400, VC.yXZ.K2, 15000], 6900, false, 1, { ...Z, tomon: -1 }));
   q.push(zanjir([6250, xs('XZ4')[0], 11950, 12150, xs('XZ3')[0], 17950], 10750, true, 1, { ...Z, tomon: -1 }));
-  q.push(zanjir([9400, 10800, 13600, 15000], 20300, false, 1, { ...Z, tomon: 1 }), zanjir([16700, 19000, 21700, ICHKI.y], 20300, false, 1, { ...Z, tomon: 1 }));
-  q.push(zanjir([18150, VC.xM], 14550, true, 1, { ...Z, tomon: 1 }));
+  q.push(zanjir([18250, ...xs('SR4'), ICHKI.x], 12500, true, 1, { ...Z, tomon: 1 }));
+  q.push(zanjir([12150, VC.xM, 17950], 14550, true, 1, { ...Z, tomon: 1 }));
   return svgOch(q);
 }
 
@@ -359,30 +345,26 @@ function konditsionerSvg(h) {
     if (d.xona.startsWith('XZ') || d.xona === 'SR4') q.push(T(d.p[0] + d.panel / 2 + 120, d.p[1] + 65, `${d.kod} · ${son(d.Q)}`, 175, `fill="${RG.ber}" font-weight="700"`));
     else q.push(T(d.p[0], d.p[1] + (d.p[1] < 8000 ? -d.panel / 2 - 130 : d.panel / 2 + 300), `${d.kod} · ${son(d.Q)}`, 175, `text-anchor="middle" fill="${RG.ber}" font-weight="700"`));
   });
-  q.push(bolakYozuv(h.kLin, RG.ber, { min: 1900, yon: 1, ofset: 60, qoch: VC.xT }));     // magistral ostida — ustida toza havo tarmoqlari
-  // tashqi havo: 2-xona fasadidagi panjara (oyna ustida) va yozuv
-  q.push(strelka([VC.xT, -1500], [VC.xT, -350], RG.toza, 60), T(VC.xT + 250, -1650, "tashqi havo 30% — 2-xona ko'cha tomonidan (oyna ustidan, filtr G4)", 175, `fill="${RG.toza}" font-weight="700"`));
-  q.push(bolakYozuv(h.tLin, RG.toza, { min: 2500, yon: 1, joy: { TM: [[VC.xT + 560, 3600, 1], [VC.xT + 520, 10800, 1, 'orta'], [VC.xT + 360, 19700, 1, 'min']],
-    T1: [[17700, VC.tY.K1 + 62, 0]], T2: [[17700, VC.tY.K2 + 62, 0]] } }));
-  // xonalarda kanal GKL qutida (punktir — quti chegarasi)
+  q.push(bolakYozuv(h.kLin, RG.ber, { min: 1900, yon: -1 }));
+  // tashqi havo: 3-xona fasadidagi panjara va yozuv
+  q.push(strelka([VC.xT, -1500], [VC.xT, -350], RG.toza, 60), T(VC.xT - 250, -1650, "tashqi havo 30% — 3-xona ko'cha tomonidan (oyna ustidan)", 175, `text-anchor="end" fill="${RG.toza}" font-weight="700"`));
+  q.push(bolakYozuv(h.tLin, RG.toza, { min: 2500, yon: 1, joy: { TV: [[VC.xT - 560, 3300, 1], [VC.xT - 520, 12300, 1, 'min']], T1: [] } }));
+  // 3- va 4-xonada kanal GKL qutida (punktir — quti chegarasi)
   GKL_QUTI.forEach(g => q.push(R(g, `fill="none" stroke="#26313d" stroke-width="18" stroke-dasharray="90 60"`)));
-  q.push(T(VC.xT - 560, 3600, 'GKL quti', 150, `text-anchor="middle" fill="#26313d" transform="rotate(-90 ${VC.xT - 560} 3600)"`));
-  // 6-xona: TD diffuzori va VP1 ventilyatori (K2 shiftida)
-  q.push(diffSvg(h.td.p, h.td.panel / 2, RG.toza, RG.tozaF), T(h.td.p[0] + 380, h.td.p[1] + 65, `TD · ${son(h.td.Q)} (to'g'ridan toza havo)`, 175, `fill="${RG.toza}" font-weight="700"`));
-  q.push(venSvg(VC.vp, RG.toza, ''), T(VC.vp.x1 - 140, VC.vp.y2 - 40, 'VP1', 190, `text-anchor="end" fill="${RG.toza}" font-weight="700"`));
+  q.push(T(VC.xT - 470, 6300, 'GKL quti', 150, `text-anchor="middle" fill="#26313d" transform="rotate(-90 ${VC.xT - 470} 6300)"`),
+    T(VC.xT - 420, 14300, 'GKL quti', 150, `text-anchor="middle" fill="#26313d" transform="rotate(-90 ${VC.xT - 420} 14300)"`));
   h.KES.forEach(k => q.push(kesBelgi(k)));
   // o'lcham zanjirlari
   const Z = { size: 1.9 }, D = h.D;
   const xs = k => D.filter(d => d.xona === k).map(d => d.p[0]);
-  q.push(zanjir([6250, ...xs('SR1'), 11950, 12150, ...xs('SR2'), VC.xT, 17950, 18150, ...xs('SR3'), ICHKI.x], 5000, true, 1, { ...Z, tomon: -1 }));
-  q.push(zanjir([6150, ...xs('SR7'), 11950, 12150, ...xs('SR6'), VC.xT, 17950, 18150, ...xs('SR5'), ICHKI.x], 19500, true, 1, { ...Z, tomon: 1 }));
-  q.push(zanjir([D.find(d => d.xona === 'SR1').p[1], 7700, 7800, VC.tY.K1, VC.magY.K1, 9300, 9400, D.find(d => d.xona === 'XZ4').p[1]], 6750, false, 1, { ...Z, tomon: -1 }));
-  q.push(zanjir([D.find(d => d.xona === 'XZ1').p[1], 15000, 15100, VC.tY.K2, VC.magY.K2, 16600, 16700, D.find(d => d.xona === 'SR7').p[1]], 6750, false, 1, { ...Z, tomon: -1 }));
-  q.push(zanjir([16700, VC.td[1], ICHKI.y], 13600, false, 1, { ...Z, tomon: -1 }));
+  q.push(zanjir([6250, ...xs('SR1'), 11950, 12150, ...xs('SR2'), 17950, 18150, ...xs('SR3'), VC.xT, ICHKI.x], 5000, true, 1, { ...Z, tomon: -1 }));
+  q.push(zanjir([6150, ...xs('SR7'), 11950, 12150, ...xs('SR6'), 17950, 18150, ...xs('SR5'), ICHKI.x], 19500, true, 1, { ...Z, tomon: 1 }));
+  q.push(zanjir([D.find(d => d.xona === 'SR1').p[1], 7700, 7800, VC.magY.K1, 9300, 9400, D.find(d => d.xona === 'XZ4').p[1]], 6750, false, 1, { ...Z, tomon: -1 }));
+  q.push(zanjir([D.find(d => d.xona === 'XZ1').p[1], 15000, 15100, VC.magY.K2, 16600, 16700, D.find(d => d.xona === 'SR7').p[1]], 6750, false, 1, { ...Z, tomon: -1 }));
   q.push(zanjir([6250, xs('XZ4')[0], 11950, 12150, xs('XZ3')[0], 17950], 11300, true, 1, { ...Z, tomon: -1 }));
   q.push(zanjir([6250, xs('XZ1')[0], 11950, 12150, xs('XZ2')[0], 17950], 13200, true, 1, { ...Z, tomon: 1 }));
-  q.push(zanjir([KX, KX + 100, VC.blok.K1.x1, VC.blok.K1.x2, VC.qaytish.K1.x2, ICHKI.x], 9750, true, 1, { ...Z, tomon: 1 }));
-  q.push(zanjir([7800, VC.blok.K1.y1, VC.blok.K1.y2, 9300], KX + 600, false, 1, { ...Z, tomon: 1 }), zanjir([15100, VC.blok.K2.y1, VC.blok.K2.y2, 16600], KX + 600, false, 1, { ...Z, tomon: 1 }));
+  q.push(zanjir([KX, KX + 100, VC.blok.K1.x1, VC.blok.K1.x2, VC.qaytish.K1.x2, VC.xT, ICHKI.x], 9750, true, 1, { ...Z, tomon: 1 }));
+  q.push(zanjir([7800, VC.blok.K1.y1, VC.blok.K1.y2, 9300], KX + 300, false, 1, { ...Z, tomon: 1 }), zanjir([15100, VC.blok.K2.y1, VC.blok.K2.y2, 16600], KX + 300, false, 1, { ...Z, tomon: 1 }));
   q.push(zanjir([9400, 10900, 13700, 15000], 21550, false, 1, { ...Z, tomon: 1 }), zanjir([18150, 20900, ICHKI.x], 12300, true, 1, { ...Z, tomon: -1 }));
   return svgOch(q);
 }
@@ -391,7 +373,6 @@ function konditsionerSvg(h) {
 const CSS2 = `
 .belgi i.d { width: 3.2mm; height: 3.2mm; } .kichik { font-size: 5.8pt; color: #555; }
 td.c, th.c { text-align: center; } .ikki { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm; }
-table.zich { font-size: 5.9pt; } table.zich td { padding: .2mm .8mm; }
 .yashil { border: .3mm solid #14896f; background: #effaf6; padding: 1mm 1.4mm; margin-top: 1mm; }
 `;
 const shtamp = (nom, n) => `<div class="shtamp"><div class="nom">${LOYIHA.brend} · ${LOYIHA.filial}</div>
@@ -405,8 +386,10 @@ export function ventHtml() {
   const h = ventHisob(), G = h.guruh;
   const blokKw = VC.blokKw, blokIssiq = VC.blokKw * VC.issiq;
   const vMag = h.vLin.flatMap(l => l.bolak.map(b => ({ ...b, lid: l.id }))).filter(b => b.L >= 300);
-  const LNOM = { VT: "1–2-xona, fasad bo'ylab", VS3: '3-xona, fasad bo\'ylab', VP: "7–6-xona, fasad bo'ylab", VX1: 'XZ4, XZ3 (o\'rta devor yonida)', VX2: 'XZ1, XZ2 (o\'rta devor yonida)', VM: 'magistral (koridor oxirlari)',
-    K1g: 'K1 koridori (KK1 dan)', K2g: 'K2 koridori (KK2 dan)', TM: "tashqi havo: 2-xona fasadi → XZ3, XZ2 → 6-xona (TD)", T1: "tashqi havo → KK1 (K1 bo'ylab)", T2: "tashqi havo → KK2 (K2 bo'ylab)" };
+  const LNOM = { VT: "1-xona, 2-xona (g'arbiy), fasad bo'ylab", VS: "2-xona (sharqiy), 3-xona, fasad bo'ylab", VP: "7-xona, 6-xona (g'arbiy), fasad bo'ylab",
+    VP2: "6-xona (sharqiy), 5-xona, fasad bo'ylab", VX1: "XZ4 (o'rta devor yonida)", VX3: "4-xona (XZ3 orqali)", VX2: "XZ1 (o'rta devor yonida)",
+    VM: "magistral: 6-xona → XZ2 → XZ3 → 2-xona (markazdan)",
+    K1g: 'K1 koridori (KK1 dan)', K2g: 'K2 koridori (KK2 dan)', T1: 'tashqi havo → KK1 (yon ulanish)', TV: "tashqi havo: 3-xona fasadi → sharqiy devor bo'ylab → KK2" };
   const bolakJadval = (lins, sarlavha) => {
     const r = [];
     lins.forEach(l => {
@@ -437,9 +420,9 @@ export function ventHtml() {
     <ul>
       <li>Kanallar shift ostida, osmalarda (har 2–2.5 m); pastki qirrasi ≥ 2.9 m. Shisha devorlar ustidagi GKL (2.5–3.5 m) va mavjud devorlardan teshik orqali o'tadi; teshik atrofi germetiklanadi.</li>
       <li>Ventilyator osma rezina amortizatorlarda, kanalga egiluvchan ulanadi; har liniya boshida rostlash klapani, panjaralar sozlanadigan (havo — jadval bo'yicha).</li>
-      <li>Kanallar 2-varaqdagi konditsioner kanallari bilan ${h.KES.length} joyda kesishadi — so'rish kanali yuqorida, berish kanali ostida (2-varaq, ①–${doira(h.KES.length)}).</li>
+      <li>Kanallar 2-varaqdagi konditsioner kanallari bilan ${h.KES.length} joyda kesishadi — so'rish kanali yuqorida, berish kanali ostida (2-varaq, ①–${['', '①', '②', '③', '④', '⑤', '⑥', '⑦'][h.KES.length]}).</li>
     </ul>
-    <div class="ogoh"><b>Diqqat — chiqish joyi:</b> eskizda VV1 chiqishi 3-xona fasadida, konditsionerning tashqi havo olish panjarasi — 2-xona fasadida (19.10), oralig'i ~${son(Math.abs(VC.xM - VC.xT))} mm — chiqarilgan havo qaytib so'rib olinishi mumkin. Me'yor: olish va chiqarish orasi ≥ 8 m. Fasad o'zgarmasligi kerak (oyna ustida faqat ~400 mm devor bor). <b>Tavsiya:</b> VV1 chiqishini to'g'ridan tomga (tom sathidan ≥ 1 m baland, soyabon bilan) chiqarish.</div>
+    <div class="ogoh"><b>Diqqat — chiqish joyi:</b> VV1 va chiqish — 2-xona fasadida (19.10), konditsionerning tashqi havo olish panjarasi — 3-xona fasadining sharqiy burchagida: oralig'i ~${son(VC.xT - VC.xM)} mm (me'yor ≥ 8 m — mos). Chiqish oyna ustidagi ~400 mm devordan (panjara ~${h.chiqish.a} × ${h.chiqish.b}); joy yetmasa — tomga (tom sathidan ≥ 1 m baland, soyabon bilan).</div>
     ${shtamp("Vitechka — so'rish kanallari rejasi", 1)}
   </div></section>`;
 
@@ -453,25 +436,25 @@ export function ventHtml() {
     <div class="belgi">
       <div><i style="background:${RG.berF};border:.5mm solid ${RG.ber}"></i>sovuq havo kanali (kesim × m³/soat)</div>
       <div><i class="d" style="background:${RG.berF};border:.5mm solid ${RG.ber}"></i>shift diffuzori D… (4 tomonga)</div>
-      <div><i style="background:${RG.tozaF};border:.5mm solid ${RG.toza}"></i>tashqi havo kanali (30%) — 2-xona fasadidan markaziy chiziq bo'ylab, K1, K2 da bloklarga; 6-xonaga TD; xonalarda GKL qutida</div>
+      <div><i style="background:${RG.tozaF};border:.5mm solid ${RG.toza}"></i>tashqi havo kanali (30%) — sharqiy devor bo'ylab bloklar orqasiga; 3- va 4-xonada GKL qutida</div>
       <div><i style="background:#e9eef5;border:.5mm dashed #26313d"></i>KK — ichki blok, kladovka shifti ustida</div>
       <div><i style="background:${RG.xiraF};border:.4mm solid ${RG.xira}"></i>vitechka (1-varaq, xira)</div>
-      <div><i class="d" style="border-radius:50%;border:.5mm solid #6a1b9a"></i>①–${doira(h.KES.length)} kesishuvlar</div></div>
-    <h3>Ichki bloklar — kladovka (KL1, KL2) shifti ustida, devorga taqalgan (96 000 BTU deb olindi)</h3>
+      <div><i class="d" style="border-radius:50%;border:.5mm solid #6a1b9a"></i>①–${['', '①', '②', '③', '④', '⑤', '⑥', '⑦'][h.KES.length]} kesishuvlar</div></div>
+    <h3>Ichki bloklar — kladovka (KL1, KL2) shifti ustida, orqasi tashqi havo kanali tomonda (96 000 BTU deb olindi)</h3>
     <table><tr><th>Blok</th><th>Xonalar</th><th class="r">Havo</th><th class="r">Tashqi havo</th></tr>
       ${kG.map(g => `<tr><td><b>${g.blok}</b></td><td>${g.xonalar.map(k => NOM[k].replace('-xona', '') + (k === 'SR4' ? ' (1 diffuzor)' : '')).join(', ')}</td><td class="r">${son(g.Q)}</td><td class="r">${son(g.oa)} (${Math.round(g.ulush * 100)}%)</td></tr>`).join('')}</table>
     <h3>Quvvat tekshiruvi (kW, eng issiq payt)</h3>
     <table><tr><th>Blok</th><th class="r">Xonalar</th><th class="r">+ tashqi havo 30%</th><th class="r">Jami</th><th>96k (${n1(blokIssiq)} kW issiqda)</th></tr>
       ${kG.map(g => `<tr><td><b>${g.blok}</b></td><td class="r">${n1(g.yuk0)}–${n1(g.xonaYuk)}</td><td class="r">${n1(g.oaYuk)}</td><td class="r"><b>${n1(g.jami)}</b></td><td>${holat(g.jami, blokIssiq)}</td></tr>`).join('')}</table>
     <h3>Xonalar: havo, tashqi havo, so'rish, CO₂</h3>
-    <table class="zich"><tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo</th><th class="r">Tashqi (30%)</th><th class="r">So'rish</th><th class="r">CO₂, ppm</th></tr>
+    <table><tr><th>Xona</th><th class="r">Odam</th><th class="r">Havo</th><th class="r">Tashqi (30%)</th><th class="r">So'rish</th><th class="r">CO₂, ppm</th></tr>
       ${XN.map(x => `<tr><td>${NOM[x.kod]} (${x.blok})</td><td class="r">${x.odam}</td><td class="r">${son(x.Q)}</td><td class="r">${son(x.toza)}</td><td class="r">${son(x.sor)}</td><td class="r">${son(Math.round(x.co2 / 10) * 10)}</td></tr>`).join('')}</table>
-    <h3>Diffuzorlar — ${h.D.length} ta (+ TD 6-xonaga toza havo)</h3>
-    <table class="zich"><tr><th>Kod</th><th>Xona</th><th class="r">x</th><th class="r">y</th><th class="r">m³/soat</th><th class="r">Panel</th><th class="r">Patrubok</th></tr>
-      ${h.D.map(d => `<tr><td><b>${d.kod}</b></td><td>${NOM[d.xona]}</td><td class="r">${son(d.p[0])}</td><td class="r">${son(d.p[1])}</td><td class="r">${son(d.Q)}</td><td class="r">${d.panel}×${d.panel}</td><td class="r">${d.boyin.a}×${d.boyin.b}</td></tr>`).join('')}<tr><td><b>TD</b></td><td>${NOM.SR6} (toza havo)</td><td class="r">${son(h.td.p[0])}</td><td class="r">${son(h.td.p[1])}</td><td class="r">${son(h.td.Q)}</td><td class="r">${h.td.panel}×${h.td.panel}</td><td class="r">${h.td.boyin.a}×${h.td.boyin.b}</td></tr></table>
+    <h3>Diffuzorlar — ${h.D.length} ta</h3>
+    <table><tr><th>Kod</th><th>Xona</th><th class="r">x</th><th class="r">y</th><th class="r">m³/soat</th><th class="r">Panel</th><th class="r">Patrubok</th></tr>
+      ${h.D.map(d => `<tr><td><b>${d.kod}</b></td><td>${NOM[d.xona]}</td><td class="r">${son(d.p[0])}</td><td class="r">${son(d.p[1])}</td><td class="r">${son(d.Q)}</td><td class="r">${d.panel}×${d.panel}</td><td class="r">${d.boyin.a}×${d.boyin.b}</td></tr>`).join('')}</table>
     ${bolakJadval([...h.kLin, ...h.tLin], 'Magistral')}
-    <p class="kichik">Kanallar jami: berish ~${Math.round(h.uz.K)} m (patrubokli), tashqi havo ~${Math.round(h.uz.T)} m, vitechka ~${Math.round(h.uz.V)} m — hammasi ~${Math.round(h.uz.jami)} m (narx: ${son(NARX.kanalM)} so'm/m). Qaytish havosi (QP): koridor shiftidagi panjara 600 × 300 — shift ustidan blokning qaytish kamerasiga.</p>
-    <div class="ogoh"><b>Diqqat:</b> (1) 2 × 96k yetmaydi — har blokka ~${Math.round(Math.max(...kG.map(g => g.jami)))} kW (~${Math.round(Math.max(...kG.map(g => g.jami)) * 3.412 / 10) * 10}k BTU) kerak; 96k issiqda ~${n1(blokIssiq)} kW beradi. (2) 30% tashqi havoda to'la sinfda CO₂ ~${son(co2Min)}–${son(co2Max)} ppm (me'yor ≤ 1 000–1 200): darsdan keyin shamollatish yoki tashqi havoni ~45–50% ga oshirish (blok shunga mos tanlansa) tavsiya. (3) TD dan 6-xonaga ${son(VC.tdQ)} m³/soat tashqi havo konditsionerdan o'tmaydi: TD oldida klapan, qishda yopiladi yoki elektr isitgich (~2.5 kW).</div>
+    <p class="kichik">Kanallar jami: berish ~${Math.round(h.uz.K)} m (patrubokli), tashqi havo ~${Math.round(h.uz.T)} m, vitechka ~${Math.round(h.uz.V)} m — hammasi ~${Math.round(h.uz.jami)} m (narx: ${son(NARX.kanalM)} so'm/m). Qaytish havosi (QP): koridor shiftidagi panjara 600 × 300, kladovka devori yonida (logoli variantda reykalar ortida) — shift ustidagi bo'shliq orqali blokning qaytish kamerasiga.</p>
+    <div class="ogoh"><b>Diqqat:</b> (1) 2 × 96k yetmaydi — har blokka ~${Math.round(Math.max(...kG.map(g => g.jami)))} kW (~${Math.round(Math.max(...kG.map(g => g.jami)) * 3.412 / 10) * 10}k BTU) kerak; 96k issiqda ~${n1(blokIssiq)} kW beradi. (2) 30% tashqi havoda to'la sinfda CO₂ ~${son(co2Min)}–${son(co2Max)} ppm (me'yor ≤ 1 000–1 200): darsdan keyin shamollatish yoki tashqi havoni ~45–50% ga oshirish (blok shunga mos tanlansa) tavsiya.</div>
     ${shtamp('Konditsioner (kanalli) va tashqi havo', 2)}
   </div></section>`;
   return `<!doctype html><html lang="uz"><head><meta charset="utf-8"><title>${LOYIHA.brend} · ${LOYIHA.filial} — vitechka va konditsioner</title><style>${ISH_CSS}${CSS2}</style></head><body>${v1}${v2}</body></html>`;

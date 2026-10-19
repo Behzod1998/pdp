@@ -51,10 +51,10 @@ const ofislar = [
 const buziladi = DEVORLAR.filter(w => w.holat === 'buziladi').map(w => ({ uz: Math.max(w.x2 - w.x1, w.y2 - w.y1), izoh: w.izoh }));
 // 16.10: kanalli konditsioner va vitechka (vent-chizma.mjs): kanallar uzunligi (+10% burilish va ulanishlar), diffuzor va panjaralar soni
 const VH = ventHisob();
-const vent = { venQ: VH.venQ, tdQ: VH.td.Q, dif: VH.D.length, sor: VH.P.length, berish: Math.round(VH.uz.K), toza: Math.round(VH.uz.T), vitechka: Math.round(VH.uz.V) };
+const vent = { dif: VH.D.length, sor: VH.P.length, berish: Math.round(VH.uz.K), toza: Math.round(VH.uz.T), vitechka: Math.round(VH.uz.V) };
 console.log(JSON.stringify({ devorlar: out, eshiklar: esh, sinflar, ofislar, buziladi, panjara: PANJARA.map(p => ({ uz: (p.x2 - p.x1) / 1000, izoh: p.izoh })),
   kanalUz: Math.round(VH.uz.jami * 1.1), kanalChizma: Math.round(VH.uz.jami), vent,
-  // 19.10: markaziy tashqi havo kanali GKL qutisi — uzunlik va yoyilma eni (pastki + ikki yon tomoni), m
-  gklQuti: GKL_QUTI.map(g => ({ kod: g.kod, uz: (g.y2 - g.y1) / 1000, yoyma: Math.round((g.x2 - g.x1 + (g.yon || 1) * g.chuq) / 25) * 25 / 1000 })),
+  // 18.10: tashqi havo kanali GKL qutisi — uzunlik va yoyilma eni (pastki + yon tomoni), m
+  gklQuti: GKL_QUTI.map(g => ({ kod: g.kod, uz: (g.y2 - g.y1) / 1000, yoyma: Math.round((g.x2 - g.x1 + g.chuq) / 25) * 25 / 1000 })),
   // 18.10: past tokli va elektr tizimlari (tizim-chizma.mjs) — soni va kabel uzunliklari
   tizim: tizimXulosa() }, null, 0));

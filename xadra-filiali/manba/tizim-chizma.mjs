@@ -144,11 +144,11 @@ export const KAMERALAR = [
   qur('K1', 2, [400, 400], 'ZN1', 'zina — shimoli-g\'arbiy burchak'), qur('K2', 2, [400, 6000], 'ZN1', 'zina — janubi-g\'arbiy burchak'),
   qur('K3', 2, [400, 6900], 'KW', 'koworking — shimoli-g\'arbiy burchak'),
   qur('K4', 2, [6450, 300], 'SR1', 'shimoli-g\'arbiy burchak'), qur('K5', 2, [12350, 300], 'SR2', 'shimoli-g\'arbiy burchak'),
-  qur('K6', 2, [23700, 300], 'SR3', 'shimoli-sharqiy burchak'),
+  qur('K6', 2, [23050, 350], 'SR3', 'shimoli-sharqiy burchak (GKL quti chetida)'),
   qur('K7', 2, [6450, 7950], 'K1', 'g\'arbiy boshi'), qur('K8', 2, [20800, 8950], 'K1', 'sharqiy oxiri, kladovka oldida'),
   qur('K9', 2, [11800, 12050], 'XZ4', 'janubi-sharqiy burchak', { yoz: 'chap' }), qur('K10', 2, [17800, 12050], 'XZ3', 'janubi-sharqiy burchak', { yoz: 'chap' }),
   qur('K11', 2, [11800, 12550], 'XZ1', 'shimoli-sharqiy burchak'), qur('K12', 2, [17800, 12550], 'XZ2', 'shimoli-sharqiy burchak'),
-  qur('K13', 2, [23700, 14850], 'SR4', 'janubi-sharqiy burchak'),
+  qur('K13', 2, [23100, 14850], 'SR4', 'janubi-sharqiy burchak (GKL quti chetida)'),
   qur('K14', 2, [6450, 15250], 'K2', 'g\'arbiy boshi'), qur('K15', 2, [20800, 16350], 'K2', 'sharqiy oxiri, kladovka oldida'),
   qur('K16', 2, [400, 18200], 'KW', 'koworking — janubi-g\'arbiy burchak, panjara oldida'), qur('K17', 2, [400, 18750], 'ZN2', 'kirish zinasi — g\'arbiy devorda'),
   qur('K18', 2, [11800, 24250], 'SR7', 'janubi-sharqiy burchak', { yoz: 'chap' }), qur('K19', 2, [17800, 24250], 'SR6', 'janubi-sharqiy burchak', { yoz: 'chap' }),
@@ -396,8 +396,7 @@ export function tizimHisob() {
     { kod: 'KK1', p: [21600, 8400], P: 10, kabel: 'VVGng-LS 5×4', avt: '3P C25', nom: 'KK1 — tashqi blok (tomda) + ichki blok', tom: 4000 },
     { kod: 'KK2', p: [21600, 15700], P: 10, kabel: 'VVGng-LS 5×4', avt: '3P C25', nom: 'KK2 — tashqi blok (tomda) + ichki blok', tom: 4000 },
     { kod: 'VV1', p: [VC.xM, VC.ven.y2], P: 0.4, kabel: 'VVGng-LS 3×1.5', avt: 'C10', nom: 'VV1 — vitechka ventilyatori', tom: 0 },
-    { kod: 'VP1', p: [(VC.vp.x1 + VC.vp.x2) / 2, (VC.vp.y1 + VC.vp.y2) / 2], P: 0.1, kabel: 'VVGng-LS 3×1.5', avt: 'C10', nom: "VP1 — 6-xonaga toza havo ventilyatori", tom: 0 },
-  ].map(k => { const ul = ulash(GE, 2, k.p, k.kod === 'VV1' ? 'SR3' : k.kod === 'KK1' ? 'K1' : 'K2'), y = yolTop(GE, DE, ul); return { ...k, ul, y, L: ((ul.L + y.L) * KOEF + k.tom + 3000) / 1000 }; });
+  ].map(k => { const ul = ulash(GE, 2, k.p, k.kod === 'VV1' ? 'SR2' : k.kod === 'KK2' ? 'K2' : 'K1'), y = yolTop(GE, DE, ul); return { ...k, ul, y, L: ((ul.L + y.L) * KOEF + k.tom + 3000) / 1000 }; });
   return { GL, GE, kam, rj, ap, nKam, nNet, shl, ipr, sir, tab, LED, guruh, kuch };
 }
 
@@ -807,7 +806,7 @@ function elektrHtml(h) {
     <h3>Kabel va materiallar (2- va 1-qavat)</h3>
     <table class="ix"><tr><th>Nomi</th><th class="r">m</th></tr>
       <tr><td>VVGng-LS 3×2.5 (rozetkalar)</td><td class="r"><b>${sum(gr, 'VVGng-LS 3×2.5')}</b></td></tr>
-      <tr><td>VVGng-LS 3×1.5 (yoritish, VV1, VP1)</td><td class="r"><b>${sum(gr, 'VVGng-LS 3×1.5') + Math.round(h.kuch.filter(k => k.kabel === 'VVGng-LS 3×1.5').reduce((t, k) => t + k.L, 0))}</b></td></tr>
+      <tr><td>VVGng-LS 3×1.5 (yoritish, VV1)</td><td class="r"><b>${sum(gr, 'VVGng-LS 3×1.5') + Math.round(h.kuch.find(k => k.kod === 'VV1').L)}</b></td></tr>
       <tr><td>VVGng-LS 5×4 (KK1, KK2)</td><td class="r"><b>${Math.round(h.kuch.filter(k => k.kabel.includes('5×4')).reduce((t, k) => t + k.L, 0))}</b></td></tr>
       <tr><td>Kuch lotogi (shift ostida, 100 mm) — koridorlar va koworking</td><td class="r">${Math.round(EL[2].reduce((t, s) => t + d1(s[0], s[1]), 0) / 1000)}</td></tr></table>
     <div class="ogoh"><b>Diqqat:</b> o'rnatilgan quvvat ~${P.toFixed(0)} kW (shundan konditsionerlar 20 kW) — mavjud shit va kirish kabelining quvvati (3 faza, avtomat ≥ 63 A) tekshirilsin; shitda ${rG.length + yG.length + h.kuch.length + 2} ta guruh uchun joy bo'lmasa, yoniga 36 modulli qo'shimcha quti. Har sinf rozetkasi — alohida difavtomat (30 mA).</div>
@@ -839,7 +838,7 @@ export function tizimXulosa() {
   const h = tizimHisob(), m = v => Math.round(v);
   const segL = t => Object.values(t).flat().reduce((s, g) => s + d1(g[0], g[1]), 0) / 1000;
   const kab = k => h.guruh.filter(g => g.kabel === k).reduce((t, g) => t + g.L, 0);
-  const vv = h.kuch.filter(k => k.kabel === 'VVGng-LS 3×1.5').reduce((t, k) => t + k.L, 0), k54 = h.kuch.filter(k => k.kabel.includes('5×4')).reduce((t, k) => t + k.L, 0);
+  const vv = h.kuch.find(k => k.kod === 'VV1').L, k54 = h.kuch.filter(k => k.kabel.includes('5×4')).reduce((t, k) => t + k.L, 0);
   const rG = h.guruh.filter(g => g.tur === 'r'), yG = h.guruh.filter(g => g.tur === 'y');
   return {
     kamera: h.kam.length, kameraM: m(jamiM(h.kam)), rj: h.rj.length, ap: h.ap.length,
@@ -848,7 +847,7 @@ export function tizimXulosa() {
     tablo: h.tab.qurilmalar.length, avariya: AVARIYA.length, yonM1: m(h.shl.reduce((t, s) => t + s.L, 0) + h.ipr.L), yonM2: m(h.sir.L + h.tab.L),
     rozetka: rG.reduce((t, g) => t + g.soni, 0), doskaR: rG.reduce((t, g) => t + g.doska, 0), vykl: VYKL.length, chiroq: h.LED.length,
     k25: m(kab('VVGng-LS 3×2.5')), k15: m(kab('VVGng-LS 3×1.5') + vv), k54: m(k54), gofra: m(h.guruh.reduce((t, g) => t + g.ichki, 0)), elM: m(segL(EL)),
-    difavt: rG.length, avt1: yG.length + h.kuch.filter(k => k.avt === 'C10').length + 2, avt3: 2, P: +([...h.guruh.map(g => g.P), ...h.kuch.map(k => k.P)].reduce((a, b) => a + b, 0)).toFixed(1),
+    difavt: rG.length, avt1: yG.length + 1 + 2, avt3: 2, P: +([...h.guruh.map(g => g.P), ...h.kuch.map(k => k.P)].reduce((a, b) => a + b, 0)).toFixed(1),
   };
 }
 

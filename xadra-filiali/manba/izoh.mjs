@@ -270,7 +270,7 @@ function havoBeti(kor, n) {
   const issiq = VC.blokKw * VC.issiq;
   return bet(n, `
     <h2 style="margin-top:0">Ventilyatsiya va konditsionerlash (16.10)</h2>
-    <p><b>Sxema (buyurtmachi eskizi 15.10, qarorlari 16.10):</b> sovutish — <b>2 ta kanalli konditsioner</b> (KK1, KK2), har biri koridor oxiridagi <b>kladovka shifti ustida</b>, devorga taqalib turadi (kladovka shovqinni to'sadi); havo koridor bo'ylab magistral bilan beriladi, sinfga 2 ta, xizmat xonasiga 1 ta shift diffuzori. Konditsionerlar <b>30% tashqi havo</b> oladi — 2-xonaning ko'cha tomonidan (oyna ustidan); kanal 2-xona, ustozlar, admin va 6-xona markazidan to'g'ri chiziqda o'tadi, K1 va K2 da undan bloklarga tarmoq ketadi, oxirida 6-xonaga to'g'ridan 300 m³/soat toza havo (TD diffuzori, VP1 ventilyatori); xonalarda GKL qutida (19.10). Ifloslangan havo — alohida <b>vitechka</b> tarmog'i (fasadlar bo'ylab va XZ xonalarida o'rta devor yonida), VV1 ventilyatori ${V.venQ} m³/soat. Avvalgi rekuperator va devor splitlari varianti bekor qilindi.</p>
+    <p><b>Sxema (buyurtmachi eskizi 15.10, qarorlari 16.10):</b> sovutish — <b>2 ta kanalli konditsioner</b> (KK1, KK2), har biri koridor oxiridagi <b>kladovka shifti ustida</b>, devorga taqalib turadi (kladovka shovqinni to'sadi); havo koridor bo'ylab magistral bilan beriladi, sinfga 2 ta, xizmat xonasiga 1 ta shift diffuzori. Konditsionerlar <b>30% tashqi havo</b> oladi — 3-xonaning ko'cha tomonidan (sharqiy burchak, oyna ustidan); kanal sharqiy (tashqi) devor bo'ylab, konditsioner bilan devor orasidan bloklar orqasiga keladi, 3- va 4-xonada GKL qutida (18.10). Ifloslangan havo — alohida <b>vitechka</b> tarmog'i (fasadlar bo'ylab va XZ xonalarida o'rta devor yonida; magistral — 2-xona, ustozlar, admin va 6-xona markazidan, 19.10), VV1 ventilyatori ${V.venQ} m³/soat — 2-xona fasadida. Avvalgi rekuperator va devor splitlari varianti bekor qilindi.</p>
     <table class="havo"><tr><th>Xona</th><th>Odam</th><th>Maydon, m²</th><th>Blok</th><th>Havo, m³/soat</th><th>Tashqi (30%)</th><th>So'rish</th><th>CO₂, ppm</th><th>Yuk, kVt</th></tr>
       ${XN.map(q).join('')}
       <tr class="jami"><td>Jami</td><td></td><td></td><td></td><td>${G.K1.Q + G.K2.Q}</td><td>${Math.round(G.K1.oa + G.K2.oa)}</td><td>${V.vQ}</td><td></td><td>${b1(G.K1.xonaYuk + G.K2.xonaYuk)}</td></tr></table>
@@ -282,7 +282,7 @@ function havoBeti(kor, n) {
       <li><b>Havo taqsimoti:</b> diffuzorlar koridor devoridan ~1.5 m ichkarida (sinflarda), so'rish panjaralari deraza tomonda — havo xonani kesib o'tadi. Qaytish havosi koridor orqali — koridor oxiridagi shift panjarasidan (600 × 300) blokka.</li>
       <li><b>Tashqi havo 30%</b> bilan to'la sinfda CO₂ ~${Math.round(Math.min(...XN.map(x => x.co2)) / 50) * 50}–${Math.round(Math.max(...XN.map(x => x.co2)) / 50) * 50} ppm — tanaffusda shamollatish; imkon bo'lsa 45–50% ga oshirish.</li>
       <li><b>Koworking:</b> konditsionerlari mavjud (${T.qoshimcha[0].mavjud.map(b => b / 1000 + 'k').join(' + ')}), koridorlarni ham qisman sovutadi; sinflarga ta'siri kichik.</li>
-      <li><b>Vitechka chiqishi</b> tashqi havo olish panjarasiga yaqin (3-xona fasadida) — chiqishni tomga chiqarish tavsiya. <b>V-1</b> — sanuzel chiqarishi alohida (mavjud shaxta).</li>
+      <li><b>Vitechka chiqishi</b> 2-xona fasadida — tashqi havo olish joyidan (3-xona sharqiy burchagi) ~8.5 m, me'yor (≥ 8 m) bajariladi. <b>V-1</b> — sanuzel chiqarishi alohida (mavjud shaxta).</li>
     </ul>
     <p class="izohm">Kanallar rejasi — Xadra_2-qavat_vitechka_konditsioner_${LOYIHA.versiya}.pdf (2 varaq, o'lchamli).</p>
   `);
@@ -326,7 +326,7 @@ function qavatBeti(kor, t, ev, n) {
     <h2>Tasdiqlash uchun savollar</h2>
     <ul>
       <li>Tomga chiqish va tashqi bloklarni tomga o'rnatishga ruxsat (ijaraga beruvchi); 3-qavatning 2-qavatga nisbatan aniq joyi.</li>
-      <li>Kanalli konditsioner (KK1, KK2) aniq modeli: quvvati (hisob bo'yicha ~130k BTU kerak, eskizda 96k), havo sarfi va tashqi havo ulushi (30% — CO₂ yuqori); vitechka chiqishi tomga.</li>
+      <li>Kanalli konditsioner (KK1, KK2) aniq modeli: quvvati (hisob bo'yicha ~130k BTU kerak, eskizda 96k), havo sarfi va tashqi havo ulushi (30% — CO₂ yuqori).</li>
       <li>Tanaffuslarni xonalar bo'yicha surish (hojatxona va koridorlar yuklamasi uchun) ma'qulmi?</li>
     </ul>
   `);
