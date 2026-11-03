@@ -19,7 +19,8 @@ const D3 = join(BU, '..', 'chizma', '3d');
 const CHIQISH = join(BU, '..', 'chizma');
 
 const FAYL = { umumiy: '1-umumiy', sinf: '2-sinf-doska', wc1: '3-hojatxona-rakovinalar', wc2: '4-hojatxona-taxorat', wc3: '5-hojatxona-supadan' };
-const rasm = async (nom, panel = null) => `data:image/jpeg;base64,${(await readFile(join(D3, `Xadra_3-qavat_3D${panel ? `_WC-panel-${panel}` : ''}_${FAYL[nom]}.jpg`))).toString('base64')}`;
+const rasmFayl = (nom, panel = null, yopiq = false) => join(D3, `Xadra_3-qavat_3D${panel ? `_WC-panel-${panel}` : ''}${yopiq ? '_yopiq' : ''}_${FAYL[nom]}.jpg`);
+const rasm = async (nom, panel = null, yopiq = false) => `data:image/jpeg;base64,${(await readFile(rasmFayl(nom, panel, yopiq))).toString('base64')}`;
 const tekstura = async n => `data:image/jpeg;base64,${(await readFile(join(BU, 'teksturalar', `wc_panel_${n}.jpg`))).toString('base64')}`;
 const { belgi, kamera } = JSON.parse(await readFile(join(D3, 'umumiy-belgilar.json'), 'utf8'));
 
@@ -121,20 +122,20 @@ const CSS2 = `.p2 { display: grid; grid-template-columns: 64mm 1fr 1fr 1fr; gap:
 .p2 figure img { border-radius: .8mm; } .p2 figcaption { font-size: 6.6pt; margin: .5mm 0 1.6mm; }
 .p2 .chap { font-size: 7pt; color: #333; line-height: 1.4; } .p2 .chap b { color: #1f1f1f; } .p2 .chap p { margin-bottom: 1.4mm; }
 .p2 .kalit svg { width: 64mm; }`;
-const panelVaraq = async () => {
-  if (!PANEL.every(([n]) => ['wc1', 'wc2', 'wc3'].every(v => existsSync(join(D3, `Xadra_3-qavat_3D_WC-panel-${n}_${FAYL[v]}.jpg`))))) return '';
+const panelVaraq = async (yopiq = false) => {
+  if (!PANEL.every(([n]) => ['wc1', 'wc2', 'wc3'].every(v => existsSync(rasmFayl(v, n, yopiq))))) return '';
   const IZ = { wc1: "eshikdan kirganda — quyma rakovina va unitazli kabina", wc2: "eshikdan supaga — chashagenli kabinalar va taxorat joyi", wc3: "supadan eshik tomonga" };
   const ustun = async ([n, nom, izoh]) => `<div><div class="ust"><img src="${await tekstura(n)}"><div><h2>${n}-variant · ${nom}</h2><p>${izoh}</p></div></div>
-    ${(await Promise.all(['wc1', 'wc2', 'wc3'].map(async (v, i) => `<figure><img src="${await rasm(v, n)}"></figure><figcaption><span class="raqam">${i + 1}</span>${IZ[v]}</figcaption>`))).join('')}</div>`;
+    ${(await Promise.all(['wc1', 'wc2', 'wc3'].map(async (v, i) => `<figure><img src="${await rasm(v, n, yopiq)}"></figure><figcaption><span class="raqam">${i + 1}</span>${IZ[v]}</figcaption>`))).join('')}</div>`;
   return `<section class="varaq">
   <header>
-    <div><div class="brend">${LOYIHA.brend} · ${LOYIHA.filial}</div><h1>3-qavat hojatxonasi — devor panellari: 3 variant (3D)</h1></div>
+    <div><div class="brend">${LOYIHA.brend} · ${LOYIHA.filial}</div><h1>3-qavat hojatxonasi — devor panellari: 3 variant (3D)${yopiq ? ' · kabina eshiklari yopiq' : ''}</h1></div>
     <div class="ong">${LOYIHA.versiya} · 03.11.2026<br>Panellar — buyurtmachi ko'rgan namunalar (rasmdan)</div>
   </header>
   <div class="p2">
     <div class="chap">
       <div class="kalit">${kalitReja([['1', 'kamera_hojatxona_1'], ['2', 'kamera_hojatxona_2'], ['3', 'kamera_hojatxona_3']], { x1: 5600, y1: -300, x2: 12000, y2: 3600 }, 900)}</div>
-      <p style="margin-top:1.5mm"><b>Kamera nuqtalari</b> — har variantda bir xil (1, 2, 3).</p>
+      <p style="margin-top:1.5mm"><b>Kamera nuqtalari</b> — har variantda bir xil (1, 2, 3).${yopiq ? ' Bu varaqda kabina eshiklari yopiq; ochiq holati — oldingi varaqda.' : ''}</p>
       <p><b>Hojatxona (03.11):</b> kirganda chapda 1.50 m quyma rakovina, so'ng unitazli kabina (1.00 m). Eshikdan 2.50 m dan keyin pol 30 sm ko'tarilgan supa (15 sm pog'ona, usti kafel): 3 ta chashagenli kabina va janubiy devor bo'ylab taxorat joyi.</p>
       <p><b>Panel:</b> plastik (PVX) marmar list, ~1.22 × 2.8 m, poldan shiftgacha; choklari ingichka. Pol va supa — kafel, kabinalar — kulrang HPL.</p>
       <p><b>Eslatma:</b> panel teksturasi buyurtmachi yuborgan rasmlardan olingan — rang va naqsh taxminan; yaltirashi (1, 2 — yaltiroq, 3 — yarim mat) do'kondagi namunaga qarab.</p>
@@ -146,7 +147,7 @@ const panelVaraq = async () => {
 
 const brauzer = await chromium.launch();
 const p = await brauzer.newPage({ viewport: { width: 1587, height: 1123 }, deviceScaleFactor: 2 });
-const v2 = await panelVaraq();
+const v2 = (await panelVaraq()) + (await panelVaraq(true));
 await p.setContent((await html()).replace('</body></html>', `${v2}</body></html>`).replace('</style>', `${CSS2}</style>`), { waitUntil: 'load' });
 const nom = `Xadra_3-qavat_3D_${LOYIHA.versiya}`;
 await p.pdf({ path: join(CHIQISH, `${nom}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
@@ -154,7 +155,8 @@ const vs = await p.$$('section.varaq');
 await vs[0].screenshot({ path: join(CHIQISH, `${nom}.png`) });
 if (vs[1]) {
   await vs[1].screenshot({ path: join(CHIQISH, `Xadra_3-qavat_WC_panellar_${LOYIHA.versiya}.png`) });
-  // alohida PDF — faqat panellar varag'i (yuborish uchun)
+  if (vs[2]) await vs[2].screenshot({ path: join(CHIQISH, `Xadra_3-qavat_WC_panellar_yopiq_${LOYIHA.versiya}.png`) });
+  // alohida PDF — faqat panellar varaqlari (ochiq va yopiq eshiklar; yuborish uchun)
   const p2 = await brauzer.newPage({ viewport: { width: 1587, height: 1123 } });
   await p2.setContent(`<!doctype html><html lang="uz"><head><meta charset="utf-8"><title>3-qavat hojatxona — panellar</title><style>${CSS}${CSS2}</style></head><body>${v2}</body></html>`, { waitUntil: 'load' });
   await p2.pdf({ path: join(CHIQISH, `Xadra_3-qavat_WC_panellar_${LOYIHA.versiya}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });

@@ -27,7 +27,7 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 | `Xadra_3-qavat_reja_v1.2.pdf` / `.png` | A3, 1:50: 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi); 1, 3, 4-xonalar o'zgarmaydi |
 | `Xadra_3-qavat_reja_rangsiz_v1.2.pdf` / `.png` | A3, 1:50: 3-qavat rangsiz (oq-qora), mebelsiz — xonalar o'lchami va maydoni, hojatxona jihozlari kontur bilan |
 | `Xadra_3-qavat_3D_v1.2.pdf` / `.png` | A3: 3-qavatning Blender 3D ko'rinishlari — umumiy, 5-xona doska tomonga, hojatxona ichidan |
-| `Xadra_3-qavat_WC_panellar_v1.2.pdf` / `.png` | A3: 3-qavat erkaklar hojatxonasi — 3 xil plastik marmar devor paneli, har biri 3 ko'rinishda (03.11) |
+| `Xadra_3-qavat_WC_panellar_v1.2.pdf` / `.png` | A3: 3-qavat erkaklar hojatxonasi — 3 xil plastik marmar devor paneli, har biri 3 ko'rinishda; 2-bet — kabina eshiklari yopiq (`_yopiq` PNG) (03.11) |
 | `Xadra_xarajatlar_xulosa_v1.2.pdf` | A3: xarajatlar — turlar, qavatlar va xonalar bo'yicha jami |
 | `Xadra_xarajatlar_fazalar_v1.2.pdf` / `.png` | A3: xarajatlar fazalar bo'yicha (F0 tayyorgarlik va buyurtmalar → F1 buzish → F2 qora ishlar va tarmoqlar → F3 pardoz → F4 o'rnatish → F5 mebel, brending, ishga tushirish): haftalik grafik, sanalar, har fazada to'lanadigan xarajatlar (avans/qoldiq), oylik pul oqimi |
 | `3d/` | Alohida 3D rasmlar (JPG) va Blender fayllari: `Xadra_1-qavat.blend`, `Xadra_2-qavat.blend`, `Xadra_3-qavat.blend` (Blender 4.2, kameralar bilan, logotip rasmlari faylga qadalgan) |
