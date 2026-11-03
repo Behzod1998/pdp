@@ -53,7 +53,7 @@ npm install                        # three, pdf-lib; Playwright Chromium kerak (
 pip install openpyxl               # xarajatlar.py uchun; qayta hisoblash — LibreOffice (xlsx skill'ining recalc.py skripti)
 node build.mjs                     # barcha rejalar, ish chizmasi, vent, tizim chizmalari + tekshiruv (xatolar 0 bo'lishi kerak)
 python3 xarajatlar.py              # hisob/Xadra_xarajatlar_v1.2.xlsx, keyin recalc
-node albom.mjs                     # 3D varaqlar va albom (50 bet); 3-qavat panel varaqlari uchun avval blender3.py --panel 1..3
+node albom.mjs                     # 3D varaqlar va albom (52 bet); 3-qavat panel varaqlari uchun avval blender3.py --panel 1..3
 ```
 
 3D: Python 3.11 venv'da `pip install bpy==4.2.0`; `node blender2-malumot.mjs > 2q.json && python blender2.py 2q.json ../chizma/3d --faqat <ko'rinishlar>`
