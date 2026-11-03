@@ -105,7 +105,11 @@ export function rangsiz3Svg() {
   });
   q.push(`<path d="M400,1400 A1200,1100 0 0 1 2800,1400" fill="none" stroke="${Q}" stroke-width="10"/>`, strelka(2200, 1700, 2200, 4150, 16));
   // hojatxona jihozlari (kontur)
-  WC3.rakovina.forEach(([x, y]) => q.push(R({ x1: x - 230, x2: x + 230, y1: y - 180, y2: y + 180 }, `rx="70" fill="#fff" stroke="${Q}" stroke-width="10"`)));
+  // supa (+0.30) va pog'ona — kontur, punktir
+  q.push(R(WC3.supa, `fill="none" stroke="${Q}" stroke-width="12" stroke-dasharray="120 60"`), R(WC3.pogona, `fill="#fff" stroke="${Q}" stroke-width="8"`),
+    T(10600, 2690, 'supa +0.30', 140, 'font-weight="700"'), T(WC3.pogona.x1 + 150, 2700, '+0.15', 110));
+  q.push(R(WC3.quyma, `rx="30" fill="#fff" stroke="${Q}" stroke-width="10"`));
+  WC3.rakovina.forEach(([x, y]) => q.push(`<ellipse cx="${x}" cy="${y + 40}" rx="190" ry="150" fill="#fff" stroke="${Q}" stroke-width="8"/>`));
   WC3.unitaz.forEach(([x, y]) => q.push(R({ x1: x - 190, x2: x + 190, y1: y - 270, y2: y + 270 }, `rx="150" fill="#fff" stroke="${Q}" stroke-width="10"`)));
   WC3.chashagen.forEach(([x, y]) => q.push(R({ x1: x - 225, x2: x + 225, y1: y - 300, y2: y + 300 }, `rx="70" fill="#fff" stroke="${Q}" stroke-width="10"`),
     `<path d="M${x - 105},${y - 170} L${x + 105},${y - 170} L${x + 125},${y + 90} A125,125 0 0 1 ${x - 125},${y + 90} Z" fill="none" stroke="${Q}" stroke-width="7"/>`));
@@ -188,7 +192,7 @@ export function rangsiz3Html() {
     <div class="izoh"><h2>Izoh</h2><ul>
       <li>Devorlar — qora; 3 va 4-xona o'zgarmaydi (xira shtrix).</li>
       <li>Koridorda yangi GKL devor (shtrix, 100 mm, 2.85 m) — zinadan chiqqan odamga hojatxona (tahoratxona) eshigi ochiq qolsa ham ichi ko'rinmaydi; eshik oldida 1.05 m tambur (18.10).</li>
-      <li>2-xona: ${KABINA.soni} ta kabina (${KABINA.en / 1000} × ${KABINA.chuq / 1000} m, eshigi ${KABINA.eshik}), 1-sida unitaz, qolganlarida chashagen, har birida mustahab; kirganda chapda 2 ta rakovina; janubiy devor bo'ylab taxorat joyi (3 jo'mrak), eshik yonida trap.</li>
+      <li>2-xona: kirganda chapda 1.50 m quyma rakovina, so'ng unitazli kabina (1.00 m); eshikdan 2.50 m dan keyin pol 30 sm ko'tarilgan supa (pog'ona 15 sm) — 3 ta chashagenli kabina va janubiy devor bo'ylab taxorat joyi (3 jo'mrak); kabinalar chuqurligi ${KABINA.chuq / 1000} m, eshigi ${KABINA.eshik}, har birida mustahab; eshik yonida trap. Devorlar — plastik marmar panel.</li>
       <li>5-xona: doska shimoliy devorda (oq to'rtburchak) — eshikdan kirganda chapda; derazalar o'ng tomonda.</li>
       <li>Derazalar joyi taxminiy; o'lchamlar chizma fotosidan — joyida o'lchanadi.</li></ul></div>`);
 }

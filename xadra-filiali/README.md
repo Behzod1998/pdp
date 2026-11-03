@@ -27,6 +27,7 @@ Yangi joyni jihozlash loyihasi. Founder namunalari tartibida tayyorlangan: Berun
 | `Xadra_3-qavat_reja_v1.2.pdf` / `.png` | A3, 1:50: 5-xona (o'quv, 24 o'rin) va 2-xona (erkaklar hojatxonasi); 1, 3, 4-xonalar o'zgarmaydi |
 | `Xadra_3-qavat_reja_rangsiz_v1.2.pdf` / `.png` | A3, 1:50: 3-qavat rangsiz (oq-qora), mebelsiz — xonalar o'lchami va maydoni, hojatxona jihozlari kontur bilan |
 | `Xadra_3-qavat_3D_v1.2.pdf` / `.png` | A3: 3-qavatning Blender 3D ko'rinishlari — umumiy, 5-xona doska tomonga, hojatxona ichidan |
+| `Xadra_3-qavat_WC_panellar_v1.2.pdf` / `.png` | A3: 3-qavat erkaklar hojatxonasi — 3 xil plastik marmar devor paneli, har biri 3 ko'rinishda (03.11) |
 | `Xadra_xarajatlar_xulosa_v1.2.pdf` | A3: xarajatlar — turlar, qavatlar va xonalar bo'yicha jami |
 | `Xadra_xarajatlar_fazalar_v1.2.pdf` / `.png` | A3: xarajatlar fazalar bo'yicha (F0 tayyorgarlik va buyurtmalar → F1 buzish → F2 qora ishlar va tarmoqlar → F3 pardoz → F4 o'rnatish → F5 mebel, brending, ishga tushirish): haftalik grafik, sanalar, har fazada to'lanadigan xarajatlar (avans/qoldiq), oylik pul oqimi |
 | `3d/` | Alohida 3D rasmlar (JPG) va Blender fayllari: `Xadra_1-qavat.blend`, `Xadra_2-qavat.blend`, `Xadra_3-qavat.blend` (Blender 4.2, kameralar bilan, logotip rasmlari faylga qadalgan) |
@@ -93,6 +94,7 @@ node blender2-malumot.mjs > 2qavat.json && python blender2.py 2qavat.json ../chi
 python blender2.py 2qavat.json ../chizma/3d --logosiz --faqat logo,k1,k2      # koridor oxiri logosiz varianti
 python blender2.py 2qavat.json ../chizma/3d --variant B --faqat k1,k2,k1_chap   # shisha devor B varianti
 node blender3-malumot.mjs > 3qavat.json && python blender3.py 3qavat.json ../chizma/3d
+# panel variantlari: ... --faqat wc1,wc2,wc3 --panel 1   (2, 3 ham)
 
 node albom.mjs          # 3D varaqlar, xarajatlar xulosasi va bitta albom PDF
 ```
@@ -113,5 +115,6 @@ Playwright Chromium bilan o'rnatilgan bo'lishi kerak. Generator avval tekshiruvn
 | `blender_umumiy.py` | Blender kutubxonasi: materiallar, devor/deraza/eshik, mebel, logotip va doskalar, chiroqlar, kamera, render |
 | `blender1*.`, `blender2*.`, `blender3*.` | har bir qavatning geometriya JSON'i va Blender sahnasi |
 | `logo/`, `logo-png.mjs` | PDP Academy logotiplari (design.pdp.uz) va Blender teksturalari |
+| `teksturalar/`, `teksturalar-panel.py` | hojatxona devor paneli teksturalari (buyurtmachi rasmlaridan); `blender3.py --panel 1|2|3` |
 | `qavat3-3d.mjs`, `albom.mjs` | 3D varaqlar (A3), xarajatlar xulosasi va loyiha albomi |
 | `xarajat-malumot.mjs`, `xarajatlar.py`, `xarajat-xulosa.py` | xarajatlar jadvali (Excel, formulalar bilan) va albom uchun xulosa |

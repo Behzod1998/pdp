@@ -1,4 +1,4 @@
-# Xadra filiali — ishni davom ettirish uchun (holat: 19.10.2026)
+# Xadra filiali — ishni davom ettirish uchun (holat: 03.11.2026)
 
 Branch: `claude/pdp-academy-xadra-flialni-building-id9rwi` (hammasi push qilingan). Manba — `manba/`, natijalar — `chizma/`,
 xarajatlar — `hisob/Xadra_xarajatlar_v1.2.xlsx`. Fayllar va vazifalari — `README.md`. Ish qoidalari — repo ildizidagi `CLAUDE.md`.
@@ -20,6 +20,10 @@ xarajatlar — `hisob/Xadra_xarajatlar_v1.2.xlsx`. Fayllar va vazifalari — `RE
 
 **3-qavat** (`manba/qavat3.mjs`) — 5-xona o'quv xonasi (24 o'rin), erkaklar hojatxonasi + tahorat; koridorda yangi GKL to'siq
 devor (zinadan hojatxona eshigi ko'rinmasin, 18.10). 3-qavat elektri mavjud — chizilmaydi.
+- **Erkaklar hojatxonasi (03.11):** kirganda chapda 1.50 m quyma rakovina (2 chanoq), so'ng unitazli kabina (1.00 m);
+  eshikdan 2.50 m dan keyin pol +0.30 supa (+0.15 pog'ona, usti kafel) — 3 ta chashagenli kabina va taxorat joyi (3 jo'mrak).
+  Devorlar — plastik marmar panel, 3 variant (`Xadra_3-qavat_WC_panellar_v1.2.pdf`; teksturalar `manba/teksturalar/`).
+  Asosiy 3D varaqda devorlar kafel ko'rinishida.
 
 **Tizim chizmalari** (`manba/tizim-chizma.mjs`, 18.10; qurilmalar joyi — buyurtmachi belgilagan, kodda koordinatalar bilan):
 kamera 24 (har biriga Cat6, XZ4 shkafi); internet 16 ta 2 portli RJ-45 (30 sm) + 6 Wi-Fi; yong'in 53 datchik (50 + kladovkalar 2 +
@@ -38,6 +42,8 @@ internet va elektr — Toshkent taxminiy narxlari.
 5. Kanalli konditsioner modeli: hisob bo'yicha har blokka ~130k BTU kerak (96k yetmaydi); 30% tashqi havoda CO₂ yuqori.
 6. Founder tanlovlari: koridor oxiri logoli/logosiz; shisha devor A/B; 1 m suriladigan eshik.
 7. Rotband cheki — buyurtmachi yuborganini aytdi, lekin sessiyaga kelmagan; qayta yuborishi so'ralgan.
+8. Hojatxona paneli: qaysi variant (1/2/3), narxi; Excel'dagi devor kafeli o'rniga panel qo'yilsinmi.
+9. Supa chegarasi (eshikdan 2.50 m) va unitaz kabinasi kengligi (1.00 m) to'g'rimi.
 
 ## Qayta yig'ish (yangi muhitda)
 
@@ -47,7 +53,7 @@ npm install                        # three, pdf-lib; Playwright Chromium kerak (
 pip install openpyxl               # xarajatlar.py uchun; qayta hisoblash — LibreOffice (xlsx skill'ining recalc.py skripti)
 node build.mjs                     # barcha rejalar, ish chizmasi, vent, tizim chizmalari + tekshiruv (xatolar 0 bo'lishi kerak)
 python3 xarajatlar.py              # hisob/Xadra_xarajatlar_v1.2.xlsx, keyin recalc
-node albom.mjs                     # 3D varaqlar va albom (50 bet)
+node albom.mjs                     # 3D varaqlar va albom (50 bet); 3-qavat panel varaqlari uchun avval blender3.py --panel 1..3
 ```
 
 3D: Python 3.11 venv'da `pip install bpy==4.2.0`; `node blender2-malumot.mjs > 2q.json && python blender2.py 2q.json ../chizma/3d --faqat <ko'rinishlar>`

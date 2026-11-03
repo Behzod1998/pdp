@@ -27,14 +27,17 @@ export const DEVOR3 = [
   // koridorda tashqi devordan hojatxona va o'quv xonasi orasidagi devor chizig'igacha; orqasida hojatxona eshigi oldida 1.05 m tambur
   r(4600, 4700, 300, 3150, { yangi: true, izoh: "koridordagi to'siq devor (GKL)" }),
 ];
-// hojatxona kabinalari: 4 ta, har biri 1.00 × 1.10 m; yupqa to'siqlar (40 mm), eshigi 650 mm
-export const KABINA = { x0: 7550, en: 1000, chuq: 1100, soni: 4, eshik: 650 };
-const kabinaXi = i => KABINA.x0 + i * KABINA.en;
+// hojatxona kabinalari (buyurtmachi, 03.11): kirgandan 1.50 m quyma rakovina, so'ng unitazli kabina (1.00 m, pastki pol);
+// eshikdan 2.50 m dan keyin pol 30 sm ko'tarilgan (supa) — 3 ta chashagenli kabina (~0.98 m) va taxorat joyi.
+// Kabina chuqurligi 1.10 m, yupqa to'siqlar (40 mm), eshigi 650 mm. xlar — kabina chegaralari (x).
+export const KABINA = { xlar: [7600, 8600, 9583, 10567, 11550], x0: 7600, chuq: 1100, soni: 4, eshik: 650 };
+const kabinaXi = i => KABINA.xlar[i];
+const kabinaEn = i => KABINA.xlar[i + 1] - KABINA.xlar[i];
 export const KABINA_DEVOR = [
   ...Array.from({ length: KABINA.soni }, (_, i) => r(kabinaXi(i) - 20, kabinaXi(i) + 20, 300, 300 + KABINA.chuq)),
   ...Array.from({ length: KABINA.soni }, (_, i) => {
-    const x0 = kabinaXi(i), yon = (KABINA.en - KABINA.eshik) / 2;
-    return [r(x0, x0 + yon, 1360, 1400), r(x0 + KABINA.en - yon, x0 + KABINA.en, 1360, 1400)];
+    const x0 = kabinaXi(i), en = kabinaEn(i), yon = (en - KABINA.eshik) / 2;
+    return [r(x0, x0 + yon, 1360, 1400), r(x0 + en - yon, x0 + en, 1360, 1400)];
   }).flat(),
 ];
 
@@ -50,8 +53,8 @@ export const ESHIK3 = [
   e('2', 'v', 1450, 2350, 5750, -1, 'a', { shisha: false }),   // hojatxona eshigi koridorga ochiladi
   e('5', 'v', 4400, 5300, 6100, +1, 'a', { shisha: true }),    // o'quv xonasi: kirganda chapda doska va ustoz joyi
   ...Array.from({ length: KABINA.soni }, (_, i) => {
-    const x0 = kabinaXi(i), yon = (KABINA.en - KABINA.eshik) / 2;
-    return e(`K${i + 1}`, 'h', x0 + yon, x0 + KABINA.en - yon, 1400, +1, 'a', { kabina: true });
+    const x0 = kabinaXi(i), en = kabinaEn(i), yon = (en - KABINA.eshik) / 2;
+    return e(`K${i + 1}`, 'h', x0 + yon, x0 + en - yon, 1400, +1, 'a', { kabina: true });
   }),
 ];
 
@@ -106,15 +109,21 @@ export function sinf3Korsatkich() {
 }
 
 // ---------- 2-xona: erkaklar hojatxonasi ----------
-// Kirganda chapda 2 ta rakovina, shimoliy devor bo'ylab 4 ta kabina (1-sida unitaz, 2–4-da chashagen,
-// har birida mustahab), janubiy devor bo'ylab taxorat joyi (3 ta jo'mrak), eshik yonida trap.
+// Kirganda chapda 1.50 m quyma rakovina (2 ta chanoq), shimoliy devor bo'ylab 4 ta kabina (1-sida unitaz — pastki polda,
+// 2–4-da chashagen — supada, har birida mustahab); eshikdan 2.50 m dan keyin butun eni bo'ylab 30 sm ko'tarilgan supa
+// (usti kafel), unga bitta pog'ona; supada janubiy devor bo'ylab taxorat joyi (3 ta jo'mrak); eshik yonida trap.
+// Devorlar — plastik (PVX) marmar panel, 3 variant (buyurtmachi, 03.11; manba/teksturalar/wc_panel_*.jpg).
+const chX = [1, 2, 3].map(i => Math.round((kabinaXi(i) + kabinaXi(i + 1)) / 2));
 export const WC3 = {
-  rakovina: [[6550, 500], [7150, 500]],
-  unitaz: [[kabinaXi(0) + 500, 590]],
-  chashagen: [1, 2, 3].map(i => [kabinaXi(i) + 500, 650]),
-  mustahab: [0, 1, 2, 3].map(i => [kabinaXi(i) + KABINA.en - 100, 1000]),
-  taxorat: r(7900, 11100, 2750, 3150),
-  taxoratJomrak: [8433, 9500, 10567].map(x => [x, 3110]),
+  quyma: r(6100, 7580, 300, 820),
+  rakovina: [[6600, 540], [7100, 540]],          // quyma rakovina chanoqlari va jo'mraklari
+  unitaz: [[(kabinaXi(0) + kabinaXi(1)) / 2, 590]],
+  chashagen: chX.map(x => [x, 650]),
+  mustahab: [0, 1, 2, 3].map(i => [kabinaXi(i + 1) - 100, 1000]),
+  supa: r(8600, 11550, 300, 3150, { h: 300 }),
+  pogona: r(8300, 8600, 2100, 3150, { h: 150 }),
+  taxorat: r(8700, 11450, 2750, 3150),
+  taxoratJomrak: chX.map(x => [x, 3110]),
   trap: [6500, 2750],
 };
 
@@ -128,7 +137,7 @@ export function tekshiruv3() {
     jihoz.slice(i + 1).forEach((b, k) => kesishadi(a, b) && xato.push(`5-xona: jihoz ${i + 1} ↔ ${i + k + 2}`));
     ESHIK3.forEach(e => kesishadi(a, eshikSektori(e).quti) && xato.push(`5-xona: jihoz ${i + 1} ↔ ${e.kod} eshigi`));
   });
-  const wc = [...WC3.rakovina.map(([x, y]) => r(x - 260, x + 260, y - 200, y + 200)), r(...[WC3.taxorat.x1, WC3.taxorat.x2, WC3.taxorat.y1, WC3.taxorat.y2])];
+  const wc = [WC3.quyma, WC3.pogona, r(...[WC3.taxorat.x1, WC3.taxorat.x2, WC3.taxorat.y1, WC3.taxorat.y2])];
   ESHIK3.forEach(e => wc.forEach((a, i) => kesishadi(a, eshikSektori(e).quti) && xato.push(`hojatxona: jihoz ${i + 1} ↔ ${e.kod} eshigi`)));
   return { orin: j.stullar.length, xato };
 }
@@ -174,7 +183,9 @@ function chiz(id, o = {}) {
   s.partalar.forEach(p => j.push(use('parta', ...markaz(p), 0)));
   s.stullar.forEach(p => j.push(use('stul', ...markaz(p), 0)));
   j.push(use('ustozStol', ...markaz(s.ustozStoli), 180), use('ofisStul', ...markaz(s.ustozStuli), 180));
-  WC3.rakovina.forEach(([x, y]) => j.push(use('rakovina', x, y)));
+  // supa (+0.30) va pog'ona — pol ostida, jihozlardan oldin
+  q.push(rect(WC3.supa, 'fill="#dfe6ec" fill-opacity=".55" stroke="#7d8a96" stroke-width="14"'), rect(WC3.pogona, 'fill="#e9eef2" stroke="#7d8a96" stroke-width="10"'));
+  j.push(rect(WC3.quyma, 'rx="30" fill="#f7f6f2" stroke="#9aa3ad" stroke-width="12"'), ...WC3.rakovina.map(([x, y]) => `<ellipse cx="${x}" cy="${y + 40}" rx="190" ry="150" fill="#eef2f5" stroke="#b9c1ca" stroke-width="8"/><circle cx="${x}" cy="${WC3.quyma.y1 + 60}" r="28" fill="#9aa3ad"/>`));
   WC3.unitaz.forEach(([x, y]) => j.push(use('unitaz', x, y)));
   WC3.chashagen.forEach(([x, y]) => j.push(use('chashagen', x, y)));
   q.push(`<g filter="url(#${id}soya)">${j.join('')}</g>`);
@@ -274,17 +285,18 @@ export function wcDetalSvg(mashtab = 50) {
   };
   const B = 'font-weight="700" fill="#262626"', R = 'fill="#262626"';
   const L = [
-    t(6830, 1300, 'Rakovina × 2', 170, B),
+    t(6840, 1150, 'Quyma rakovina 1.50', 160, B),
+    t(10100, 1900, 'supa +0.30', 170, B), t(8450, 2600, "pog'ona +0.15", 120, R, true),
     t(kabinaXi(0) + 450, 1230, 'unitaz', 140, R, true),
     ...[1, 2, 3].map(i => t(kabinaXi(i) + 450, 1230, 'chashagen', 140, R, true)),
-    t(9500, 2620, "Taxorat joyi — 3 jo'mrak", 170, B, true),
+    t(10075, 2620, "Taxorat joyi — 3 jo'mrak", 170, B, true),
     t(6650, 2450, 'trap', 150, R),
   ];
   const d = [];
   const chiziq = (a, b) => d.push(`<line x1="${f(a[0])}" y1="${f(a[1])}" x2="${f(b[0])}" y2="${f(b[1])}" stroke="#777" stroke-width="8"/>`);
   const belgi = p => d.push(`<line x1="${f(p[0] - 55)}" y1="${f(p[1] + 55)}" x2="${f(p[0] + 55)}" y2="${f(p[1] - 55)}" stroke="#555" stroke-width="14"/>`);
   // shimoliy devor bo'ylab (burilgan rejada o'ngda, vertikal): rakovina zonasi va 4 ta kabina
-  const nx = [6100, 7550, 8550, 9550, 10550, 11550];
+  const nx = [6100, ...KABINA.xlar];
   chiziq(P(nx[0], -450), P(nx.at(-1), -450)); nx.forEach(x => belgi(P(x, -450)));
   for (let i = 1; i < nx.length; i++) {
     const [X, Y] = P((nx[i] + nx[i - 1]) / 2, -450);
@@ -342,11 +354,11 @@ export function qavat3Html() {
         <h2>2-xona — erkaklar hojatxonasi (buyurtmachi chizgan ko'rinishda)</h2>
         <div class="detal">${wcDetalSvg()}
           <div class="belgi">Reja 90° burilgan: eshik tepada (koridordan), deraza pastda.
-            <b>Kirganda chapda</b>2 ta rakovina (jo'mrak bilan)
-            <b>Kabinalar</b>4 ta, har biri 1.00 × 1.10 m: 1 ta unitazli, 3 ta chashagenli; har birida mustahab; eshiklari 65 sm, tashqariga ochiladi
-            <b>Taxorat joyi</b>janubiy devor bo'ylab 3.2 m, 3 ta jo'mrak
-            <b>Pol</b>eshik yonida trap (pol suvi uchun)
-            <b>Kafel</b>devor 58 m², pol 16 m²</div>
+            <b>Kirganda chapda</b>quyma rakovina 1.50 m (2 ta chanoq, jo'mrak bilan)
+            <b>Kabinalar</b>4 ta, chuqurligi 1.10 m: 1 ta unitazli (1.00 m, pastki polda), 3 ta chashagenli (~0.98 m, supada); har birida mustahab; eshiklari 65 sm
+            <b>Supa</b>eshikdan 2.50 m dan keyin pol 30 sm ko'tarilgan (usti kafel), pog'ona 15 sm; supada taxorat joyi — janubiy devor bo'ylab 2.75 m, 3 ta jo'mrak
+            <b>Pol</b>kafel; eshik yonida trap
+            <b>Devorlar</b>plastik (PVX) marmar panel — 3 variant (3D)</div>
         </div>
         <table><tr><th>Xona</th><th>Vazifasi</th><th class="r">m²</th></tr>
           <tr><td>1</td><td>Koridor (zinapoyadan)</td><td class="r">17.35</td></tr>
