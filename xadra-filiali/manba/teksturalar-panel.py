@@ -4,7 +4,7 @@
 import sys, numpy as np
 from PIL import Image, ImageFilter
 src, out = sys.argv[1], sys.argv[2]
-CROP = {'1': (70, 120, 430, 950), '2': (55, 110, 440, 945), '3': (55, 25, 600, 950)}
+CROP = {'1': (70, 120, 430, 912), '2': (55, 110, 440, 945), '3': (85, 25, 600, 950)}  # chetdagi qora burchak / kulrang yo'l kesib tashlangan
 for k, box in CROP.items():
     im = Image.open(f'{src}/{k}.webp').convert('RGB').crop(box)
     a = np.asarray(im).astype(np.float32)
