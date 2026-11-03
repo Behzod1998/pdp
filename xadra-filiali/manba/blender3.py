@@ -1,7 +1,7 @@
 # 3-qavat — Blender sahnasi va renderlar (Cycles). Umumiy qismlar: blender_umumiy.py
 # Ishlatish:
 #   node blender3-malumot.mjs > 3qavat.json
-#   python blender3.py 3qavat.json ../chizma/3d [--tez] [--blend] [--faqat umumiy,sinf,wc1,wc2,wc3] [--panel 1|2|3]
+#   python blender3.py 3qavat.json ../chizma/3d [--tez] [--blend] [--faqat umumiy,sinf,wc1,wc2,wc3] [--panel 1|2|3] [--yopiq]
 #   --panel N — hojatxona devorlari plastik marmar panel N-variantda (teksturalar/wc_panel_N.jpg); fayllar «_WC-panel-N» bilan
 # (bpy moduli kerak: pip install bpy==4.2.0 — Python 3.11)
 import json, os, sys
@@ -13,6 +13,7 @@ from blender_umumiy import Q, P, M, H, KESIM, SILL, HEAD, ESH_H
 A = bu.argv()
 D = json.load(open(A['json']))
 PANEL = sys.argv[sys.argv.index('--panel') + 1] if '--panel' in sys.argv else None
+YOPIQ = '--yopiq' in sys.argv      # 03.11: kabina eshiklari yopiq holatda (panel variantlari bilan)
 BAMBUK_H = 2500   # 5-xonada bambuk panel balandligi (buyurtmachi)
 bu.boshla()
 
@@ -123,7 +124,7 @@ for d in DERAZALAR:
 q.obj('derazalar', 'asos')
 
 # ---------------- eshiklar ----------------
-OCHIQ = {'K1': 92, 'K2': 92, 'K3': 40, 'K4': 0}
+OCHIQ = {} if YOPIQ else {'K1': 92, 'K2': 92, 'K3': 40, 'K4': 0}
 for e in D['eshiklar']:
     supada = e.get('kabina') and e['a'] >= SUPA['x1']          # 2–4-kabina eshiklari supada
     bu.eshik(e, OCHIQ.get(e['kod'], 0), kab_z=(150 + SH, 2000 + SH) if supada else (150, 2000))
@@ -286,6 +287,6 @@ os.makedirs(A['chiq'], exist_ok=True)
 bu.belgilar(KOR['umumiy']['cam'], KOR['umumiy']['res'],
             {'1': (4375, 3300, 0), '2': (8825, -700, KESIM), '3': (2350, 7700, 0), '4': (3025, 10700, 0), '5': (8825, 4700, 0), 'Z': (1600, 3100, 0)},
             os.path.join(A['chiq'], 'umumiy-belgilar.json'))
-bu.renderla(KOR, A['chiq'], 'Xadra_3-qavat_3D' + (f'_WC-panel-{PANEL}' if PANEL else ''), FAYL, A['tez'], A['faqat'])
-if PANEL: sys.exit(0)      # panel variantlari — faqat renderlar; asosiy .blend kafelli qoladi
+bu.renderla(KOR, A['chiq'], 'Xadra_3-qavat_3D' + (f'_WC-panel-{PANEL}' if PANEL else '') + ('_yopiq' if YOPIQ else ''), FAYL, A['tez'], A['faqat'])
+if PANEL or YOPIQ: sys.exit(0)      # panel variantlari — faqat renderlar; asosiy .blend kafelli qoladi
 bu.saqla(A['chiq'], 'Xadra_3-qavat.blend', KOR['sinf']['cam'], tez=A['tez'], blend=A['blend'])
