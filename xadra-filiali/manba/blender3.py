@@ -275,7 +275,7 @@ KOR = {
     'umumiy': dict(cam=kam('kamera_umumiy', (3200, 22000, 23500), (6250, 6500, -400), 40), res=(2400, 1700), ichki=False, quyosh=(130, 52, 3.2)),
     'sinf': dict(cam=kam('kamera_sinf', (7000, 11650, 1650), (9150, 3400, 1250), 20), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
     'wc1': dict(cam=kam('kamera_hojatxona_1', (7680, 2730, 1650), (7150, 650, 1000), 15), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
-    'wc2': dict(cam=kam('kamera_hojatxona_2', (6250, 2950, 1650), (11300, 1750, 1000), 16), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
+    'wc2': dict(cam=kam('kamera_hojatxona_2', (6300, 2550, 1650), (11300, 1650, 1000), 16), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
     # 03.11: supadan eshik tomonga — quyma rakovina, unitazli kabina, pog'ona
     'wc3': dict(cam=kam('kamera_hojatxona_3', (11350, 2350, 1950), (6400, 1200, 1050), 16), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
 }
