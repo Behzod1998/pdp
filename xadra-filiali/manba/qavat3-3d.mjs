@@ -89,10 +89,10 @@ const html = async () => `<!doctype html><html lang="uz"><head><meta charset="ut
       <div class="izoh">
         <div>
           <p><b>5-xona — o'quv xonasi.</b> ${k.parta} ta ikki kishilik parta (140 × 60 sm), 4 qator × 3, ${k.orin} o'rin. Interaktiv doska shimoliy devorda, eshikdan kirganda chapda; ikki yonida oq doska. Ustoz stoli deraza tomonda. Bambuk panel 3 devorda, 2.5 m gacha (doska devori, orqa devor, eshikli devor). Eshik shisha, matli polosa bilan. Konditsioner orqa devorda.</p>
-          <p><b>2-xona — erkaklar hojatxonasi (03.11).</b> Kirganda chapda 1.50 m quyma rakovina (2 ta chanoq), ko'zgu va qo'l quritgich, so'ng unitazli kabina. Eshikdan 2.50 m dan keyin pol 30 sm ko'tarilgan supa (pog'ona bilan, usti kafel): 3 ta chashagenli kabina va janubiy devor bo'ylab taxorat joyi (3 ta jo'mrak); har kabinada mustahab, eshik yonida trap. Devorlar — plastik marmar panel, 3 variant 2-varaqda (bu varaqda — kafel bilan).</p>
+          <p><b>2-xona — erkaklar hojatxonasi (03.11).</b> Kirganda chapda 1.50 m quyma rakovina (2 ta chanoq), ko'zgu va qo'l quritgich, so'ng unitazli kabina. Eshikdan 2.50 m dan keyin supa +0.15 (usti kafel): chashagenli 3 ta kabina g'isht supada +0.30, janubiy devor bo'ylab taxorat lotogi (ariqcha va g'isht labi, 3 ta jo'mrak); har kabinada mustahab, eshik yonida va supada trap. Joyidagi foto bo'yicha (04.11): baland lenta derazalar, sharqiy devorda radiator va konditsioner, mavjud PVX reykali shift. Devorlar — plastik marmar panel, 3 variant keyingi varaqlarda (bu varaqda — kafel bilan).</p>
         </div>
         <div>
-          <p><b>Taxminlar (joyida aniqlanadi).</b> Shift balandligi 3.5 m (bino balandligi). Derazalar joyi va o'lchami (tokcha 0.9 m, tepasi 2.6 m) chizma fotosidan taxminiy. Kabina to'siqlari HPL, 2.0 m balandlikda. Chashagenlar supaga botirilgan. Pol, kafel va jihozlar rangi — namuna uchun, tanlovga qarab o'zgaradi. Ko'zgu va qo'l quritgich xarajatlar jadvalida yo'q — ko'rinish uchun qo'yilgan.</p>
+          <p><b>Taxminlar (joyida aniqlanadi).</b> Shift balandligi 3.5 m (bino balandligi). Derazalar joyi va o'lchami (tokcha 0.9 m, tepasi 2.6 m) chizma fotosidan taxminiy; hojatxonada — joyidagi fotodan: derazalar tokchasi ~1.85 m, shift ~3.0 m (mavjud PVX reyka). Kabina to'siqlari HPL, 2.0 m balandlikda. Chashagenlar supaga botirilgan. Pol, kafel va jihozlar rangi — namuna uchun, tanlovga qarab o'zgaradi. Ko'zgu va qo'l quritgich xarajatlar jadvalida yo'q — ko'rinish uchun qo'yilgan.</p>
           <p><b>Fayllar.</b> chizma/3d/: har bir ko'rinishning rasmi (JPG) va Xadra_3-qavat.blend (Blender 4.2, 4 ta kamera). Sahna manba/blender3.py dan qayta yig'iladi.</p>
         </div>
       </div>
@@ -104,7 +104,7 @@ const html = async () => `<!doctype html><html lang="uz"><head><meta charset="ut
       <figure><img src="${await rasm('wc1')}"></figure>
       <figcaption><span class="raqam">3</span><b>Hojatxona ichi — quyma rakovina va 1-kabina.</b> Chapda kirish eshigi, 1.50 m quyma rakovina va ko'zgu, o'ngda unitazli kabina (mustahab bilan).</figcaption>
       <figure><img src="${await rasm('wc2')}"></figure>
-      <figcaption><span class="raqam">4</span><b>Hojatxona ichi — eshikdan sharqqa.</b> Pog'ona va 30 sm ko'tarilgan supa: chapda chashagenli kabinalar, o'ngda taxorat joyi (3 ta jo'mrak), oldinda deraza (xira oyna).</figcaption>
+      <figcaption><span class="raqam">4</span><b>Hojatxona ichi — eshikdan sharqqa.</b> Supa (+0.15) va kabinalar supasi (+0.30): chapda chashagenli kabinalar, o'ngda taxorat lotogi (3 ta jo'mrak), oldinda radiator, deraza va konditsioner.</figcaption>
     </div>
   </div>
 </section></body></html>`;
@@ -124,20 +124,20 @@ const CSS2 = `.p2 { display: grid; grid-template-columns: 64mm 1fr 1fr 1fr; gap:
 .p2 .kalit svg { width: 64mm; }`;
 const panelVaraq = async (yopiq = false) => {
   if (!PANEL.every(([n]) => ['wc1', 'wc2', 'wc3'].every(v => existsSync(rasmFayl(v, n, yopiq))))) return '';
-  const IZ = { wc1: "eshikdan kirganda — quyma rakovina va unitazli kabina", wc2: "eshikdan supaga — chashagenli kabinalar va taxorat joyi", wc3: "supadan eshik tomonga" };
+  const IZ = { wc1: "eshikdan kirganda — quyma rakovina va unitazli kabina", wc2: "eshikdan supaga — chashagenli kabinalar va taxorat lotogi", wc3: "supadan eshik tomonga" };
   const ustun = async ([n, nom, izoh]) => `<div><div class="ust"><img src="${await tekstura(n)}"><div><h2>${n}-variant · ${nom}</h2><p>${izoh}</p></div></div>
     ${(await Promise.all(['wc1', 'wc2', 'wc3'].map(async (v, i) => `<figure><img src="${await rasm(v, n, yopiq)}"></figure><figcaption><span class="raqam">${i + 1}</span>${IZ[v]}</figcaption>`))).join('')}</div>`;
   return `<section class="varaq">
   <header>
     <div><div class="brend">${LOYIHA.brend} · ${LOYIHA.filial}</div><h1>3-qavat hojatxonasi — devor panellari: 3 variant (3D)${yopiq ? ' · kabina eshiklari yopiq' : ''}</h1></div>
-    <div class="ong">${LOYIHA.versiya} · 03.11.2026<br>Panellar — buyurtmachi ko'rgan namunalar (rasmdan)</div>
+    <div class="ong">${LOYIHA.versiya} · 04.11.2026<br>Panellar — buyurtmachi ko'rgan namunalar (rasmdan); xona — joyidagi foto bo'yicha</div>
   </header>
   <div class="p2">
     <div class="chap">
       <div class="kalit">${kalitReja([['1', 'kamera_hojatxona_1'], ['2', 'kamera_hojatxona_2'], ['3', 'kamera_hojatxona_3']], { x1: 5600, y1: -300, x2: 12000, y2: 3600 }, 900)}</div>
       <p style="margin-top:1.5mm"><b>Kamera nuqtalari</b> — har variantda bir xil (1, 2, 3).${yopiq ? ' Bu varaqda kabina eshiklari yopiq; ochiq holati — oldingi varaqda.' : ''}</p>
-      <p><b>Hojatxona (03.11):</b> kirganda chapda 1.50 m quyma rakovina, so'ng unitazli kabina (1.00 m). Eshikdan 2.50 m dan keyin pol 30 sm ko'tarilgan supa (15 sm pog'ona, usti kafel): 3 ta chashagenli kabina va janubiy devor bo'ylab taxorat joyi.</p>
-      <p><b>Panel:</b> plastik (PVX) marmar list, ~1.22 × 2.8 m, poldan shiftgacha; choklari ingichka. Pol va supa — kafel, kabinalar — kulrang HPL.</p>
+      <p><b>Hojatxona (joyidagi foto bo'yicha, 04.11):</b> kirganda chapda 1.50 m quyma rakovina, so'ng unitazli kabina (1.00 m). Eshikdan 2.50 m dan keyin supa +0.15 (usti kafel); 3 ta chashagenli kabina g'isht supada +0.30; janubiy devor bo'ylab taxorat lotogi — ariqcha va g'isht labi, 3 ta jo'mrak. Sharqiy devorda radiator va konditsioner, derazalar baland (tokcha ~1.85 m), shift — mavjud PVX reyka, 4 ta dumaloq chiroq.</p>
+      <p><b>Panel:</b> plastik (PVX) marmar list, ~1.22 × 2.8 m, poldan shiftgacha (derazalar ostida — tokchagacha); choklari ingichka. Pol, supa va lotok — kafel, kabinalar — kulrang HPL.</p>
       <p><b>Eslatma:</b> panel teksturasi buyurtmachi yuborgan rasmlardan olingan — rang va naqsh taxminan; yaltirashi (1, 2 — yaltiroq, 3 — yarim mat) do'kondagi namunaga qarab.</p>
     </div>
     ${(await Promise.all(PANEL.map(ustun))).join('')}

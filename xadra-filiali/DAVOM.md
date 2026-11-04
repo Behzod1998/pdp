@@ -1,4 +1,4 @@
-# Xadra filiali — ishni davom ettirish uchun (holat: 03.11.2026)
+# Xadra filiali — ishni davom ettirish uchun (holat: 04.11.2026)
 
 Branch: `claude/pdp-academy-xadra-flialni-building-id9rwi` (hammasi push qilingan). Manba — `manba/`, natijalar — `chizma/`,
 xarajatlar — `hisob/Xadra_xarajatlar_v1.2.xlsx`. Fayllar va vazifalari — `README.md`. Ish qoidalari — repo ildizidagi `CLAUDE.md`.
@@ -20,8 +20,11 @@ xarajatlar — `hisob/Xadra_xarajatlar_v1.2.xlsx`. Fayllar va vazifalari — `RE
 
 **3-qavat** (`manba/qavat3.mjs`) — 5-xona o'quv xonasi (24 o'rin), erkaklar hojatxonasi + tahorat; koridorda yangi GKL to'siq
 devor (zinadan hojatxona eshigi ko'rinmasin, 18.10). 3-qavat elektri mavjud — chizilmaydi.
-- **Erkaklar hojatxonasi (03.11):** kirganda chapda 1.50 m quyma rakovina (2 chanoq), so'ng unitazli kabina (1.00 m);
-  eshikdan 2.50 m dan keyin pol +0.30 supa (+0.15 pog'ona, usti kafel) — 3 ta chashagenli kabina va taxorat joyi (3 jo'mrak).
+- **Erkaklar hojatxonasi (03.11; joyidagi foto bo'yicha 04.11):** kirganda chapda 1.50 m quyma rakovina (2 chanoq), so'ng
+  unitazli kabina (1.00 m); eshikdan 2.50 m dan keyin supa +0.15 (usti kafel), 3 ta chashagenli kabina g'isht supada +0.30
+  (chuqurligi 1.10 m); janubiy devor bo'ylab taxorat lotogi (ariqcha ~0.28 m + g'isht labi ~0.14 m, 3 jo'mrak). Fotodan: shimoliy
+  va sharqiy devorda baland derazalar (tokcha ~1.85 m), sharqiy devorda radiator va split konditsioner, mavjud PVX reykali shift
+  (~3.0 m, 4 dumaloq chiroq), shimoliy-g'arbiy burchakda stoyak. O'lchamlar fotodan taxminiy.
   Devorlar — plastik marmar panel, 3 variant (`Xadra_3-qavat_WC_panellar_v1.2.pdf`; teksturalar `manba/teksturalar/`).
   Asosiy 3D varaqda devorlar kafel ko'rinishida.
 
