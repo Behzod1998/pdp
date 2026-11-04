@@ -115,6 +115,7 @@ Playwright Chromium bilan o'rnatilgan bo'lishi kerak. Generator avval tekshiruvn
 | `blender_umumiy.py` | Blender kutubxonasi: materiallar, devor/deraza/eshik, mebel, logotip va doskalar, chiroqlar, kamera, render |
 | `blender1*.`, `blender2*.`, `blender3*.` | har bir qavatning geometriya JSON'i va Blender sahnasi |
 | `logo/`, `logo-png.mjs` | PDP Academy logotiplari (design.pdp.uz) va Blender teksturalari |
+| `hojatxona-xarajat.py` | 3-qavat erkaklar hojatxonasi — alohida xarajatlar (zayavka 30.10, santexnika, hajm tekshiruvi) → `hisob/Xadra_3-qavat_hojatxona_xarajatlar_v1.2.xlsx`; zayavka rasmi — `hisob/zayavkalar/` |
 | `teksturalar/`, `teksturalar-panel.py` | hojatxona devor paneli teksturalari (buyurtmachi rasmlaridan); `blender3.py --panel 1|2|3` |
 | `qavat3-3d.mjs`, `albom.mjs` | 3D varaqlar (A3), xarajatlar xulosasi va loyiha albomi |
 | `xarajat-malumot.mjs`, `xarajatlar.py`, `xarajat-xulosa.py` | xarajatlar jadvali (Excel, formulalar bilan) va albom uchun xulosa |

@@ -33,6 +33,10 @@ kamera 24 (har biriga Cat6, XZ4 shkafi); internet 16 ta 2 portli RJ-45 (30 sm) +
 3-qavat tamburi 1), 5 shleyf, pult 1-qavat resepshnda, IPR/sirena/tablo/avariya me'yor bo'yicha; elektr — 78 rozetka + 7 doska
 rozetkasi (1.6 m), 13 vyklyuchatel, chiroqlar 3D dagidek, har sinfga alohida difavtomat, mavjud shit 6-xonada (kirishda o'ngda).
 
+**3-qavat hojatxona xarajatlari (04.11, alohida):** `hisob/Xadra_3-qavat_hojatxona_xarajatlar_v1.2.xlsx` (`manba/hojatxona-xarajat.py`
++ recalc) — buyurtmachi zayavkasi «Sanuzel remonti» 30.10.2026 (22 432 000 so'm: material 12.82 mln korporativ, ish haqi 9.61 mln naqd;
+rasm `hisob/zayavkalar/`), santexnika va kabinalar (oldingi narxlar, 12.2 mln), qo'shimcha TAXMIN; hajmlar chizmadan solishtirilgan.
+
 **Xarajatlar:** Excel (umumiy ~96 000 $ kutilmagan xarajatlar bilan, 18.10). Yong'in — buyurtmachi summasi (18 mln so'm);
 internet va elektr — Toshkent taxminiy narxlari.
 
@@ -47,6 +51,7 @@ internet va elektr — Toshkent taxminiy narxlari.
 7. Rotband cheki — buyurtmachi yuborganini aytdi, lekin sessiyaga kelmagan; qayta yuborishi so'ralgan.
 8. Hojatxona paneli: qaysi variant (1/2/3), narxi; Excel'dagi devor kafeli o'rniga panel qo'yilsinmi.
 9. Supa chegarasi (eshikdan 2.50 m) va unitaz kabinasi kengligi (1.00 m) to'g'rimi.
+10. Hojatxona zayavkasi: dekor panel 28 dona (95.2 m²) — chizma bo'yicha ~44 m² (15 dona); kafel kleyi 20 qop (~5 yetadi); santexnika ishlari ulushi; asosiy jadvalda devor kafeli (58 m²) o'rniga panel.
 
 ## Qayta yig'ish (yangi muhitda)
 
