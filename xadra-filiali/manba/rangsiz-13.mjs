@@ -105,19 +105,20 @@ export function rangsiz3Svg() {
   });
   q.push(`<path d="M400,1400 A1200,1100 0 0 1 2800,1400" fill="none" stroke="${Q}" stroke-width="10"/>`, strelka(2200, 1700, 2200, 4150, 16));
   // hojatxona jihozlari (kontur)
-  // supa (+0.30) va pog'ona — kontur, punktir
-  q.push(R(WC3.supa, `fill="none" stroke="${Q}" stroke-width="12" stroke-dasharray="120 60"`), R(WC3.pogona, `fill="#fff" stroke="${Q}" stroke-width="8"`),
-    T(10600, 2690, 'supa +0.30', 140, 'font-weight="700"'), T(WC3.pogona.x1 + 150, 2700, '+0.15', 110));
+  // supa (+0.15) va kabinalar supasi (+0.30) — kontur, punktir
+  q.push(R(WC3.supa, `fill="none" stroke="${Q}" stroke-width="12" stroke-dasharray="120 60"`), R(WC3.kabinaSupa, `fill="none" stroke="${Q}" stroke-width="12" stroke-dasharray="120 60"`),
+    T(10600, 2600, 'supa +0.15', 140, 'font-weight="700"'), T(10100, 1640, '+0.30', 110));
   q.push(R(WC3.quyma, `rx="30" fill="#fff" stroke="${Q}" stroke-width="10"`));
   WC3.rakovina.forEach(([x, y]) => q.push(`<ellipse cx="${x}" cy="${y + 40}" rx="190" ry="150" fill="#fff" stroke="${Q}" stroke-width="8"/>`));
   WC3.unitaz.forEach(([x, y]) => q.push(R({ x1: x - 190, x2: x + 190, y1: y - 270, y2: y + 270 }, `rx="150" fill="#fff" stroke="${Q}" stroke-width="10"`)));
   WC3.chashagen.forEach(([x, y]) => q.push(R({ x1: x - 225, x2: x + 225, y1: y - 300, y2: y + 300 }, `rx="70" fill="#fff" stroke="${Q}" stroke-width="10"`),
     `<path d="M${x - 105},${y - 170} L${x + 105},${y - 170} L${x + 125},${y + 90} A125,125 0 0 1 ${x - 125},${y + 90} Z" fill="none" stroke="${Q}" stroke-width="7"/>`));
   WC3.mustahab.forEach(([x, y]) => q.push(`<circle cx="${x}" cy="${y}" r="60" fill="#fff" stroke="${Q}" stroke-width="10"/>`));
-  q.push(R(WC3.taxorat, `rx="40" fill="#fff" stroke="${Q}" stroke-width="10"`));
+  const tl = WC3.taxorat;
+  q.push(R(tl, `fill="#fff" stroke="${Q}" stroke-width="10"`), R({ x1: tl.x1, x2: tl.x2, y1: tl.y1, y2: tl.y1 + tl.lab }, `fill="${Q}"`), R({ x1: tl.x1, x2: tl.x1 + tl.uch, y1: tl.y1, y2: tl.y2 }, `fill="${Q}"`));
+  q.push(R(WC3.stoyak, `fill="#fff" stroke="${Q}" stroke-width="10"`), R({ x1: 11550 - 110, x2: 11550 - 20, y1: WC3.radiator.y1, y2: WC3.radiator.y2 }, `fill="#fff" stroke="${Q}" stroke-width="8"`));
   WC3.taxoratJomrak.forEach(([x, y]) => q.push(R({ x1: x - 70, x2: x + 70, y1: y - 35, y2: y + 35 }, `fill="#fff" stroke="${Q}" stroke-width="8"`)));
-  const [tx, ty] = WC3.trap;
-  q.push(`<path d="M${tx},${ty - 110} L${tx + 110},${ty} L${tx},${ty + 110} L${tx - 110},${ty} Z" fill="#fff" stroke="${Q}" stroke-width="10"/>`);
+  [WC3.trap, WC3.trap2].forEach(([tx, ty]) => q.push(`<path d="M${tx},${ty - 110} L${tx + 110},${ty} L${tx},${ty + 110} L${tx - 110},${ty} Z" fill="#fff" stroke="${Q}" stroke-width="10"/>`));
   // doska (5-xona)
   const d = sinf3().doska;
   q.push(R({ ...d, y2: d.y1 + 80 }, `fill="#fff" stroke="${Q}" stroke-width="10"`));
@@ -125,8 +126,10 @@ export function rangsiz3Svg() {
   DEVOR3.forEach(w => q.push(w.yangi ? R(w, `fill="#fff" stroke="${Q}" stroke-width="10"`) + R(w, 'fill="url(#gkl)"') : R(w, `fill="${Q}"`)));
   KABINA_DEVOR.forEach(w => q.push(R(w, `fill="${Q}"`)));
   DERAZA3.forEach(w => {
-    const m = (w.x1 + w.x2) / 2;
-    q.push(R(w, `fill="#fff" stroke="${Q}" stroke-width="7"`), L(m - 40, w.y1, m - 40, w.y2, `stroke="${Q}" stroke-width="5"`), L(m + 40, w.y1, m + 40, w.y2, `stroke="${Q}" stroke-width="5"`));
+    const boyY = w.y2 - w.y1 > w.x2 - w.x1, m = boyY ? (w.x1 + w.x2) / 2 : (w.y1 + w.y2) / 2;
+    q.push(R(w, `fill="#fff" stroke="${Q}" stroke-width="7"`), ...(boyY
+      ? [L(m - 40, w.y1, m - 40, w.y2, `stroke="${Q}" stroke-width="5"`), L(m + 40, w.y1, m + 40, w.y2, `stroke="${Q}" stroke-width="5"`)]
+      : [L(w.x1, m - 40, w.x2, m - 40, `stroke="${Q}" stroke-width="5"`), L(w.x1, m + 40, w.x2, m + 40, `stroke="${Q}" stroke-width="5"`)]));
   });
   // yozuvlar
   const X = kod => XONA3.find(x => x.kod === kod);
@@ -192,7 +195,7 @@ export function rangsiz3Html() {
     <div class="izoh"><h2>Izoh</h2><ul>
       <li>Devorlar — qora; 3 va 4-xona o'zgarmaydi (xira shtrix).</li>
       <li>Koridorda yangi GKL devor (shtrix, 100 mm, 2.85 m) — zinadan chiqqan odamga hojatxona (tahoratxona) eshigi ochiq qolsa ham ichi ko'rinmaydi; eshik oldida 1.05 m tambur (18.10).</li>
-      <li>2-xona: kirganda chapda 1.50 m quyma rakovina, so'ng unitazli kabina (1.00 m); eshikdan 2.50 m dan keyin pol 30 sm ko'tarilgan supa (pog'ona 15 sm) — 3 ta chashagenli kabina va janubiy devor bo'ylab taxorat joyi (3 jo'mrak); kabinalar chuqurligi ${KABINA.chuq / 1000} m, eshigi ${KABINA.eshik}, har birida mustahab; eshik yonida trap. Devorlar — plastik marmar panel.</li>
+      <li>2-xona: kirganda chapda 1.50 m quyma rakovina, so'ng unitazli kabina (1.00 m); eshikdan 2.50 m dan keyin supa +0.15, chashagenli 3 ta kabina g'isht supada +0.30; janubiy devor bo'ylab taxorat lotogi (ariqcha va g'isht labi, 3 jo'mrak); sharqiy devorda radiator, burchakda stoyak qutisi; kabinalar chuqurligi ${KABINA.chuq / 1000} m, eshigi ${KABINA.eshik}, har birida mustahab; eshik yonida trap. Devorlar — plastik marmar panel.</li>
       <li>5-xona: doska shimoliy devorda (oq to'rtburchak) — eshikdan kirganda chapda; derazalar o'ng tomonda.</li>
       <li>Derazalar joyi taxminiy; o'lchamlar chizma fotosidan — joyida o'lchanadi.</li></ul></div>`);
 }

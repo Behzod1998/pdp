@@ -20,7 +20,9 @@ bu.boshla()
 # ---------------- pollar ----------------
 WC_X = D['wc']
 CHASH = [(x - 225, x + 225, y - 300, y + 300) for x, y in WC_X['chashagen']]
-SUPA = WC_X['supa']; SH = SUPA['h']       # 03.11: chashagenli kabinalar va taxorat joyi 30 sm ko'tarilgan supada
+KSUPA = WC_X['kabinaSupa']; SH = KSUPA['h']     # 04.11 (foto): chashagenli kabinalar g'isht supada +0.30
+SUPA = WC_X['supa']; PH = SUPA['h']             # kabinalar va taxorat orasi +0.15
+WC_H = WC_X['shift']                            # hojatxonada mavjud PVX reykali shift
 QUDUQ = (300, 2900, 1400, 6050)      # zinapoya quduq'i (pastga ochiq)
 B = D['bino']
 q = Q()
@@ -36,12 +38,11 @@ for x in D['xonalar']:
         for rr in bu.tesik(r, tesh):
             q.box(*rr, 0, 10, POL[x['tur']])
     q.obj(f"pol_{x['kod']}", 'asos')
-# supa (+0.30, usti kafel, chashagen o'rni ochiq) va pog'ona (+0.15)
+# kabinalar supasi (+0.30, chashagen o'rni ochiq) va supa (+0.15) — usti kafel
 q = Q()
-for rr in bu.tesik((SUPA['x1'], SUPA['x2'], SUPA['y1'], SUPA['y2']), CHASH):
+for rr in bu.tesik((KSUPA['x1'], KSUPA['x2'], KSUPA['y1'], KSUPA['y2']), CHASH):
     q.box(*rr, 0, SH, M['kafel_y'], top=M['wc_pol'])
-pg = WC_X['pogona']
-q.box(pg['x1'], pg['x2'], pg['y1'], pg['y2'], 0, pg['h'], M['kafel_y'], top=M['wc_pol'])
+q.box(SUPA['x1'], SUPA['x2'], SUPA['y1'], SUPA['y2'], 0, PH, M['kafel_y'], top=M['wc_pol'])
 q.obj('supa', 'asos')
 
 # ---------------- devorlar ----------------
@@ -67,7 +68,9 @@ def esh(kod): return next(e for e in D['eshiklar'] if e['kod'] == kod)
 WC = next(x for x in D['xonalar'] if x['kod'] == '2')['bolaklar'][0]
 SN = next(x for x in D['xonalar'] if x['kod'] == '5')['bolaklar'][0]
 e2, e5 = esh('2'), esh('5')
-wc_der = [d for d in DERAZALAR if d['y1'] < WC['y2'] and d['y2'] > WC['y1']]
+wc_der = [d for d in DERAZALAR if d['x1'] >= WC['x2'] and d['y1'] < WC['y2'] and d['y2'] > WC['y1']]       # sharqiy devor
+wc_shd = [d for d in DERAZALAR if d['y2'] <= WC['y1'] and d['x1'] >= WC['x1'] and d['x2'] <= WC['x2']]      # shimoliy devor
+oy = lambda d: (d.get('tokcha', SILL), d.get('tepa', HEAD))
 
 def panel_mat(nom, fayl, oq, rough, coat):
     """Plastik marmar panel: rasm teksturasi, bitta panel 1220 × 2800 mm (devor bo'ylab — oq: 'x' | 'y', balandlik — z),
@@ -101,12 +104,14 @@ if PANEL:
     WX, WY = panel_mat('wc_panel_x', f'wc_panel_{PANEL}.jpg', 'x', rg, ct), panel_mat('wc_panel_y', f'wc_panel_{PANEL}.jpg', 'y', rg, ct)
 else:
     WX, WY = M['kafel_x'], M['kafel_y']
-for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
+for h, k in ((min(H, WC_H), 'toliq'), (min(KESIM, WC_H), 'kesim')):
     q = Q()
-    bu.qoplama(q, 'h', WC['y1'], +1, WC['x1'], WC['x2'], 0, h, [], WX, 8)
+    bu.qoplama(q, 'h', WC['y1'], +1, WC['x1'], WC['x2'], 0, h, [(d['x1'], d['x2'], *oy(d)) for d in wc_shd], WX, 8)
     bu.qoplama(q, 'h', WC['y2'], -1, WC['x1'], WC['x2'], 0, h, [], WX, 8)
     bu.qoplama(q, 'v', WC['x1'], +1, WC['y1'], WC['y2'], 0, h, [(e2['a'], e2['b'], 0, ESH_H)], WY, 8)
-    bu.qoplama(q, 'v', WC['x2'], -1, WC['y1'], WC['y2'], 0, h, [(d['y1'], d['y2'], SILL, HEAD) for d in wc_der], WY, 8)
+    bu.qoplama(q, 'v', WC['x2'], -1, WC['y1'], WC['y2'], 0, h, [(d['y1'], d['y2'], *oy(d)) for d in wc_der], WY, 8)
+    st = WC_X['stoyak']          # stoyak qutisi (shimoliy-g'arbiy burchak) — panel bilan qoplangan
+    q.box(st['x1'] + 8, st['x2'], st['y1'] + 8, st['y2'], 0, h, WX)
     q.obj(f'kafel_{k}', k)
 q = Q()
 bu.qoplama(q, 'h', SN['y1'], +1, SN['x1'], SN['x2'], 0, BAMBUK_H, [], M['bambuk_x'], 12)
@@ -119,14 +124,14 @@ q.obj('bambuk_panel', 'asos')
 
 # ---------------- derazalar ----------------
 q = Q()
-for d in DERAZALAR:
-    bu.deraza(q, {**d, 'ichki': -1}, M['xira'] if d['y1'] < WC['y2'] else M['oyna'])
+for d in DERAZALAR:     # shimoliy devordagilarining ichki tomoni — +y
+    bu.deraza(q, {**d, 'ichki': +1 if d['y2'] <= WC['y1'] else -1}, M['oyna'])
 q.obj('derazalar', 'asos')
 
 # ---------------- eshiklar ----------------
 OCHIQ = {} if YOPIQ else {'K1': 92, 'K2': 92, 'K3': 40, 'K4': 0}
 for e in D['eshiklar']:
-    supada = e.get('kabina') and e['a'] >= SUPA['x1']          # 2–4-kabina eshiklari supada
+    supada = e.get('kabina') and e['a'] >= KSUPA['x1']         # 2–4-kabina eshiklari kabinalar supasida
     bu.eshik(e, OCHIQ.get(e['kod'], 0), kab_z=(150 + SH, 2000 + SH) if supada else (150, 2000))
 
 # ---------------- zinapoya ----------------
@@ -194,7 +199,7 @@ for i, (x, y) in enumerate(WC_X['rakovina']):
     q.cyl((x, y + 40, 740), (x, y + 40, 748), 25, M['xrom'])
     q.obj(f'jomrak_{i + 1}', 'asos')
 q = Q()
-q.box(qr['x1'] + 150, qr['x2'] - 150, yw, yw + 8, 1100, 1900, M['kozgu'])
+q.box(qr['x1'] + 150, qr['x2'] - 150, yw, yw + 8, 1100, 1780, M['kozgu'])      # deraza tokchasi (1.85) ostida
 q.box(qr['x1'] + 150, qr['x2'] - 150, yw + 8, yw + 120, 1080, 1092, M['keramika'])   # tokcha
 q.box(WC['x1'] + 8, WC['x1'] + 118, 1050, 1230, 1050, 1350, M['kond'], bevel=15)   # qo'l quritgich (g'arbiy devorda, rakovina va eshik orasida)
 q.obj('kozgu', 'asos')
@@ -236,35 +241,77 @@ for i, (x, y) in enumerate(WC_X['mustahab']):
     q.cyl((xf - 120, y - 210, 750), (xf - 120, y - 90, 750), 55, M['keramika'], 24)
     q.obj(f'mustahab_{i + 1}', 'asos').location.z += z0 / 1000
 
-# taxorat joyi (supada, +SH): kafel qoplangan o'rindiq, zanglamas po'lat novi, 3 ta jo'mrak
-tx = WC_X['taxorat']
-q = Q(); q.box(tx['x1'], tx['x2'], tx['y1'], tx['y2'] - 8, 0, 330, M['kafel_x']); q.obj('taxorat_supa', 'asos').location.z += SH / 1000
-q = Q(); q.box(tx['x1'] + 30, tx['x2'] - 30, tx['y1'] + 20, tx['y2'] - 30, 330, 430, M['polat'], bevel=10)
-ob = q.obj('taxorat_novi', 'asos')
-bu.ayir(ob, bu.kesuvchi_quti(tx['x1'] + 70, tx['x2'] - 70, tx['y1'] + 60, tx['y2'] - 70, 360, 500))
-ob.location.z += SH / 1000
+# taxorat lotogi (foto, 04.11): supa (+PH) ustida devor bo'ylab ariqcha, oldida g'isht labi va g'arbiy uchi (kafel bilan), 3 ta jo'mrak
+tx = WC_X['taxorat']; lab, uch, th = tx['lab'], tx['uch'], tx['h']
+q = Q()
+q.box(tx['x1'], tx['x2'] - 8, tx['y1'], tx['y1'] + lab, PH, PH + th, M['kafel_x'], top=M['wc_pol'])
+q.box(tx['x1'], tx['x1'] + uch, tx['y1'] + lab, tx['y2'] - 8, PH, PH + th, M['kafel_x'], top=M['wc_pol'])
+q.box(tx['x1'] + uch, tx['x2'] - 8, tx['y1'] + lab, tx['y2'] - 8, PH, PH + 4, M['wc_pol'])      # ariqcha tubi (kafel)
+q.obj('taxorat_lotogi', 'asos')
 q = Q()
 for x, y in WC_X['taxoratJomrak']:
-    yf = WC['y2'] - 8
-    q.cyl((x, yf, 850), (x, yf - 50, 850), 30, M['xrom'])
-    q.cyl((x, yf - 40, 850), (x, yf - 180, 830), 13, M['xrom'])
-    q.cyl((x, yf - 180, 830), (x, yf - 180, 800), 13, M['xrom'])
-    q.cyl((x, yf - 60, 850), (x, yf - 60, 920), 9, M['xrom'])
-    q.box(x - 70, x + 70, yf - 130, yf, 1050, 1062, M['keramika'], bevel=3)    # sovun tokchasi
-q.cyl((tx['x1'] + 200, WC['y2'] - 160, 358), (tx['x1'] + 200, WC['y2'] - 160, 364), 30, M['teshik'])
-q.obj('taxorat_jomraklar', 'asos').location.z += SH / 1000
-q = Q(); tx_, ty_ = WC_X['trap']
-q.box(tx_ - 75, tx_ + 75, ty_ - 75, ty_ + 75, 10, 13, M['polat'])
+    yf, zj = WC['y2'] - 8, PH + 650
+    q.cyl((x, yf, zj), (x, yf - 50, zj), 30, M['xrom'])
+    q.cyl((x, yf - 40, zj), (x, yf - 180, zj - 20), 13, M['xrom'])
+    q.cyl((x, yf - 180, zj - 20), (x, yf - 180, zj - 50), 13, M['xrom'])
+    q.cyl((x, yf - 60, zj), (x, yf - 60, zj + 70), 9, M['xrom'])
+    q.box(x - 70, x + 70, yf - 130, yf, PH + 900, PH + 912, M['keramika'], bevel=3)    # sovun tokchasi
+lx, ly = WC_X['lotokTrap']
+q.cyl((lx, ly, PH + 4), (lx, ly, PH + 7), 45, M['teshik'])
+q.obj('taxorat_jomraklar', 'asos')
+q = Q()
+for (tx_, ty_), z in ((WC_X['trap'], 10), (WC_X['trap2'], PH)):
+    q.box(tx_ - 75, tx_ + 75, ty_ - 75, ty_ + 75, z, z + 3, M['polat'])
 q.obj('trap', 'asos')
+
+# radiator (sharqiy devorda, supa ustida) va mavjud split konditsioner (deraza ustida)
+rd = WC_X['radiator']; xr = WC['x2'] - 8
+q = Q()
+yy = rd['y1']
+while yy + 72 <= rd['y2']:
+    q.box(xr - 95, xr - 25, yy, yy + 72, rd['z1'], rd['z2'], M['kond'], bevel=6)
+    yy += 80
+for zz in (rd['z1'] + 40, rd['z2'] - 40):
+    q.cyl((xr - 60, rd['y1'] - 10, zz), (xr - 60, rd['y2'] + 10, zz), 14, M['kond'])
+for yv in (rd['y1'] - 60, rd['y2'] + 60):
+    q.cyl((xr - 40, yv, PH), (xr - 40, yv, rd['z1'] + 40), 11, M['kond'])
+    q.cyl((xr - 40, yv, rd['z1'] + 40), (xr - 40, yv + (50 if yv < rd['y1'] else -50), rd['z1'] + 40), 11, M['kond'])
+q.obj('radiator', 'asos')
+kd = WC_X['kond']
+q = Q(); bu.konditsioner(q, 0, 0, kd['z']); q.obj('wc_konditsioner', 'asos', (xr, (kd['y1'] + kd['y2']) / 2), 90)
+# shimoliy devordagi so'rg'ich ventilyator (derazalar orasida)
+vt = WC_X['ventilyator']; yv = WC['y1'] + 8
+q = Q()
+q.cyl((vt['x'], yv, vt['z']), (vt['x'], yv + 18, vt['z']), 95, M['kond'], 32)
+q.cyl((vt['x'], yv + 18, vt['z']), (vt['x'], yv + 20, vt['z']), 70, M['teshik'], 32)
+q.obj('ventilyator', 'asos')
 
 # ---------------- shift, chiroqlar ----------------
 q = Q(); q.box(0, B['L'], 0, B['B'], H, H + 200, M['shift']); q.obj('shift', 'tepa')
 LED = [(SN['x1'] + (SN['x2'] - SN['x1']) * i / 4, SN['y1'] + (SN['y2'] - SN['y1']) * j / 6, 600, 600) for i in (1, 3) for j in (1, 3, 5)]
-LED += [(x, 2075, 600, 600) for x in (6900, 9300)]
 LED += [(4375, 2500, 600, 600), (4375, 5500, 600, 600), (5000, 7600, 600, 600)]
-LED += [((KB['xlar'][i] + KB['xlar'][i + 1]) / 2, 800, 180, 180) for i in range(KB['soni'])]
 bu.led_panellar(LED, 'led')
-q = Q(); q.box(9000, 9250, 1100, 1350, H - 10, H, M['alyuminiy']); q.obj('sorgich', 'tepa')   # hojatxona so'rg'ich panjarasi
+# hojatxona: mavjud PVX reykali shift (reykalar eni bo'ylab, ~100 mm) va 4 ta dumaloq chiroq
+def reyka_mat():
+    m, n, l, b = bu.yangi_mat('wc_reyka')
+    tc = n.new('ShaderNodeTexCoord'); sp = n.new('ShaderNodeSeparateXYZ'); cb = n.new('ShaderNodeCombineXYZ')
+    l.new(tc.outputs['Object'], sp.inputs[0]); l.new(sp.outputs['Y'], cb.inputs[0]); l.new(sp.outputs['X'], cb.inputs[1])
+    br = n.new('ShaderNodeTexBrick'); br.offset = 0.0; br.squash = 1.0
+    br.inputs['Scale'].default_value = 1.0; br.inputs['Brick Width'].default_value = 20.0; br.inputs['Row Height'].default_value = 0.1
+    br.inputs['Mortar Size'].default_value = 0.004; br.inputs['Color1'].default_value = br.inputs['Color2'].default_value = bu.lin('#f3f3f1')
+    br.inputs['Mortar'].default_value = bu.lin('#b9bcbf')
+    l.new(cb.outputs[0], br.inputs['Vector']); l.new(br.outputs['Color'], b.inputs['Base Color'])
+    b.inputs['Roughness'].default_value = 0.12; b.inputs['Coat Weight'].default_value = 0.5
+    return m
+q = Q(); q.box(WC['x1'], WC['x2'], WC['y1'], WC['y2'], WC_H, WC_H + 10, reyka_mat()); q.obj('wc_shift', 'tepa')
+q = Q()
+for i, (x, y) in enumerate(WC_X['chiroq']):
+    q.cyl((x, y, WC_H - 6), (x, y, WC_H), 95, M['ramka'], 32)
+    q.cyl((x, y, WC_H - 8), (x, y, WC_H - 6), 78, M['led'], 32)
+    L = bpy.data.lights.new(f'wc_chiroq_{i}', 'AREA'); L.shape = 'DISK'; L.size = 0.16; L.energy = 32; L.color = (1.0, 0.96, 0.9)
+    ob = bpy.data.objects.new(f'wc_chiroq_{i}', L); bu.K['chiroq'].objects.link(ob)
+    ob.visible_camera = False; ob.visible_glossy = False; ob.location = P(x, y, WC_H - 15)
+q.obj('wc_chiroqlar', 'tepa')
 
 # ---------------- tashqi muhit ----------------
 q = Q(); q.box(-60000, 70000, -60000, 70000, -9300, -9000, M['yer']); q.obj('yer', 'tashqi')
@@ -276,8 +323,8 @@ KOR = {
     'umumiy': dict(cam=kam('kamera_umumiy', (3200, 22000, 23500), (6250, 6500, -400), 40), res=(2400, 1700), ichki=False, quyosh=(130, 52, 3.2)),
     'sinf': dict(cam=kam('kamera_sinf', (7000, 11650, 1650), (9150, 3400, 1250), 20), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
     'wc1': dict(cam=kam('kamera_hojatxona_1', (7680, 2730, 1650), (7150, 650, 1000), 15), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
-    'wc2': dict(cam=kam('kamera_hojatxona_2', (6300, 2550, 1650), (11300, 1650, 1000), 16), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
-    # 03.11: supadan eshik tomonga — quyma rakovina, unitazli kabina, pog'ona
+    'wc2': dict(cam=kam('kamera_hojatxona_2', (6300, 2200, 1650), (11400, 2000, 950), 16), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
+    # 03.11: supadan eshik tomonga — quyma rakovina, unitazli kabina, supa pog'onasi
     'wc3': dict(cam=kam('kamera_hojatxona_3', (11350, 2350, 1950), (6400, 1200, 1050), 16), res=(1920, 1080), ichki=True, quyosh=(10, 28, 3.5)),
 }
 FAYL = {'umumiy': '1-umumiy', 'sinf': '2-sinf-doska', 'wc1': '3-hojatxona-rakovinalar', 'wc2': '4-hojatxona-taxorat', 'wc3': '5-hojatxona-supadan'}
