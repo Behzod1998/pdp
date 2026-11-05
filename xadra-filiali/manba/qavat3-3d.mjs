@@ -145,6 +145,37 @@ const panelVaraq = async (yopiq = false) => {
 </section>`;
 };
 
+// 05.11: oq yaltiroq panel (tik tolali, buyurtmachi namunasi) — choklardagi profil rangi: oltin, kumush, qora
+const PROFIL = [['oltin', 'Oltin profil', '#c9a54e', "Choklar va burchaklarda oltin rang alyumin profil — oq panel bilan iliq, bezakli ko'rinish."],
+  ['kumush', 'Kumush profil', '#c9ced3', "Kumush (alyumin) profil — oq panelga deyarli qo'shilib ketadi, eng sokin va toza ko'rinish."],
+  ['qora', 'Qora profil', '#1c1c1e', "Qora mat profil — choklar aniq chiziq bo'lib ko'rinadi, zamonaviy grafik uslub."]];
+const profilFayl = (v, rang) => join(D3, `Xadra_3-qavat_3D_WC-panel-4_profil-${rang}_${FAYL[v]}.jpg`);
+const profilVaraq = async () => {
+  if (!PROFIL.every(([r]) => ['wc1', 'wc2'].every(v => existsSync(profilFayl(v, r))))) return '';
+  const t4 = await tekstura(4);
+  const IZ = { wc1: "eshikdan kirganda — quyma rakovina va unitazli kabina", wc2: "eshikdan supaga — kabinalar va taxorat lotogi" };
+  const ustun = async ([r, nom, rang, izoh]) => `<div><div class="ust"><div style="position:relative;width:22mm;height:30mm"><img src="${t4}">
+      <i style="position:absolute;left:10.5mm;top:0;width:1.2mm;height:30mm;background:${rang}"></i><i style="position:absolute;left:0;top:20mm;width:22mm;height:1.2mm;background:${rang}"></i></div>
+      <div><h2>${nom}</h2><p>${izoh}</p></div></div>
+    ${(await Promise.all(['wc1', 'wc2'].map(async (v, i) => `<figure><img src="data:image/jpeg;base64,${(await readFile(profilFayl(v, r))).toString('base64')}"></figure><figcaption><span class="raqam">${i + 1}</span>${IZ[v]}</figcaption>`))).join('')}</div>`;
+  return `<section class="varaq">
+  <header>
+    <div><div class="brend">${LOYIHA.brend} · ${LOYIHA.filial}</div><h1>3-qavat hojatxonasi — oq panel, choklardagi profil rangi: 3 variant (3D)</h1></div>
+    <div class="ong">${LOYIHA.versiya} · 05.11.2026<br>Panel va profillar — buyurtmachi do'kondan yuborgan namunalar</div>
+  </header>
+  <div class="p2">
+    <div class="chap">
+      <div class="kalit">${kalitReja([['1', 'kamera_hojatxona_1'], ['2', 'kamera_hojatxona_2']], { x1: 5600, y1: -300, x2: 12000, y2: 3600 }, 900)}</div>
+      <p style="margin-top:1.5mm"><b>Kamera nuqtalari</b> — har variantda bir xil (1, 2).</p>
+      <p><b>Panel:</b> oq yaltiroq PVX panel, och kulrang tik tola naqshli (buyurtmachi namunasi), ~1.22 × 2.8 m, poldan shiftgacha.</p>
+      <p><b>Profil:</b> panellar orasida tik chok (soedinitel, ~1.22 m dan), 2.8 m balandlikda yotiq chok, xona burchaklari va stoyak qutisi burchagida ugol, deraza va eshik atrofida, shift ostida qirra profili. Faqat profil rangi farq qiladi.</p>
+      <p><b>Eslatma:</b> panel naqshi va profil rangi rasmdan — taxminan; choklar joyi panel kesilishiga qarab joyida aniqlanadi.</p>
+    </div>
+    ${(await Promise.all(PROFIL.map(ustun))).join('')}
+  </div>
+</section>`;
+};
+
 const brauzer = await chromium.launch();
 const p = await brauzer.newPage({ viewport: { width: 1587, height: 1123 }, deviceScaleFactor: 2 });
 const v2 = (await panelVaraq()) + (await panelVaraq(true));
@@ -160,6 +191,13 @@ if (vs[1]) {
   const p2 = await brauzer.newPage({ viewport: { width: 1587, height: 1123 } });
   await p2.setContent(`<!doctype html><html lang="uz"><head><meta charset="utf-8"><title>3-qavat hojatxona — panellar</title><style>${CSS}${CSS2}</style></head><body>${v2}</body></html>`, { waitUntil: 'load' });
   await p2.pdf({ path: join(CHIQISH, `Xadra_3-qavat_WC_panellar_${LOYIHA.versiya}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
+}
+const v3 = await profilVaraq();
+if (v3) {     // alohida PNG va PDF — oq panel, profil ranglari
+  const p3 = await brauzer.newPage({ viewport: { width: 1587, height: 1123 }, deviceScaleFactor: 2 });
+  await p3.setContent(`<!doctype html><html lang="uz"><head><meta charset="utf-8"><title>3-qavat hojatxona — profil ranglari</title><style>${CSS}${CSS2}</style></head><body>${v3}</body></html>`, { waitUntil: 'load' });
+  await (await p3.$('section.varaq')).screenshot({ path: join(CHIQISH, `Xadra_3-qavat_WC_profil_${LOYIHA.versiya}.png`) });
+  await p3.pdf({ path: join(CHIQISH, `Xadra_3-qavat_WC_profil_${LOYIHA.versiya}.pdf`), width: '420mm', height: '297mm', printBackground: true, preferCSSPageSize: true });
 }
 await brauzer.close();
 console.log('Tayyor:', join(CHIQISH, `${nom}.pdf`));

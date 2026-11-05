@@ -1,7 +1,7 @@
 # 3-qavat — Blender sahnasi va renderlar (Cycles). Umumiy qismlar: blender_umumiy.py
 # Ishlatish:
 #   node blender3-malumot.mjs > 3qavat.json
-#   python blender3.py 3qavat.json ../chizma/3d [--tez] [--blend] [--faqat umumiy,sinf,wc1,wc2,wc3] [--panel 1|2|3] [--yopiq]
+#   python blender3.py 3qavat.json ../chizma/3d [--tez] [--blend] [--faqat umumiy,sinf,wc1,wc2,wc3] [--panel 1|2|3|4] [--profil oltin|kumush|qora] [--yopiq]
 #   --panel N — hojatxona devorlari plastik marmar panel N-variantda (teksturalar/wc_panel_N.jpg); fayllar «_WC-panel-N» bilan
 # (bpy moduli kerak: pip install bpy==4.2.0 — Python 3.11)
 import json, os, sys
@@ -14,6 +14,7 @@ A = bu.argv()
 D = json.load(open(A['json']))
 PANEL = sys.argv[sys.argv.index('--panel') + 1] if '--panel' in sys.argv else None
 YOPIQ = '--yopiq' in sys.argv      # 03.11: kabina eshiklari yopiq holatda (panel variantlari bilan)
+PROFIL = sys.argv[sys.argv.index('--profil') + 1] if '--profil' in sys.argv else None   # 05.11: panel choklari profili — oltin | kumush | qora
 BAMBUK_H = 2500   # 5-xonada bambuk panel balandligi (buyurtmachi)
 bu.boshla()
 
@@ -98,7 +99,7 @@ def panel_mat(nom, fayl, oq, rough, coat):
     return m
 
 # devor qoplamasi: --panel bo'lsa — tanlangan plastik panel (1, 2 — yaltiroq, 3 — yarim mat), aks holda kafel
-PANEL_SOZ = {'1': (0.12, 0.6), '2': (0.08, 0.8), '3': (0.35, 0.0)}
+PANEL_SOZ = {'1': (0.12, 0.6), '2': (0.08, 0.8), '3': (0.35, 0.0), '4': (0.1, 0.7)}     # 4 — oq yaltiroq, tik tolali (05.11)
 if PANEL:
     rg, ct = PANEL_SOZ[PANEL]
     WX, WY = panel_mat('wc_panel_x', f'wc_panel_{PANEL}.jpg', 'x', rg, ct), panel_mat('wc_panel_y', f'wc_panel_{PANEL}.jpg', 'y', rg, ct)
@@ -113,6 +114,41 @@ for h, k in ((min(H, WC_H), 'toliq'), (min(KESIM, WC_H), 'kesim')):
     st = WC_X['stoyak']          # stoyak qutisi (shimoliy-g'arbiy burchak) — panel bilan qoplangan
     q.box(st['x1'] + 8, st['x2'], st['y1'] + 8, st['y2'], 0, h, WX)
     q.obj(f'kafel_{k}', k)
+
+# 05.11: panel choklari — profil (soedinitel: panellar orasida tik va 2.8 m da yotiq; ugol: burchaklarda; deraza atrofida)
+if PANEL and PROFIL:
+    PRANG = {'oltin': ('#c9a54e', 0.28), 'kumush': ('#c9ced3', 0.25), 'qora': ('#1c1c1e', 0.45)}[PROFIL]
+    pm, _n, _l, pb = bu.yangi_mat(f'profil_{PROFIL}')
+    pb.inputs['Base Color'].default_value = bu.lin(PRANG[0]); pb.inputs['Metallic'].default_value = 0.9 if PROFIL != 'qora' else 0.4
+    pb.inputs['Roughness'].default_value = PRANG[1]
+    PW, PT, T0 = 5, 3, 8          # profil yuzi ±5 mm (10 mm), panel sirtidan 3 mm chiqib turadi; panel qalinligi 8
+    q = Q()
+    shd_t = [(d['x1'], d['x2'], *oy(d)) for d in wc_shd]; shq_t = [(d['y1'], d['y2'], *oy(d)) for d in wc_der]
+    esh_t = [(e2['a'], e2['b'], 0, ESH_H)]
+    devorlar = [('h', WC['y1'] + T0, +1, WC['x1'], WC['x2'], shd_t), ('h', WC['y2'] - T0, -1, WC['x1'], WC['x2'], []),
+                ('v', WC['x1'] + T0, +1, WC['y1'], WC['y2'], esh_t), ('v', WC['x2'] - T0, -1, WC['y1'], WC['y2'], shq_t)]
+    for oq_, k_, ich, a1, a2, tsh in devorlar:
+        for j in range(int(a1 // 1220) + 1, int(a2 // 1220) + 1):      # panellar orasidagi tik choklar (tekstura bilan bir joyda)
+            c = j * 1220
+            if a1 + 30 < c < a2 - 30: bu.qoplama(q, oq_, k_, ich, c - PW, c + PW, 0, WC_H, tsh, pm, PT)
+        bu.qoplama(q, oq_, k_, ich, a1, a2, 2800 - PW, 2800 + PW, tsh, pm, PT)          # yotiq chok (panel 2.8 m)
+        for o in tsh:                                                                    # deraza / eshik atrofi
+            oa, ob, z1, z2 = o
+            bu.qoplama(q, oq_, k_, ich, oa - 2 * PW, oa, 0 if z1 == 0 else z1 - 2 * PW, z2 + 2 * PW, [], pm, PT)
+            bu.qoplama(q, oq_, k_, ich, ob, ob + 2 * PW, 0 if z1 == 0 else z1 - 2 * PW, z2 + 2 * PW, [], pm, PT)
+            bu.qoplama(q, oq_, k_, ich, oa, ob, z2, z2 + 2 * PW, [], pm, PT)
+            if z1 > 0: bu.qoplama(q, oq_, k_, ich, oa, ob, z1 - 2 * PW, z1, [], pm, PT)
+    for cx, cy in ((WC['x1'], WC['y1']), (WC['x1'], WC['y2']), (WC['x2'], WC['y1']), (WC['x2'], WC['y2'])):   # ichki burchaklar (ugol)
+        sx, sy = (1 if cx == WC['x1'] else -1), (1 if cy == WC['y1'] else -1)
+        xa, xb = sorted((cx + sx * T0, cx + sx * (T0 + 12))); ya, yb = sorted((cy + sy * T0, cy + sy * (T0 + 12)))
+        q.box(xa, xb, ya, yb, 0, WC_H, pm)
+    st_ = WC_X['stoyak']           # stoyak qutisining tashqi burchagi
+    q.box(st_['x2'] - 6, st_['x2'] + 6, st_['y2'] - 6, st_['y2'] + 6, 0, WC_H, pm)
+    q.box(WC['x1'], WC['x2'], WC['y1'] + T0, WC['y1'] + T0 + 12, WC_H - 12, WC_H, pm)   # shift ostidagi qirra profili
+    q.box(WC['x1'], WC['x2'], WC['y2'] - T0 - 12, WC['y2'] - T0, WC_H - 12, WC_H, pm)
+    q.box(WC['x1'] + T0, WC['x1'] + T0 + 12, WC['y1'], WC['y2'], WC_H - 12, WC_H, pm)
+    q.box(WC['x2'] - T0 - 12, WC['x2'] - T0, WC['y1'], WC['y2'], WC_H - 12, WC_H, pm)
+    q.obj('panel_profillar', 'asos')
 q = Q()
 bu.qoplama(q, 'h', SN['y1'], +1, SN['x1'], SN['x2'], 0, BAMBUK_H, [], M['bambuk_x'], 12)
 bu.qoplama(q, 'h', SN['y2'], -1, SN['x1'], SN['x2'], 0, BAMBUK_H, [], M['bambuk_x'], 12)
@@ -334,6 +370,6 @@ os.makedirs(A['chiq'], exist_ok=True)
 bu.belgilar(KOR['umumiy']['cam'], KOR['umumiy']['res'],
             {'1': (4375, 3300, 0), '2': (8825, -700, KESIM), '3': (2350, 7700, 0), '4': (3025, 10700, 0), '5': (8825, 4700, 0), 'Z': (1600, 3100, 0)},
             os.path.join(A['chiq'], 'umumiy-belgilar.json'))
-bu.renderla(KOR, A['chiq'], 'Xadra_3-qavat_3D' + (f'_WC-panel-{PANEL}' if PANEL else '') + ('_yopiq' if YOPIQ else ''), FAYL, A['tez'], A['faqat'])
+bu.renderla(KOR, A['chiq'], 'Xadra_3-qavat_3D' + (f'_WC-panel-{PANEL}' if PANEL else '') + (f'_profil-{PROFIL}' if PANEL and PROFIL else '') + ('_yopiq' if YOPIQ else ''), FAYL, A['tez'], A['faqat'])
 if PANEL or YOPIQ: sys.exit(0)      # panel variantlari — faqat renderlar; asosiy .blend kafelli qoladi
 bu.saqla(A['chiq'], 'Xadra_3-qavat.blend', KOR['sinf']['cam'], tez=A['tez'], blend=A['blend'])
