@@ -121,7 +121,8 @@ const CSS2 = `.p2 { display: grid; grid-template-columns: 64mm 1fr 1fr 1fr; gap:
 .p2 .ust h2 { font-size: 10.5pt; color: #1f1f1f; } .p2 .ust p { font-size: 6.9pt; color: #444; line-height: 1.35; margin-top: .8mm; }
 .p2 figure img { border-radius: .8mm; } .p2 figcaption { font-size: 6.6pt; margin: .5mm 0 1.6mm; }
 .p2 .chap { font-size: 7pt; color: #333; line-height: 1.4; } .p2 .chap b { color: #1f1f1f; } .p2 .chap p { margin-bottom: 1.4mm; }
-.p2 .kalit svg { width: 64mm; }`;
+.p2 .kalit svg { width: 64mm; }
+.p2.t4 { grid-template-columns: 52mm 1fr 1fr 1fr 1fr; gap: 3mm; } .p2.t4 .kalit svg { width: 52mm; }`;
 const panelVaraq = async (yopiq = false) => {
   if (!PANEL.every(([n]) => ['wc1', 'wc2', 'wc3'].every(v => existsSync(rasmFayl(v, n, yopiq))))) return '';
   const IZ = { wc1: "eshikdan kirganda — quyma rakovina va unitazli kabina", wc2: "eshikdan supaga — chashagenli kabinalar va taxorat lotogi", wc3: "supadan eshik tomonga" };
@@ -145,10 +146,11 @@ const panelVaraq = async (yopiq = false) => {
 </section>`;
 };
 
-// 05.11: oq yaltiroq panel (tik tolali, buyurtmachi namunasi) — choklardagi profil rangi: oltin, kumush, qora
+// 05.11: oq yaltiroq panel (tik tolali, buyurtmachi namunasi) — choklardagi profil rangi: oltin, kumush, qora, nikel
 const PROFIL = [['oltin', 'Oltin profil', '#c9a54e', "Choklar va burchaklarda oltin rang alyumin profil — oq panel bilan iliq, bezakli ko'rinish."],
   ['kumush', 'Kumush profil', '#c9ced3', "Kumush (alyumin) profil — oq panelga deyarli qo'shilib ketadi, eng sokin va toza ko'rinish."],
-  ['qora', 'Qora profil', '#1c1c1e', "Qora mat profil — choklar aniq chiziq bo'lib ko'rinadi, zamonaviy grafik uslub."]];
+  ['qora', 'Qora profil', '#1c1c1e', "Qora mat profil — choklar aniq chiziq bo'lib ko'rinadi, zamonaviy grafik uslub."],
+  ['nikel', 'Nikel profil', '#a9a59c', "Nikel (iliq kulrang metall, yaltiroq) — kumushdan to'qroq va iliqroq, santexnika jihozlari bilan uyg'un."]];
 const profilFayl = (v, rang) => join(D3, `Xadra_3-qavat_3D_WC-panel-4_profil-${rang}_${FAYL[v]}.jpg`);
 const profilVaraq = async () => {
   if (!PROFIL.every(([r]) => ['wc1', 'wc2'].every(v => existsSync(profilFayl(v, r))))) return '';
@@ -160,10 +162,10 @@ const profilVaraq = async () => {
     ${(await Promise.all(['wc1', 'wc2'].map(async (v, i) => `<figure><img src="data:image/jpeg;base64,${(await readFile(profilFayl(v, r))).toString('base64')}"></figure><figcaption><span class="raqam">${i + 1}</span>${IZ[v]}</figcaption>`))).join('')}</div>`;
   return `<section class="varaq">
   <header>
-    <div><div class="brend">${LOYIHA.brend} · ${LOYIHA.filial}</div><h1>3-qavat hojatxonasi — oq panel, choklardagi profil rangi: 3 variant (3D)</h1></div>
+    <div><div class="brend">${LOYIHA.brend} · ${LOYIHA.filial}</div><h1>3-qavat hojatxonasi — oq panel, choklardagi profil rangi: ${PROFIL.length} variant (3D)</h1></div>
     <div class="ong">${LOYIHA.versiya} · 05.11.2026<br>Panel va profillar — buyurtmachi do'kondan yuborgan namunalar</div>
   </header>
-  <div class="p2">
+  <div class="p2 t4">
     <div class="chap">
       <div class="kalit">${kalitReja([['1', 'kamera_hojatxona_1'], ['2', 'kamera_hojatxona_2']], { x1: 5600, y1: -300, x2: 12000, y2: 3600 }, 900)}</div>
       <p style="margin-top:1.5mm"><b>Kamera nuqtalari</b> — har variantda bir xil (1, 2).</p>

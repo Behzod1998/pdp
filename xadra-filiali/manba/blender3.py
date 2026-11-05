@@ -1,7 +1,7 @@
 # 3-qavat — Blender sahnasi va renderlar (Cycles). Umumiy qismlar: blender_umumiy.py
 # Ishlatish:
 #   node blender3-malumot.mjs > 3qavat.json
-#   python blender3.py 3qavat.json ../chizma/3d [--tez] [--blend] [--faqat umumiy,sinf,wc1,wc2,wc3] [--panel 1|2|3|4] [--profil oltin|kumush|qora] [--yopiq]
+#   python blender3.py 3qavat.json ../chizma/3d [--tez] [--blend] [--faqat umumiy,sinf,wc1,wc2,wc3] [--panel 1|2|3|4] [--profil oltin|kumush|qora|nikel] [--yopiq]
 #   --panel N — hojatxona devorlari plastik marmar panel N-variantda (teksturalar/wc_panel_N.jpg); fayllar «_WC-panel-N» bilan
 # (bpy moduli kerak: pip install bpy==4.2.0 — Python 3.11)
 import json, os, sys
@@ -14,7 +14,7 @@ A = bu.argv()
 D = json.load(open(A['json']))
 PANEL = sys.argv[sys.argv.index('--panel') + 1] if '--panel' in sys.argv else None
 YOPIQ = '--yopiq' in sys.argv      # 03.11: kabina eshiklari yopiq holatda (panel variantlari bilan)
-PROFIL = sys.argv[sys.argv.index('--profil') + 1] if '--profil' in sys.argv else None   # 05.11: panel choklari profili — oltin | kumush | qora
+PROFIL = sys.argv[sys.argv.index('--profil') + 1] if '--profil' in sys.argv else None   # 05.11: panel choklari profili — oltin | kumush | qora | nikel
 BAMBUK_H = 2500   # 5-xonada bambuk panel balandligi (buyurtmachi)
 bu.boshla()
 
@@ -117,7 +117,7 @@ for h, k in ((min(H, WC_H), 'toliq'), (min(KESIM, WC_H), 'kesim')):
 
 # 05.11: panel choklari — profil (soedinitel: panellar orasida tik va 2.8 m da yotiq; ugol: burchaklarda; deraza atrofida)
 if PANEL and PROFIL:
-    PRANG = {'oltin': ('#c9a54e', 0.28), 'kumush': ('#c9ced3', 0.25), 'qora': ('#1c1c1e', 0.45)}[PROFIL]
+    PRANG = {'oltin': ('#c9a54e', 0.28), 'kumush': ('#c9ced3', 0.25), 'qora': ('#1c1c1e', 0.45), 'nikel': ('#a9a59c', 0.18)}[PROFIL]
     pm, _n, _l, pb = bu.yangi_mat(f'profil_{PROFIL}')
     pb.inputs['Base Color'].default_value = bu.lin(PRANG[0]); pb.inputs['Metallic'].default_value = 0.9 if PROFIL != 'qora' else 0.4
     pb.inputs['Roughness'].default_value = PRANG[1]
