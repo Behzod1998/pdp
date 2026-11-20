@@ -33,6 +33,10 @@ kamera 24 (har biriga Cat6, XZ4 shkafi); internet 16 ta 2 portli RJ-45 (30 sm) +
 3-qavat tamburi 1), 5 shleyf, pult 1-qavat resepshnda, IPR/sirena/tablo/avariya me'yor bo'yicha; elektr — 78 rozetka + 7 doska
 rozetkasi (1.6 m), 13 vyklyuchatel, chiroqlar 3D dagidek, har sinfga alohida difavtomat, mavjud shit 6-xonada (kirishda o'ngda).
 
+**Ochilish — 06.12.2026 (buyurtmachi, 20.11).** Zayavkalar rejasi: `hisob/Xadra_zayavkalar_reja_v1.2.xlsx` (`manba/zayavka-reja.py`
++ recalc) — 15 ta zayavka (Z00 berilgan sanuzel, Z01–Z14 asosiy jadvaldan), jami ~1 047 mln so'm; muddatlar ochilishdan orqaga.
+Profil rangi — kumush (oq panel 4, founder tasdig'ida, 05.11).
+
 **3-qavat hojatxona xarajatlari (04.11, alohida):** `hisob/Xadra_3-qavat_hojatxona_xarajatlar_v1.2.xlsx` (`manba/hojatxona-xarajat.py`
 + recalc) — buyurtmachi zayavkasi «Sanuzel remonti» 30.10.2026 (22 432 000 so'm: material 12.82 mln korporativ, ish haqi 9.61 mln naqd;
 rasm `hisob/zayavkalar/`), santexnika va kabinalar (oldingi narxlar, 12.2 mln), qo'shimcha TAXMIN; hajmlar chizmadan solishtirilgan.
