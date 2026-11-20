@@ -48,13 +48,15 @@ export const ZINA_ZONA = [ZINA1.pastki, ZINA1.maydoncha, ZINA1.past];
 // shimolda — zina maydonchasi tagidagi yopuvchi panel. Stoyka zalga (g'arbga) qaragan — turniketlar va eshik ko'rinadi.
 export const RESEPSHN = {
   chiziq: 4880,
-  stol: r(4880, 5530, 3500, 5300),          // stoyka 1.8 m: g'arb tomonida 1.10 m lik peshtaxta, sharqda 0.75 m ish yuzasi
+  stol: r(4880, 5480, 3500, 5300),          // stoyka 1.8 m: g'arb tomonida 1.10 m lik peshtaxta, sharqda 0.75 m ish yuzasi (20.11: chuqurligi 0.60)
   peshtaxta: r(4860, 5100, 3500, 5300),
   panellar: [r(4880, 4930, 2450, 2550), r(4880, 4930, 3350, 3500), r(4880, 4930, 5300, 6100), r(4880, 6250, 2400, 2450)],
   xodimEshik: r(4880, 4930, 2550, 3350, { en: 800 }),
   kreslo: r(5640, 6090, 4175, 4625),
-  logoDevor: { x: 6250, y1: 3300, y2: 5300, z1: 1100, z2: 2700, en: 1500, bal: 440 },    // xodim orqasidagi devor (to'q panel)
-  logoStol: { x: 4860, y1: 3900, y2: 4900, z: 620, en: 1000, bal: 125 },                  // stoykaning zal tomonidagi paneli
+  logoDevor: { x: 6250, y1: 3750, y2: 4950, z1: 1700, z2: 2400, en: 900, bal: 440 },     // orqa devor markazidagi tik panelda (PRAZA 677)
+  // 20.11 (buyurtmachi namunasi — PDP Junior filiali): orqa devorda markazda tik yog'och panel (logotip, qora tik chiziqlar), ikki yonida
+  // qora metall javon (X bog'lam, yog'och tokchalar) va ortida to'q yog'och reyka, chetlarda yashil o'simlik devor (LED bilan).
+  orqa: { y1: 2450, y2: 5750, panel: [3750, 4950], javon: [[3150, 3750], [4950, 5550]], yashil: [[2450, 3150], [5550, 5750]], javonChuq: 220 },
 };
 export const TURNIKET = {
   chiziq: 4050,
@@ -173,10 +175,13 @@ export function q1Svg(o = {}) {
   });
 
   // logotiplar
-  const LD = R.logoDevor, LS = R.logoStol;
-  q.push(rect({ x1: 6190, x2: 6250, y1: LD.y1, y2: LD.y2 }, 'fill="#1d2b22"'), rect({ x1: 6160, x2: 6190, y1: (LD.y1 + LD.y2) / 2 - LD.en / 2, y2: (LD.y1 + LD.y2) / 2 + LD.en / 2 }, `fill="${RANG1.logo}"`));
-  q.push(rect({ x1: 4820, x2: 4860, y1: LS.y1, y2: LS.y2 }, `fill="${RANG1.logo}"`));
-  q.push(logoBelgi(5990, 2750, 130), logoBelgi(4550, 4500, 110));
+  // orqa devor (20.11): markazda yog'och panel va logotip, yonlarida javon (to'q reyka ortida), chetlarda yashil devor
+  const LD = R.logoDevor, O = R.orqa;
+  q.push(rect({ x1: 6212, x2: 6250, y1: O.panel[0], y2: O.panel[1] }, 'fill="#d8bf9c" stroke="#2b2d31" stroke-width="6"'));
+  O.javon.forEach(([a, b]) => q.push(rect({ x1: 6250 - O.javonChuq, x2: 6250, y1: a, y2: b }, 'fill="#5a3c27" stroke="#1f2329" stroke-width="14"')));
+  O.yashil.forEach(([a, b]) => q.push(rect({ x1: 6190, x2: 6250, y1: a, y2: b }, 'fill="#4f8a3a"')));
+  q.push(rect({ x1: 6180, x2: 6212, y1: (LD.y1 + LD.y2) / 2 - LD.en / 2, y2: (LD.y1 + LD.y2) / 2 + LD.en / 2 }, `fill="${RANG1.logo}"`));
+  q.push(logoBelgi(5990, 2750, 130));
 
   // eshiklar
   ESHIK1.forEach(e => {
@@ -289,7 +294,7 @@ export function qavat1Html(o = {}) {
           <li><b>Zina mavjud holicha</b>: pastki marsh shimoliy devor bo'ylab sharqqa, sharqiy maydoncha (~1.5 m), undan yuqori marsh g'arbga — 2-qavatga. Shuning uchun zalning shimoliy qismi (${m(ZINA1.maydoncha.y2 - 100)} m) zinaga band.</li>
           <li><b>Turniket chizig'i</b> eshikdan ${m(t.eshikdan)} m ichkarida, zal bo'ylab: o'ngda <b>kirish</b> (resepshn yonida), chaprog'ida <b>chiqish</b> — turniketlar buyurtmachida mavjud; o'tish yo'llari ${t.otish.map(v => v / 10).join(' va ')} sm. Chapda <b>evakuatsiya darvozasi</b> ${t.darvoza / 10} sm (antipanika, chiqishga ochiladi), qolgan qismi to'siq.</li>
           <li><b>Resepshn</b> o'ng devor bo'ylab L shaklida: stoyka ${m(t.stoyka)} m, zalga qaragan (turniketlar va eshik ko'rinadi), mijoz tomonida 1.10 m lik peshtaxta; qolgan qismi past to'siq panellari, shimolda — zina maydonchasi tagidagi yopuvchi panel. Xodim resepshnga turniketdan o'tgan zonadan, 80 sm eshikcha orqali kiradi.</li>
-          <li><b>Logotiplar</b> (design.pdp.uz, PDP Academy): xodim orqasidagi o'ng devorda to'q panelda ichidan yoritilgan katta logotip (~${m(RESEPSHN.logoDevor.en)} m) — eshikdan kirganda o'ng tomonda, zaldan ko'rinadi; stoykaning zal tomonidagi panelida ikkinchi logotip (~${m(RESEPSHN.logoStol.en)} m, yoritilgan).</li>
+          <li><b>Logotiplar</b> (design.pdp.uz, PDP Academy): xodim orqasidagi o'ng devorda, markazdagi tik yog'och panelda hajmli logotip (~${m(RESEPSHN.logoDevor.en)} m); ikki yonida qora metall javonlar va yashil o'simlik devor (20.11, buyurtmachi namunasi). Devorlar — PRAZA № 677 panel, shift — qora.</li>
           <li><b>Mehmonlar joyi</b>: chap devor bo'ylab divan va jurnal stolchasi — kirish zonasida (turniketgacha).</li>
           <li>Pol (oktagon plitka), devorlar va zina — mavjud holicha (videodagi kabi).</li>
         </ul>

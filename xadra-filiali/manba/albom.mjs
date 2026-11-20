@@ -69,14 +69,16 @@ async function q1Varaq() {
   const nom = { resepshn: 'Resepshn', turniket: 'Turniketlar (kirish / chiqish)', zina: 'Zina (mavjud) — 2-qavatga', mehmon: 'Mehmonlar', logo: 'Logotip', tambur: 'Tambur' };
   return `<section class="varaq">${bosh("1-qavat — 3D ko'rinishlar (Blender): kirish zali", `Reja: Xadra_1-qavat_reja_${V}.pdf`)}
   <div class="ikki"><div>
-    ${fig(await rasm('Xadra_1-qavat_3D_1-umumiy.jpg'), "<b>Umumiy ko'rinish</b> — shift olib tashlangan, devorlar 2.7 m da kesilgan. Zina, pol (oktagon plitka) va devorlar — mavjud holat (video bo'yicha).", yorliqlar(b, nom))}
+    ${fig(await rasm('Xadra_1-qavat_3D_1-umumiy.jpg'), "<b>Umumiy ko'rinish</b> — shift olib tashlangan, devorlar 2.7 m da kesilgan. Zina va pol (oktagon plitka) — mavjud holat; devorlar — PRAZA № 677 yog'och panel, shift qora (20.11).", yorliqlar(b, nom))}
     <div class="matn"><h3>Yechim (buyurtmachi sxemasi bo'yicha)</h3>
       <p><b>Turniket chizig'i</b> zal bo'ylab, eshikdan ~2 m ichkarida: o'ngda kirish (resepshn yonida), chaprog'ida chiqish; chapda evakuatsiya darvozasi (90 sm, chiqishga ochiladi), qolgani shisha to'siq. Turniketlar buyurtmachida mavjud.</p>
-      <p><b>Resepshn</b> o'ng devor bo'ylab L shaklida: 1.8 m stoyka zalga qaragan (turniketlar va eshik ko'rinadi), qolgani past to'siq panellari; xodim turniketdan o'tgan zonadan eshikcha orqali kiradi. <b>Logotiplar</b>: xodim orqasidagi devorda ichidan yoritilgan katta logotip va stoyka panelida ikkinchisi (design.pdp.uz).</p>
+      <p><b>Resepshn</b> (20.11, buyurtmachi namunasi — PDP Junior filiali, PDP Academy'ga moslab): o'ng devor bo'ylab 1.8 m stoyka zalga qaragan — old tomoni 677 panel, qora tik chiziqlar, yonlari to'q yog'och reyka, oq peshtaxta qora kant bilan; qolgani past to'siq panellari, xodim eshikchasi. <b>Orqa devor</b>: markazda shiftgacha tik 677 panel (qora chiziqlar, hajmli PDP Academy logotipi), ikki yonida qora metall javon (X bog'lam, yog'och tokchalar) va to'q reyka, chetlarda yashil o'simlik devor va LED; stoyka ustida osma kvadrat LED chiroq va o'simliklar.</p>
+      <p><b>Pardoz:</b> devorlar — PRAZA № 677 panel (1.22 × 2.8 m, ingichka choklar), shift — qora, dumaloq chiroqlar; zina perilasi — zanglamas po'lat va shisha (mavjud). Fotodagi qurilish chiqindilari ko'rsatilmagan.</p>
     </div></div>
     <div>
-      ${fig(await rasm('Xadra_1-qavat_3D_2-kirish.jpg'), "<b>Eshikdan kirganda.</b> Oldinda mavjud zina, turniketlar; o'ngda resepshn va yoritilgan logotip.")}
-      ${fig(await rasm('Xadra_1-qavat_3D_3-resepshn.jpg'), "<b>Resepshn.</b> Stoyka va devordagi logotip, oldinda kirish turniketi.")}
+      ${fig(await rasm('Xadra_1-qavat_3D_2-kirish.jpg'), "<b>Eshikdan kirganda.</b> Oldinda mavjud zina (shisha perila), turniketlar; o'ngda resepshn.")}
+      ${fig(await rasm('Xadra_1-qavat_3D_3-resepshn.jpg'), "<b>Resepshn.</b> Stoyka, orqa devor: logotip, javonlar, yashil devor; oldinda kirish turniketi.")}
+      ${fig(await rasm('Xadra_1-qavat_3D_4-resepshn-oldidan.jpg'), "<b>Resepshn — old tomondan.</b> Markazda logotipli 677 panel, yonlarida javon va to'q reyka, chetlarda yashil devor.")}
     </div></div></section>`;
 }
 

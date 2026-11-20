@@ -195,6 +195,36 @@ def mox_mat(nom='mox', c1='#2f5a22', c2='#7aa84a'):
     return m
 
 
+def yogoch_panel(nom, fayl, oq, tile=(0.34, 0.28), chok=(1.22, 2.8), chok_en=0.003, chok_rang='#3b342d', rough=0.42, chok_yoq=False):
+    """Devor paneli (masalan PRAZA № 677): rasm teksturasi haqiqiy o'lchamda (tile, m — ko'zgu-takrorlash), list o'lchami chok
+    (en × balandlik, m) bo'yicha ingichka to'q choklar; tik ustunlar, yotiq choklar ustundan ustunga yarim listga suriladi.
+    oq: 'x' | 'y' — devor qaysi o'q bo'ylab. Obyekt koordinatasi (m) ishlatiladi."""
+    m, n, l, b = yangi_mat(nom)
+    tc = n.new('ShaderNodeTexCoord'); sp = n.new('ShaderNodeSeparateXYZ')
+    l.new(tc.outputs['Object'], sp.inputs[0])
+    A = sp.outputs['X' if oq == 'x' else 'Y']
+    uv = n.new('ShaderNodeCombineXYZ'); l.new(A, uv.inputs[0]); l.new(sp.outputs['Z'], uv.inputs[1])
+    mp = n.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (1 / tile[0], 1 / tile[1], 1)
+    l.new(uv.outputs[0], mp.inputs['Vector'])
+    tx = n.new('ShaderNodeTexImage'); tx.extension = 'MIRROR'; tx.interpolation = 'Cubic'
+    tx.image = bpy.data.images.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'teksturalar', fayl), check_existing=True)
+    l.new(mp.outputs[0], tx.inputs['Vector'])
+    if chok_yoq:
+        l.new(tx.outputs['Color'], b.inputs['Base Color'])
+    else:
+        za = n.new('ShaderNodeCombineXYZ'); l.new(sp.outputs['Z'], za.inputs[0]); l.new(A, za.inputs[1])
+        br = n.new('ShaderNodeTexBrick'); br.offset = 0.5; br.offset_frequency = 2; br.squash = 1.0
+        br.inputs['Scale'].default_value = 1.0; br.inputs['Brick Width'].default_value = chok[1]; br.inputs['Row Height'].default_value = chok[0]
+        br.inputs['Mortar Size'].default_value = chok_en; br.inputs['Mortar Smooth'].default_value = 0.0
+        l.new(za.outputs[0], br.inputs['Vector'])
+        mx = n.new('ShaderNodeMixRGB'); mx.inputs['Color2'].default_value = lin(chok_rang)
+        l.new(br.outputs['Fac'], mx.inputs['Fac']); l.new(tx.outputs['Color'], mx.inputs['Color1'])
+        l.new(mx.outputs['Color'], b.inputs['Base Color'])
+    b.inputs['Roughness'].default_value = rough
+    m.diffuse_color = (0.8, 0.71, 0.6, 1)
+    return m
+
+
 def rasm_mat(nom, fayl, kuch=0.0, rang_kuch=1.0):
     """PNG (alfa bilan) — plastinka materiali. kuch > 0 bo'lsa, rasm o'zi nur sochadi (yorituvchi logotip)."""
     m, n, l, b = yangi_mat(nom)
