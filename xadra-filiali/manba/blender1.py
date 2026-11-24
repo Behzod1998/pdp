@@ -13,6 +13,7 @@ from blender_umumiy import Q, P, M, H, KESIM, ESH_H
 import bmesh
 
 A = bu.argv()
+LOGO_LED = '--led' in sys.argv          # 24.11: logotip orqasidan LED yoritish (alohida renderlar)
 D = json.load(open(A['json']))
 bu.boshla()
 B = D['bino']; I = B['ichki']; T = D['tambur']; Z = D['zina']; R = D['resepshn']; TR = D['turniket']; MH = D['mehmon']
@@ -172,7 +173,10 @@ for a_, b_ in OB['taroq']:
 q.obj('orqa_devor', 'asos')
 q = Q(); q.box(5900, XW - 8, 5742 - 8, 5742, 0, H, PZX); q.obj('ustun_panel', 'asos')        # burchak ustunining shimoliy yuzi (panel)
 LD = R['logoDevor']; p1, p2 = O['panel']
-bu.logo_panel(xp - 2, (p1 + p2) / 2, 90, 1050, (LD['z1'] + LD['z2']) / 2, 'primary-on-light', kuch=0.0, halqa=0.0, nom='logo_devor', ofset=22)
+# logotip (24.11, buyurtmachi namunasi): bir qatorda PDP · belgi · Academy, ikkala so'z bir xil qora; hajmli harflar SVG'dan (tiniq),
+# devordan 25 mm tayanchlarda; --led bo'lsa harflar ortidan devorga oq LED nur
+bu.logo_3d('pdp-academy-inline-markaz-on-light.svg', xp, (p1 + p2) / 2, 90, 1050, 1900, chuq=18, ofset=25, nom='logo_devor',
+           led=3.0 if LOGO_LED else 0.0, halqa_png='pdp-academy-inline-markaz-on-light-halqa-oq.png')
 # stoyka ustida osma kvadrat LED chiroq (o'simliksiz)
 q = Q(); cx, cy, zr, a_ = 5180, (st['y1'] + st['y2']) / 2, 2950, 450
 for (u1, u2, v1, v2) in ((-a_, a_, -a_, -a_ + 45), (-a_, a_, a_ - 45, a_), (-a_, -a_ + 45, -a_, a_), (a_ - 45, a_, -a_, a_)):
@@ -252,5 +256,6 @@ bu.belgilar(KOR['umumiy']['cam'], KOR['umumiy']['res'],
             {'resepshn': (5560, 4400, 1100), 'turniket': (3450, 4050, 1000), 'zina': (3300, 750, 1500), 'mehmon': (650, 5100, 500),
              'logo': (6250, (LD['y1'] + LD['y2']) / 2, 2700), 'tambur': (3600, 7000, 0)},
             os.path.join(A['chiq'], 'umumiy-belgilar-1.json'))
-bu.renderla(KOR, A['chiq'], 'Xadra_1-qavat_3D', FAYL, A['tez'], A['faqat'], namuna=(64, 40))
+bu.renderla(KOR, A['chiq'], 'Xadra_1-qavat_3D' + ('_logo-LED' if LOGO_LED else ''), FAYL, A['tez'], A['faqat'], namuna=(64, 40))
+if LOGO_LED: sys.exit(0)
 bu.saqla(A['chiq'], 'Xadra_1-qavat.blend', KOR['kirish']['cam'], tez=A['tez'], blend=A['blend'])

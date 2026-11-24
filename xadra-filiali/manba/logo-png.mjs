@@ -12,7 +12,9 @@ try { ({ chromium } = require('playwright')); } catch {
   ({ chromium } = require(join(process.execPath, '../../lib/node_modules/playwright')));
 }
 const BU = join(dirname(fileURLToPath(import.meta.url)), 'logo');
-const NOMLAR = ['pdp-academy-primary-on-dark', 'pdp-academy-primary-on-light', 'pdp-academy-inline-on-dark', 'pdp-academy-inline-on-light', 'pdp-academy-primary-mono-dark'];   // mono-dark — shisha devorlardagi mat plyonka uchun (15.10)
+const NOMLAR = ['pdp-academy-primary-on-dark', 'pdp-academy-primary-on-light', 'pdp-academy-inline-on-dark', 'pdp-academy-inline-on-light', 'pdp-academy-primary-mono-dark',
+  'pdp-academy-inline-markaz-on-light'];   // inline-markaz — PDP · belgi · Academy (1-qavat resepshn, 24.11); unga oq LED halqa ham
+const OQ_HALQA = new Set(['pdp-academy-inline-markaz-on-light']);   // mono-dark — shisha devorlardagi mat plyonka uchun (15.10)
 const EN = 3000, CHET = 160;   // px; chekkadagi bo'sh joy — halqa kesilmasligi uchun
 
 const brauzer = await chromium.launch();
@@ -21,7 +23,9 @@ for (const nom of NOMLAR) {
   const svg = await readFile(join(BU, `${nom}.svg`), 'utf8');
   const [, , w, h] = svg.match(/viewBox="([^"]+)"/)[1].split(/\s+/).map(Number);
   const H = Math.round(EN * h / w);
-  for (const [qosh, filtr] of [['', ''], ['-halqa', 'filter: blur(38px) brightness(1.6);']]) {
+  const turlar = [['', ''], ['-halqa', 'filter: blur(38px) brightness(1.6);']];
+  if (OQ_HALQA.has(nom)) turlar.push(['-halqa-oq', 'filter: brightness(0) invert(1) blur(30px);']);   // orqadan LED: oq nur
+  for (const [qosh, filtr] of turlar) {
     await p.setViewportSize({ width: EN + 2 * CHET, height: H + 2 * CHET });
     await p.setContent(`<html><body style="margin:0;background:transparent">
       <div style="padding:${CHET}px;width:${EN}px;height:${H}px"><img style="width:${EN}px;height:${H}px;${filtr}" src="data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}"></div></body></html>`);

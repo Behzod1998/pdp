@@ -823,6 +823,53 @@ def logo_panel(x, y, rot, en, zc, versiya='primary-on-dark', kuch=3.0, halqa=1.2
     return W, Hh
 
 
+def logo_3d(svg, x, y, rot, en, zc, chuq=18, ofset=25, nom='logo3d', k='asos', led=0.0, halqa_png=None):
+    """Hajmli logotip SVG'dan (tiniq, harflar qalinligi chuq mm): x, y — devordagi markaz, rot — burilish (logo_panel kabi),
+    en — eni (mm), zc — markaz balandligi; harflar devordan ofset mm oldinda (tayanchlarda). led > 0 — harflar ortidan
+    devorga oq LED nur (halqa_png: oq xira siluet), harflar old tomoni o'z rangida qoladi."""
+    import addon_utils
+    addon_utils.enable('io_curve_svg', default_set=True)
+    oldin = set(bpy.data.objects)
+    bpy.ops.import_curve.svg(filepath=os.path.join(LOGO_DIR, svg))
+    yangi = [o for o in bpy.data.objects if o not in oldin and o.type == 'CURVE']
+    def rang_mat(c):
+        r_, g_, b_ = c[:3]
+        if g_ > 0.3 and r_ < 0.2: return M.setdefault('logo_yashil', mat('logo_yashil', '#00B533', 0.35))
+        if r_ > 0.6 and g_ > 0.3: return M.setdefault('logo_sariq', mat('logo_sariq', '#FFCC19', 0.35))
+        return M.setdefault('logo_qora', mat('logo_qora', '#131313', 0.38))
+    for o in yangi:
+        c = o.data.materials[0].diffuse_color if o.data.materials else (0, 0, 0, 1)
+        o.data.materials.clear(); o.data.materials.append(rang_mat(c))
+        o.data.extrude = 0.5          # vaqtincha — keyin masshtab bilan haqiqiy qalinlik beriladi
+    for o in list(bpy.context.scene.collection.objects) + [o for c in bpy.data.collections for o in c.objects]:
+        o.select_set(False)
+    for o in yangi: o.select_set(True)
+    bpy.context.view_layer.objects.active = yangi[0]
+    bpy.ops.object.convert(target='MESH')
+    bpy.ops.object.join()
+    ob = bpy.context.view_layer.objects.active; ob.name = nom
+    me = ob.data
+    xs = [v.co.x for v in me.vertices]; ys = [v.co.y for v in me.vertices]; zs = [v.co.z for v in me.vertices]
+    cx_, cy_ = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2
+    sk = (en / 1000) / (max(xs) - min(xs)); dz = (max(zs) - min(zs)) or 1
+    for v in me.vertices:          # SVG tekisligi (x, y) → devor tekisligi (u, z); qalinlik — devordan tashqariga
+        u, w, t = (v.co.x - cx_) * sk, (v.co.y - cy_) * sk, (v.co.z - min(zs)) / dz
+        v.co = Vector((u, -(ofset + t * chuq) / 1000, w))
+    for c in list(ob.users_collection): c.objects.unlink(ob)
+    K[k].objects.link(ob)
+    ob.location = P(x, y, zc); ob.rotation_euler.z = -math.radians(rot)
+    for p_ in me.polygons: p_.use_smooth = False
+    W = en; Hh = en * (max(ys) - min(ys)) / (max(xs) - min(xs))
+    if led and halqa_png:              # orqadan LED: devorga tushadigan oq nur (harflar siluetidan xira)
+        kalit = f'halqa_oq_{led}'
+        if kalit not in M:
+            M[kalit] = rasm_mat(kalit, halqa_png, led)
+        im = bpy.data.images.load(os.path.join(LOGO_DIR, halqa_png), check_existing=True)
+        Wp = W * im.size[0] / 3000; Hp = Wp * im.size[1] / im.size[0]
+        q = Q(); q.tekis(-Wp / 2, Wp / 2, zc - Hp / 2, zc + Hp / 2, 3, M[kalit]); q.obj(nom + '_led', k, (x, y, 0), rot)
+    return W, Hh
+
+
 def elon_doskasi(x, y, rot, en=1800, z1=950, z2=1950, nom='elon'):
     """E'lonlar doskasi: probka, alyuminiy rom, sarlavha va qadalgan varaqlar."""
     import random
