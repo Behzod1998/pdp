@@ -128,8 +128,9 @@ rnd = random.Random(20)          # XW — sharqiy devor ichki yuzi
 q = Q()
 # stoyka: old tomoni (zalga) — 677 panel, qora tik chiziqlar; ikki yoni — to'q yog'och reyka; oq peshtaxta, qora kant
 q.box(x0, x0 + 40, st['y1'], st['y2'], 0, 1080, PZY0)
-for yy in (3900, 3960, 4840, 4900):
-    q.box(x0 - 3, x0, yy - 6, yy + 6, 0, 1080, M['qora_metall'])
+for a_, b_ in D['orqaBolak']['panel']:              # orqa devordagi bo'laklar bilan bir chiziqda qora chiziqlar
+    for yy in (a_, b_):
+        if st['y1'] + 30 < yy < st['y2'] - 30: q.box(x0 - 3, x0, yy - 6, yy + 6, 0, 1080, M['qora_metall'])
 q.box(x0 - 40, st['x2'], st['y1'] - 20, st['y2'] + 20, 1080, 1110, OQ_STOL, bevel=4)              # peshtaxta (oq)
 for (a1, a2, b1, b2) in ((x0 - 46, x0 - 40, st['y1'] - 20, st['y2'] + 20), (x0 - 46, st['x2'], st['y1'] - 26, st['y1'] - 20),
                          (x0 - 46, st['x2'], st['y2'] + 20, st['y2'] + 26)):
@@ -154,69 +155,29 @@ q.cyl((xe['x1'] - 20, xe['y2'] - 120, 900), (xe['x1'] - 20, xe['y2'] - 260, 900)
 q.obj('resepshn', 'asos')
 bu.joyla(bu.kreslo_mesh(), 'resepshn_kreslo', 'asos', mk(R['kreslo']), 90)
 
-# orqa devor: markazda tik 677 panel (shiftgacha, qora tik chiziqlar, logotip), yonlarida javon va to'q reyka, chetlarda yashil devor
+# orqa devor (24.11, buyurtmachi): simmetrik, o'simliksiz — markazda bitta to'liq 677 panel 1.20 m (logotip), ikki yonida
+# 10 sm li 2 tadan bo'lak, ular orasidagi choklar qora; eng chetlarda taroq — qora asos ustida to'q yog'och reyka; shiftgacha.
+OB = D['orqaBolak']
 q = Q()
-p1, p2 = O['panel']; xp = XW - 8 - 30
-q.box(xp, XW - 8, p1, p2, 0, H, PZY0)
-for d in (110, 170):
-    for yy in (p1 + d, p2 - d):
-        q.box(xp - 3, xp, yy - 5, yy + 5, 0, H, M['qora_metall'])
-q.box(xp - 3, XW - 8, p1 - 4, p1, 0, H, M['qora_metall']); q.box(xp - 3, XW - 8, p2, p2 + 4, 0, H, M['qora_metall'])
-for j1, j2 in O['javon']:
-    q.box(XW - 26, XW - 8, j1, j2, 0, H, M['qora_metall'])                                 # reyka asosi (qora)
-    yy = j1 + 12
-    while yy + 30 <= j2 - 8:
+xp = XW - 8 - 30
+q.box(XW - 26, XW - 8, O['y1'], O['y2'], 0, H, M['qora_metall'])                          # qora asos (choklar shu rangda)
+for a_, b_ in OB['panel']:
+    q.box(xp, XW - 26, a_, b_, 0, H, PZY0)
+for a_, b_ in OB['taroq']:
+    yy = a_ + 10
+    while yy + 30 <= b_ - 5:
         q.box(XW - 50, XW - 26, yy, yy + 30, 0, H, YONGOQ); yy += 46
-    xj = XW - 8 - O['javonChuq']                                                          # javon: qora ramka, X bog'lam, yog'och tokchalar
-    for yv in (j1 + 40, j2 - 40):
-        for xv in (xj, XW - 60):
-            q.box(xv, xv + 25, yv - 12, yv + 13, 0, 2700, M['qora_metall'])
-    for zt in (350, 900, 1450, 2000, 2550):
-        q.box(xj - 5, XW - 50, j1 + 28, j2 - 28, zt, zt + 25, M['parta'])
-        if zt in (900, 1450, 2000):          # tokchalarda bezak: oq qutilar / kitoblar, kichik o'simlik
-            yy0 = rnd.uniform(j1 + 80, j2 - 260)
-            q.box(xj + 30, XW - 70, yy0, yy0 + 140, zt + 25, zt + 25 + rnd.choice((180, 230)), OQ_STOL, bevel=3)
-            yk = yy0 + 230 if yy0 < (j1 + j2) / 2 else yy0 - 120
-            q.cyl(((xj + XW - 58) / 2, yk, zt + 25), ((xj + XW - 58) / 2, yk, zt + 135), 50, OQ_STOL, 16)
-            for _ in range(6):
-                q.shar((xj + XW - 58) / 2 + rnd.uniform(-35, 35), yk + rnd.uniform(-35, 35), zt + 150 + rnd.uniform(0, 90), 30, 30, 45, M['barg'], 8)
-    for za, zb in ((0, 900), (900, 1800), (1800, 2700)):
-        for (ya, yb) in ((j1 + 52, j2 - 52), (j2 - 52, j1 + 52)):
-            qiya_quti(q, (xj + 12, ya), (xj + 12, yb), za + 30, za + 45, zb - 45, zb - 30, 10, M['qora_metall'])
 q.obj('orqa_devor', 'asos')
-# yashil o'simlik devor (chetlarda) — mox va barglar, ichki chetida tik LED
-q = Q()
-yashil = [(XW - 8 - 50, XW - 8, a, b) for a, b in O['yashil']] + [(5900, XW - 8, 5750 - 8 - 50, 5750 - 8)]
-for x1, x2, y1, y2 in yashil:
-    q.box(x1, x2, y1, y2, 0, H, M['mox'])
-    tik = (x2 - x1) < 100                                    # devor bo'ylab (y) yoki ustun yuzi (x)
-    for _ in range(int(max(y2 - y1, x2 - x1) / 4) + 40):    # mayda barglar (paporotnik), devordan biroz chiqib turadi
-        bx = x1 - rnd.uniform(0, 45) if tik else rnd.uniform(x1, x2)
-        by = rnd.uniform(y1, y2) if tik else y1 - rnd.uniform(0, 45)
-        rd, rw, rh = rnd.uniform(6, 14), rnd.uniform(14, 30), rnd.uniform(55, 140)
-        q.shar(bx, by, rnd.uniform(80, H - 80), rd if tik else rw, rw if tik else rd, rh, M['barg'] if rnd.random() < .7 else M['barg_och'], 8)
-for a, b in O['yashil']:
-    for yy in (a, b):
-        if O['panel'][0] <= yy <= O['panel'][1] or yy in (O['javon'][0][0], O['javon'][1][1]):
-            q.box(XW - 70, XW - 58, yy - 6, yy + 6, 50, H - 50, M['led_chiziq'])
-q.obj('yashil_devor', 'asos')
-LD = R['logoDevor']
+q = Q(); q.box(5900, XW - 8, 5742 - 8, 5742, 0, H, PZX); q.obj('ustun_panel', 'asos')        # burchak ustunining shimoliy yuzi (panel)
+LD = R['logoDevor']; p1, p2 = O['panel']
 bu.logo_panel(xp - 2, (p1 + p2) / 2, 90, 1050, (LD['z1'] + LD['z2']) / 2, 'primary-on-light', kuch=0.0, halqa=0.0, nom='logo_devor', ofset=22)
-# stoyka ustida osma kvadrat LED chiroq va undan osilgan o'simliklar (namunadagidek)
+# stoyka ustida osma kvadrat LED chiroq (o'simliksiz)
 q = Q(); cx, cy, zr, a_ = 5180, (st['y1'] + st['y2']) / 2, 2950, 450
 for (u1, u2, v1, v2) in ((-a_, a_, -a_, -a_ + 45), (-a_, a_, a_ - 45, a_), (-a_, -a_ + 45, -a_, a_), (a_ - 45, a_, -a_, a_)):
     q.box(cx + u1, cx + u2, cy + v1, cy + v2, zr, zr + 50, M['qora_metall'])
     q.box(cx + u1 + 8, cx + u2 - 8, cy + v1 + 8, cy + v2 - 8, zr - 4, zr, M['led_chiziq'])
 for u, v in ((-a_, -a_), (a_, -a_), (-a_, a_), (a_, a_)):
     q.cyl((cx + u * .9, cy + v * .9, zr + 50), (cx + u * .9, cy + v * .9, H), 2, M['qora_metall'], 6)
-for _ in range(34):            # ramkadan osilib tushgan o'simlik shoxlari: mayda barglar tik zanjir bo'lib
-    t_ = rnd.uniform(-1, 1) * a_; tomon = rnd.randrange(4)
-    ux, uy = [(t_, -a_), (t_, a_), (-a_, t_), (a_, t_)][tomon]
-    uz = rnd.uniform(150, 480)
-    for i in range(int(uz / 45)):
-        z_ = zr - i * 45 - rnd.uniform(0, 20)
-        q.shar(cx + ux + rnd.uniform(-35, 35), cy + uy + rnd.uniform(-35, 35), z_, rnd.uniform(14, 28), rnd.uniform(14, 28), rnd.uniform(28, 48),
-               M['barg'] if rnd.random() < .5 else M['barg_och'], 6)
 q.obj('osma_chiroq', 'asos')
 L_ = bpy.data.lights.new('osma_chiroq_nur', 'AREA'); L_.shape = 'SQUARE'; L_.size = 0.9; L_.energy = 120; L_.color = (1.0, 0.95, 0.88)
 ob_ = bpy.data.objects.new('osma_chiroq_nur', L_); bu.K['chiroq'].objects.link(ob_); ob_.visible_camera = False; ob_.location = P(cx, cy, zr - 10)
@@ -268,7 +229,7 @@ bu.doira_chiroqlar([(1100, 3200), (2900, 3200), (1100, 5100), (2900, 5100), (410
 bu.doira_chiroqlar([(3600, 7000)], 'tambur_chiroq', 25)
 bu.doira_chiroqlar([(3000, 1200), (4600, 1250)], 'quduq_chiroq', 45, z=QAVAT2 + 3500)
 bu.spot(5500, (LD['y1'] + LD['y2']) / 2, H - 40, 60, (XW, (LD['y1'] + LD['y2']) / 2, 1900), 45, 'logo_spot')
-for j1, j2 in O['javon']: bu.spot(5700, (j1 + j2) / 2, H - 40, 35, (XW, (j1 + j2) / 2, 1200), 55, 'javon_spot')
+for a_, b_ in OB['taroq']: bu.spot(5650, (a_ + b_) / 2, H - 40, 35, (XW, (a_ + b_) / 2, 1200), 55, 'taroq_spot')
 
 # ---------------- tashqi muhit ----------------
 q = Q(); q.box(-60000, 70000, -60000, 70000, -260, -250, M['yer']); q.obj('yer', 'tashqi')
@@ -280,9 +241,9 @@ KOR = {
     'umumiy': dict(cam=kam('kamera_umumiy', (-1800, 12500, 15500), (3300, 3600, -300), 32), res=(2400, 1700), ichki=False, quyosh=(120, 55, 3.2)),
     'kirish': dict(cam=kam('kamera_kirish', (3500, 6250, 1600), (4100, 1200, 1550), 18), res=(1920, 1080), ichki=True, quyosh=(100, 40, 3.0)),
     'resepshn': dict(cam=kam('kamera_resepshn', (3500, 5850, 1600), (6250, 4150, 1450), 18), res=(1920, 1080), ichki=True, quyosh=(100, 40, 3.0)),
-    'resepshn2': dict(cam=kam('kamera_resepshn_2', (2300, 4750, 1550), (6250, 4450, 1550), 20), res=(1920, 1080), ichki=True, quyosh=(100, 40, 3.0)),
+    'resepshn2': dict(cam=kam('kamera_resepshn_2', (1900, 4100, 1650), (6250, 4100, 1700), 20), res=(1920, 1080), ichki=True, quyosh=(100, 40, 3.0)),
 }
-FAYL = {'umumiy': '1-umumiy', 'kirish': '2-kirish', 'resepshn': '3-resepshn', 'resepshn2': '4-resepshn-oldidan'}
+FAYL = {'umumiy': '1-umumiy', 'kirish': '2-kirish', 'resepshn': '3-resepshn', 'resepshn2': '4-resepshn-togridan'}
 bu.render_sozla(A['tez'])
 os.makedirs(A['chiq'], exist_ok=True)
 bu.belgilar(KOR['umumiy']['cam'], KOR['umumiy']['res'],

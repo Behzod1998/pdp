@@ -72,13 +72,13 @@ async function q1Varaq() {
     ${fig(await rasm('Xadra_1-qavat_3D_1-umumiy.jpg'), "<b>Umumiy ko'rinish</b> — shift olib tashlangan, devorlar 2.7 m da kesilgan. Zina va pol (oktagon plitka) — mavjud holat; devorlar — PRAZA № 677 yog'och panel, shift qora (20.11).", yorliqlar(b, nom))}
     <div class="matn"><h3>Yechim (buyurtmachi sxemasi bo'yicha)</h3>
       <p><b>Turniket chizig'i</b> zal bo'ylab, eshikdan ~2 m ichkarida: o'ngda kirish (resepshn yonida), chaprog'ida chiqish; chapda evakuatsiya darvozasi (90 sm, chiqishga ochiladi), qolgani shisha to'siq. Turniketlar buyurtmachida mavjud.</p>
-      <p><b>Resepshn</b> (20.11, buyurtmachi namunasi — PDP Junior filiali, PDP Academy'ga moslab): o'ng devor bo'ylab 1.8 m stoyka zalga qaragan — old tomoni 677 panel, qora tik chiziqlar, yonlari to'q yog'och reyka, oq peshtaxta qora kant bilan; qolgani past to'siq panellari, xodim eshikchasi. <b>Orqa devor</b>: markazda shiftgacha tik 677 panel (qora chiziqlar, hajmli PDP Academy logotipi), ikki yonida qora metall javon (X bog'lam, yog'och tokchalar) va to'q reyka, chetlarda yashil o'simlik devor va LED; stoyka ustida osma kvadrat LED chiroq va o'simliklar.</p>
+      <p><b>Resepshn</b> (20.11, buyurtmachi namunasi — PDP Junior filiali, PDP Academy'ga moslab): o'ng devor bo'ylab 1.8 m stoyka zalga qaragan — old tomoni 677 panel, qora tik chiziqlar, yonlari to'q yog'och reyka, oq peshtaxta qora kant bilan; qolgani past to'siq panellari, xodim eshikchasi. <b>Orqa devor</b> (24.11): simmetrik, o'simliksiz — markazda bitta to'liq 677 panel 1.20 m (hajmli PDP Academy logotipi), ikki yonida 10 sm li 2 tadan bo'lak, orasidagi choklar qora; eng chetlarda taroq (to'q yog'och reyka), hammasi shiftgacha; stoyka kompozitsiya markazida, ustida osma kvadrat LED chiroq.</p>
       <p><b>Pardoz:</b> devorlar — PRAZA № 677 panel (1.22 × 2.8 m, ingichka choklar), shift — qora, dumaloq chiroqlar; zina perilasi — zanglamas po'lat va shisha (mavjud). Fotodagi qurilish chiqindilari ko'rsatilmagan.</p>
     </div></div>
     <div>
       ${fig(await rasm('Xadra_1-qavat_3D_2-kirish.jpg'), "<b>Eshikdan kirganda.</b> Oldinda mavjud zina (shisha perila), turniketlar; o'ngda resepshn.")}
-      ${fig(await rasm('Xadra_1-qavat_3D_3-resepshn.jpg'), "<b>Resepshn.</b> Stoyka, orqa devor: logotip, javonlar, yashil devor; oldinda kirish turniketi.")}
-      ${fig(await rasm('Xadra_1-qavat_3D_4-resepshn-oldidan.jpg'), "<b>Resepshn — old tomondan.</b> Markazda logotipli 677 panel, yonlarida javon va to'q reyka, chetlarda yashil devor.")}
+      ${fig(await rasm('Xadra_1-qavat_3D_3-resepshn.jpg'), "<b>Resepshn.</b> Stoyka va orqa devor: logotipli panel, 10 sm li bo'laklar, chetlarda taroq; oldinda kirish turniketi.")}
+      ${fig(await rasm('Xadra_1-qavat_3D_4-resepshn-togridan.jpg'), "<b>Resepshn — to'g'ridan.</b> Markazda 1.20 m panel va logotip, yonlarida 10 sm li bo'laklar (qora choklar), chetlarda taroq.")}
     </div></div></section>`;
 }
 
