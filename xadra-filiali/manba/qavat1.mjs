@@ -81,11 +81,12 @@ export function orqaBolaklar(O = RESEPSHN.orqa) {
 // zina boshiga olib boradi (yuqori marsh ostida bosh balandligi yetarli joyda, x < 3200); sharq tomoni shisha to'siq resepshngacha.
 export const TURNIKET = {
   chiziq: 2600,
-  tosiq: [r(650, 700, 2570, 2630), r(2500, 2650, 2570, 2630), r(3550, 4880, 2570, 2630)],
-  darvoza: r(700, 1600, 2570, 2630, { ochiladi: 'janub' }),                          // evakuatsiya darvozasi 900, chiqishga ochiladi
+  // 24.11: turniketlar chap (g'arbiy) devorga yopishgan — yo'laklar to'g'ri zina boshiga olib boradi (zina osti emas)
+  tosiq: [r(3350, 4880, 2570, 2630)],
+  darvoza: r(2450, 3350, 2570, 2630, { ochiladi: 'janub' }),                          // evakuatsiya darvozasi 900, chiqishga ochiladi
   turniketlar: [
-    { yonalish: 'chiqish', korpus: r(2200, 2500, 2300, 2900), otish: r(1600, 2200, 2300, 2900) },
-    { yonalish: 'kirish', korpus: r(3250, 3550, 2300, 2900), otish: r(2650, 3250, 2300, 2900) },
+    { yonalish: 'chiqish', korpus: r(1250, 1550, 2300, 2900), otish: r(650, 1250, 2300, 2900) },
+    { yonalish: 'kirish', korpus: r(2150, 2450, 2300, 2900), otish: r(1550, 2150, 2300, 2900) },
   ],
 };
 export const MEHMON = {
@@ -233,9 +234,9 @@ export function q1Svg(o = {}) {
     t(4100, 1700, 'h < 2 m', 150, G),
     t(1100, 2100, 'zina osti', 170, G),
     t(5520, 5650, 'Resepshn', 220, B),
-    t(1900, 3500, 'chiqish', 160, 'font-weight="700" fill="#c0392b"'), t(2950, 3500, 'kirish', 160, 'font-weight="700" fill="#1d7a35"'),
-    t(2450, 3850, 'Turniketlar (mavjud)', 200, B),
-    t(2000, 4350, 'evak. darvoza', 150, G),
+    t(950, 3700, 'chiqish', 160, 'font-weight="700" fill="#c0392b"'), t(1850, 3700, 'kirish', 160, 'font-weight="700" fill="#1d7a35"'),
+    t(1650, 4050, 'Turniketlar (mavjud)', 200, B),
+    t(2900, 3700, 'evak. darvoza', 150, G),
     t(1050, 6000, 'Mehmonlar', 190, G),
     t(2250, 7100, 'Tambur', 220, 'font-weight="700" fill="#444"'),
     t(5990, 3150, 'Logotip', 140, 'font-weight="700" fill="#1d7a35"'),
@@ -262,7 +263,7 @@ export function q1Svg(o = {}) {
   if (o.olcham !== false) {
     zX(-1000, [0, BINO1.L], true, true);
     zX(9350, [TAMBUR.x1, TAMBUR.x2], false, true);
-    zX(3150, [650, 1600, 2200, 2500, 2650, 3250, 3550, 4880], false);
+    zX(3150, [650, 1250, 1550, 2150, 2450, 3350, 4880], false);
     zY(-700, [0, BINO1.B], true, true);
     zY(-350, [100, 1400, 2400, 2600, 6100], true);
     zY(7200, [6300, TAMBUR.y2], false);
