@@ -62,7 +62,7 @@ export function rangsiz1Svg() {
     q.push(R(t.korpus, `rx="40" fill="#fff" stroke="${Q}" stroke-width="12"`));
     [-1, 0, 1].forEach(k => { const a = (k * 120 - 180) * Math.PI / 180; q.push(L(t.korpus.x1, TT.chiziq, t.korpus.x1 + Math.cos(a) * 520, TT.chiziq + Math.sin(a) * 520, `stroke="${Q}" stroke-width="14" stroke-linecap="round"`)); });
     const cx = (t.otish.x1 + t.otish.x2) / 2, kir = t.yonalish === 'kirish';
-    q.push(kir ? strelka(cx, 4950, cx, 3350, 16) : strelka(cx, 3350, cx, 4950, 16));
+    q.push(kir ? strelka(cx, TT.chiziq + 900, cx, TT.chiziq - 700, 16) : strelka(cx, TT.chiziq - 700, cx, TT.chiziq + 900, 16));
   });
   // resepshn stoykasi va to'siq panellari (kontur), xodim eshigi
   const RS = RESEPSHN;
@@ -77,7 +77,7 @@ export function rangsiz1Svg() {
   q.push(T(1650, 5250, 'Kirish zali', 300, 'font-weight="700"'), T(1650, 5600, `${m2(I.x2 - I.x1, I.y2 - I.y1)} · ${BINO1.maydon.toFixed(2)} m²`, 190),
     T(3300, 1100, 'Zina (mavjud) — 2-qavatga', 190, 'font-weight="700"'), T(2700, 2280, 'yuqori marsh (tepada)', 150),
     T(4100, 2280, 'h < 2 m', 150), T(1100, 2100, 'zina osti', 160),
-    T(5560, 5750, 'Resepshn', 200, 'font-weight="700"'), T(3500, 4750, 'Turniketlar (mavjud)', 180, 'font-weight="700"'),
+    T(5560, 5750, 'Resepshn', 200, 'font-weight="700"'), T(2250, 3300, 'Turniketlar (mavjud)', 180, 'font-weight="700"'),
     T(2950, 3650, 'chiqish', 150), T(4010, 3650, 'kirish', 150), T(2000, 4380, 'evak. darvoza 900', 140),
     T(3600, 7120, 'Tambur', 220, 'font-weight="700"'), T(3600, 7400, m2(TAMBUR.x2 - TAMBUR.x1 - 240, TAMBUR.y2 - TAMBUR.y1 - 120), 160),
     strelka(3585, 9050, 3585, 8350, 30), T(4250, 8800, 'KIRISH', 220, 'font-weight="700"'));

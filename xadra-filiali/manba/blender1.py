@@ -142,8 +142,9 @@ for y_, sg in ((st['y1'], -1), (st['y2'], +1)):                                 
         q.box(xx, xx + 30, min(y_, y_ + sg * 18), max(y_, y_ + sg * 18), 0, 1075, YONGOQ); xx += 48
     q.box(x0 - 6, x0 + 4, min(y_, y_ + sg * 22), max(y_, y_ + sg * 22), 0, 1080, M['qora_metall'])
 q.box(x0 + 40, st['x2'], st['y1'] + 40, st['y2'] - 40, 730, 750, OQ_STOL, bevel=3)                # ish yuzasi
-q.box(st['x2'] - 450, st['x2'], st['y2'] - 520, st['y2'] - 40, 0, 730, OQ_STOL)                   # tumba
-bu.monitor(q, x0 + 330, (st['y1'] + st['y2']) / 2, 90)
+q.box(st['x2'] - 450, st['x2'], st['y2'] - 260, st['y2'] - 40, 0, 730, OQ_STOL)                   # tumba (janubiy chetda)
+for kk in ('kreslo', 'kreslo2'):                                                              # 2 ish o'rni: admin va sotuvchi
+    bu.monitor(q, x0 + 330, mk(R[kk])[1], 90)
 for p_ in R['panellar']:                                                                      # past to'siq panellari (677)
     alongY = (p_['y2'] - p_['y1']) > (p_['x2'] - p_['x1'])
     ztop = 1280 if not alongY else 1100                                                       # zina maydonchasi ostidagisi — plitagacha
@@ -154,6 +155,7 @@ q.box(xe['x1'] + 10, xe['x2'] - 10, xe['y1'] + 20, xe['y2'] - 20, 100, 1080, PZY
 q.cyl((xe['x1'] - 20, xe['y2'] - 120, 900), (xe['x1'] - 20, xe['y2'] - 260, 900), 10, M['qora_metall'])
 q.obj('resepshn', 'asos')
 bu.joyla(bu.kreslo_mesh(), 'resepshn_kreslo', 'asos', mk(R['kreslo']), 90)
+bu.joyla(bu.kreslo_mesh(), 'resepshn_kreslo_2', 'asos', mk(R['kreslo2']), 90)
 
 # orqa devor (24.11, buyurtmachi): simmetrik, o'simliksiz — markazda bitta to'liq 677 panel 1.20 m (logotip), ikki yonida
 # 10 sm li 2 tadan bo'lak, ular orasidagi choklar qora; eng chetlarda taroq — qora asos ustida to'q yog'och reyka; shiftgacha.

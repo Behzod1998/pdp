@@ -50,13 +50,16 @@ export const RESEPSHN = {
   chiziq: 4880,
   stol: r(4880, 5480, 3200, 5000),          // stoyka 1.8 m: g'arb tomonida 1.10 m lik peshtaxta, sharqda 0.75 m ish yuzasi (20.11: chuqurligi 0.60)
   peshtaxta: r(4860, 5100, 3200, 5000),
-  panellar: [r(4880, 4930, 5000, 6100), r(4880, 6250, 2400, 2450)],
-  xodimEshik: r(4880, 4930, 2450, 3200, { en: 750 }),
-  kreslo: r(5640, 6090, 3875, 4325),
+  // 24.11: turniket resepshndan ajratildi — stoyka oldi bo'sh (kelganlar bilan suhbat, konsultatsiya); stoyka ortida 2 ish o'rni
+  // (admin va sotuvchi); xodim eshikchasi janubiy uchida (zal tomondan).
+  panellar: [r(4880, 4930, 2450, 3200), r(4880, 4930, 5750, 6100), r(4880, 6250, 2400, 2450)],
+  xodimEshik: r(4880, 4930, 5000, 5750, { en: 750 }),
+  kreslo: r(5640, 6090, 3500, 3950),
+  kreslo2: r(5640, 6090, 4250, 4700),
   logoDevor: { x: 6250, y1: 3500, y2: 4700, z1: 1700, z2: 2400, en: 900, bal: 440 },     // orqa devor markazidagi tik panelda (PRAZA 677)
   // 24.11 (buyurtmachi): orqa devor simmetrik, to'g'ridan ko'rinadi, o'simliksiz — markazda bitta to'liq panel 1.20 m (logotip),
   // ikki yonida 10 sm li 2 tadan bo'lak (choklari qora), eng chetlarda taroq (to'q yog'och reyka). Stoyka kompozitsiya markazida.
-  orqa: { y1: 2450, y2: 5750, panel: [3500, 4700], bolak: 100, bolakSoni: 2, chok: 15 },
+  orqa: { y1: 2450, y2: 5750, panel: [3500, 4700], bolak: 100, bolakSoni: 2, chok: 15, taroqUlush: 0.5 },   // taroq — chetdagi yarmi, qolgani panel
 };
 // orqa devor bo'laklari: markaziy panel, ikki yonida 10 sm li bo'laklar (orasida qora chok), chetlarda taroq
 export function orqaBolaklar(O = RESEPSHN.orqa) {
@@ -66,16 +69,21 @@ export function orqaBolaklar(O = RESEPSHN.orqa) {
     a -= O.chok; panel.push([a - O.bolak, a]); a -= O.bolak;
     b += O.chok; panel.push([b, b + O.bolak]); b += O.bolak;
   }
-  taroq.push([O.y1, a - O.chok], [b + O.chok, O.y2]);
+  // chetlarda taroq (yon qismning tashqi yarmi), ichki yarmi — panel (orasida qora chok)
+  const ya = O.y1 + Math.round((a - O.chok - O.y1) * O.taroqUlush), yb = O.y2 - Math.round((O.y2 - b - O.chok) * O.taroqUlush);
+  panel.push([ya + O.chok, a - O.chok], [b + O.chok, yb - O.chok]);
+  taroq.push([O.y1, ya], [yb, O.y2]);
   return { panel, taroq };
 }
+// 24.11 (buyurtmachi): turniket chizig'i zina kirishiga yaqin — yuqori marsh chetidan (y = 2400) biroz janubda; o'tish yo'laklari
+// zina boshiga olib boradi (yuqori marsh ostida bosh balandligi yetarli joyda, x < 3200); sharq tomoni shisha to'siq resepshngacha.
 export const TURNIKET = {
-  chiziq: 4050,
-  tosiq: [r(250, 1550, 4020, 4080), r(2450, 2650, 4020, 4080), r(3550, 3710, 4020, 4080), r(4610, 4880, 4020, 4080)],
-  darvoza: r(1550, 2450, 4020, 4080, { ochiladi: 'janub' }),                         // evakuatsiya darvozasi 900, chiqishga ochiladi
+  chiziq: 2600,
+  tosiq: [r(250, 300, 2570, 2630), r(2150, 2300, 2570, 2630), r(3200, 4880, 2570, 2630)],
+  darvoza: r(300, 1200, 2570, 2630, { ochiladi: 'janub' }),                          // evakuatsiya darvozasi 900, chiqishga ochiladi
   turniketlar: [
-    { yonalish: 'chiqish', korpus: r(3250, 3550, 3750, 4350), otish: r(2650, 3250, 3750, 4350) },
-    { yonalish: 'kirish', korpus: r(4310, 4610, 3750, 4350), otish: r(3710, 4310, 3750, 4350) },
+    { yonalish: 'chiqish', korpus: r(1850, 2150, 2300, 2900), otish: r(1250, 1850, 2300, 2900) },
+    { yonalish: 'kirish', korpus: r(2900, 3200, 2300, 2900), otish: r(2300, 2900, 2300, 2900) },
   ],
 };
 export const MEHMON = {
@@ -88,7 +96,7 @@ export function tekshiruv1() {
   const xato = [];
   const kesishadi = (a, b) => a.x1 < b.x2 && b.x1 < a.x2 && a.y1 < b.y2 && b.y1 < a.y2;
   const T = TURNIKET, R = RESEPSHN;
-  const jihoz = [R.stol, R.kreslo, ...R.panellar, MEHMON.divan, MEHMON.stolcha, ...T.turniketlar.map(t => t.korpus), ...T.tosiq, T.darvoza];
+  const jihoz = [R.stol, R.kreslo, R.kreslo2, ...R.panellar, MEHMON.divan, MEHMON.stolcha, ...T.turniketlar.map(t => t.korpus), ...T.tosiq, T.darvoza];
   jihoz.forEach((a, i) => {
     jihoz.slice(i + 1).forEach((b, k) => kesishadi(a, b) && xato.push(`jihoz ${i + 1} ↔ ${i + k + 2}`));
     USTUN1.forEach(u => kesishadi(a, u) && xato.push(`jihoz ${i + 1} ↔ ustun`));
@@ -154,8 +162,10 @@ export function q1Svg(o = {}) {
   j.push(rect(R.stol, `rx="30" fill="url(#${id}yog)"`));                                 // ish yuzasi
   j.push(rect(R.peshtaxta, `rx="30" fill="${RANG1.resepshn}"`), rect({ ...R.peshtaxta, x2: R.peshtaxta.x1 + 120 }, 'fill="#f2efe9"'));
   R.panellar.forEach(p => j.push(rect(p, `fill="${RANG1.resepshn}"`)));
-  j.push(use('ofisStul', ...markaz(R.kreslo), 90));
-  j.push(`<rect x="${R.stol.x1 + 300}" y="${(R.stol.y1 + R.stol.y2) / 2 - 280}" width="60" height="560" rx="14" fill="#1f2329"/>`);
+  [R.kreslo, R.kreslo2].forEach(k => {
+    j.push(use('ofisStul', ...markaz(k), 90));
+    j.push(`<rect x="${R.stol.x1 + 300}" y="${(k.y1 + k.y2) / 2 - 250}" width="60" height="500" rx="14" fill="#1f2329"/>`);
+  });
   const M = MEHMON;
   j.push(rect(M.divan, 'rx="120" fill="#7d858f"'), rect({ ...M.divan, x2: M.divan.x1 + 220 }, 'rx="90" fill="#626a74"'));
   for (let i = 0; i < 2; i++) {
@@ -181,7 +191,7 @@ export function q1Svg(o = {}) {
     });
     // yo'nalish strelkasi
     const cx = (t.otish.x1 + t.otish.x2) / 2, kir = t.yonalish === 'kirish';
-    const [ya, yb] = kir ? [4900, 3300] : [3300, 4900];
+    const [ya, yb] = kir ? [T.chiziq + 850, T.chiziq - 750] : [T.chiziq - 750, T.chiziq + 850];
     q.push(`<line x1="${cx}" y1="${ya}" x2="${cx}" y2="${yb + (kir ? 120 : -120)}" stroke="${kir ? '#1d7a35' : '#c0392b'}" stroke-width="34"/><path d="M${cx - 110},${yb + (kir ? 170 : -170)} L${cx},${yb} L${cx + 110},${yb + (kir ? 170 : -170)} Z" fill="${kir ? '#1d7a35' : '#c0392b'}"/>`);
   });
 
@@ -221,7 +231,7 @@ export function q1Svg(o = {}) {
     t(1100, 2100, 'zina osti', 170, G),
     t(5520, 5650, 'Resepshn', 220, B),
     t(2950, 3600, 'chiqish', 160, 'font-weight="700" fill="#c0392b"'), t(4010, 3600, 'kirish', 160, 'font-weight="700" fill="#1d7a35"'),
-    t(3500, 4720, 'Turniketlar (mavjud)', 200, B),
+    t(2250, 3350, 'Turniketlar (mavjud)', 200, B),
     t(2000, 4350, 'evak. darvoza', 150, G),
     t(1050, 6000, 'Mehmonlar', 190, G),
     t(2250, 7100, 'Tambur', 220, 'font-weight="700" fill="#444"'),
@@ -303,7 +313,7 @@ export function qavat1Html(o = {}) {
         <h2>Yechim (buyurtmachi sxemasi bo'yicha)</h2>
         <ul>
           <li><b>Zina mavjud holicha</b>: pastki marsh shimoliy devor bo'ylab sharqqa, sharqiy maydoncha (~1.5 m), undan yuqori marsh g'arbga — 2-qavatga. Shuning uchun zalning shimoliy qismi (${m(ZINA1.maydoncha.y2 - 100)} m) zinaga band.</li>
-          <li><b>Turniket chizig'i</b> eshikdan ${m(t.eshikdan)} m ichkarida, zal bo'ylab: o'ngda <b>kirish</b> (resepshn yonida), chaprog'ida <b>chiqish</b> — turniketlar buyurtmachida mavjud; o'tish yo'llari ${t.otish.map(v => v / 10).join(' va ')} sm. Chapda <b>evakuatsiya darvozasi</b> ${t.darvoza / 10} sm (antipanika, chiqishga ochiladi), qolgan qismi to'siq.</li>
+          <li><b>Turniket chizig'i</b> (24.11) zina kirishiga yaqin — yuqori marsh chetida, eshikdan ${m(t.eshikdan)} m ichkarida: <b>kirish</b> va <b>chiqish</b> zina boshiga olib boradi, sharq tomoni resepshngacha shisha to'siq; resepshn oldi bo'sh — kelganlar bilan suhbat va konsultatsiya joyi, stoyka ortida 2 ish o'rni (admin, sotuvchi) — turniketlar buyurtmachida mavjud; o'tish yo'llari ${t.otish.map(v => v / 10).join(' va ')} sm. Chapda <b>evakuatsiya darvozasi</b> ${t.darvoza / 10} sm (antipanika, chiqishga ochiladi), qolgan qismi to'siq.</li>
           <li><b>Resepshn</b> o'ng devor bo'ylab L shaklida: stoyka ${m(t.stoyka)} m, zalga qaragan (turniketlar va eshik ko'rinadi), mijoz tomonida 1.10 m lik peshtaxta; qolgan qismi past to'siq panellari, shimolda — zina maydonchasi tagidagi yopuvchi panel. Xodim resepshnga turniketdan o'tgan zonadan, 80 sm eshikcha orqali kiradi.</li>
           <li><b>Logotiplar</b> (design.pdp.uz, PDP Academy): xodim orqasidagi o'ng devorda, markazdagi 1.20 m li panelda hajmli logotip (~${m(RESEPSHN.logoDevor.en)} m); ikki yonida 10 sm li bo'laklar (qora choklar), chetlarda taroq — to'q yog'och reyka (24.11, buyurtmachi). Devorlar — PRAZA № 677 panel, shift — qora.</li>
           <li><b>Mehmonlar joyi</b>: chap devor bo'ylab divan va jurnal stolchasi — kirish zonasida (turniketgacha).</li>
