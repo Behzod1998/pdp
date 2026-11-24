@@ -9,20 +9,20 @@ import { LOYIHA } from './model.mjs';
 import { defs } from './render-svg.mjs';
 import { eshikSektori } from './tekshiruv.mjs';
 
-export const BINO1 = { L: 6500, B: 6300, ichki: { x1: 250, x2: 6250, y1: 100, y2: 6100 }, maydon: 36.5, H: 4000 };      // H — shift (24.11, buyurtmachi: 4.0 m)
+export const BINO1 = { L: 6500, B: 6300, ichki: { x1: 650, x2: 6250, y1: 100, y2: 6100 }, maydon: 33.6, H: 4000 };   // 24.11 (buyurtmachi): resepshn devoridan qarshi devorgacha 5.60 m      // H — shift (24.11, buyurtmachi: 4.0 m)
 const r = (x1, x2, y1, y2, q = {}) => ({ x1, x2, y1, y2, ...q });
 
 // ---------- devorlar ----------
 export const TAMBUR = r(1480, 5730, 6300, 7750);           // kirish tamburi (chizmada shtrixlangan), 4.25 m
 export const DEVOR1 = [
-  r(0, 250, 0, 6300, { tashqi: true }), r(6250, 6500, 0, 6300, { tashqi: true }),
+  r(400, 650, 0, 6300, { tashqi: true }), r(6250, 6500, 0, 6300, { tashqi: true }),
   r(0, 6500, 0, 100, { tashqi: true }),                       // yuqori chegara (ustunlar orasida)
   r(0, 3350, 6100, 6300, { tashqi: true }), r(4850, 6500, 6100, 6300, { tashqi: true }),
   // tambur devorlari
   r(1480, 1600, 6300, 7750, { tambur: true }), r(5610, 5730, 6300, 7750, { tambur: true }),
   r(1480, 2880, 7630, 7750, { tambur: true }), r(4290, 5730, 7630, 7750, { tambur: true }),
 ];
-export const USTUN1 = [r(250, 600, 100, 450), r(5900, 6250, 100, 450), r(250, 600, 5750, 6100), r(5900, 6250, 5750, 6100)];
+export const USTUN1 = [r(650, 1000, 100, 450), r(5900, 6250, 100, 450), r(650, 1000, 5750, 6100), r(5900, 6250, 5750, 6100)];
 
 // ---------- eshiklar (ikki tavaqali, evakuatsiya yo'nalishida — tashqariga ochiladi) ----------
 const e = (kod, a, b, yuz, yon, ilgak) => ({ kod, devor: 'h', a, b, yuz, yon, ilgak, en: b - a });
@@ -81,17 +81,17 @@ export function orqaBolaklar(O = RESEPSHN.orqa) {
 // zina boshiga olib boradi (yuqori marsh ostida bosh balandligi yetarli joyda, x < 3200); sharq tomoni shisha to'siq resepshngacha.
 export const TURNIKET = {
   chiziq: 2600,
-  tosiq: [r(250, 300, 2570, 2630), r(2150, 2300, 2570, 2630), r(3200, 4880, 2570, 2630)],
-  darvoza: r(300, 1200, 2570, 2630, { ochiladi: 'janub' }),                          // evakuatsiya darvozasi 900, chiqishga ochiladi
+  tosiq: [r(650, 700, 2570, 2630), r(2500, 2650, 2570, 2630), r(3550, 4880, 2570, 2630)],
+  darvoza: r(700, 1600, 2570, 2630, { ochiladi: 'janub' }),                          // evakuatsiya darvozasi 900, chiqishga ochiladi
   turniketlar: [
-    { yonalish: 'chiqish', korpus: r(1850, 2150, 2300, 2900), otish: r(1250, 1850, 2300, 2900) },
-    { yonalish: 'kirish', korpus: r(2900, 3200, 2300, 2900), otish: r(2300, 2900, 2300, 2900) },
+    { yonalish: 'chiqish', korpus: r(2200, 2500, 2300, 2900), otish: r(1600, 2200, 2300, 2900) },
+    { yonalish: 'kirish', korpus: r(3250, 3550, 2300, 2900), otish: r(2650, 3250, 2300, 2900) },
   ],
 };
 export const MEHMON = {
-  divan: r(250, 1050, 4500, 5700),
-  stolcha: r(1150, 1500, 4800, 5400),
-  osimlik: [[650, 4300], [2150, 5750]],
+  divan: r(650, 1450, 4500, 5700),
+  stolcha: r(1550, 1900, 4800, 5400),
+  osimlik: [[1050, 4300], [2400, 5750]],
 };
 
 export function tekshiruv1() {
@@ -233,8 +233,8 @@ export function q1Svg(o = {}) {
     t(4100, 1700, 'h < 2 m', 150, G),
     t(1100, 2100, 'zina osti', 170, G),
     t(5520, 5650, 'Resepshn', 220, B),
-    t(2950, 3600, 'chiqish', 160, 'font-weight="700" fill="#c0392b"'), t(4010, 3600, 'kirish', 160, 'font-weight="700" fill="#1d7a35"'),
-    t(2250, 3350, 'Turniketlar (mavjud)', 200, B),
+    t(1900, 3500, 'chiqish', 160, 'font-weight="700" fill="#c0392b"'), t(2950, 3500, 'kirish', 160, 'font-weight="700" fill="#1d7a35"'),
+    t(2450, 3850, 'Turniketlar (mavjud)', 200, B),
     t(2000, 4350, 'evak. darvoza', 150, G),
     t(1050, 6000, 'Mehmonlar', 190, G),
     t(2250, 7100, 'Tambur', 220, 'font-weight="700" fill="#444"'),
@@ -262,11 +262,11 @@ export function q1Svg(o = {}) {
   if (o.olcham !== false) {
     zX(-1000, [0, BINO1.L], true, true);
     zX(9350, [TAMBUR.x1, TAMBUR.x2], false, true);
-    zX(2650, [250, 1550, 2450, 2650, 3250, 3550, 3710, 4310, 4610, 4880], true);
+    zX(3150, [650, 1600, 2200, 2500, 2650, 3250, 3550, 4880], false);
     zY(-700, [0, BINO1.B], true, true);
-    zY(-350, [100, 1400, 2400, 4050, 6100], true);
+    zY(-350, [100, 1400, 2400, 2600, 6100], true);
     zY(7200, [6300, TAMBUR.y2], false);
-    zY(7000, [2400, 3500, 5300, 6100], false);
+    zY(7000, [2450, 3050, 4650, 5250, 6100], false);
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb.x1} ${vb.y1} ${vb.x2 - vb.x1} ${vb.y2 - vb.y1}" width="${(vb.x2 - vb.x1) / (o.mashtab || 50)}mm" height="${(vb.y2 - vb.y1) / (o.mashtab || 50)}mm">${q.join('')}<g ${SHRIFT}>${L.join('')}</g>${d.join('')}</svg>`;
 }

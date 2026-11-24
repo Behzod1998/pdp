@@ -55,12 +55,13 @@ for h, k in ((H1, 'toliq'), (KESIM, 'kesim')):
 # devor paneli (PRAZA 677) — zal devorlari va ustunlarining ichki yuzlari, eshik teshigi ustida ham
 for h, k in ((H1, 'toliq'), (KESIM, 'kesim')):
     q = Q()
-    bu.qoplama(q, 'h', I['y1'], +1, 600, 5900, 0, h, [], PZX, 8)                               # shimoliy (zina ortida)
-    bu.qoplama(q, 'h', I['y2'], -1, 600, 5900, 0, h, [(3350, 4850, 0, ESH_H + 300)], PZX, 8)     # janubiy (kirish)
+    X1 = I['x1'] + 350                                                                         # g'arbiy ustunlar cheti
+    bu.qoplama(q, 'h', I['y1'], +1, X1, 5900, 0, h, [], PZX, 8)                               # shimoliy (zina ortida)
+    bu.qoplama(q, 'h', I['y2'], -1, X1, 5900, 0, h, [(3350, 4850, 0, ESH_H + 300)], PZX, 8)     # janubiy (kirish)
     bu.qoplama(q, 'v', I['x1'], +1, 450, 5750, 0, h, [], PZY, 8)                                # g'arbiy
     bu.qoplama(q, 'v', I['x2'], -1, 450, 5750, 0, h, [], PZY, 8)                                # sharqiy (resepshn orqasi)
-    bu.qoplama(q, 'h', 450, +1, 250, 600, 0, h, [], PZX, 8); bu.qoplama(q, 'v', 600, +1, 100, 450, 0, h, [], PZY, 8)        # ustunlar
-    bu.qoplama(q, 'h', 5750, -1, 250, 600, 0, h, [], PZX, 8); bu.qoplama(q, 'v', 600, +1, 5750, 6100, 0, h, [], PZY, 8)
+    bu.qoplama(q, 'h', 450, +1, I['x1'], X1, 0, h, [], PZX, 8); bu.qoplama(q, 'v', X1, +1, 100, 450, 0, h, [], PZY, 8)        # ustunlar
+    bu.qoplama(q, 'h', 5750, -1, I['x1'], X1, 0, h, [], PZX, 8); bu.qoplama(q, 'v', X1, +1, 5750, 6100, 0, h, [], PZY, 8)
     bu.qoplama(q, 'v', 5900, -1, 5750, 6100, 0, h, [], PZY, 8)
     q.obj(f'devor_panel_{k}', k)
 q = Q()
@@ -241,8 +242,8 @@ q.box(T['x1'], T['x2'], T['y1'], T['y2'], H1, QAVAT2, SHIFT_Q)
 q.box(0, B['L'], -150, 100, QAVAT2, QAVAT2 + 3500, M['devor_bej']); q.box(I['x2'], B['L'], 0, 2600, QAVAT2, QAVAT2 + 3500, M['devor_bej'])
 q.box(0, B['L'], -150, 2600, QAVAT2 + 3500, QAVAT2 + 3700, M['shift'])
 q.obj('shift', 'tepa')
-bu.doira_chiroqlar([(1100, 3200), (2900, 3200), (1100, 5100), (2900, 5100), (4100, 5300), (5560, 3000), (5560, 5650),
-                    (1000, 1800), (2600, 2900)], 'downlight', 40, z=H1)
+bu.doira_chiroqlar([(1500, 3400), (3000, 3400), (1500, 5100), (3000, 5100), (4100, 5300), (5560, 3000), (5560, 4900),
+                    (1400, 1800), (2900, 2000)], 'downlight', 40, z=H1)
 bu.doira_chiroqlar([(3600, 7000)], 'tambur_chiroq', 25, z=H1)
 bu.doira_chiroqlar([(3000, 1200), (4600, 1250)], 'quduq_chiroq', 45, z=QAVAT2 + 3500)
 bu.spot(5500, (LD['y1'] + LD['y2']) / 2, H1 - 40, 60, (XW, (LD['y1'] + LD['y2']) / 2, 1900), 45, 'logo_spot')
