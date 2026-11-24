@@ -18,7 +18,8 @@ D = json.load(open(A['json']))
 bu.boshla()
 B = D['bino']; I = B['ichki']; T = D['tambur']; Z = D['zina']; R = D['resepshn']; TR = D['turniket']; MH = D['mehmon']
 mk = lambda r: ((r['x1'] + r['x2']) / 2, (r['y1'] + r['y2']) / 2)
-QAVAT2 = 3750                     # 2-qavat poli (shift + plita)
+H1 = B['H']                       # 1-qavat shifti (24.11: 4.0 m, buyurtmachi)
+QAVAT2 = H1 + 250                 # 2-qavat poli (shift + plita)
 QUDUQ = (1600, I['x2'], I['y1'], 2400)    # zina ustidagi shift teshigi
 PZX, PZY = bu.yogoch_panel('praza677_x', 'praza_677.jpg', 'x'), bu.yogoch_panel('praza677_y', 'praza_677.jpg', 'y')     # devor paneli
 PZX0, PZY0 = (bu.yogoch_panel(f'praza677_{o}_choksiz', 'praza_677.jpg', o, chok_yoq=True) for o in 'xy')                 # mebel uchun (choksiz)
@@ -41,7 +42,7 @@ q = Q(); q.box(2880, 4290, 6900, 7520, 8, 20, M['mato_kul_toq'], bevel=4); q.obj
 # ---------------- devorlar, ustunlar, plintus ----------------
 OCH = [(3350, 4850, 6100, 6300), (2880, 4290, 7630, 7750)]     # eshik teshiklari (ustida devor)
 LD = R['logoDevor']
-for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
+for h, k in ((H1, 'toliq'), (KESIM, 'kesim')):
     q = Q()
     cap = M['qopqoq'] if k == 'kesim' else None
     for w in D['devorlar']:
@@ -52,7 +53,7 @@ for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
         q.box(u['x1'], u['x2'], u['y1'], u['y2'], 0, h, M['devor_bej'], top=cap)
     q.obj(f'devorlar_{k}', k)
 # devor paneli (PRAZA 677) — zal devorlari va ustunlarining ichki yuzlari, eshik teshigi ustida ham
-for h, k in ((H, 'toliq'), (KESIM, 'kesim')):
+for h, k in ((H1, 'toliq'), (KESIM, 'kesim')):
     q = Q()
     bu.qoplama(q, 'h', I['y1'], +1, 600, 5900, 0, h, [], PZX, 8)                               # shimoliy (zina ortida)
     bu.qoplama(q, 'h', I['y2'], -1, 600, 5900, 0, h, [(3350, 4850, 0, ESH_H + 300)], PZX, 8)     # janubiy (kirish)
@@ -163,15 +164,25 @@ bu.joyla(bu.kreslo_mesh(), 'resepshn_kreslo_2', 'asos', mk(R['kreslo2']), 90)
 OB = D['orqaBolak']
 q = Q()
 xp = XW - 8 - 30
-q.box(XW - 26, XW - 8, O['y1'], O['y2'], 0, H, M['qora_metall'])                          # qora asos (choklar shu rangda)
+q.box(XW - 26, XW - 8, O['y1'], O['y2'], 0, H1, M['qora_metall'])                          # qora asos (choklar shu rangda)
 for a_, b_ in OB['panel']:
-    q.box(xp, XW - 26, a_, b_, 0, H, PZY0)
+    q.box(xp, XW - 26, a_, b_, 0, H1, PZY0)
 for a_, b_ in OB['taroq']:
     yy = a_ + 10
     while yy + 30 <= b_ - 5:
-        q.box(XW - 50, XW - 26, yy, yy + 30, 0, H, YONGOQ); yy += 46
+        q.box(XW - 50, XW - 26, yy, yy + 30, 0, H1, YONGOQ); yy += 46
 q.obj('orqa_devor', 'asos')
-q = Q(); q.box(5900, XW - 8, 5742 - 8, 5742, 0, H, PZX); q.obj('ustun_panel', 'asos')        # burchak ustunining shimoliy yuzi (panel)
+# resepshn devorining o'ng chetida — qora oynali tambur yoni (videodan): alyumin rom, tik impostlar, tepada ko'ndalang
+tb = R['tamburYon']; RAM = bu.mat('tambur_rom', '#7f857c', 0.4, 0.6); TOQ = bu.mat('oyna_toq', '#1d2227', 0.04, 0.0, coat=0.6)
+q = Q(); yc_ = (tb['y1'] + tb['y2']) / 2
+q.box(tb['x1'], tb['x2'], yc_ - 6, yc_ + 6, 0, H1, TOQ)
+n_ = max(1, round((tb['x2'] - tb['x1']) / 1100))
+for i in range(n_ + 1):
+    xx = tb['x1'] + (tb['x2'] - tb['x1']) * i / n_
+    q.box(xx - 25, xx + 25, tb['y1'], tb['y2'], 0, H1, RAM)
+for zz in (0, 2400, H1 - 50):
+    q.box(tb['x1'], tb['x2'], tb['y1'], tb['y2'], zz, zz + 50, RAM)
+q.obj('tambur_yon', 'asos')
 LD = R['logoDevor']; p1, p2 = O['panel']
 # logotip (24.11, buyurtmachi namunasi): bir qatorda PDP · belgi · Academy, ikkala so'z bir xil qora; hajmli harflar SVG'dan (tiniq),
 # devordan 25 mm tayanchlarda; --led bo'lsa harflar ortidan devorga oq LED nur
@@ -183,7 +194,7 @@ for (u1, u2, v1, v2) in ((-a_, a_, -a_, -a_ + 45), (-a_, a_, a_ - 45, a_), (-a_,
     q.box(cx + u1, cx + u2, cy + v1, cy + v2, zr, zr + 50, M['qora_metall'])
     q.box(cx + u1 + 8, cx + u2 - 8, cy + v1 + 8, cy + v2 - 8, zr - 4, zr, M['led_chiziq'])
 for u, v in ((-a_, -a_), (a_, -a_), (-a_, a_), (a_, a_)):
-    q.cyl((cx + u * .9, cy + v * .9, zr + 50), (cx + u * .9, cy + v * .9, H), 2, M['qora_metall'], 6)
+    q.cyl((cx + u * .9, cy + v * .9, zr + 50), (cx + u * .9, cy + v * .9, H1), 2, M['qora_metall'], 6)
 q.obj('osma_chiroq', 'asos')
 L_ = bpy.data.lights.new('osma_chiroq_nur', 'AREA'); L_.shape = 'SQUARE'; L_.size = 0.9; L_.energy = 120; L_.color = (1.0, 0.95, 0.88)
 ob_ = bpy.data.objects.new('osma_chiroq_nur', L_); bu.K['chiroq'].objects.link(ob_); ob_.visible_camera = False; ob_.location = P(cx, cy, zr - 10)
@@ -224,18 +235,18 @@ q.obj('mehmon_joyi', 'asos')
 # ---------------- shift, zina qudug'i, chiroqlar ----------------
 q = Q()
 for r in bu.tesik((0, B['L'], 0, B['B']), [QUDUQ]):
-    q.box(*r, H, QAVAT2, SHIFT_Q)
-q.box(T['x1'], T['x2'], T['y1'], T['y2'], H, QAVAT2, SHIFT_Q)
+    q.box(*r, H1, QAVAT2, SHIFT_Q)
+q.box(T['x1'], T['x2'], T['y1'], T['y2'], H1, QAVAT2, SHIFT_Q)
 # zina qudug'i ustidagi 2-qavat devorlari va shifti (yuqoriga qaraganda bo'shliq ko'rinmasin)
 q.box(0, B['L'], -150, 100, QAVAT2, QAVAT2 + 3500, M['devor_bej']); q.box(I['x2'], B['L'], 0, 2600, QAVAT2, QAVAT2 + 3500, M['devor_bej'])
 q.box(0, B['L'], -150, 2600, QAVAT2 + 3500, QAVAT2 + 3700, M['shift'])
 q.obj('shift', 'tepa')
 bu.doira_chiroqlar([(1100, 3200), (2900, 3200), (1100, 5100), (2900, 5100), (4100, 5300), (5560, 3000), (5560, 5650),
-                    (1000, 1800), (2600, 2900)], 'downlight', 34)
-bu.doira_chiroqlar([(3600, 7000)], 'tambur_chiroq', 25)
+                    (1000, 1800), (2600, 2900)], 'downlight', 40, z=H1)
+bu.doira_chiroqlar([(3600, 7000)], 'tambur_chiroq', 25, z=H1)
 bu.doira_chiroqlar([(3000, 1200), (4600, 1250)], 'quduq_chiroq', 45, z=QAVAT2 + 3500)
-bu.spot(5500, (LD['y1'] + LD['y2']) / 2, H - 40, 60, (XW, (LD['y1'] + LD['y2']) / 2, 1900), 45, 'logo_spot')
-for a_, b_ in OB['taroq']: bu.spot(5650, (a_ + b_) / 2, H - 40, 35, (XW, (a_ + b_) / 2, 1200), 55, 'taroq_spot')
+bu.spot(5500, (LD['y1'] + LD['y2']) / 2, H1 - 40, 60, (XW, (LD['y1'] + LD['y2']) / 2, 1900), 45, 'logo_spot')
+for a_, b_ in OB['taroq']: bu.spot(5650, (a_ + b_) / 2, H1 - 40, 35, (XW, (a_ + b_) / 2, 1200), 55, 'taroq_spot')
 
 # ---------------- tashqi muhit ----------------
 q = Q(); q.box(-60000, 70000, -60000, 70000, -260, -250, M['yer']); q.obj('yer', 'tashqi')
@@ -246,7 +257,7 @@ kam = bu.kamera
 KOR = {
     'umumiy': dict(cam=kam('kamera_umumiy', (-1800, 12500, 15500), (3300, 3600, -300), 32), res=(2400, 1700), ichki=False, quyosh=(120, 55, 3.2)),
     'kirish': dict(cam=kam('kamera_kirish', (3500, 6250, 1600), (4100, 1200, 1550), 18), res=(1920, 1080), ichki=True, quyosh=(100, 40, 3.0)),
-    'resepshn': dict(cam=kam('kamera_resepshn', (3500, 5850, 1600), (6250, 4150, 1450), 18), res=(1920, 1080), ichki=True, quyosh=(100, 40, 3.0)),
+    'resepshn': dict(cam=kam('kamera_resepshn', (3300, 5050, 1600), (6250, 3850, 1500), 18), res=(1920, 1080), ichki=True, quyosh=(100, 40, 3.0)),
     'resepshn2': dict(cam=kam('kamera_resepshn_2', (1900, 4100, 1650), (6250, 4100, 1700), 20), res=(1920, 1080), ichki=True, quyosh=(100, 40, 3.0)),
 }
 FAYL = {'umumiy': '1-umumiy', 'kirish': '2-kirish', 'resepshn': '3-resepshn', 'resepshn2': '4-resepshn-togridan'}

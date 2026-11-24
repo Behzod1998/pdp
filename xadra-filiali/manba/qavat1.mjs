@@ -9,7 +9,7 @@ import { LOYIHA } from './model.mjs';
 import { defs } from './render-svg.mjs';
 import { eshikSektori } from './tekshiruv.mjs';
 
-export const BINO1 = { L: 6500, B: 6300, ichki: { x1: 250, x2: 6250, y1: 100, y2: 6100 }, maydon: 36.5, H: 3500 };
+export const BINO1 = { L: 6500, B: 6300, ichki: { x1: 250, x2: 6250, y1: 100, y2: 6100 }, maydon: 36.5, H: 4000 };      // H — shift (24.11, buyurtmachi: 4.0 m)
 const r = (x1, x2, y1, y2, q = {}) => ({ x1, x2, y1, y2, ...q });
 
 // ---------- devorlar ----------
@@ -37,7 +37,7 @@ export const ESHIK1 = [
 export const ZINA1 = {
   pastki: r(2000, 4600, 100, 1400, { yo: 'sharq', soni: 10, kotarilish: 150 }),
   maydoncha: r(4600, 6250, 100, 2400, { z: 1500 }),
-  yuqori: r(1600, 4600, 1400, 2400, { yo: "g'arb", soni: 13, z1: 1500, z2: 3750 }),
+  yuqori: r(1600, 4600, 1400, 2400, { yo: "g'arb", soni: 16, z1: 1500, z2: 4250 }),     // 2-qavat poli = shift 4.0 + plita
   past: r(3600, 4600, 1400, 2400),          // yuqori marsh ostida, bosh balandligi < 2 m — o'tib bo'lmaydi
   boshi: { x: 1900, y: 750 },               // pastki marshning birinchi pog'onasi (g'arbdan kiriladi)
 };
@@ -48,18 +48,20 @@ export const ZINA_ZONA = [ZINA1.pastki, ZINA1.maydoncha, ZINA1.past];
 // shimolda — zina maydonchasi tagidagi yopuvchi panel. Stoyka zalga (g'arbga) qaragan — turniketlar va eshik ko'rinadi.
 export const RESEPSHN = {
   chiziq: 4880,
-  stol: r(4880, 5480, 3200, 5000),          // stoyka 1.8 m: g'arb tomonida 1.10 m lik peshtaxta, sharqda 0.75 m ish yuzasi (20.11: chuqurligi 0.60)
-  peshtaxta: r(4860, 5100, 3200, 5000),
+  stol: r(4880, 5480, 3050, 4650),          // 24.11: devor 2.80 m — stoyka 1.60 m, devor markazida          // stoyka 1.8 m: g'arb tomonida 1.10 m lik peshtaxta, sharqda 0.75 m ish yuzasi (20.11: chuqurligi 0.60)
+  peshtaxta: r(4860, 5100, 3050, 4650),
   // 24.11: turniket resepshndan ajratildi — stoyka oldi bo'sh (kelganlar bilan suhbat, konsultatsiya); stoyka ortida 2 ish o'rni
   // (admin va sotuvchi); xodim eshikchasi janubiy uchida (zal tomondan).
-  panellar: [r(4880, 4930, 2450, 3200), r(4880, 4930, 5750, 6100), r(4880, 6250, 2400, 2450)],
-  xodimEshik: r(4880, 4930, 5000, 5750, { en: 750 }),
-  kreslo: r(5640, 6090, 3500, 3950),
-  kreslo2: r(5640, 6090, 4250, 4700),
-  logoDevor: { x: 6250, y1: 3500, y2: 4700, z1: 1700, z2: 2400, en: 900, bal: 440 },     // orqa devor markazidagi tik panelda (PRAZA 677)
+  panellar: [r(4880, 4930, 2450, 3050), r(4880, 6250, 2400, 2450)],
+  xodimEshik: r(4880, 4930, 4650, 5250, { en: 600 }),
+  kreslo: r(5640, 6090, 3225, 3675),
+  kreslo2: r(5640, 6090, 4025, 4475),
+  // videodan (24.11): resepshn devori 2.80 m (zina maydonchasidan qora oynali tambur yonigacha), balandligi 4.0 m
+  tamburYon: r(4930, 6250, 5230, 5270),
+  logoDevor: { x: 6250, y1: 3250, y2: 4450, z1: 1800, z2: 2400, en: 1050, bal: 130 },     // orqa devor markazidagi tik panelda (PRAZA 677)
   // 24.11 (buyurtmachi): orqa devor simmetrik, to'g'ridan ko'rinadi, o'simliksiz — markazda bitta to'liq panel 1.20 m (logotip),
   // ikki yonida 10 sm li 2 tadan bo'lak (choklari qora), eng chetlarda taroq (to'q yog'och reyka). Stoyka kompozitsiya markazida.
-  orqa: { y1: 2450, y2: 5750, panel: [3500, 4700], bolak: 100, bolakSoni: 2, chok: 15, taroqUlush: 0.5 },   // taroq — chetdagi yarmi, qolgani panel
+  orqa: { y1: 2450, y2: 5250, panel: [3250, 4450], bolak: 100, bolakSoni: 2, chok: 15, taroqUlush: 0.5 },   // taroq — chetdagi yarmi, qolgani panel
 };
 // orqa devor bo'laklari: markaziy panel, ikki yonida 10 sm li bo'laklar (orasida qora chok), chetlarda taroq
 export function orqaBolaklar(O = RESEPSHN.orqa) {
@@ -201,6 +203,7 @@ export function q1Svg(o = {}) {
   q.push(rect({ x1: 6200, x2: 6250, y1: O.y1, y2: O.y2 }, 'fill="#1f2329"'));
   ob.taroq.forEach(([a, b]) => q.push(rect({ x1: 6195, x2: 6250, y1: a, y2: b }, 'fill="#5a3c27" stroke="#1f2329" stroke-width="8"')));
   ob.panel.forEach(([a, b]) => q.push(rect({ x1: 6212, x2: 6250, y1: a, y2: b }, 'fill="#d8bf9c"')));
+  q.push(rect(R.tamburYon, 'fill="#4a5560" stroke="#7f857c" stroke-width="12"'));
   q.push(rect({ x1: 6180, x2: 6212, y1: (LD.y1 + LD.y2) / 2 - LD.en / 2, y2: (LD.y1 + LD.y2) / 2 + LD.en / 2 }, `fill="${RANG1.logo}"`));
   q.push(logoBelgi(5990, 2750, 130));
 
