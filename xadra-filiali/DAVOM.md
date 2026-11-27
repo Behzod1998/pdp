@@ -35,7 +35,8 @@ rozetkasi (1.6 m), 13 vyklyuchatel, chiroqlar 3D dagidek, har sinfga alohida dif
 
 **2-qavat koworking sahnasi — logotipli interaktiv devor (27.11, buyurtmachi chizmasi va fotosi):** devor 5.90 × 3.50 m, polda
 sahna yo'q (fotozona). Simmetrik: bambuk 0.85 · taroq 0.60 · 3 ta B 0.30 · markaz 1.20 (logotip) · teskari. B — PRAZA № 677, choklar
-qora 8 mm; taroq — buyurtmachi namunasi (jigarrang qovurg'ali panel, planka ~120 mm; `manba/teksturalar-taroq.py`). Logotip — belgi +
+qora 8 mm; taroq — buyurtmachi namunasi (jigarrang qovurg'ali panel, planka ~120 mm; `manba/teksturalar-taroq.py`). Joyi — buyurtmachining birinchi fotosi bo'yicha (alohida GKL devor, ikki yonda shift osti to'sini, orqada shisha xonalar);
+yonidagi qolgan joylar (to'sin yuzi, devor uchlari) ham 677. Logotip — belgi +
 ikki qator, PDP qora, Academy yashil (`logo/pdp-academy-primary-yashil-academy.svg`), 1.60 m, markazi 2.25 m; LED varianti ham.
 Alohida sahna: `manba/blender-sahna.py` → `chizma/3d/Xadra_2-qavat_koworking-sahna_*.jpg`; varaq `manba/sahna-varaq.mjs` →
 `chizma/Xadra_2-qavat_koworking-sahna_v1.2.pdf/png`. 2-qavat umumiy modelidagi eski sahna (`KW_SAHNA`, grafit panel + ekran) hali

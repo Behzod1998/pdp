@@ -18,7 +18,7 @@ bu.boshla()
 bu.K['led'] = bu.kol('led')
 
 EN, BAL = 5900, 3500            # devor eni va balandligi (shiftgacha)
-PLINTUS = 80                    # plintus balandligi
+PLINTUS = 150                   # mavjud plintus (och kafel, foto)
 CHOK = 8                        # bo'laklar orasidagi qora chok
 CHUQ_ROOM = 8000                # xona chuqurligi (kamera uchun)
 # devor kompozitsiyasi (x, mm): b — 677 panel, t — taroq
@@ -51,18 +51,51 @@ PL = bu.mat('plintus_och', '#d8d6d1', 0.4)
 POL = bu.gisht('pol_kul', 'xy', '#9a9893', '#918f8a', '#77756f', 0.6, 0.6, 0.0, 0.0018, 0.3, coat=0.15, shovqin=0.06)
 DEVOR = bu.mat('devor_oq_sahna', '#ecebe8', 0.85)
 
-# ---------------- xona: pol, shift, yon devorlar ----------------
+# ---------------- atrof — buyurtmachining birinchi fotosi bo'yicha (27.11) ----------------
+# Sahna devori — alohida GKL devor bo'lagi; uning chizig'i ikki yonda shift ostidagi to'sin bo'lib davom etadi, to'sinlar ostida
+# ochiq joy, ichkarida (devor chizig'idan orqada) shisha to'siqli xonalar. Shift qora, osma dumaloq chiroqlar, pol — kulrang plitka.
+# Buyurtmachi: «yonidagi joylar qolib ketadigan bo'lsa, ular ham bambuk panel» — to'sinlar yuzi va devor uchlari ham PRAZA 677.
+CHAP, ONG = -4500, EN + 4500      # ko'rinadigan atrof chegarasi
+TOSIN_Z = 3050                    # yon to'sinlar osti
+SH_Y = -1200                      # shisha xonalar old yuzi (devor chizig'idan orqada)
+PZY = bu.yogoch_panel('praza677_y', 'praza_677.jpg', 'y', chok_yoq=True)
 q = Q()
-q.box(-1500, EN + 1500, -200, CHUQ_ROOM, -10, 0, POL)
+q.box(CHAP, ONG, -6000, CHUQ_ROOM, -10, 0, POL)
 q.obj('pol', 'asos')
 q = Q()
-q.box(-1500, EN + 1500, -200, CHUQ_ROOM, BAL, BAL + 100, SHIFT_Q)
+q.box(CHAP, ONG, -6000, CHUQ_ROOM, BAL, BAL + 100, SHIFT_Q)
 q.obj('shift', 'tepa')
 q = Q()
-q.box(-150, 0, -200, CHUQ_ROOM, 0, BAL, DEVOR); q.box(EN, EN + 150, -200, CHUQ_ROOM, 0, BAL, DEVOR)          # yon devorlar
-q.box(-150, EN + 150, CHUQ_ROOM, CHUQ_ROOM + 150, 0, BAL, DEVOR)                                              # orqa (kamera ortida)
-q.box(0, EN, -200, -30, 0, BAL, DEVOR)                                                                        # GKL devor
+q.box(CHAP - 150, CHAP, -6000, CHUQ_ROOM, 0, BAL, DEVOR); q.box(ONG, ONG + 150, -6000, CHUQ_ROOM, 0, BAL, DEVOR)   # chetki devorlar
+q.box(CHAP, ONG, CHUQ_ROOM, CHUQ_ROOM + 150, 0, BAL, DEVOR)                                                     # kamera ortida
+q.box(0, EN, -200, -30, 0, BAL, DEVOR)                                                                          # sahna devori (GKL)
+for x1, x2 in ((CHAP, 0), (EN, ONG)):                                                                           # yon to'sinlar
+    q.box(x1, x2, -200, -18, TOSIN_Z, BAL, DEVOR)
 q.obj('devorlar', 'asos')
+q = Q()
+for x1, x2 in ((CHAP, 0), (EN, ONG)):
+    q.box(x1, x2, -18, 0, TOSIN_Z, BAL, PZ)                                       # to'sin yuzi — 677
+q.box(-18, 0, -200, 0, PLINTUS, BAL, PZY); q.box(EN, EN + 18, -200, 0, PLINTUS, BAL, PZY)     # devor uchlari — 677
+q.box(-18, 0, -200, 10, 0, PLINTUS, PL); q.box(EN, EN + 18, -200, 10, 0, PLINTUS, PL)
+q.obj('yon_panellar', 'asos')
+# shisha xonalar: old yuzi devor chizig'idan orqada, devor uchiga yaqin tomoni — tik shisha (fotodagi qiya ko'rinadigan oyna)
+q = Q()
+for tomon in (-1, 1):
+    xa = -300 if tomon < 0 else EN + 300                      # shisha burchagi
+    xb = CHAP if tomon < 0 else ONG
+    lo, hi = min(xa, xb), max(xa, xb)
+    q.box(lo, hi, SH_Y - 6, SH_Y + 6, 0, TOSIN_Z, M['oyna'])                       # old shisha
+    q.box(xa - 6, xa + 6, SH_Y, -200, 0, TOSIN_Z, M['oyna'])                       # yon shisha (devorga qadar)
+    for xx in [xa] + [xa + tomon * k * 1100 for k in range(1, 4)]:
+        q.box(xx - 22, xx + 22, SH_Y - 25, SH_Y + 25, 0, TOSIN_Z, M['qora_metall'])
+    for yy in (SH_Y, (SH_Y - 200) / 2, -200):
+        q.box(xa - 22, xa + 22, yy - 22, yy + 22, 0, TOSIN_Z, M['qora_metall'])
+    for zz in (0, TOSIN_Z - 45):
+        q.box(lo, hi, SH_Y - 25, SH_Y + 25, zz, zz + 45, M['qora_metall'])
+        q.box(xa - 22, xa + 22, SH_Y, -200, zz, zz + 45, M['qora_metall'])
+    q.box(lo, hi, SH_Y - 4500, SH_Y - 4350, 0, BAL, PZ)                            # xona ichi: orqa devor (panel)
+    q.box(lo, hi, SH_Y - 120, SH_Y - 25, TOSIN_Z, BAL, DEVOR)                     # shisha ustidagi GKL
+q.obj('shisha_xonalar', 'asos')
 
 # ---------------- sahna devori ----------------
 q = Q()
@@ -100,7 +133,7 @@ bu.kor_yashir('led', True)
 # ---------------- chiroqlar ----------------
 # osma dumaloq chiroqlar (foto): devordan ~1 m, uchta
 q = Q()
-OSMA = [(1100, 1000), (XC, 1000), (EN - 1100, 1000)]
+OSMA = [(500, 1400), (2750, 1300), (5100, 1400), (2100, 4300), (4900, 4300)]
 ZO = 2850
 for x, y in OSMA:
     q.cyl((x, y, ZO), (x, y, ZO + 45), 230, M['qora_metall'], 48)
@@ -109,28 +142,29 @@ for x, y in OSMA:
     q.cyl((x, y, BAL - 15), (x, y, BAL), 40, M['qora_metall'], 16)
 q.obj('osma_chiroqlar', 'tepa')
 for i, (x, y) in enumerate(OSMA):
-    L_ = bpy.data.lights.new(f'osma_{i}', 'AREA'); L_.shape = 'DISK'; L_.size = 0.42; L_.energy = 45; L_.color = (1.0, 0.95, 0.88)
+    L_ = bpy.data.lights.new(f'osma_{i}', 'AREA'); L_.shape = 'DISK'; L_.size = 0.42; L_.energy = 70; L_.color = (1.0, 0.95, 0.88)
     ob_ = bpy.data.objects.new(f'osma_{i}', L_); bu.K['chiroq'].objects.link(ob_); ob_.visible_camera = False; ob_.location = P(x, y, ZO - 10)
-# shiftda qora spotlar — devorni yoritadi (logotip, taroq, chetlar)
+# shiftda 2 ta qora spot — logotipga
 q = Q()
-for x, nish_z, kuch, nom in ((425, 1600, 35, 'chet'), (1150, 1600, 40, 'taroq'), (XC - 450, LOGO_Z, 45, 'logo'), (XC + 450, LOGO_Z, 45, 'logo'),
-                             (EN - 1150, 1600, 40, 'taroq'), (EN - 425, 1600, 35, 'chet')):
+for x, nish_z, kuch, nom in ((XC - 450, LOGO_Z, 45, 'logo'), (XC + 450, LOGO_Z, 45, 'logo')):
     q.cyl((x, 700, BAL - 120), (x, 700, BAL), 45, M['qora_metall'], 20)
     bu.spot(x, 700, BAL - 125, kuch, (x, 0, nish_z), 42, f'spot_{nom}')
 q.obj('spotlar', 'tepa')
-bu.doira_chiroqlar([(1200, 4000), (EN - 1200, 4000), (1200, 6500), (EN - 1200, 6500)], 'downlight', 14)
+
+
+bu.doira_chiroqlar([(x, y) for x in (-3300, -1500, EN + 1500, EN + 3300) for y in (-2200, -4200)], 'xona_chiroq', 35)   # shisha xonalar ichi
 
 # ---------------- kameralar va render ----------------
 kam = bu.kamera
 Q_ = (90, 40, 0.0)
 KOR = {
-    'old': dict(cam=kam('kamera_old', (XC, 6800, 1550), (XC, 0, 1800), 28), res=(1920, 1280), ichki=True, quyosh=Q_),
-    'qiya': dict(cam=kam('kamera_qiya', (700, 4600, 1600), (3900, 0, 1700), 22), res=(1920, 1280), ichki=True, quyosh=Q_),
-    'yaqin': dict(cam=kam('kamera_yaqin', (XC + 400, 3300, 1650), (XC, 0, 2050), 30), res=(1920, 1280), ichki=True, quyosh=Q_),
+    'old': dict(cam=kam('kamera_old', (XC, 5800, 1660), (XC, 0, 1660), 26), res=(2000, 1500), ichki=True, quyosh=Q_),       # 1-foto nuqtasi
+    'qiya': dict(cam=kam('kamera_qiya', (7300, 3400, 1600), (2300, 0, 1550), 20), res=(2000, 1500), ichki=True, quyosh=Q_),   # 3-foto kabi, o'ngdan
+    'yaqin': dict(cam=kam('kamera_yaqin', (XC + 400, 3300, 1650), (XC, 0, 2050), 30), res=(2000, 1500), ichki=True, quyosh=Q_),
 }
 KOR['old_led'] = dict(KOR['old'], korsat=['led'], exp=-0.3)
 KOR['yaqin_led'] = dict(KOR['yaqin'], korsat=['led'], exp=-0.3)
 FAYL = {'old': '1-togridan', 'qiya': '2-qiya', 'yaqin': '3-logotip-yaqin', 'old_led': '4-togridan-LED', 'yaqin_led': '5-logotip-yaqin-LED'}
 bu.render_sozla(A['tez'])
-bu.renderla(KOR, A['chiq'], 'Xadra_2-qavat_koworking-sahna', FAYL, A['tez'], A['faqat'], namuna=(96, 48))
+bu.renderla(KOR, A['chiq'], 'Xadra_2-qavat_koworking-sahna', FAYL, A['tez'], A['faqat'], namuna=(64, 40))
 print('tayyor')

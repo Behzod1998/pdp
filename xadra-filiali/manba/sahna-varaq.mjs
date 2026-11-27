@@ -19,7 +19,7 @@ const CHIQISH = join(BU, '..', 'chizma');
 
 // devor (blender-sahna.py bilan bir xil): eni, balandligi, kompozitsiya (b — PRAZA 677, t — taroq), logotip
 export const SAHNA_DEVOR = {
-  en: 5900, bal: 3500, plintus: 80, chok: 8, planka: 120,
+  en: 5900, bal: 3500, plintus: 150, chok: 8, planka: 120,
   seg: [['b', 0, 850], ['t', 850, 1450], ['b', 1450, 1750], ['b', 1750, 2050], ['b', 2050, 2350], ['b', 2350, 3550],
     ['b', 3550, 3850], ['b', 3850, 4150], ['b', 4150, 4450], ['t', 4450, 5050], ['b', 5050, 5900]],
   logo: { en: 1600, z: 2250 },
@@ -109,8 +109,10 @@ const izoh = async () => `<div class="izoh">
     <b>T (taroq)</b> — buyurtmachi namunasi: jigarrang qovurg'ali yog'och panel, baland va past qovurg'alar navbatma-navbat; planka ~${S.planka} mm, har tomonda 5 ta.</p>
   <p><b>Logotip:</b> hajmli harflar (qalinligi ~20 mm), devordan ~30 mm tayanchlarda; belgi — yashil halqa va sariq doira, PDP — qora, Academy — yashil (buyurtmachi namunasi).
     Eni ${m(S.logo.en)} m, markazi poldan ${m(S.logo.z)} m. LED variant (2-varaq): harflar ortidan devorga oq nur.</p>
-  <p><b>Chiroqlar:</b> 3 ta osma dumaloq chiroq (fotodagi kabi), shiftda 6 ta qora spot devorni yoritadi (logotip, taroq, chetlar). Shift qora. Rozetkalar — fotodagi teshiklar o'rnida (+${S.rozetkaZ / 1000} m).</p>
-  <p><b>Taxminlar (joyida aniqlanadi):</b> taroq plankasining aniq eni va uzunligi (3.42 m dan qisqa bo'lsa — yotiq chok joyi), tor B bo'laklar eni (chizmadan ${m(300)}), plintus rangi, spotlar soni. Pol — mavjud kulrang plitka (tozalangan).</p>
+  <p><b>Joyi — buyurtmachining fotosi bo'yicha:</b> alohida GKL devor; uning chizig'i ikki yonda shift ostidagi to'sin bo'lib davom etadi, ostida — shisha xonalar.
+    Yonida qolgan joylar (to'sinlar yuzi, devor uchlari) ham PRAZA № 677. Mavjud och plintus (~${S.plintus} mm) qoladi.</p>
+  <p><b>Chiroqlar:</b> mavjud osma dumaloq chiroqlar (foto); logotipga shiftdan 2 ta qora spot (taklif). Shift qora. Rozetkalar — fotodagi teshiklar o'rnida (+${S.rozetkaZ / 1000} m).</p>
+  <p><b>Taxminlar (joyida aniqlanadi):</b> taroq plankasining aniq eni va uzunligi (3.42 m dan qisqa bo'lsa — yotiq chok joyi), tor B bo'laklar eni (chizmadan ${m(300)}), plintus rangi, spotlar soni. Pol — mavjud kulrang plitka (tozalangan, musorsiz).</p>
 </div>`;
 
 const html = async () => `<!doctype html><html lang="uz"><head><meta charset="utf-8"><title>Koworking sahnasi</title><style>${CSS}</style></head><body>
@@ -122,13 +124,13 @@ const html = async () => `<!doctype html><html lang="uz"><head><meta charset="ut
   <div class="asosiy">
     <div>
       <figure><img src="${await rasm('old')}"></figure>
-      <figcaption><span class="raqam">1</span><b>To'g'ridan</b> — koworking tomondan, devor markazidan.</figcaption>
+      <figcaption><span class="raqam">1</span><b>To'g'ridan</b> — fotodagi nuqtadan (koworking tomondan, devor markazidan).</figcaption>
       <div class="fasad">${await fasad()}</div>
       <figcaption><b>Fasad (mm).</b> B — PRAZA № 677, T — taroq; choklar qora ${S.chok} mm; pastda plintus ${S.plintus} mm.</figcaption>
     </div>
     <div>
       <figure><img src="${await rasm('qiya')}"></figure>
-      <figcaption><span class="raqam">2</span><b>Qiya ko'rinish</b> — chap tomondan: taroq qovurg'alari va tor bo'laklar.</figcaption>
+      <figcaption><span class="raqam">2</span><b>Qiya ko'rinish</b> — o'ng tomondan (2-foto kabi): taroq qovurg'alari, tor bo'laklar, yon to'sin va shisha xona.</figcaption>
       <figure><img src="${await rasm('yaqin')}"></figure>
       <figcaption><span class="raqam">3</span><b>Logotip yaqindan</b> — hajmli harflar, spotlar bilan yoritilgan.</figcaption>
       ${await izoh()}
