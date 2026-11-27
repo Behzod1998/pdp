@@ -13,8 +13,8 @@ try { ({ chromium } = require('playwright')); } catch {
 }
 const BU = join(dirname(fileURLToPath(import.meta.url)), 'logo');
 const NOMLAR = ['pdp-academy-primary-on-dark', 'pdp-academy-primary-on-light', 'pdp-academy-inline-on-dark', 'pdp-academy-inline-on-light', 'pdp-academy-primary-mono-dark',
-  'pdp-academy-inline-markaz-on-light'];   // inline-markaz — PDP · belgi · Academy (1-qavat resepshn, 24.11); unga oq LED halqa ham
-const OQ_HALQA = new Set(['pdp-academy-inline-markaz-on-light']);   // mono-dark — shisha devorlardagi mat plyonka uchun (15.10)
+  'pdp-academy-inline-markaz-on-light', 'pdp-academy-primary-yashil-academy'];   // yashil-academy — koworking sahnasi (27.11); inline-markaz — PDP · belgi · Academy (1-qavat resepshn, 24.11); unga oq LED halqa ham
+const OQ_HALQA = new Set(['pdp-academy-inline-markaz-on-light', 'pdp-academy-primary-yashil-academy']);   // mono-dark — shisha devorlardagi mat plyonka uchun (15.10)
 const EN = 3000, CHET = 160;   // px; chekkadagi bo'sh joy — halqa kesilmasligi uchun
 
 const brauzer = await chromium.launch();

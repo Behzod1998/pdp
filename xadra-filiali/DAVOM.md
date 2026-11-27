@@ -33,6 +33,14 @@ kamera 24 (har biriga Cat6, XZ4 shkafi); internet 16 ta 2 portli RJ-45 (30 sm) +
 3-qavat tamburi 1), 5 shleyf, pult 1-qavat resepshnda, IPR/sirena/tablo/avariya me'yor bo'yicha; elektr — 78 rozetka + 7 doska
 rozetkasi (1.6 m), 13 vyklyuchatel, chiroqlar 3D dagidek, har sinfga alohida difavtomat, mavjud shit 6-xonada (kirishda o'ngda).
 
+**2-qavat koworking sahnasi — logotipli interaktiv devor (27.11, buyurtmachi chizmasi va fotosi):** devor 5.90 × 3.50 m, polda
+sahna yo'q (fotozona). Simmetrik: bambuk 0.85 · taroq 0.60 · 3 ta B 0.30 · markaz 1.20 (logotip) · teskari. B — PRAZA № 677, choklar
+qora 8 mm; taroq — buyurtmachi namunasi (jigarrang qovurg'ali panel, planka ~120 mm; `manba/teksturalar-taroq.py`). Logotip — belgi +
+ikki qator, PDP qora, Academy yashil (`logo/pdp-academy-primary-yashil-academy.svg`), 1.60 m, markazi 2.25 m; LED varianti ham.
+Alohida sahna: `manba/blender-sahna.py` → `chizma/3d/Xadra_2-qavat_koworking-sahna_*.jpg`; varaq `manba/sahna-varaq.mjs` →
+`chizma/Xadra_2-qavat_koworking-sahna_v1.2.pdf/png`. 2-qavat umumiy modelidagi eski sahna (`KW_SAHNA`, grafit panel + ekran) hali
+yangilanmagan. Buyurtmachi: 1-qavat resepshndagi taroq ham shu namunaga almashtiriladi (vaqti so'ralgan).
+
 **Ochilish — 06.12.2026 (buyurtmachi, 20.11).** Zayavkalar rejasi: `hisob/Xadra_zayavkalar_reja_v1.2.xlsx` (`manba/zayavka-reja.py`
 + recalc) — 15 ta zayavka (Z00 berilgan sanuzel, Z01–Z14 asosiy jadvaldan), jami ~1 047 mln so'm; muddatlar ochilishdan orqaga.
 Profil rangi — kumush (oq panel 4, founder tasdig'ida, 05.11).
@@ -56,6 +64,7 @@ internet va elektr — Toshkent taxminiy narxlari.
 8. Hojatxona paneli: qaysi variant (1/2/3), narxi; Excel'dagi devor kafeli o'rniga panel qo'yilsinmi.
 9. Supa chegarasi (eshikdan 2.50 m) va unitaz kabinasi kengligi (1.00 m) to'g'rimi.
 10. Hojatxona zayavkasi: dekor panel 28 dona (95.2 m²) — chizma bo'yicha ~44 m² (15 dona); kafel kleyi 20 qop (~5 yetadi); santexnika ishlari ulushi; asosiy jadvalda devor kafeli (58 m²) o'rniga panel.
+11. Koworking sahnasi: taroq plankasining aniq eni/uzunligi (3.42 m dan qisqa bo'lsa — yotiq chok joyi); tor B bo'laklar eni (0.30 taxmin).
 
 ## Qayta yig'ish (yangi muhitda)
 
