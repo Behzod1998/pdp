@@ -87,7 +87,7 @@ header { display: flex; justify-content: space-between; align-items: flex-end; h
 header .brend { font-size: 8pt; color: #6b6b6b; font-weight: 700; }
 header h1 { font-size: 15pt; color: #1f1f1f; }
 header .ong { text-align: right; font-size: 7.2pt; color: #555; }
-.asosiy { display: grid; grid-template-columns: 1fr 128mm; gap: 4mm; margin-top: 2mm; }
+.asosiy { display: grid; grid-template-columns: 172mm 116mm 1fr; gap: 4mm; margin-top: 2mm; }
 figure img { display: block; width: 100%; border-radius: 1.2mm; }
 figcaption { font-size: 7.4pt; color: #333; margin: 1mm 0 2.2mm; line-height: 1.3; }
 figcaption b { color: #1f1f1f; }
@@ -96,7 +96,7 @@ figcaption b { color: #1f1f1f; }
 .fasad svg { display: block; width: 100%; height: auto; }
 .izoh { font-size: 7pt; color: #333; line-height: 1.42; } .izoh b { color: #1f1f1f; } .izoh p { margin-bottom: 1.2mm; }
 .namuna { display: flex; gap: 3mm; margin: 1mm 0 2mm; } .namuna div { font-size: 6.6pt; color: #444; text-align: center; }
-.namuna img { width: 30mm; height: 22mm; object-fit: cover; border: .3mm solid #bbb; border-radius: .8mm; display: block; margin-bottom: .6mm; }
+.namuna img { width: 26mm; height: 22mm; object-fit: cover; border: .3mm solid #bbb; border-radius: .8mm; display: block; margin-bottom: .6mm; }
 .led { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; margin-top: 2mm; }
 `;
 
@@ -133,8 +133,8 @@ const html = async () => `<!doctype html><html lang="uz"><head><meta charset="ut
       <figcaption><span class="raqam">2</span><b>Qiya ko'rinish</b> — o'ng tomondan (2-foto kabi): taroq qovurg'alari, tor bo'laklar, yon to'sin va shisha xona.</figcaption>
       <figure><img src="${await rasm('yaqin')}"></figure>
       <figcaption><span class="raqam">3</span><b>Logotip yaqindan</b> — hajmli harflar, spotlar bilan yoritilgan.</figcaption>
-      ${await izoh()}
     </div>
+    <div>${await izoh()}</div>
   </div>
 </section>
 <section class="varaq">
